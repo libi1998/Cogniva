@@ -4,3 +4,6 @@ allowBuilds:
   sharp: true
   unrs-resolver: true
   msw: false
+  # traduzione sul dispositivo: nel browser serve solo onnxruntime-web
+  onnxruntime-node: false
+  protobufjs: false

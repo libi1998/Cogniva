@@ -5,3 +5,7 @@ node_modules/
 coverage/
 pnpm-lock.yaml
 .pnpm-store/
+# generati da scripts/fetch-fonts.mjs e scripts/gen-icons.mjs
+fonts/
+lib/font-catalog.ts
+lib/icon-library.ts

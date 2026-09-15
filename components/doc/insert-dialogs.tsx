@@ -1,0 +1,1576 @@
+"use client"
+
+import * as React from "react"
+import type { Editor } from "@tiptap/react"
+import { Search } from "lucide-react"
+import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { FontPicker } from "@/components/shared/font-picker"
+import { CustomColor } from "@/components/shared/custom-color"
+import { Glyph } from "@/components/board/glyph"
+import { useAuthor } from "@/lib/author"
+import {
+  BOOKMARK_NAME,
+  DATE_FORMATS,
+  FIELD_LABELS,
+  goToBookmark,
+  hiddenBookmarkName,
+  listBookmarks,
+  REF_FORMATS,
+  type FieldKind,
+} from "@/lib/doc-fields"
+import {
+  signatureContent,
+  smartArtBoard,
+  SMARTART_TEMPLATES,
+} from "@/lib/doc-inserts"
+import { fontStack } from "@/lib/fonts"
+import {
+  BAND_FIELDS,
+  bandParts,
+  FOOTER_PRESETS,
+  HEADER_PRESETS,
+  joinBand,
+  PAGE_NUMBER_FORMATS,
+} from "@/lib/header-footer"
+import { ICON_CATEGORIES, ICON_NAMES } from "@/lib/icon-library"
+import { docAccent, getSwatch } from "@/lib/palette"
+import type { DocTheme } from "@/lib/types"
+import { cn } from "@/lib/utils"
+
+/** Finestra con intestazione, contenuto e pulsanti: lo schema di tutte */
+function Shell({
+  open,
+  onClose,
+  title,
+  description,
+  width = 460,
+  children,
+}: {
+  open: boolean
+  onClose: () => void
+  title: string
+  description?: string
+  width?: number
+  children: React.ReactNode
+}) {
+  return (
+    <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
+      <DialogContent
+        className="gap-0 p-0"
+        style={{ maxWidth: `min(${width}px, calc(100% - 2rem))` }}
+      >
+        <DialogHeader className="border-b border-border px-5 py-4">
+          <DialogTitle>{title}</DialogTitle>
+          {description ? (
+            <DialogDescription>{description}</DialogDescription>
+          ) : null}
+        </DialogHeader>
+        {open ? children : null}
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function Footer({
+  onClose,
+  children,
+}: {
+  onClose: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <DialogFooter className="border-t border-border px-5 py-3">
+      <Button type="button" variant="ghost" onClick={onClose}>
+        Annulla
+      </Button>
+      {children}
+    </DialogFooter>
+  )
+}
+
+const selectClass =
+  "h-8 min-w-0 rounded-md border border-input bg-transparent px-2 text-sm text-foreground"
+
+/* ------------------------------ segnalibro ------------------------------- */
+
+export function BookmarkDialog({
+  open,
+  onClose,
+  editor,
+}: {
+  open: boolean
+  onClose: () => void
+  editor: Editor
+}) {
+  return (
+    <Shell
+      open={open}
+      onClose={onClose}
+      title="Segnalibro"
+      description="Un nome per questo punto del documento: ci si torna da qui e lo si usa nei riferimenti incrociati."
+    >
+      <BookmarkForm editor={editor} onClose={onClose} />
+    </Shell>
+  )
+}
+
+function BookmarkForm({
+  editor,
+  onClose,
+}: {
+  editor: Editor
+  onClose: () => void
+}) {
+  const [list, setList] = React.useState(() => listBookmarks(editor.state))
+  const [name, setName] = React.useState(() => {
+    const words = editor.state.doc
+      .textBetween(editor.state.selection.from, editor.state.selection.to, " ")
+      .trim()
+      .normalize("NFD")
+      .replace(/\p{Diacritic}/gu, "")
+      .replace(/[^A-Za-z0-9]+/g, "_")
+      .replace(/^[^A-Za-z]+|_+$/g, "")
+      .slice(0, 40)
+    return words
+  })
+  const [sort, setSort] = React.useState<"name" | "position">("position")
+  const valid = BOOKMARK_NAME.test(name)
+  const shown =
+    sort === "name"
+      ? [...list].sort((a, b) => a.name.localeCompare(b.name, "it"))
+      : list
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        if (!valid) return
+        if (!editor.chain().focus().setBookmark(name).run()) {
+          toast.info("Posiziona il cursore su una parola o seleziona del testo")
+          return
+        }
+        toast.success(`Segnalibro «${name}» aggiunto`)
+        onClose()
+      }}
+    >
+      <div className="space-y-3 px-5 py-4">
+        <label className="block space-y-1">
+          <span className="text-xs text-muted-foreground">Nome segnalibro</span>
+          <Input
+            autoFocus
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Es. Conclusioni"
+            className="h-8 text-sm"
+          />
+          {name && !valid ? (
+            <span className="block text-[11px] text-destructive">
+              Inizia con una lettera; solo lettere, numeri e trattino basso,
+              senza spazi.
+            </span>
+          ) : null}
+        </label>
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span>Segnalibri del documento ({list.length})</span>
+          <span className="flex gap-3">
+            {(["name", "position"] as const).map((value) => (
+              <label key={value} className="flex items-center gap-1">
+                <input
+                  type="radio"
+                  checked={sort === value}
+                  onChange={() => setSort(value)}
+                />
+                {value === "name" ? "Nome" : "Posizione"}
+              </label>
+            ))}
+          </span>
+        </div>
+        <div className="max-h-48 overflow-y-auto rounded-md border border-border">
+          {shown.length ? (
+            shown.map((b) => (
+              <div
+                key={b.name}
+                className="flex items-center gap-2 border-b border-border px-2.5 py-1.5 text-sm last:border-b-0"
+              >
+                <button
+                  type="button"
+                  onClick={() => setName(b.name)}
+                  className="min-w-0 flex-1 text-left"
+                >
+                  <span className="block truncate font-medium">{b.name}</span>
+                  <span className="block truncate text-[11px] text-muted-foreground">
+                    {b.text}
+                  </span>
+                </button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 text-xs"
+                  onClick={() => {
+                    goToBookmark(editor, b.name)
+                    onClose()
+                  }}
+                >
+                  Vai a
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 text-xs text-destructive"
+                  onClick={() => {
+                    editor.chain().removeBookmark(b.name).run()
+                    setList(listBookmarks(editor.state))
+                  }}
+                >
+                  Elimina
+                </Button>
+              </div>
+            ))
+          ) : (
+            <p className="px-2.5 py-3 text-xs text-muted-foreground">
+              Ancora nessun segnalibro.
+            </p>
+          )}
+        </div>
+      </div>
+      <Footer onClose={onClose}>
+        <Button type="submit" disabled={!valid}>
+          Aggiungi
+        </Button>
+      </Footer>
+    </form>
+  )
+}
+
+/* ------------------------- riferimento incrociato ------------------------ */
+
+type RefKind = "heading" | "bookmark" | "Figura" | "Tabella" | "Equazione"
+
+type RefItem = {
+  key: string
+  label: string
+  /** titoli: la posizione, per aggiungere il segnalibro nascosto */
+  heading?: { from: number; to: number; existing: string | null }
+  target?: string
+}
+
+function refItems(editor: Editor, kind: RefKind): RefItem[] {
+  const { state } = editor
+  if (kind === "bookmark") {
+    return listBookmarks(state).map((b) => ({
+      key: b.name,
+      label: `${b.name} — ${b.text}`,
+      target: `bm:${b.name}`,
+    }))
+  }
+  const items: RefItem[] = []
+  const counters = new Map<string, number>()
+  state.doc.descendants((node, pos) => {
+    if (kind === "heading" && node.type.name === "heading") {
+      const hidden = node.firstChild?.marks.find(
+        (m) =>
+          m.type.name === "bookmark" &&
+          String(m.attrs.name ?? "").startsWith("_Ref")
+      )
+      items.push({
+        key: String(pos),
+        label: `${"  ".repeat(Number(node.attrs.level) - 1)}${node.textContent}`,
+        heading: {
+          from: pos + 1,
+          to: pos + node.nodeSize - 1,
+          existing: hidden ? String(hidden.attrs.name) : null,
+        },
+      })
+      return false
+    }
+    if (
+      node.type.name === "field" &&
+      node.attrs.kind === "seq" &&
+      node.attrs.label === kind
+    ) {
+      const n = (counters.get(kind) ?? 0) + 1
+      counters.set(kind, n)
+      const $pos = state.doc.resolve(pos)
+      items.push({
+        key: String(pos),
+        label: $pos.parent.textContent.trim() || `${kind} ${n}`,
+        target: `seq:${node.attrs.target}`,
+      })
+    }
+    return true
+  })
+  return items
+}
+
+export function CrossRefDialog({
+  open,
+  onClose,
+  editor,
+}: {
+  open: boolean
+  onClose: () => void
+  editor: Editor
+}) {
+  return (
+    <Shell
+      open={open}
+      onClose={onClose}
+      title="Riferimento incrociato"
+      description="Un rimando che si aggiorna da solo quando il testo o le pagine cambiano."
+      width={520}
+    >
+      <CrossRefForm editor={editor} onClose={onClose} />
+    </Shell>
+  )
+}
+
+function CrossRefForm({
+  editor,
+  onClose,
+}: {
+  editor: Editor
+  onClose: () => void
+}) {
+  const [kind, setKind] = React.useState<RefKind>("heading")
+  const [format, setFormat] = React.useState("text")
+  const [picked, setPicked] = React.useState<string | null>(null)
+  const items = refItems(editor, kind)
+  const formats = REF_FORMATS.filter(
+    (f) =>
+      f.for === "any" ||
+      (f.for === "seq" && kind !== "heading" && kind !== "bookmark")
+  )
+  const current = items.find((i) => i.key === picked) ?? null
+
+  const insert = (item: RefItem | null) => {
+    if (!item) return
+    let target = item.target ?? ""
+    const chain = editor.chain().focus()
+    if (item.heading) {
+      const name = item.heading.existing ?? hiddenBookmarkName()
+      target = `bm:${name}`
+      if (!item.heading.existing && item.heading.to > item.heading.from) {
+        const { from, to } = item.heading
+        chain.command(({ tr, state }) => {
+          tr.addMark(from, to, state.schema.marks.bookmark.create({ name }))
+          return true
+        })
+      }
+    }
+    chain.insertField({ kind: "ref", target, format }).run()
+    onClose()
+  }
+
+  return (
+    <div>
+      <div className="grid gap-3 px-5 py-4 sm:grid-cols-2">
+        <label className="block space-y-1">
+          <span className="text-xs text-muted-foreground">
+            Tipo di riferimento
+          </span>
+          <select
+            value={kind}
+            onChange={(e) => {
+              const next = e.target.value as RefKind
+              setKind(next)
+              setPicked(null)
+              setFormat(
+                next === "heading" || next === "bookmark" ? "text" : "label"
+              )
+            }}
+            className={cn(selectClass, "w-full")}
+          >
+            <option value="heading">Titolo</option>
+            <option value="bookmark">Segnalibro</option>
+            <option value="Figura">Figura</option>
+            <option value="Tabella">Tabella</option>
+            <option value="Equazione">Equazione</option>
+          </select>
+        </label>
+        <label className="block space-y-1">
+          <span className="text-xs text-muted-foreground">
+            Inserisci riferimento a
+          </span>
+          <select
+            value={format}
+            onChange={(e) => setFormat(e.target.value)}
+            className={cn(selectClass, "w-full")}
+          >
+            {formats.map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.id === "text" && kind !== "heading" && kind !== "bookmark"
+                  ? "Didascalia intera"
+                  : f.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <div className="sm:col-span-2">
+          <span className="text-xs text-muted-foreground">
+            Per quale{" "}
+            {kind === "heading"
+              ? "titolo"
+              : kind === "bookmark"
+                ? "segnalibro"
+                : "didascalia"}
+          </span>
+          <div className="mt-1 max-h-56 overflow-y-auto rounded-md border border-border">
+            {items.length ? (
+              items.map((i) => (
+                <button
+                  key={i.key}
+                  type="button"
+                  onClick={() => setPicked(i.key)}
+                  onDoubleClick={() => insert(i)}
+                  className={cn(
+                    "block w-full truncate px-2.5 py-1.5 text-left text-sm whitespace-pre hover:bg-muted",
+                    picked === i.key && "bg-accent text-accent-foreground"
+                  )}
+                >
+                  {i.label}
+                </button>
+              ))
+            ) : (
+              <p className="px-2.5 py-3 text-xs text-muted-foreground">
+                {kind === "heading"
+                  ? "Il documento non ha titoli (stili Titolo 1–3)."
+                  : kind === "bookmark"
+                    ? "Nessun segnalibro: aggiungine uno da Inserisci › Segnalibro."
+                    : `Nessuna didascalia «${kind}»: aggiungila da Riferimenti › Inserisci didascalia.`}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+      <Footer onClose={onClose}>
+        <Button
+          type="button"
+          disabled={!current}
+          onClick={() => insert(current)}
+        >
+          Inserisci
+        </Button>
+      </Footer>
+    </div>
+  )
+}
+
+/* ------------------------------ data e ora ------------------------------- */
+
+export function DateTimeDialog({
+  open,
+  onClose,
+  editor,
+}: {
+  open: boolean
+  onClose: () => void
+  editor: Editor
+}) {
+  return (
+    <Shell open={open} onClose={onClose} title="Data e ora">
+      <DateTimeForm editor={editor} onClose={onClose} />
+    </Shell>
+  )
+}
+
+function DateTimeForm({
+  editor,
+  onClose,
+}: {
+  editor: Editor
+  onClose: () => void
+}) {
+  const [now] = React.useState(() => new Date())
+  const [picked, setPicked] = React.useState(DATE_FORMATS[0].id)
+  const [auto, setAuto] = React.useState(false)
+  const insert = () => {
+    const format = DATE_FORMATS.find((f) => f.id === picked) ?? DATE_FORMATS[0]
+    const chain = editor.chain().focus()
+    if (auto) chain.insertField({ kind: format.kind, format: format.id })
+    else chain.insertContent(format.render(now))
+    chain.run()
+    onClose()
+  }
+  return (
+    <div>
+      <div className="space-y-3 px-5 py-4">
+        <div className="max-h-64 overflow-y-auto rounded-md border border-border">
+          {DATE_FORMATS.map((f) => (
+            <button
+              key={f.id}
+              type="button"
+              onClick={() => setPicked(f.id)}
+              onDoubleClick={insert}
+              className={cn(
+                "block w-full px-2.5 py-1.5 text-left text-sm hover:bg-muted",
+                picked === f.id && "bg-accent text-accent-foreground"
+              )}
+            >
+              {f.render(now)}
+            </button>
+          ))}
+        </div>
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={auto}
+            onChange={(e) => setAuto(e.target.checked)}
+          />
+          Aggiorna automaticamente
+        </label>
+      </div>
+      <Footer onClose={onClose}>
+        <Button type="button" onClick={insert}>
+          Inserisci
+        </Button>
+      </Footer>
+    </div>
+  )
+}
+
+/* --------------------------------- campo --------------------------------- */
+
+const SIMPLE_FIELDS: FieldKind[] = [
+  "date",
+  "time",
+  "page",
+  "pages",
+  "title",
+  "author",
+  "words",
+]
+
+export function FieldDialog({
+  open,
+  onClose,
+  editor,
+}: {
+  open: boolean
+  onClose: () => void
+  editor: Editor
+}) {
+  return (
+    <Shell
+      open={open}
+      onClose={onClose}
+      title="Campo"
+      description="Un valore che il documento calcola e tiene aggiornato."
+    >
+      <FieldForm editor={editor} onClose={onClose} />
+    </Shell>
+  )
+}
+
+function FieldForm({
+  editor,
+  onClose,
+}: {
+  editor: Editor
+  onClose: () => void
+}) {
+  const [kind, setKind] = React.useState<FieldKind>("page")
+  const [format, setFormat] = React.useState("")
+  const dates = DATE_FORMATS.filter((f) => f.kind === kind)
+  return (
+    <div>
+      <div className="grid gap-3 px-5 py-4 sm:grid-cols-[180px_1fr]">
+        <div className="rounded-md border border-border">
+          {SIMPLE_FIELDS.map((k) => (
+            <button
+              key={k}
+              type="button"
+              onClick={() => {
+                setKind(k)
+                setFormat("")
+              }}
+              className={cn(
+                "block w-full px-2.5 py-1.5 text-left text-sm hover:bg-muted",
+                kind === k && "bg-accent text-accent-foreground"
+              )}
+            >
+              {FIELD_LABELS[k]}
+            </button>
+          ))}
+        </div>
+        <div className="space-y-2 text-sm">
+          {dates.length ? (
+            <label className="block space-y-1">
+              <span className="text-xs text-muted-foreground">Formato</span>
+              <select
+                value={format || dates[0].id}
+                onChange={(e) => setFormat(e.target.value)}
+                className={cn(selectClass, "w-full")}
+              >
+                {dates.map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.render(new Date())}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            {kind === "page"
+              ? "Il numero della pagina su cui si trova il campo, con il formato scelto in Inserisci › Numero di pagina."
+              : kind === "pages"
+                ? "Il numero totale di pagine del documento."
+                : kind === "title"
+                  ? "Il titolo del documento: cambia quando cambi il titolo."
+                  : kind === "author"
+                    ? "Il nome dell'autore impostato nell'app."
+                    : kind === "words"
+                      ? "Le parole del documento, aggiornate mentre scrivi."
+                      : "Si aggiorna ogni volta che il documento viene aperto o stampato."}
+          </p>
+        </div>
+      </div>
+      <Footer onClose={onClose}>
+        <Button
+          type="button"
+          onClick={() => {
+            editor
+              .chain()
+              .focus()
+              .insertField({ kind, format: format || dates[0]?.id || "" })
+              .run()
+            onClose()
+          }}
+        >
+          Inserisci
+        </Button>
+      </Footer>
+    </div>
+  )
+}
+
+/* --------------------------- riga della firma ---------------------------- */
+
+export function SignatureDialog({
+  open,
+  onClose,
+  editor,
+}: {
+  open: boolean
+  onClose: () => void
+  editor: Editor
+}) {
+  return (
+    <Shell open={open} onClose={onClose} title="Riga della firma">
+      <SignatureForm editor={editor} onClose={onClose} />
+    </Shell>
+  )
+}
+
+function SignatureForm({
+  editor,
+  onClose,
+}: {
+  editor: Editor
+  onClose: () => void
+}) {
+  const author = useAuthor()
+  const [info, setInfo] = React.useState({
+    name: author,
+    role: "",
+    email: "",
+    date: true,
+  })
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        editor.chain().focus().insertContent(signatureContent(info)).run()
+        onClose()
+      }}
+    >
+      <div className="space-y-2.5 px-5 py-4">
+        {(
+          [
+            ["name", "Firmatario suggerito", "Nome e cognome"],
+            ["role", "Titolo del firmatario", "Es. Amministratore delegato"],
+            ["email", "Indirizzo di posta elettronica", "nome@azienda.it"],
+          ] as const
+        ).map(([key, label, placeholder]) => (
+          <label key={key} className="block space-y-1">
+            <span className="text-xs text-muted-foreground">{label}</span>
+            <Input
+              value={info[key]}
+              placeholder={placeholder}
+              onChange={(e) => setInfo({ ...info, [key]: e.target.value })}
+              className="h-8 text-sm"
+            />
+          </label>
+        ))}
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={info.date}
+            onChange={(e) => setInfo({ ...info, date: e.target.checked })}
+          />
+          Aggiungi la riga per luogo e data
+        </label>
+      </div>
+      <Footer onClose={onClose}>
+        <Button type="submit">Inserisci</Button>
+      </Footer>
+    </form>
+  )
+}
+
+/* ------------------------------- simboli -------------------------------- */
+
+const SYMBOL_GROUPS: { label: string; chars: string }[] = [
+  {
+    label: "Punteggiatura",
+    chars: "« » „ “ ” ‘ ’ ‚ … – — • · ¡ ¿ § ¶ † ‡ ※ ‖ © ® ™ ℗ № ℮ ° ′ ″",
+  },
+  { label: "Valute", chars: "€ £ $ ¥ ₹ ₽ ₩ ₿ ¢ ₺ ₴ ₦ ฿ ₫ ₪ ₱ ₲ ₡ ₵" },
+  {
+    label: "Matematica",
+    chars:
+      "± × ÷ = ≠ ≈ ≡ ≤ ≥ < > ∞ √ ∛ ∑ ∏ ∫ ∮ ∂ ∆ ∇ ∈ ∉ ⊂ ⊃ ⊆ ⊇ ∪ ∩ ∧ ∨ ¬ ∀ ∃ ∅ ‰ ∝ ∠ ⊥ ∥ ∴ ∵ ⌈ ⌉ ⌊ ⌋",
+  },
+  {
+    label: "Frazioni e apici",
+    chars:
+      "½ ⅓ ⅔ ¼ ¾ ⅕ ⅖ ⅗ ⅘ ⅙ ⅚ ⅛ ⅜ ⅝ ⅞ ⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ ⁿ ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉",
+  },
+  {
+    label: "Greco",
+    chars:
+      "α β γ δ ε ζ η θ ι κ λ μ ν ξ ο π ρ σ τ υ φ χ ψ ω Γ Δ Θ Λ Ξ Π Σ Φ Ψ Ω",
+  },
+  {
+    label: "Frecce",
+    chars: "← → ↑ ↓ ↔ ↕ ⇐ ⇒ ⇑ ⇓ ⇔ ↖ ↗ ↘ ↙ ↩ ↪ ↺ ↻ ⟵ ⟶ ⟷ ➔ ➜ ➤ ➢",
+  },
+  {
+    label: "Forme",
+    chars: "■ □ ▪ ▫ ▲ △ ▼ ▽ ◀ ▶ ◆ ◇ ● ○ ◉ ◎ ◐ ◑ ★ ☆ ♠ ♣ ♥ ♦ ✦ ✧ ❖",
+  },
+  {
+    label: "Spunte e segni",
+    chars: "✓ ✔ ✗ ✘ ☐ ☑ ☒ ⊕ ⊗ ⚠ ⓘ ☎ ✉ ✂ ✎ ⌘ ⌥ ⇧ ⌫ ⏎ ♫ ☀ ☁ ☂ ☕ ⚑",
+  },
+  {
+    label: "Lettere",
+    chars:
+      "À Á Â Ä Ã Å Æ Ç È É Ê Ë Ì Í Î Ï Ñ Ò Ó Ô Ö Õ Ø Œ Ù Ú Û Ü ß à á â ä ã å æ ç è é ê ë ì í î ï ñ ò ó ô ö õ ø œ ù ú û ü ÿ",
+  },
+]
+
+const RECENT_KEY = "cogniva.symbols.recent"
+
+function readRecentSymbols(): string[] {
+  try {
+    const raw = JSON.parse(localStorage.getItem(RECENT_KEY) ?? "[]")
+    return Array.isArray(raw)
+      ? raw.filter((c) => typeof c === "string").slice(0, 16)
+      : []
+  } catch {
+    return []
+  }
+}
+
+function saveRecentSymbols(list: string[]) {
+  try {
+    localStorage.setItem(RECENT_KEY, JSON.stringify(list))
+  } catch {
+    // senza localStorage i recenti valgono finché la finestra è aperta
+  }
+}
+
+export function SymbolDialog({
+  open,
+  onClose,
+  editor,
+}: {
+  open: boolean
+  onClose: () => void
+  editor: Editor
+}) {
+  return (
+    <Shell open={open} onClose={onClose} title="Simboli" width={560}>
+      <SymbolForm editor={editor} onClose={onClose} />
+    </Shell>
+  )
+}
+
+function SymbolForm({
+  editor,
+  onClose,
+}: {
+  editor: Editor
+  onClose: () => void
+}) {
+  const [group, setGroup] = React.useState(SYMBOL_GROUPS[0].label)
+  const [picked, setPicked] = React.useState<string | null>(null)
+  const [code, setCode] = React.useState("")
+  const [recent, setRecent] = React.useState<string[]>(readRecentSymbols)
+
+  const chars = (SYMBOL_GROUPS.find((g) => g.label === group)?.chars ?? "")
+    .split(" ")
+    .filter(Boolean)
+  const fromCode = /^(u\+)?[0-9a-f]{4,5}$/i.test(code.trim())
+    ? String.fromCodePoint(parseInt(code.trim().replace(/^u\+/i, ""), 16))
+    : null
+  const current = fromCode ?? picked
+
+  const insert = (char: string | null) => {
+    if (!char) return
+    editor.chain().focus().insertContent(char).run()
+    const next = [char, ...recent.filter((c) => c !== char)].slice(0, 16)
+    setRecent(next)
+    saveRecentSymbols(next)
+  }
+
+  const cell = (char: string) => (
+    <button
+      key={char}
+      type="button"
+      title={`U+${char.codePointAt(0)?.toString(16).toUpperCase().padStart(4, "0")}`}
+      onClick={() => {
+        setPicked(char)
+        setCode("")
+      }}
+      onDoubleClick={() => insert(char)}
+      className={cn(
+        "flex aspect-square items-center justify-center rounded-md border text-lg transition hover:bg-muted",
+        current === char ? "border-primary bg-accent" : "border-border"
+      )}
+    >
+      {char}
+    </button>
+  )
+
+  return (
+    <div>
+      <div className="space-y-3 px-5 py-4">
+        <div className="flex flex-wrap gap-1">
+          {SYMBOL_GROUPS.map((g) => (
+            <button
+              key={g.label}
+              type="button"
+              onClick={() => setGroup(g.label)}
+              className={cn(
+                "rounded-full border px-2.5 py-1 text-xs transition",
+                group === g.label
+                  ? "border-primary bg-accent text-accent-foreground"
+                  : "border-border text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {g.label}
+            </button>
+          ))}
+        </div>
+        <div className="grid max-h-60 grid-cols-8 gap-1 overflow-y-auto sm:grid-cols-12">
+          {chars.map(cell)}
+        </div>
+        {recent.length ? (
+          <div>
+            <span className="text-xs text-muted-foreground">
+              Simboli usati di recente
+            </span>
+            <div className="mt-1 grid grid-cols-8 gap-1 sm:grid-cols-16">
+              {recent.map(cell)}
+            </div>
+          </div>
+        ) : null}
+        <div className="flex items-center gap-3">
+          <span
+            className="flex size-12 shrink-0 items-center justify-center rounded-lg border border-border text-2xl"
+            aria-live="polite"
+          >
+            {current ?? ""}
+          </span>
+          <label className="flex flex-1 items-center gap-2 text-xs text-muted-foreground">
+            Codice carattere
+            <Input
+              value={
+                code ||
+                (current
+                  ? current
+                      .codePointAt(0)!
+                      .toString(16)
+                      .toUpperCase()
+                      .padStart(4, "0")
+                  : "")
+              }
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="00A9"
+              className="h-8 w-24 font-mono text-sm uppercase"
+            />
+          </label>
+        </div>
+      </div>
+      <Footer onClose={onClose}>
+        <Button
+          type="button"
+          disabled={!current}
+          onClick={() => insert(current)}
+        >
+          Inserisci
+        </Button>
+      </Footer>
+    </div>
+  )
+}
+
+/* -------------------------------- icone --------------------------------- */
+
+export function IconsDialog({
+  open,
+  onClose,
+  theme,
+  onInsert,
+}: {
+  open: boolean
+  onClose: () => void
+  theme: DocTheme
+  onInsert: (names: string[], color: string) => void
+}) {
+  return (
+    <Shell
+      open={open}
+      onClose={onClose}
+      title="Inserisci icone"
+      description="Si inseriscono come immagini: si spostano, ruotano e ridimensionano come le foto."
+      width={620}
+    >
+      <IconsForm theme={theme} onClose={onClose} onInsert={onInsert} />
+    </Shell>
+  )
+}
+
+function IconsForm({
+  theme,
+  onClose,
+  onInsert,
+}: {
+  theme: DocTheme
+  onClose: () => void
+  onInsert: (names: string[], color: string) => void
+}) {
+  const [query, setQuery] = React.useState("")
+  const [category, setCategory] = React.useState<string | null>(null)
+  const [picked, setPicked] = React.useState<string[]>([])
+  const [color, setColor] = React.useState(docAccent(theme.accent).solid)
+  const q = query.trim().toLowerCase()
+  const names = q
+    ? ICON_NAMES.filter((n) => n.includes(q))
+    : category
+      ? (ICON_CATEGORIES.find((c) => c.label === category)?.icons ?? [])
+      : ICON_NAMES
+  const colors = [
+    ...new Set([
+      docAccent(theme.accent).solid,
+      "#18181b",
+      "#71717a",
+      ...["blue", "purple", "pink", "teal", "green", "orange"].map(
+        (k) => getSwatch(k).solid
+      ),
+    ]),
+  ]
+  return (
+    <div>
+      <div className="space-y-3 px-5 py-4">
+        <div className="flex items-center gap-2 rounded-md border border-input px-2.5">
+          <Search className="size-3.5 text-muted-foreground" />
+          <input
+            autoFocus
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder={`Cerca fra ${ICON_NAMES.length} icone (in inglese: arrow, user, chart…)`}
+            className="h-8 flex-1 bg-transparent text-sm outline-none"
+          />
+        </div>
+        {!q ? (
+          <div className="flex gap-1 overflow-x-auto pb-1">
+            {[null, ...ICON_CATEGORIES.map((c) => c.label)].map((label) => (
+              <button
+                key={label ?? "all"}
+                type="button"
+                onClick={() => setCategory(label)}
+                className={cn(
+                  "shrink-0 rounded-full border px-2.5 py-1 text-xs transition",
+                  category === label
+                    ? "border-primary bg-accent text-accent-foreground"
+                    : "border-border text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {label ?? "Tutte"}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        <div className="grid max-h-72 grid-cols-6 gap-1.5 overflow-y-auto sm:grid-cols-10">
+          {names.map((name) => {
+            const on = picked.includes(name)
+            return (
+              <button
+                key={name}
+                type="button"
+                title={name}
+                aria-pressed={on}
+                onClick={() =>
+                  setPicked(
+                    on ? picked.filter((n) => n !== name) : [...picked, name]
+                  )
+                }
+                className={cn(
+                  "flex aspect-square items-center justify-center rounded-md border transition hover:bg-muted",
+                  on ? "border-primary bg-accent" : "border-border"
+                )}
+              >
+                <Glyph name={name} size={22} color={color} />
+              </button>
+            )
+          })}
+        </div>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <span className="mr-1 text-xs text-muted-foreground">Colore</span>
+          {colors.map((c) => (
+            <button
+              key={c}
+              type="button"
+              onClick={() => setColor(c)}
+              className={cn(
+                "size-6 rounded-md ring-1 ring-black/10",
+                color === c &&
+                  "ring-2 ring-ring ring-offset-1 ring-offset-background"
+              )}
+              style={{ background: c }}
+              aria-label={c}
+            />
+          ))}
+          <div className="w-28">
+            <CustomColor value={color} onChange={setColor} />
+          </div>
+        </div>
+      </div>
+      <Footer onClose={onClose}>
+        <Button
+          type="button"
+          disabled={!picked.length}
+          onClick={() => {
+            onInsert(picked, color)
+            onClose()
+          }}
+        >
+          Inserisci{picked.length ? ` (${picked.length})` : ""}
+        </Button>
+      </Footer>
+    </div>
+  )
+}
+
+/* ------------------------------- SmartArt ------------------------------- */
+
+function SmartArtPreview({ id }: { id: string }) {
+  const { drafts, edges } = smartArtBoard(id)
+  const nodes = drafts.map((d) => ({ ...d.node, key: d.key }))
+  const xs = nodes.flatMap((n) => [n.x, n.x + (n.w ?? 180)])
+  const ys = nodes.flatMap((n) => [n.y, n.y + (n.h ?? 84)])
+  const minX = Math.min(...xs) - 20
+  const minY = Math.min(...ys) - 20
+  const w = Math.max(...xs) - minX + 20
+  const h = Math.max(...ys) - minY + 20
+  const byKey = new Map(nodes.map((n) => [n.key, n]))
+  return (
+    <svg
+      viewBox={`${minX} ${minY} ${w} ${h}`}
+      className="h-20 w-full"
+      aria-hidden
+    >
+      {edges.map((e, i) => {
+        const a = byKey.get(e.from)
+        const b = byKey.get(e.to)
+        if (!a || !b) return null
+        return (
+          <line
+            key={i}
+            x1={a.x + (a.w ?? 180) / 2}
+            y1={a.y + (a.h ?? 84) / 2}
+            x2={b.x + (b.w ?? 180) / 2}
+            y2={b.y + (b.h ?? 84) / 2}
+            stroke="currentColor"
+            strokeOpacity={0.4}
+            strokeWidth={6}
+          />
+        )
+      })}
+      {nodes.map((n) => (
+        <rect
+          key={n.key}
+          x={n.x}
+          y={n.y}
+          width={n.w ?? 180}
+          height={n.h ?? 84}
+          rx={
+            n.shape === "ellipse"
+              ? (n.w ?? 180) / 2
+              : n.shape === "pill"
+                ? (n.h ?? 84) / 2
+                : n.shape === "rect"
+                  ? 4
+                  : 16
+          }
+          fill={getSwatch(n.color ?? "blue").fill}
+          stroke={getSwatch(n.color ?? "blue").solid}
+          strokeWidth={5}
+        />
+      ))}
+    </svg>
+  )
+}
+
+export function SmartArtDialog({
+  open,
+  onClose,
+  onPick,
+}: {
+  open: boolean
+  onClose: () => void
+  onPick: (id: string) => void
+}) {
+  return (
+    <Shell
+      open={open}
+      onClose={onClose}
+      title="Scegli elemento grafico SmartArt"
+      description="Diventa una board incorporata: si modifica con tutti gli strumenti delle board."
+      width={640}
+    >
+      <SmartArtForm onClose={onClose} onPick={onPick} />
+    </Shell>
+  )
+}
+
+function SmartArtForm({
+  onClose,
+  onPick,
+}: {
+  onClose: () => void
+  onPick: (id: string) => void
+}) {
+  const groups = [...new Set(SMARTART_TEMPLATES.map((t) => t.group))]
+  const [group, setGroup] = React.useState<string | null>(null)
+  const [picked, setPicked] = React.useState(SMARTART_TEMPLATES[0].id)
+  const shown = SMARTART_TEMPLATES.filter((t) => !group || t.group === group)
+  const current = SMARTART_TEMPLATES.find((t) => t.id === picked)
+  return (
+    <div>
+      <div className="grid gap-3 px-5 py-4 sm:grid-cols-[130px_1fr]">
+        <div className="flex gap-1 overflow-x-auto sm:flex-col">
+          {[null, ...groups].map((g) => (
+            <button
+              key={g ?? "all"}
+              type="button"
+              onClick={() => setGroup(g)}
+              className={cn(
+                "shrink-0 rounded-md px-2.5 py-1.5 text-left text-sm hover:bg-muted",
+                group === g && "bg-accent text-accent-foreground"
+              )}
+            >
+              {g ?? "Tutti"}
+            </button>
+          ))}
+        </div>
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {shown.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setPicked(t.id)}
+                onDoubleClick={() => {
+                  onPick(t.id)
+                  onClose()
+                }}
+                className={cn(
+                  "rounded-lg border p-2 text-left transition hover:border-foreground/30",
+                  picked === t.id
+                    ? "border-primary ring-1 ring-primary/40"
+                    : "border-border"
+                )}
+              >
+                <SmartArtPreview id={t.id} />
+                <span className="mt-1 block truncate text-xs font-medium">
+                  {t.label}
+                </span>
+              </button>
+            ))}
+          </div>
+          {current ? (
+            <p className="text-xs text-muted-foreground">
+              <b className="text-foreground">{current.label}</b> —{" "}
+              {current.hint}.
+            </p>
+          ) : null}
+        </div>
+      </div>
+      <Footer onClose={onClose}>
+        <Button
+          type="button"
+          onClick={() => {
+            onPick(picked)
+            onClose()
+          }}
+        >
+          OK
+        </Button>
+      </Footer>
+    </div>
+  )
+}
+
+/* ------------------------------ capolettera ------------------------------ */
+
+export function DropCapDialog({
+  open,
+  onClose,
+  editor,
+  theme,
+}: {
+  open: boolean
+  onClose: () => void
+  editor: Editor
+  theme: DocTheme
+}) {
+  return (
+    <Shell open={open} onClose={onClose} title="Capolettera">
+      <DropCapForm editor={editor} theme={theme} onClose={onClose} />
+    </Shell>
+  )
+}
+
+function DropCapForm({
+  editor,
+  theme,
+  onClose,
+}: {
+  editor: Editor
+  theme: DocTheme
+  onClose: () => void
+}) {
+  const attrs = editor.getAttributes("paragraph")
+  const [mode, setMode] = React.useState<"drop" | "margin" | null>(
+    (attrs.dropCap as "drop" | "margin" | null) ?? "drop"
+  )
+  const [lines, setLines] = React.useState(Number(attrs.dropLines) || 3)
+  const [font, setFont] = React.useState<string>(
+    theme.headingFont ?? theme.font
+  )
+  return (
+    <div>
+      <div className="space-y-3 px-5 py-4">
+        <div className="grid grid-cols-3 gap-2">
+          {(
+            [
+              [null, "Nessuno"],
+              ["drop", "Interno"],
+              ["margin", "Nel margine"],
+            ] as const
+          ).map(([value, label]) => (
+            <button
+              key={label}
+              type="button"
+              onClick={() => setMode(value)}
+              className={cn(
+                "flex flex-col items-center gap-1 rounded-lg border p-2 text-xs transition",
+                mode === value
+                  ? "border-primary ring-1 ring-primary/40"
+                  : "border-border"
+              )}
+            >
+              <span
+                aria-hidden
+                className="relative flex h-12 w-16 flex-col justify-center gap-1"
+              >
+                {value ? (
+                  <span
+                    className="absolute top-0.5 text-2xl leading-none font-bold text-primary"
+                    style={{ left: value === "margin" ? -8 : 0 }}
+                  >
+                    A
+                  </span>
+                ) : null}
+                {[0, 1, 2, 3].map((i) => (
+                  <span
+                    key={i}
+                    className="h-[3px] rounded-full bg-foreground/20"
+                    style={{ marginLeft: value === "drop" && i < 3 ? 18 : 0 }}
+                  />
+                ))}
+              </span>
+              {label}
+            </button>
+          ))}
+        </div>
+        <label className="block space-y-1">
+          <span className="text-xs text-muted-foreground">
+            Tipo di carattere
+          </span>
+          <FontPicker value={font} onChange={setFont} />
+        </label>
+        <label className="flex items-center justify-between gap-3 text-sm">
+          <span className="text-muted-foreground">Altezza in righe</span>
+          <input
+            type="number"
+            min={2}
+            max={6}
+            value={lines}
+            onChange={(e) =>
+              setLines(Math.max(2, Math.min(6, Number(e.target.value) || 3)))
+            }
+            className="h-8 w-20 rounded-md border border-input bg-transparent px-2 text-right tabular-nums"
+          />
+        </label>
+      </div>
+      <Footer onClose={onClose}>
+        <Button
+          type="button"
+          onClick={() => {
+            editor
+              .chain()
+              .focus()
+              .setDropCap(mode, lines, mode ? fontStack(font) : null)
+              .run()
+            onClose()
+          }}
+        >
+          OK
+        </Button>
+      </Footer>
+    </div>
+  )
+}
+
+/* ----------------------- intestazione e piè di pagina -------------------- */
+
+export function HeaderFooterDialog({
+  open,
+  onClose,
+  theme,
+  setTheme,
+  initial,
+}: {
+  open: boolean
+  onClose: () => void
+  theme: DocTheme
+  setTheme: (patch: Partial<DocTheme>) => void
+  initial: "header" | "footer"
+}) {
+  return (
+    <Shell
+      open={open}
+      onClose={onClose}
+      title="Intestazione e piè di pagina"
+      description="Tre parti per riga: a sinistra, al centro, a destra. I campi si riempiono pagina per pagina."
+      width={600}
+    >
+      <HeaderFooterForm
+        theme={theme}
+        setTheme={setTheme}
+        onClose={onClose}
+        initial={initial}
+      />
+    </Shell>
+  )
+}
+
+function HeaderFooterForm({
+  theme,
+  setTheme,
+  onClose,
+  initial,
+}: {
+  theme: DocTheme
+  setTheme: (patch: Partial<DocTheme>) => void
+  onClose: () => void
+  initial: "header" | "footer"
+}) {
+  const [tab, setTab] = React.useState(initial)
+  const [header, setHeader] = React.useState(bandParts(theme.header))
+  const [footer, setFooter] = React.useState(bandParts(theme.footer))
+  const [first, setFirst] = React.useState(theme.differentFirstPage)
+  const [format, setFormat] = React.useState(theme.pageNumberFormat)
+  const [start, setStart] = React.useState(theme.pageNumberStart)
+  const focused = React.useRef<{
+    index: number
+    input: HTMLInputElement | null
+  }>({
+    index: 0,
+    input: null,
+  })
+  const parts = tab === "header" ? header : footer
+  const setParts = tab === "header" ? setHeader : setFooter
+  const presets = tab === "header" ? HEADER_PRESETS : FOOTER_PRESETS
+
+  const addToken = (token: string) => {
+    const { index, input } = focused.current
+    const value = parts[index]
+    const at = input?.selectionStart ?? value.length
+    const next = [...parts] as [string, string, string]
+    next[index] = `${value.slice(0, at)}${token}${value.slice(at)}`
+    setParts(next)
+  }
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault()
+        setTheme({
+          header: joinBand(header),
+          footer: joinBand(footer),
+          differentFirstPage: first,
+          pageNumberFormat: format,
+          pageNumberStart: Math.max(0, Math.round(start)),
+        })
+        onClose()
+      }}
+    >
+      <div className="space-y-3 px-5 py-4">
+        <div className="flex gap-1 rounded-lg bg-muted p-0.5">
+          {(["header", "footer"] as const).map((value) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setTab(value)}
+              className={cn(
+                "h-7 flex-1 rounded-md text-xs transition",
+                tab === value
+                  ? "bg-background font-medium shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {value === "header" ? "Intestazione" : "Piè di pagina"}
+            </button>
+          ))}
+        </div>
+        <div className="grid gap-2 sm:grid-cols-3">
+          {(["A sinistra", "Al centro", "A destra"] as const).map(
+            (label, i) => (
+              <label key={label} className="block space-y-1">
+                <span className="text-xs text-muted-foreground">{label}</span>
+                <Input
+                  value={parts[i]}
+                  onFocus={(e) => {
+                    focused.current = { index: i, input: e.target }
+                  }}
+                  onChange={(e) => {
+                    const next = [...parts] as [string, string, string]
+                    next[i] = e.target.value.replace(/\|/g, "")
+                    setParts(next)
+                  }}
+                  className={cn(
+                    "h-8 text-sm",
+                    i === 1 && "text-center",
+                    i === 2 && "text-right"
+                  )}
+                />
+              </label>
+            )
+          )}
+        </div>
+        <div className="flex flex-wrap items-center gap-1">
+          <span className="mr-1 text-xs text-muted-foreground">
+            Inserisci campo
+          </span>
+          {BAND_FIELDS.map((f) => (
+            <Button
+              key={f.token}
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-7 text-xs"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => addToken(f.token)}
+            >
+              {f.label}
+            </Button>
+          ))}
+        </div>
+        <div>
+          <span className="text-xs text-muted-foreground">Modelli</span>
+          <div className="mt-1 grid grid-cols-2 gap-1.5 sm:grid-cols-3">
+            {presets.map((p) => (
+              <button
+                key={p.label}
+                type="button"
+                onClick={() => setParts(bandParts(p.value))}
+                className="rounded-md border border-border px-2 py-1.5 text-left transition hover:bg-muted"
+              >
+                <span className="block text-xs font-medium">{p.label}</span>
+                <span className="block truncate text-[11px] text-muted-foreground">
+                  {p.hint}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="grid gap-2 border-t border-border pt-3 sm:grid-cols-3">
+          <label className="flex items-center gap-2 text-sm sm:col-span-3">
+            <input
+              type="checkbox"
+              checked={first}
+              onChange={(e) => setFirst(e.target.checked)}
+            />
+            Diversa per la prima pagina (niente intestazione e piè di pagina)
+          </label>
+          <label className="block space-y-1 sm:col-span-2">
+            <span className="text-xs text-muted-foreground">
+              Formato numeri di pagina
+            </span>
+            <select
+              value={format}
+              onChange={(e) =>
+                setFormat(e.target.value as DocTheme["pageNumberFormat"])
+              }
+              className={cn(selectClass, "w-full")}
+            >
+              {PAGE_NUMBER_FORMATS.map((f) => (
+                <option key={f.value} value={f.value}>
+                  {f.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="block space-y-1">
+            <span className="text-xs text-muted-foreground">Inizia da</span>
+            <input
+              type="number"
+              min={0}
+              max={9999}
+              value={start}
+              onChange={(e) => setStart(Number(e.target.value) || 0)}
+              className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-right text-sm tabular-nums"
+            />
+          </label>
+        </div>
+      </div>
+      <Footer onClose={onClose}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => setParts(["", "", ""])}
+        >
+          Rimuovi {tab === "header" ? "intestazione" : "piè di pagina"}
+        </Button>
+        <Button type="submit">Salva</Button>
+      </Footer>
+    </form>
+  )
+}

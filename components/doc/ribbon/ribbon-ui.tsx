@@ -1,0 +1,332 @@
+"use client"
+
+import * as React from "react"
+import { ChevronDown } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import { cn } from "@/lib/utils"
+
+/**
+ * Pezzi della barra a schede. I pulsanti usano il `title` nativo invece dei
+ * tooltip: con un centinaio di comandi, un tooltip ciascuno pesava su ogni
+ * ridisegno della barra.
+ */
+
+/** Gruppo con l'etichetta in basso, come «Carattere» o «Paragrafo» in Word */
+export function RibbonGroup({
+  label,
+  children,
+  className,
+  safe,
+}: {
+  label: string
+  children: React.ReactNode
+  className?: string
+  /** i comandi del gruppo non toccano la selezione del testo */
+  safe?: boolean
+}) {
+  return (
+    <div
+      data-safe={safe ? "" : undefined}
+      role="group"
+      aria-label={label}
+      className="flex shrink-0 flex-col border-r border-border/70 px-2 last:border-r-0"
+    >
+      <div
+        className={cn("flex min-h-0 flex-1 items-center gap-0.5", className)}
+      >
+        {children}
+      </div>
+      <div className="pt-0.5 text-center text-[10px] leading-4 text-muted-foreground select-none">
+        {label}
+      </div>
+    </div>
+  )
+}
+
+/** Due righe di comandi piccoli dentro un gruppo */
+export function RibbonRows({ children }: { children: React.ReactNode }) {
+  return <div className="flex flex-col justify-center gap-0.5">{children}</div>
+}
+
+export function RibbonRow({ children }: { children: React.ReactNode }) {
+  return <div className="flex items-center gap-0.5">{children}</div>
+}
+
+type ButtonProps = {
+  icon?: React.ReactNode
+  label?: string
+  title?: string
+  active?: boolean
+  disabled?: boolean
+  large?: boolean
+  /** riga bassa, per le colonne di tre comandi come «Appunti» e «Modifica» */
+  compact?: boolean
+  /** freccia dei comandi che aprono un menu */
+  chevron?: boolean
+  onClick?: () => void
+  className?: string
+}
+
+export const RibbonButton = React.forwardRef<
+  HTMLButtonElement,
+  ButtonProps & Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "title">
+>(function RibbonButton(
+  {
+    icon,
+    label,
+    title,
+    active,
+    disabled,
+    large,
+    compact,
+    chevron,
+    onClick,
+    onMouseDown,
+    className,
+    ...rest
+  },
+  ref
+) {
+  return (
+    <button
+      ref={ref}
+      type="button"
+      title={title ?? label}
+      // il nome accessibile comincia dall'etichetta visibile
+      aria-label={label ?? title}
+      aria-pressed={active === undefined ? undefined : active}
+      disabled={disabled}
+      // il fuoco resta nel testo: la selezione non si perde. Quando il
+      // pulsante apre un menu, Base UI aggiunge il suo gestore: si chiamano
+      // entrambi invece di sovrascriversi
+      onMouseDown={(e) => {
+        onMouseDown?.(e)
+        e.preventDefault()
+      }}
+      onClick={onClick}
+      className={cn(
+        "flex shrink-0 items-center justify-center rounded-md text-foreground/80 transition-colors hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-35",
+        large
+          ? "h-[58px] min-w-[52px] flex-col gap-1 px-1.5 text-[11px] leading-tight"
+          : cn(
+              compact ? "h-[21px] gap-1 text-[11px]" : "h-7 gap-1 text-xs",
+              label ? "px-1.5" : compact ? "w-6" : "w-7"
+            ),
+        active && "bg-accent text-accent-foreground hover:bg-accent",
+        className
+      )}
+      {...rest}
+    >
+      {icon}
+      {label ? (
+        <span className={cn(large && "max-w-[76px] text-center")}>
+          {label}
+          {chevron && large ? (
+            <ChevronDown className="mx-auto mt-px size-3 opacity-60" />
+          ) : null}
+        </span>
+      ) : null}
+      {chevron && !large ? (
+        <ChevronDown className="-ml-0.5 size-3 opacity-60" />
+      ) : null}
+    </button>
+  )
+})
+
+const CloseMenuContext = React.createContext<(() => void) | null>(null)
+
+/**
+ * Chiude il menu della barra che contiene il componente. Serve alle griglie
+ * (colori, tabella) fatte di pulsanti semplici: le voci di menu si chiudono da
+ * sole, i pulsanti no.
+ */
+export function useCloseRibbonMenu() {
+  return React.useContext(CloseMenuContext)
+}
+
+/**
+ * Comando con menu. Chiudendo il menu il fuoco torna nel testo invece di
+ * restare sul pulsante.
+ */
+export function RibbonMenu({
+  trigger,
+  children,
+  align = "start",
+  className,
+  onClose,
+}: {
+  trigger: React.ReactElement
+  children: React.ReactNode
+  align?: "start" | "center" | "end"
+  className?: string
+  onClose?: () => void
+}) {
+  const [open, setOpen] = React.useState(false)
+  return (
+    <DropdownMenu
+      open={open}
+      onOpenChange={setOpen}
+      onOpenChangeComplete={(next) => {
+        if (!next) onClose?.()
+      }}
+    >
+      <DropdownMenuTrigger render={trigger} />
+      <DropdownMenuContent
+        align={align}
+        className={cn("w-56", className)}
+        // il fuoco torna nel testo, non sul pulsante della barra
+        finalFocus={false}
+      >
+        <CloseMenuContext.Provider value={() => setOpen(false)}>
+          {children}
+        </CloseMenuContext.Provider>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
+
+/** Tavolozza dentro un menu */
+export function SwatchGrid({
+  colors,
+  value,
+  onPick,
+  columns = 6,
+}: {
+  /** `swatch` quando il valore non è già un colore CSS (una chiave) */
+  colors: { label: string; value: string; swatch?: string }[]
+  value?: string | null
+  onPick: (value: string) => void
+  columns?: number
+}) {
+  const close = useCloseRibbonMenu()
+  return (
+    <div
+      className="grid gap-1.5 p-1.5"
+      style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+    >
+      {colors.map((c) => (
+        <button
+          key={c.label}
+          type="button"
+          title={c.label}
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => {
+            onPick(c.value)
+            close?.()
+          }}
+          className={cn(
+            "relative aspect-square rounded-md transition hover:scale-110",
+            (value ?? "") === c.value &&
+              "ring-2 ring-ring ring-offset-1 ring-offset-background"
+          )}
+          style={{
+            background:
+              c.swatch ||
+              c.value ||
+              "linear-gradient(135deg, transparent 45%, #e03177 45% 55%, transparent 55%)",
+            boxShadow: "inset 0 0 0 1px rgba(15,1,26,0.16)",
+          }}
+        />
+      ))}
+    </div>
+  )
+}
+
+/**
+ * Campo numerico con frecce, come «Rientro» e «Spaziatura» nella scheda
+ * Layout. Mentre si scrive il testo resta com'è; il valore si applica quando
+ * è un numero valido.
+ */
+export function Stepper({
+  icon,
+  label,
+  value,
+  unit,
+  step,
+  min,
+  max,
+  decimals = 1,
+  onChange,
+  width = 64,
+  labelWidth = 62,
+}: {
+  icon?: React.ReactNode
+  label: string
+  value: number
+  unit: string
+  step: number
+  min: number
+  max: number
+  decimals?: number
+  onChange: (value: number) => void
+  width?: number
+  labelWidth?: number
+}) {
+  const [draft, setDraft] = React.useState<string | null>(null)
+  const clamp = (v: number) =>
+    Math.min(max, Math.max(min, Number(v.toFixed(decimals))))
+  const shown =
+    draft ??
+    `${String(Number(value.toFixed(decimals))).replace(".", ",")} ${unit}`
+
+  const commit = (text: string) => {
+    const n = Number(text.replace(",", ".").replace(/[^\d.-]/g, ""))
+    if (Number.isFinite(n) && text.trim() !== "") onChange(clamp(n))
+  }
+
+  return (
+    <label className="flex h-7 items-center gap-1.5 text-xs text-muted-foreground">
+      {icon}
+      <span className="shrink-0 truncate" style={{ width: labelWidth }}>
+        {label}
+      </span>
+      <span
+        className="flex h-6 items-center overflow-hidden rounded-md border border-border bg-background focus-within:border-ring"
+        style={{ width }}
+      >
+        <input
+          value={shown}
+          inputMode="decimal"
+          aria-label={label}
+          onFocus={(e) => {
+            setDraft(String(Number(value.toFixed(decimals))).replace(".", ","))
+            requestAnimationFrame(() => e.target.select())
+          }}
+          onChange={(e) => {
+            setDraft(e.target.value)
+            commit(e.target.value)
+          }}
+          onBlur={() => setDraft(null)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") (e.target as HTMLInputElement).blur()
+            if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return
+            e.preventDefault()
+            const next = clamp(value + (e.key === "ArrowUp" ? step : -step))
+            setDraft(String(next).replace(".", ","))
+            onChange(next)
+          }}
+          className="h-full w-0 min-w-0 flex-1 bg-transparent px-1.5 text-foreground tabular-nums outline-none"
+        />
+        <span className="flex h-full flex-col border-l border-border">
+          {[1, -1].map((dir) => (
+            <button
+              key={dir}
+              type="button"
+              tabIndex={-1}
+              aria-label={dir > 0 ? "Aumenta" : "Riduci"}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => onChange(clamp(value + dir * step))}
+              className="flex h-1/2 w-4 items-center justify-center text-[8px] leading-none hover:bg-muted"
+            >
+              {dir > 0 ? "▲" : "▼"}
+            </button>
+          ))}
+        </span>
+      </span>
+    </label>
+  )
+}

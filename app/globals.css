@@ -5,128 +5,1644 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-    --font-heading: var(--font-sans);
-    --font-sans: var(--font-sans);
-    --color-sidebar-ring: var(--sidebar-ring);
-    --color-sidebar-border: var(--sidebar-border);
-    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-    --color-sidebar-accent: var(--sidebar-accent);
-    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-    --color-sidebar-primary: var(--sidebar-primary);
-    --color-sidebar-foreground: var(--sidebar-foreground);
-    --color-sidebar: var(--sidebar);
-    --color-chart-5: var(--chart-5);
-    --color-chart-4: var(--chart-4);
-    --color-chart-3: var(--chart-3);
-    --color-chart-2: var(--chart-2);
-    --color-chart-1: var(--chart-1);
-    --color-ring: var(--ring);
-    --color-input: var(--input);
-    --color-border: var(--border);
-    --color-destructive: var(--destructive);
-    --color-accent-foreground: var(--accent-foreground);
-    --color-accent: var(--accent);
-    --color-muted-foreground: var(--muted-foreground);
-    --color-muted: var(--muted);
-    --color-secondary-foreground: var(--secondary-foreground);
-    --color-secondary: var(--secondary);
-    --color-primary-foreground: var(--primary-foreground);
-    --color-primary: var(--primary);
-    --color-popover-foreground: var(--popover-foreground);
-    --color-popover: var(--popover);
-    --color-card-foreground: var(--card-foreground);
-    --color-card: var(--card);
-    --color-foreground: var(--foreground);
-    --color-background: var(--background);
-    --radius-sm: calc(var(--radius) * 0.6);
-    --radius-md: calc(var(--radius) * 0.8);
-    --radius-lg: var(--radius);
-    --radius-xl: calc(var(--radius) * 1.4);
-    --radius-2xl: calc(var(--radius) * 1.8);
-    --radius-3xl: calc(var(--radius) * 2.2);
-    --radius-4xl: calc(var(--radius) * 2.6);
+  --font-heading: var(--font-sans);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
 :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.141 0.005 285.823);
-    --card: oklch(1 0 0);
-    --card-foreground: oklch(0.141 0.005 285.823);
-    --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.141 0.005 285.823);
-    --primary: oklch(0.457 0.24 277.023);
-    --primary-foreground: oklch(0.962 0.018 272.314);
-    --secondary: oklch(0.967 0.001 286.375);
-    --secondary-foreground: oklch(0.21 0.006 285.885);
-    --muted: oklch(0.967 0.001 286.375);
-    --muted-foreground: oklch(0.552 0.016 285.938);
-    --accent: oklch(0.967 0.001 286.375);
-    --accent-foreground: oklch(0.21 0.006 285.885);
-    --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.92 0.004 286.32);
-    --input: oklch(0.92 0.004 286.32);
-    --ring: oklch(0.705 0.015 286.067);
-    --chart-1: oklch(0.785 0.115 274.713);
-    --chart-2: oklch(0.585 0.233 277.117);
-    --chart-3: oklch(0.511 0.262 276.966);
-    --chart-4: oklch(0.457 0.24 277.023);
-    --chart-5: oklch(0.398 0.195 277.366);
-    --radius: 0.625rem;
-    --sidebar: oklch(0.985 0 0);
-    --sidebar-foreground: oklch(0.141 0.005 285.823);
-    --sidebar-primary: oklch(0.511 0.262 276.966);
-    --sidebar-primary-foreground: oklch(0.962 0.018 272.314);
-    --sidebar-accent: oklch(0.967 0.001 286.375);
-    --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-    --sidebar-border: oklch(0.92 0.004 286.32);
-    --sidebar-ring: oklch(0.705 0.015 286.067);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.141 0.005 285.823);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.141 0.005 285.823);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.141 0.005 285.823);
+  --primary: oklch(0.457 0.24 277.023);
+  --primary-foreground: oklch(0.962 0.018 272.314);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.967 0.001 286.375);
+  --muted-foreground: oklch(0.552 0.016 285.938);
+  --accent: oklch(0.967 0.001 286.375);
+  --accent-foreground: oklch(0.21 0.006 285.885);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.92 0.004 286.32);
+  --input: oklch(0.92 0.004 286.32);
+  --ring: oklch(0.705 0.015 286.067);
+  --chart-1: oklch(0.785 0.115 274.713);
+  --chart-2: oklch(0.585 0.233 277.117);
+  --chart-3: oklch(0.511 0.262 276.966);
+  --chart-4: oklch(0.457 0.24 277.023);
+  --chart-5: oklch(0.398 0.195 277.366);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.141 0.005 285.823);
+  --sidebar-primary: oklch(0.511 0.262 276.966);
+  --sidebar-primary-foreground: oklch(0.962 0.018 272.314);
+  --sidebar-accent: oklch(0.967 0.001 286.375);
+  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+  --sidebar-border: oklch(0.92 0.004 286.32);
+  --sidebar-ring: oklch(0.705 0.015 286.067);
 }
 
 .dark {
-    --background: oklch(0.141 0.005 285.823);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.21 0.006 285.885);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.21 0.006 285.885);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.398 0.195 277.366);
-    --primary-foreground: oklch(0.962 0.018 272.314);
-    --secondary: oklch(0.274 0.006 286.033);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.274 0.006 286.033);
-    --muted-foreground: oklch(0.705 0.015 286.067);
-    --accent: oklch(0.274 0.006 286.033);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.552 0.016 285.938);
-    --chart-1: oklch(0.785 0.115 274.713);
-    --chart-2: oklch(0.585 0.233 277.117);
-    --chart-3: oklch(0.511 0.262 276.966);
-    --chart-4: oklch(0.457 0.24 277.023);
-    --chart-5: oklch(0.398 0.195 277.366);
-    --sidebar: oklch(0.21 0.006 285.885);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.585 0.233 277.117);
-    --sidebar-primary-foreground: oklch(0.962 0.018 272.314);
-    --sidebar-accent: oklch(0.274 0.006 286.033);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.552 0.016 285.938);
+  --background: oklch(0.141 0.005 285.823);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.21 0.006 285.885);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.21 0.006 285.885);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.398 0.195 277.366);
+  --primary-foreground: oklch(0.962 0.018 272.314);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.274 0.006 286.033);
+  --muted-foreground: oklch(0.705 0.015 286.067);
+  --accent: oklch(0.274 0.006 286.033);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.552 0.016 285.938);
+  --chart-1: oklch(0.785 0.115 274.713);
+  --chart-2: oklch(0.585 0.233 277.117);
+  --chart-3: oklch(0.511 0.262 276.966);
+  --chart-4: oklch(0.457 0.24 277.023);
+  --chart-5: oklch(0.398 0.195 277.366);
+  --sidebar: oklch(0.21 0.006 285.885);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.585 0.233 277.117);
+  --sidebar-primary-foreground: oklch(0.962 0.018 272.314);
+  --sidebar-accent: oklch(0.274 0.006 286.033);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.552 0.016 285.938);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
+  }
   body {
     @apply bg-background text-foreground;
-    }
-  button:not(:disabled), [role="button"]:not(:disabled) {
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
     cursor: pointer;
-    }
+  }
   html {
     @apply font-sans;
-    }
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Cogniva — superfici di lavoro e stili dell'editor                  */
+/* ------------------------------------------------------------------ */
+
+/*
+ * Scala neutra usata da canvas, tabelle e barre di scorrimento: gli stessi
+ * zinco del tema, con i valori invertiti in scuro.
+ */
+:root {
+  --w-base-0: #fafafa;
+  --w-base-50: #f4f4f5;
+  --w-base-100: #efeff1;
+  --w-base-200: #e4e4e7;
+  --w-base-300: #d4d4d8;
+  --w-base-600: #71717a;
+  --w-base-700: #52525b;
+  --w-base-800: #27272a;
+  --w-base-900: #09090b;
+  --w-blue-50: #eef2ff;
+  --w-blue-400: #6366f1;
+  --w-blue-500: #4f46e5;
+
+  /* superfici del canvas e del foglio quando il colore è "auto" */
+  --canvas-auto: #fafafa;
+  --doc-bg-auto: #f4f4f5;
+  --paper-auto: #ffffff;
+}
+
+.dark {
+  --w-base-0: #18181b;
+  --w-base-50: #1f1f23;
+  --w-base-100: #27272a;
+  --w-base-200: #303036;
+  --w-base-300: #3f3f46;
+  --w-base-600: #a1a1aa;
+  --w-base-700: #d4d4d8;
+  --w-base-800: #f4f4f5;
+  --w-base-900: #ffffff;
+  --w-blue-50: #1e1b4b;
+  --w-blue-400: #818cf8;
+  --w-blue-500: #a5b4fc;
+
+  --canvas-auto: #0c0c0e;
+  --doc-bg-auto: #09090b;
+  --paper-auto: #18181b;
+
+  color-scheme: dark;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+/*
+ * Margini sicuri: con viewport-fit=cover l'app arriva sotto notch e barra
+ * di sistema, quindi barre e controlli ai bordi si scostano da soli.
+ */
+@utility safe-x {
+  padding-left: max(0.5rem, env(safe-area-inset-left));
+  padding-right: max(0.5rem, env(safe-area-inset-right));
+  @media (width >= 40rem) {
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+    padding-right: max(0.75rem, env(safe-area-inset-right));
+  }
+}
+
+@utility safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* scheletri: un respiro leggero finché i dati non sono pronti */
+@utility skeleton {
+  border-radius: 0.375rem;
+  background: color-mix(in oklch, var(--muted-foreground) 14%, transparent);
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+  }
+}
+
+@keyframes skeleton-pulse {
+  50% {
+    opacity: 0.55;
+  }
+}
+
+body {
+  overscroll-behavior: none;
+}
+
+::selection {
+  background: color-mix(in oklch, var(--primary) 32%, transparent);
+}
+
+/*
+ * Barre di scorrimento discrete. Stanno nel livello base: fuori dai livelli
+ * vincerebbero su ogni utility, e `[scrollbar-width:none]` sulle barre a
+ * scorrimento orizzontale (filtri, strumenti) non avrebbe effetto.
+ */
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--w-base-300) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: var(--w-base-300);
+    border: 3px solid transparent;
+    background-clip: content-box;
+    border-radius: 99px;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: var(--w-base-600);
+    background-clip: content-box;
+  }
+}
+
+/* -------------------------------- Board --------------------------------- */
+
+/*
+ * Maniglie di collegamento e ridimensionamento: piccole a vista, ma con un
+ * bersaglio largo sui touch screen, dove un dito copre dieci pixel.
+ */
+.board-handle::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+}
+@media (pointer: coarse) {
+  .board-handle::before {
+    inset: -14px;
+  }
+}
+
+/* ------------------------------ Documento ------------------------------- */
+
+.doc-sheet {
+  min-height: 60vh;
+  transition:
+    border-radius 160ms ease,
+    background 160ms ease;
+}
+
+/* tipografia, spazi e titoli li genera lib/doc-styles.ts (gli stili del
+   documento): qui resta solo lo stacco dei blocchi che non sono testo */
+.doc-prose > * + * {
+  margin-top: 0.7em;
+}
+
+.doc-prose a {
+  color: var(--doc-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.doc-prose strong {
+  font-weight: 700;
+}
+
+.doc-prose mark {
+  background: var(--doc-accent-soft);
+  border-radius: 4px;
+  padding: 0.06em 0.22em;
+  color: inherit;
+}
+
+.doc-prose code {
+  font-family: var(--font-jetbrains), ui-monospace, monospace;
+  font-size: 0.88em;
+  background: var(--w-base-100);
+  border: 1px solid var(--doc-border);
+  border-radius: calc(var(--doc-radius) * 0.45);
+  padding: 0.1em 0.34em;
+}
+
+.doc-prose pre {
+  background: var(--w-base-900);
+  color: #f4f4f5;
+  border-radius: var(--doc-radius);
+  padding: 14px 16px;
+  overflow-x: auto;
+}
+.doc-prose pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: inherit;
+}
+
+.doc-prose hr {
+  border: 0;
+  border-top: 1px solid var(--doc-border);
+  margin: 1.6em 0;
+}
+
+.doc-prose ul,
+.doc-prose ol {
+  padding-left: 1.35em;
+}
+.doc-prose ul {
+  list-style: disc;
+}
+.doc-prose ol {
+  list-style: decimal;
+}
+.doc-prose li {
+  margin: 0.16em 0;
+}
+.doc-prose li::marker {
+  color: var(--doc-muted);
+}
+
+/* raccolte di elenchi (lib/doc-typography.ts) */
+.doc-prose ul[data-list-style="circle"] {
+  list-style-type: circle;
+}
+.doc-prose ul[data-list-style="square"] {
+  list-style-type: square;
+}
+.doc-prose ul[data-list-style="diamond"] {
+  list-style-type: "◆  ";
+}
+.doc-prose ul[data-list-style="arrow"] {
+  list-style-type: "➢  ";
+}
+.doc-prose ul[data-list-style="check"] {
+  list-style-type: "✓  ";
+}
+.doc-prose ul[data-list-style="dash"] {
+  list-style-type: "–  ";
+}
+.doc-prose ul[data-list-style="star"] {
+  list-style-type: "★  ";
+}
+.doc-prose ol[data-list-style="upper-roman"] {
+  list-style-type: upper-roman;
+}
+.doc-prose ol[data-list-style="lower-roman"] {
+  list-style-type: lower-roman;
+}
+.doc-prose ol[data-list-style="upper-alpha"] {
+  list-style-type: upper-alpha;
+}
+.doc-prose ol[data-list-style="lower-alpha"] {
+  list-style-type: lower-alpha;
+}
+.doc-prose ol[data-list-style="leading-zero"] {
+  list-style-type: decimal-leading-zero;
+}
+.doc-prose ol[data-list-style="decimal-paren"] > li::marker {
+  content: counter(list-item) ") ";
+}
+.doc-prose ol[data-list-style="alpha-paren"] > li::marker {
+  content: counter(list-item, lower-alpha) ") ";
+}
+
+/* elenchi a più livelli: il livello lo dà l'annidamento */
+.doc-prose ol ol {
+  list-style-type: lower-alpha;
+}
+.doc-prose ol ol ol {
+  list-style-type: lower-roman;
+}
+.doc-prose ul ul {
+  list-style-type: circle;
+}
+.doc-prose ul ul ul {
+  list-style-type: square;
+}
+.doc-prose ol[data-levels="legal"] li::marker {
+  content: counters(list-item, ".") ". ";
+}
+.doc-prose ol[data-levels="legal"] ol {
+  padding-left: 2.2em;
+}
+.doc-prose ol[data-levels="outline"] {
+  list-style-type: upper-roman;
+}
+.doc-prose ol[data-levels="outline"] ol {
+  list-style-type: upper-alpha;
+}
+.doc-prose ol[data-levels="outline"] ol ol {
+  list-style-type: decimal;
+}
+.doc-prose ol[data-levels="article"] {
+  padding-left: 0;
+  list-style-position: inside;
+}
+.doc-prose ol[data-levels="article"] > li::marker {
+  content: "Articolo " counter(list-item) " ";
+  font-weight: 700;
+}
+.doc-prose ol[data-levels="article"] ol {
+  padding-left: 1.6em;
+  list-style-position: outside;
+}
+.doc-prose ol[data-levels="article"] ol > li::marker {
+  content: "Sezione " counters(list-item, ".0") " ";
+}
+.doc-prose ol[data-levels="article"] ol ol > li::marker {
+  content: "(" counter(list-item, lower-alpha) ") ";
+}
+.doc-prose ol[data-levels="chapter"] {
+  padding-left: 0;
+  list-style-position: inside;
+}
+.doc-prose ol[data-levels="chapter"] > li::marker {
+  content: "Capitolo " counter(list-item) " ";
+  font-weight: 700;
+}
+.doc-prose ol[data-levels="chapter"] ol {
+  padding-left: 1.6em;
+  list-style-position: outside;
+}
+.doc-prose ol[data-levels="chapter"] ol > li::marker {
+  content: counters(list-item, ".") " ";
+}
+.doc-prose ol[data-levels="chapter"] ol ol > li::marker {
+  content: counter(list-item, lower-alpha) ") ";
+}
+.doc-prose ul[data-levels="arrows"] {
+  list-style-type: "➢  ";
+}
+.doc-prose ul[data-levels="arrows"] ul {
+  list-style-type: disc;
+}
+.doc-prose ul[data-levels="arrows"] ul ul {
+  list-style-type: "–  ";
+}
+.doc-prose ul[data-levels="checks"] {
+  list-style-type: "✓  ";
+}
+.doc-prose ul[data-levels="checks"] ul {
+  list-style-type: "◆  ";
+}
+.doc-prose ul[data-levels="checks"] ul ul {
+  list-style-type: disc;
+}
+.doc-prose li > p {
+  margin: 0;
+}
+
+.doc-prose ul[data-type="taskList"] {
+  list-style: none;
+  padding-left: 0.1em;
+}
+.doc-prose ul[data-type="taskList"] li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6em;
+}
+.doc-prose ul[data-type="taskList"] li > label {
+  margin-top: 0.28em;
+  user-select: none;
+}
+.doc-prose ul[data-type="taskList"] li > div {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.doc-prose ul[data-type="taskList"] input[type="checkbox"] {
+  appearance: none;
+  width: 1.05em;
+  height: 1.05em;
+  border: 1.6px solid var(--doc-border);
+  border-radius: calc(var(--doc-radius) * 0.4);
+  display: grid;
+  place-content: center;
+  cursor: pointer;
+  transition: all 120ms ease;
+}
+.doc-prose ul[data-type="taskList"] input[type="checkbox"]:checked {
+  background: var(--doc-accent);
+  border-color: var(--doc-accent);
+}
+.doc-prose ul[data-type="taskList"] input[type="checkbox"]:checked::after {
+  content: "";
+  width: 0.55em;
+  height: 0.3em;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(-45deg) translate(0.04em, -0.06em);
+}
+.doc-prose ul[data-type="taskList"] li[data-checked="true"] > div {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+.doc-prose p.is-empty::before,
+.doc-prose h1.is-empty::before,
+.doc-prose h2.is-empty::before,
+.doc-prose h3.is-empty::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  color: var(--doc-muted);
+  opacity: 0.6;
+}
+
+/* ------------------------- Tabelle nel documento ------------------------- */
+
+.doc-prose table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 1em 0;
+  overflow: hidden;
+  border-radius: calc(var(--doc-radius) * 0.6);
+}
+
+.doc-prose table td,
+.doc-prose table th {
+  border: var(--tb-w, 1px) var(--tb-s, solid) var(--tb-c, var(--doc-border));
+  padding: 6px 10px;
+  vertical-align: top;
+  position: relative;
+  min-width: 1em;
+}
+
+.doc-prose table th {
+  background: var(--doc-accent-soft);
+  font-weight: 700;
+  text-align: left;
+}
+
+.doc-prose table p {
+  margin: 0;
+}
+
+.doc-prose .selectedCell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--doc-accent) 14%, transparent);
+  pointer-events: none;
+}
+
+.doc-prose .column-resize-handle {
+  position: absolute;
+  right: -2px;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--doc-accent);
+  cursor: col-resize;
+}
+
+.doc-prose .tableWrapper {
+  overflow-x: auto;
+}
+
+/* --------------------------- Board incorporate --------------------------- */
+
+.doc-embed {
+  position: relative;
+}
+
+.doc-embed.ProseMirror-selectednode > div:first-child {
+  outline: 2px solid var(--doc-accent);
+  outline-offset: 2px;
+}
+
+.doc-prose .ProseMirror-selectednode {
+  outline: none;
+}
+
+/* ------------------------ Immagini e testo ricco ------------------------- */
+
+/* -------------------------------- Sommario ------------------------------- */
+
+.doc-prose .doc-toc {
+  margin: 1.2em 0;
+  padding: 0.9em 1.1em;
+  border: 1px solid var(--doc-border);
+  border-radius: var(--doc-radius);
+  background: var(--doc-accent-soft);
+}
+.doc-prose .doc-toc.is-selected {
+  outline: 2px solid var(--doc-accent);
+  outline-offset: 2px;
+}
+.doc-prose .doc-toc-title {
+  margin: 0 0 0.4em;
+  font-size: 0.8em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--doc-muted);
+}
+.doc-prose .doc-toc ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.doc-prose .doc-toc li {
+  margin: 0;
+}
+.doc-prose .doc-toc li[data-level="2"] {
+  padding-left: 1.1em;
+}
+.doc-prose .doc-toc li[data-level="3"] {
+  padding-left: 2.2em;
+}
+.doc-prose .doc-toc button {
+  display: block;
+  width: 100%;
+  padding: 0.12em 0;
+  font: inherit;
+  font-size: 0.92em;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+.doc-prose .doc-toc button:hover {
+  color: var(--doc-accent);
+}
+/* «Automatico 2» e «Semplice»: niente riquadro, righe con puntini e pagine */
+.doc-prose .doc-toc[data-variant="classic"],
+.doc-prose .doc-toc[data-variant="simple"] {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+}
+.doc-prose .doc-toc[data-variant="classic"] .doc-toc-title,
+.doc-prose .doc-toc[data-variant="simple"] .doc-toc-title {
+  font-size: 1.25em;
+  letter-spacing: -0.01em;
+  text-transform: none;
+  color: inherit;
+  margin-bottom: 0.6em;
+}
+.doc-prose .doc-toc button {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35em;
+}
+.doc-prose .doc-toc-text {
+  min-width: 0;
+}
+.doc-prose .doc-toc-leader {
+  flex: 1;
+  min-width: 1.5em;
+  border-bottom: 1.5px dotted currentColor;
+  opacity: 0.45;
+  transform: translateY(-0.25em);
+}
+.doc-prose .doc-toc-page {
+  font-variant-numeric: tabular-nums;
+}
+.doc-prose
+  .doc-toc[data-kind="toc"][data-variant="classic"]
+  li[data-level="1"]
+  > button {
+  font-weight: 600;
+}
+.doc-prose .doc-index-body {
+  column-count: var(--index-columns, 2);
+  column-gap: 2em;
+}
+.doc-prose .doc-index-group {
+  break-inside: avoid;
+  margin-bottom: 0.6em;
+}
+.doc-prose .doc-index-letter {
+  margin: 0 0 0.15em;
+  font-weight: 700;
+  color: var(--doc-accent);
+}
+/* le voci segnate si vedono solo con i segni di formattazione */
+.doc-marks .doc-prose .doc-index-entry {
+  text-decoration: underline dotted var(--doc-accent);
+  text-underline-offset: 0.2em;
+}
+.doc-prose .doc-toc-empty {
+  margin: 0;
+  font-size: 0.85em;
+  color: var(--doc-muted);
+}
+
+/* ------------------------ Immagini nel documento ------------------------- */
+
+.doc-prose .doc-image {
+  margin: 0.8em 0;
+}
+.doc-prose .doc-image-box {
+  position: relative;
+  display: block;
+  max-width: 100%;
+}
+.doc-prose .doc-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--doc-radius);
+}
+
+/* in linea e «sopra e sotto»: una riga propria, allineata */
+.doc-prose .doc-image-topBottom {
+  clear: both;
+}
+.doc-prose .doc-image-align-center .doc-image-box {
+  margin-inline: auto;
+}
+.doc-prose .doc-image-align-right .doc-image-box {
+  margin-left: auto;
+}
+
+/* quadrato, ravvicinato, all'interno: il testo gira intorno */
+.doc-prose .doc-image-float {
+  float: left;
+  max-width: 100%;
+  margin: 0.25em 1.3em 0.7em 0;
+}
+.doc-prose .doc-image-float.doc-image-side-right {
+  float: right;
+  margin: 0.25em 0 0.7em 1.3em;
+}
+.doc-prose .doc-image-tight {
+  margin: 0.15em 0.6em 0.4em 0;
+}
+.doc-prose .doc-image-tight.doc-image-side-right {
+  margin: 0.15em 0 0.4em 0.6em;
+}
+.doc-prose .doc-image-through {
+  margin: 0.05em 0.3em 0.2em 0;
+}
+.doc-prose .doc-image-through.doc-image-side-right {
+  margin: 0.05em 0 0.2em 0.3em;
+}
+
+/* dietro e davanti al testo: fuori dal flusso, coordinate libere sul foglio */
+.doc-prose .doc-image-free {
+  position: absolute;
+  margin: 0;
+}
+.doc-prose .doc-image-free img,
+.doc-prose .doc-image-movable img {
+  cursor: move;
+}
+/* mentre si trascina un'immagine col testo intorno si vede un'anteprima */
+.doc-prose .doc-image-movable.is-dragging {
+  position: relative;
+  z-index: 7;
+  opacity: 0.8;
+}
+.doc-prose .doc-image-behind {
+  z-index: -1;
+}
+.doc-prose .doc-image-front {
+  z-index: 5;
+}
+.doc-prose .doc-image-free.is-selected {
+  z-index: 6;
+}
+/* il blocco che le ospita non deve lasciare un buco nel testo */
+.doc-prose > .node-image:has(> .doc-image-free) {
+  height: 0;
+  margin: 0 !important;
+}
+
+/* il testo che segue non deve finire sotto a un'immagine affiancata */
+.doc-prose::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.doc-prose .doc-image.is-selected .doc-image-box {
+  outline: 2px solid var(--doc-accent);
+  outline-offset: 3px;
+  border-radius: var(--doc-radius);
+}
+.doc-image-handle {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  border: 2px solid #fff;
+  border-radius: 3px;
+  background: var(--doc-accent);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+.doc-image-handle-nw {
+  top: -6px;
+  left: -6px;
+  cursor: nwse-resize;
+}
+.doc-image-handle-ne {
+  top: -6px;
+  right: -6px;
+  cursor: nesw-resize;
+}
+.doc-image-handle-sw {
+  bottom: -6px;
+  left: -6px;
+  cursor: nesw-resize;
+}
+.doc-image-handle-se {
+  bottom: -6px;
+  right: -6px;
+  cursor: nwse-resize;
+}
+
+.doc-prose sub,
+.doc-prose sup {
+  font-size: 0.7em;
+  line-height: 0;
+}
+
+/* righe alternate: le celle colorate a mano restano del loro colore */
+.doc-prose table[data-banded] tr:nth-child(even) td:not([data-bg]) {
+  background-color: color-mix(in srgb, var(--doc-accent) 7%, transparent);
+}
+
+.doc-prose td[data-bg],
+.doc-prose th[data-bg] {
+  /* il colore arriva dall'attributo inline della cella */
+  background-clip: padding-box;
+}
+
+.doc-prose .tableWrapper table {
+  min-width: 100%;
+}
+
+.doc-prose li[style*="margin-left"] {
+  /* i rientri sui blocchi non devono rompere gli elenchi */
+  list-style-position: outside;
+}
+
+/* ------------------------ Trova, righello, griglia ---------------------- */
+
+.doc-prose .find-match {
+  background: #ffd76a;
+  color: #2a1c00;
+  border-radius: 2px;
+}
+.doc-prose .find-match-active {
+  background: #ff9f1c;
+  color: #22110a;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.18);
+}
+
+/* Leggi ad alta voce: la frase in corso e, più marcata, la parola */
+.doc-prose .read-aloud-sentence {
+  background: color-mix(in oklab, #7aa7ff 22%, transparent);
+  border-radius: 2px;
+}
+.doc-prose .read-aloud-word {
+  background: color-mix(in oklab, #3b73ff 45%, transparent);
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px color-mix(in oklab, #3b73ff 35%, transparent);
+}
+
+.doc-page-break {
+  position: relative;
+  height: 0;
+  margin: 1.4em 0;
+  border-top: 2px dashed var(--doc-border);
+}
+.doc-page-break::after {
+  content: "Interruzione di pagina";
+  position: absolute;
+  right: 0;
+  top: -0.85em;
+  padding: 0 5px;
+  font-size: 9px;
+  letter-spacing: 0.02em;
+  color: var(--doc-muted);
+  background: inherit;
+}
+.doc-prose .doc-page-break.ProseMirror-selectednode {
+  border-top-color: var(--doc-accent);
+}
+
+.doc-column-break {
+  position: relative;
+  height: 0;
+  margin: 0.6em 0;
+  border-top: 1px dotted var(--doc-border);
+  break-after: column;
+}
+.doc-column-break::after {
+  content: "Interruzione di colonna";
+  position: absolute;
+  right: 0;
+  top: -0.8em;
+  padding: 0 5px;
+  font-size: 9px;
+  color: var(--doc-muted);
+  background: inherit;
+}
+
+/* note di chiusura */
+.doc-prose .doc-fn {
+  padding: 0 1px;
+  font-size: 0.68em;
+  font-weight: 700;
+  line-height: 0;
+  color: var(--doc-accent);
+  cursor: pointer;
+}
+.doc-prose .doc-fn.is-selected {
+  border-radius: 3px;
+  outline: 2px solid var(--doc-accent);
+  outline-offset: 1px;
+}
+.doc-notes {
+  margin-top: 2.2em !important;
+  font-size: 0.82em;
+  user-select: none;
+}
+.doc-notes-title {
+  margin: 0 0 0.3em;
+  padding-top: 0.8em;
+  border-top: 1px solid var(--doc-border);
+  font-size: 0.85em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--doc-muted);
+}
+.doc-notes ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.doc-notes li[data-note] {
+  display: flex;
+  gap: 0.5em;
+  padding: 0.1em 0;
+}
+.doc-notes li[data-note]::before {
+  content: attr(data-label) ".";
+  min-width: 1.4em;
+  font-weight: 700;
+  color: var(--doc-accent);
+}
+.doc-notes button {
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+.doc-notes-empty {
+  opacity: 0.5;
+}
+
+/* citazioni e bibliografia */
+.doc-prose .doc-citation {
+  cursor: pointer;
+  border-radius: 3px;
+}
+.doc-prose .doc-citation:hover {
+  background: var(--doc-accent-soft);
+}
+.doc-prose .doc-citation.is-selected {
+  outline: 2px solid var(--doc-accent);
+  outline-offset: 1px;
+}
+.doc-prose .doc-citation.is-missing {
+  color: #e03177;
+}
+.doc-prose .doc-bibliography {
+  margin: 1.4em 0;
+}
+.doc-prose .doc-bibliography.is-selected {
+  outline: 2px solid var(--doc-accent);
+  outline-offset: 6px;
+  border-radius: 4px;
+}
+.doc-prose .doc-bib-title {
+  margin: 0 0 0.6em;
+  font-size: 1.42em;
+  font-weight: 700;
+  line-height: 1.22;
+  letter-spacing: -0.018em;
+}
+.doc-prose .doc-bib-entry {
+  margin: 0 0 0.55em;
+  padding-left: 2em;
+  text-indent: -2em;
+}
+.doc-prose .doc-bib-empty {
+  margin: 0;
+  font-size: 0.85em;
+  color: var(--doc-muted);
+}
+
+/* grafici */
+.doc-prose .doc-chart {
+  margin: 1em 0;
+  max-width: 100%;
+}
+.doc-chart-box {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--doc-radius);
+}
+.doc-chart-box svg {
+  display: block;
+}
+.doc-prose .doc-chart.is-selected .doc-chart-box {
+  overflow: visible;
+  outline: 2px solid var(--doc-accent);
+  outline-offset: 3px;
+}
+.doc-chart-resize {
+  position: absolute;
+  left: 50%;
+  bottom: -7px;
+  width: 36px;
+  height: 8px;
+  margin-left: -18px;
+  border: 2px solid #fff;
+  border-radius: 4px;
+  background: var(--doc-accent);
+  cursor: ns-resize;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+/* video online */
+.doc-prose .doc-video {
+  margin: 1em 0;
+  max-width: 100%;
+}
+.doc-video-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--doc-radius);
+  background: linear-gradient(135deg, #2a1440, #0f0118);
+}
+.doc-prose .doc-video.is-selected .doc-video-frame {
+  outline: 2px solid var(--doc-accent);
+  outline-offset: 3px;
+}
+.doc-video-poster,
+.doc-video-player {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.doc-video-poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.92;
+}
+.doc-video-badge {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(15, 1, 24, 0.65);
+}
+.doc-video-play {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  width: 64px;
+  height: 64px;
+  margin: -32px 0 0 -32px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(15, 1, 24, 0.7);
+  cursor: pointer;
+  transition: transform 120ms ease;
+}
+.doc-video-play:hover {
+  transform: scale(1.06);
+}
+.doc-video-link {
+  display: block;
+  margin-top: 0.35em;
+  overflow: hidden;
+  font-size: 0.72em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--doc-muted) !important;
+  text-decoration: none !important;
+}
+
+/* equazioni */
+.doc-prose .doc-math {
+  cursor: pointer;
+  border-radius: 4px;
+}
+.doc-prose .doc-math .katex {
+  font-size: 1.12em;
+}
+.doc-prose .doc-math-block {
+  display: block;
+  margin: 0.9em 0;
+  padding: 0.2em 0;
+  text-align: center;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+.doc-prose .doc-math-block .katex-display {
+  margin: 0;
+}
+.doc-prose .doc-math.is-selected {
+  outline: 2px solid var(--doc-accent);
+  outline-offset: 2px;
+}
+.doc-prose .doc-math-empty {
+  padding: 0 0.3em;
+  font-size: 0.85em;
+  color: var(--doc-muted);
+  border: 1px dashed var(--doc-border);
+}
+
+/* commenti: l'evidenziato lo accende CommentHighlights solo per i commenti
+   che hanno una conversazione */
+.doc-sheet {
+  --doc-comment-bg: color-mix(in srgb, #f5b400 20%, transparent);
+  --doc-comment-active: color-mix(in srgb, #f5b400 42%, transparent);
+  --doc-comment-line: color-mix(in srgb, #e39500 75%, transparent);
+}
+.doc-comments-hidden .doc-prose .doc-comment {
+  background: transparent !important;
+  border-bottom: 0 !important;
+}
+
+/* numeri di riga nel margine sinistro */
+.doc-line-numbers {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 4;
+  pointer-events: none;
+  user-select: none;
+}
+.doc-line-numbers > span {
+  position: absolute;
+  right: 0;
+  display: flex;
+  align-items: center;
+  font-size: 0.66em;
+  font-variant-numeric: tabular-nums;
+  color: var(--doc-muted);
+}
+
+/* note a piè di pagina: sopra al margine inferiore di ogni foglio */
+.doc-page-notes {
+  box-sizing: border-box;
+  padding-top: 0.9em;
+  font-size: 0.78em;
+  line-height: 1.4;
+}
+/* filetto vero, non ::before: le esportazioni in SVG non copiano i
+   pseudo-elementi */
+.doc-page-notes-rule {
+  position: absolute;
+  top: 0.4em;
+  left: 0;
+  width: 33%;
+  border-top: 1px solid var(--doc-border);
+}
+.doc-page-note {
+  margin: 0 0 0.2em;
+  cursor: pointer;
+}
+.doc-page-note-n {
+  display: inline-block;
+  min-width: 1.1em;
+  margin-right: 0.35em;
+  font-size: 0.8em;
+  font-weight: 700;
+  vertical-align: 0.3em;
+  line-height: 0;
+  color: var(--doc-accent);
+}
+
+/*
+ * Spaziatori fra le pagine. Sono decorazioni dell'editor: non finiscono nel
+ * file e la loro altezza comprende lo stacco fra i fogli (--page-gap).
+ */
+.doc-prose .doc-page-gap {
+  display: block;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  list-style: none;
+  pointer-events: none;
+  user-select: none;
+}
+/* dentro a citazioni, codice e tabelle lo sfondo del blocco finirebbe nei
+   margini e nello stacco: una fascia color carta, con in mezzo la scrivania,
+   lo copre per tutta la larghezza del testo */
+.doc-prose .doc-page-gap-nested::before,
+.doc-prose .doc-page-gap-row > td::before {
+  content: "";
+  position: absolute;
+  /* qualche pixel in più: il bordo sinistro delle citazioni sta sul filo */
+  left: -6px;
+  right: -6px;
+  height: inherit;
+  background: linear-gradient(
+    to bottom,
+    var(--doc-paper) var(--gap-edge, 0px),
+    var(--doc-desk) var(--gap-edge, 0px),
+    var(--doc-desk) calc(var(--gap-edge, 0px) + var(--page-gap, 0px)),
+    var(--doc-paper) calc(var(--gap-edge, 0px) + var(--page-gap, 0px))
+  );
+  z-index: 3;
+}
+.doc-prose .doc-page-gap-row > td {
+  position: static !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+
+/* segni di formattazione (¶) */
+.doc-marks .doc-prose p::after,
+.doc-marks .doc-prose h1::after,
+.doc-marks .doc-prose h2::after,
+.doc-marks .doc-prose h3::after,
+.doc-marks .doc-prose blockquote > p::after {
+  content: "¶";
+  margin-left: 2px;
+  font-weight: 400;
+  color: var(--doc-accent);
+  opacity: 0.45;
+}
+
+@media print {
+  /* a video aiutano, sulla carta no */
+  .doc-marks .doc-prose p::after,
+  .doc-marks .doc-prose h1::after,
+  .doc-marks .doc-prose h2::after,
+  .doc-marks .doc-prose h3::after,
+  .doc-marks .doc-prose blockquote > p::after {
+    content: none !important;
+  }
+  /* il lettore non si stampa: resta l'anteprima con l'indirizzo */
+  .doc-video-player {
+    display: none !important;
+  }
+  .doc-prose .doc-comment {
+    background: transparent !important;
+    border-bottom: 0 !important;
+  }
+  /* l'interruzione di pagina si vede solo a schermo, come in Word */
+  .doc-prose .doc-page-break {
+    border-top-color: transparent !important;
+  }
+  .doc-prose .doc-page-break::after {
+    content: none !important;
+  }
+  .doc-prose .find-match,
+  .doc-prose .read-aloud-sentence,
+  .doc-prose .read-aloud-word {
+    background: transparent !important;
+    color: inherit !important;
+    box-shadow: none !important;
+  }
+}
+
+/* copia formato */
+.ProseMirror.doc-painting,
+.ProseMirror.doc-painting * {
+  cursor: copy;
+}
+
+/* cursore dello zoom nella barra di stato */
+.doc-zoom-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 11px;
+  height: 11px;
+  border-radius: 999px;
+  background: var(--foreground);
+  cursor: pointer;
+}
+.doc-zoom-range::-moz-range-thumb {
+  width: 11px;
+  height: 11px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--foreground);
+  cursor: pointer;
+}
+
+/* elenchi dei caratteri: le voci fuori vista non si disegnano, così i
+   caratteri si scaricano solo quando si scorre fino a loro */
+.doc-font-row {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32px;
+}
+
+/* ----------------------- campi, segnalibri, caselle ----------------------- */
+
+/* un campo si riconosce solo passandoci sopra, come in Word */
+.doc-prose .doc-field {
+  border-radius: 3px;
+  transition: background-color 120ms ease;
+}
+.doc-prose .doc-field:hover,
+.doc-prose .doc-field.ProseMirror-selectednode {
+  background: color-mix(in srgb, var(--doc-muted) 22%, transparent);
+}
+.doc-marks .doc-prose .doc-field {
+  background: color-mix(in srgb, var(--doc-muted) 16%, transparent);
+}
+/* i segnalibri si vedono con i segni di formattazione: [testo] */
+.doc-marks .doc-prose .doc-bookmark:not([data-bookmark^="_"])::before {
+  content: "[";
+  color: var(--doc-muted);
+}
+.doc-marks .doc-prose .doc-bookmark:not([data-bookmark^="_"])::after {
+  content: "]";
+  color: var(--doc-muted);
+}
+
+.doc-prose .doc-textbox {
+  box-sizing: border-box;
+  padding: 0.7em 0.95em;
+  border-radius: calc(var(--doc-radius) * 0.6);
+  margin-block: 0.7em;
+}
+.doc-prose .doc-textbox > :first-child {
+  margin-top: 0;
+}
+.doc-prose .doc-textbox > :last-child {
+  margin-bottom: 0;
+}
+.doc-prose .doc-textbox[data-border="thin"] {
+  border: 1px solid var(--doc-border);
+}
+.doc-prose .doc-textbox[data-border="accent"] {
+  border: 1.5px solid var(--doc-accent);
+}
+.doc-prose .doc-textbox[data-border="dashed"] {
+  border: 1.5px dashed var(--doc-muted);
+}
+.doc-prose .doc-textbox[data-border="left"] {
+  border-left: 4px solid var(--doc-accent);
+  border-radius: 0;
+  font-size: 1.15em;
+  font-style: italic;
+}
+.doc-prose .doc-textbox[data-shadow] {
+  box-shadow: 0 10px 28px -12px rgba(15, 1, 26, 0.35);
+}
+.doc-prose .doc-textbox[data-layout="left"] {
+  float: left;
+  margin: 0.2em 1.2em 0.6em 0;
+}
+.doc-prose .doc-textbox[data-layout="right"] {
+  float: right;
+  margin: 0.2em 0 0.6em 1.2em;
+}
+.doc-prose .doc-textbox[data-layout="center"] {
+  margin-inline: auto;
+}
+
+/* capolettera: la prima lettera occupa tre righe (o quelle scelte) */
+.doc-prose p[data-dropcap]::first-letter {
+  float: left;
+  font-family: var(--drop-font, inherit);
+  font-size: calc(var(--drop-lines, 3) * 1.46em);
+  line-height: 0.82;
+  font-weight: 700;
+  margin: 0.08em 0.1em 0 0;
+  color: var(--doc-accent);
+}
+.doc-prose p[data-dropcap="margin"]::first-letter {
+  margin-left: calc(var(--drop-lines, 3) * -0.62em);
+  margin-right: 0.25em;
+}
+
+/* «Riproduzione input penna»: ogni tratto si ridisegna */
+@keyframes ink-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* sillabazione automatica: la lingua è quella del foglio (attributo lang) */
+.doc-hyphens .doc-prose {
+  hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphenate-limit-chars: 7 3 3;
+}
+
+/* fogli di etichette: righe alte quanto l'etichetta, senza bordi */
+.doc-prose table[data-row-height] td,
+.doc-prose table[data-row-height] th {
+  height: var(--tb-row-h);
+  overflow: hidden;
+  padding: 2mm 3mm;
+}
+
+/* campi della stampa unione: «Nome», grigi se «Evidenzia campi unione» */
+.doc-prose .doc-merge-field {
+  border-radius: 3px;
+}
+.doc-prose .doc-merge-field:not([data-preview]) {
+  color: var(--doc-accent);
+}
+.doc-prose .doc-merge-field[data-highlight] {
+  background: color-mix(in srgb, var(--doc-muted) 28%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--doc-muted) 28%, transparent);
+}
+
+/* ------------------------------- revisioni ------------------------------- */
+
+.doc-prose ins.doc-insertion {
+  color: var(--change-color);
+  text-decoration: underline;
+  text-decoration-color: var(--change-color);
+  text-underline-offset: 0.15em;
+}
+.doc-prose del.doc-deletion {
+  color: var(--change-color);
+  text-decoration: line-through;
+  text-decoration-color: var(--change-color);
+}
+/* «Revisioni semplici»: testo finale e una riga rossa accanto a ciò che cambia */
+.doc-markup-simple .doc-prose ins.doc-insertion,
+.doc-markup-none .doc-prose ins.doc-insertion {
+  color: inherit;
+  text-decoration: none;
+}
+.doc-markup-simple .doc-prose del.doc-deletion,
+.doc-markup-none .doc-prose del.doc-deletion,
+.doc-markup-original .doc-prose ins.doc-insertion {
+  display: none;
+}
+.doc-markup-original .doc-prose del.doc-deletion {
+  color: inherit;
+  text-decoration: none;
+}
+.doc-markup-simple .doc-prose > :has(ins.doc-change, del.doc-change) {
+  position: relative;
+}
+.doc-markup-simple .doc-prose > :has(ins.doc-change, del.doc-change)::after {
+  content: "";
+  position: absolute;
+  top: 0.15em;
+  bottom: 0.15em;
+  left: -14px;
+  width: 2px;
+  border-radius: 1px;
+  background: #e11d48;
+}
+
+/* ---------------------------- visualizzazioni ---------------------------- */
+
+/* Struttura: titoli rientrati per livello, il testo sotto il suo titolo */
+.doc-view-outline .doc-prose > :is(h1, h2, h3):not(.is-empty)::before {
+  content: "⊕";
+  display: inline-block;
+  width: 1.1em;
+  margin-left: -1.3em;
+  color: var(--doc-muted);
+  font-weight: 400;
+}
+.doc-view-outline .doc-prose > h2 {
+  margin-left: 1.5em;
+}
+.doc-view-outline .doc-prose > h3 {
+  margin-left: 3em;
+}
+.doc-view-outline .doc-prose > :not(h1, h2, h3) {
+  margin-left: 4.5em;
+}
+.doc-view-outline[data-outline-level="1"] .doc-prose > :not(h1),
+.doc-view-outline[data-outline-level="2"] .doc-prose > :not(h1, h2),
+.doc-view-outline[data-outline-level="3"] .doc-prose > :not(h1, h2, h3) {
+  display: none;
+}
+/* Bozza: niente oggetti fuori dal flusso del testo */
+.doc-view-draft .doc-prose .doc-image-free,
+.doc-view-draft [data-watermark] {
+  display: none;
+}
+/* Lettura immersiva: lettere e parole più distanziate, righe più alte */
+.doc-imm-spacing .doc-prose,
+.doc-imm-spacing .doc-prose * {
+  letter-spacing: 0.05em !important;
+  word-spacing: 0.16em !important;
+  line-height: 1.95 !important;
+}
+
+/* ------------------------------ modelli 3D ------------------------------ */
+
+.doc-prose .doc-model3d {
+  margin: 1em 0;
+  max-width: 100%;
+}
+.doc-model3d-frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--doc-radius);
+  touch-action: none;
+}
+.doc-prose .doc-model3d.is-selected .doc-model3d-frame {
+  outline: 2px solid var(--doc-accent);
+  outline-offset: 3px;
+}
+.doc-model3d-canvas,
+.doc-model3d-poster {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.doc-model3d-canvas {
+  cursor: grab;
+}
+.doc-model3d-canvas:active {
+  cursor: grabbing;
+}
+.doc-model3d-canvas.is-hidden,
+.doc-model3d-poster.is-hidden {
+  visibility: hidden;
+}
+.doc-model3d-message {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
+  font-size: 12px;
+  color: var(--doc-muted, #71717a);
+}
+.doc-model3d-badge,
+.doc-model3d-hint,
+.doc-model3d-grip {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(24, 24, 27, 0.6);
+  pointer-events: none;
+  user-select: none;
+}
+.doc-model3d-badge {
+  right: 8px;
+  top: 8px;
+  padding: 2px 8px;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+.doc-model3d-frame:hover .doc-model3d-badge,
+.doc-model3d.is-selected .doc-model3d-badge {
+  opacity: 1;
+}
+.doc-model3d-hint {
+  left: 50%;
+  bottom: 8px;
+  padding: 3px 10px;
+  font-weight: 500;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 16px);
+  white-space: nowrap;
+}
+.doc-model3d-grip {
+  left: 8px;
+  top: 8px;
+  padding: 4px 2px;
+  border-radius: 6px;
+  cursor: grab;
+  pointer-events: auto;
+  opacity: 0;
+}
+.doc-model3d-frame:hover .doc-model3d-grip,
+.doc-model3d.is-selected .doc-model3d-grip {
+  opacity: 1;
+}
+
+@media print {
+  .doc-model3d-canvas,
+  .doc-model3d-badge,
+  .doc-model3d-hint,
+  .doc-model3d-grip {
+    display: none !important;
+  }
+  .doc-model3d-poster.is-hidden {
+    visibility: visible !important;
+  }
 }
