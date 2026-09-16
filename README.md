@@ -8,6 +8,7 @@
 
 Diagrams, wireframes and professional documents: **no account**, **no server**, even **offline**.
 
+[![Latest release](https://img.shields.io/github/v/release/libi1998/Cogniva?style=flat-square&color=4F46E5&label=release)](https://github.com/libi1998/Cogniva/releases/latest)
 [![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-19-149ECA?style=flat-square&logo=react&logoColor=white)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
@@ -176,11 +177,11 @@ Adding a phrase? Wrap it in `t("…")` and run `pnpm i18n` to update the catalog
 **You'll need:** [Node.js](https://nodejs.org) 20.9 or newer (24 recommended) and [pnpm](https://pnpm.io) 11.
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/cogniva.git
+git clone https://github.com/libi1998/Cogniva.git
 ```
 
 ```bash
-cd cogniva
+cd Cogniva
 ```
 
 ```bash
