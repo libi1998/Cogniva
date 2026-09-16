@@ -5,6 +5,8 @@ import type { Editor } from "@tiptap/react"
 import { AlignJustify, Focus, Glasses, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+import { useT } from "@/lib/i18n/client"
+import { tr } from "@/lib/i18n/client"
 /**
  * Le modalità «a schermo pieno» della scheda Visualizza: focus (solo il
  * foglio), lettura (solo lettura, testo più grande) e lettura immersiva
@@ -42,9 +44,15 @@ export const IMMERSIVE_PAPERS: Record<
 }
 
 const MODE_LABELS: Record<Exclude<DocMode, "normal">, string> = {
-  focus: "Modalità focus",
-  reading: "Modalità lettura",
-  immersive: "Lettura immersiva",
+  get focus() {
+    return tr("Modalità focus")
+  },
+  get reading() {
+    return tr("Modalità lettura")
+  },
+  get immersive() {
+    return tr("Lettura immersiva")
+  },
 }
 
 /** La barra che resta visibile in cima nelle modalità a schermo pieno */
@@ -59,6 +67,7 @@ export function ModeBar({
   immersive: ImmersiveSettings
   setImmersive: (next: ImmersiveSettings) => void
 }) {
+  const t = useT()
   const set = (patch: Partial<ImmersiveSettings>) =>
     setImmersive({ ...immersive, ...patch })
   const chip = (active: boolean) =>
@@ -97,10 +106,10 @@ export function ModeBar({
                 onClick={() => set({ width: w })}
               >
                 {w === "narrow"
-                  ? "Stretta"
+                  ? t("Stretta")
                   : w === "moderate"
-                    ? "Media"
-                    : "Ampia"}
+                    ? t("Media")
+                    : t("Ampia")}
               </button>
             ))}
             <span className="mx-1 h-5 w-px shrink-0 bg-border" />
@@ -112,14 +121,14 @@ export function ModeBar({
                 type="button"
                 title={
                   p === "none"
-                    ? "Colore del documento"
+                    ? t("Colore del documento")
                     : p === "sepia"
-                      ? "Seppia"
+                      ? t("Seppia")
                       : p === "cream"
-                        ? "Crema"
+                        ? t("Crema")
                         : p === "mint"
-                          ? "Menta"
-                          : "Scuro"
+                          ? t("Menta")
+                          : t("Scuro")
                 }
                 onClick={() => set({ paper: p })}
                 className={cn(
@@ -139,7 +148,7 @@ export function ModeBar({
               className={chip(immersive.spacing)}
               onClick={() => set({ spacing: !immersive.spacing })}
             >
-              Spaziatura testo
+              {t("Spaziatura testo")}
             </button>
             {([0, 1, 3, 5] as const).map((n) => (
               <button
@@ -147,9 +156,13 @@ export function ModeBar({
                 type="button"
                 className={chip(immersive.lineFocus === n)}
                 onClick={() => set({ lineFocus: n })}
-                title="Messa a fuoco riga"
+                title={t("Messa a fuoco riga")}
               >
-                {n === 0 ? "Tutto" : `${n} ${n === 1 ? "riga" : "righe"}`}
+                {n === 0
+                  ? t("Tutto")
+                  : n === 1
+                    ? t("1 riga")
+                    : t("{count} righe", { count: n })}
               </button>
             ))}
           </>
@@ -160,9 +173,9 @@ export function ModeBar({
           onClick={onExit}
           className="flex h-7 shrink-0 items-center gap-1 rounded-md px-2 text-xs hover:bg-muted"
         >
-          <X className="size-3.5" /> Esci
+          <X className="size-3.5" /> {t("Esci")}
           <kbd className="ml-1 rounded border border-border px-1 text-[10px] text-muted-foreground">
-            Esc
+            {t("Esc")}
           </kbd>
         </button>
       </div>

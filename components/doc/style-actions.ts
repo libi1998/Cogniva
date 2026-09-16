@@ -1,6 +1,7 @@
 "use client"
 
 import type { Editor } from "@tiptap/react"
+import { tr } from "@/lib/i18n/client"
 import {
   defaultStyleFor,
   newStyleId,
@@ -222,7 +223,7 @@ export function createStyleFromSelection(
   return {
     id,
     def: {
-      name: name.trim() || "Stile",
+      name: name.trim() || tr("Stile"),
       kind: base.kind,
       level: base.level,
       basedOn: baseId,

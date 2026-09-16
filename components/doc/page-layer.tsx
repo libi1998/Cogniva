@@ -1,5 +1,6 @@
 "use client"
 
+import { useT, currentRegion } from "@/lib/i18n/client"
 import * as React from "react"
 import { useEditorState, type Editor } from "@tiptap/react"
 import { watermarkFontSize } from "@/lib/doc-design"
@@ -309,7 +310,7 @@ function PageBand({
     pages: start + pages - 1,
     title,
     author,
-    date: new Date().toLocaleDateString("it-IT", {
+    date: new Date().toLocaleDateString(currentRegion(), {
       day: "numeric",
       month: "long",
       year: "numeric",
@@ -390,6 +391,7 @@ export function GridOverlay() {
 
 /** Linee tratteggiate che mostrano dove cadono i salti pagina */
 export function PageGuides({ pageHeight }: { pageHeight: number }) {
+  const t = useT()
   const ref = React.useRef<HTMLDivElement>(null)
   const [count, setCount] = React.useState(0)
 
@@ -423,7 +425,7 @@ export function PageGuides({ pageHeight }: { pageHeight: number }) {
             className="absolute top-1 right-1 text-[9px]"
             style={{ color: "var(--doc-muted)" }}
           >
-            pagina {i + 2}
+            {t("pagina {page}", { page: i + 2 })}
           </span>
         </div>
       ))}

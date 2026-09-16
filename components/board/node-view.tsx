@@ -12,6 +12,7 @@ import { useIsDark } from "@/lib/use-theme"
 import { WireBody } from "./wireframe"
 import type { BoardNode, BoardTheme, Side, TableData } from "@/lib/types"
 
+import { useT } from "@/lib/i18n/client"
 export const SELECT_COLOR = whim.blue[400]
 
 const HANDLE_SIDES: Exclude<Side, "auto">[] = ["top", "right", "bottom", "left"]
@@ -134,6 +135,7 @@ function NodeText({
   color: string
   placeholder?: string
 }) {
+  const t = useT()
   const inset =
     node.kind === "shape"
       ? textInset(node.shape, node.w, node.h)
@@ -168,7 +170,7 @@ function NodeText({
         }}
       >
         {node.text || (
-          <span style={{ opacity: 0.3 }}>{placeholder ?? "Testo…"}</span>
+          <span style={{ opacity: 0.3 }}>{placeholder ?? t("Testo…")}</span>
         )}
       </span>
     </div>
@@ -263,6 +265,7 @@ function SectionBody({ node, theme }: { node: BoardNode; theme: BoardTheme }) {
 }
 
 function SectionLabel({ node, theme }: { node: BoardNode; theme: BoardTheme }) {
+  const t = useT()
   const sw = getSwatch(node.color)
   return (
     <div
@@ -276,7 +279,7 @@ function SectionLabel({ node, theme }: { node: BoardNode; theme: BoardTheme }) {
         fontWeight: node.bold ? 700 : 600,
       }}
     >
-      {node.text || "Sezione"}
+      {node.text || t("Sezione")}
     </div>
   )
 }

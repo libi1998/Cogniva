@@ -37,8 +37,7 @@ Diagrams, wireframes and professional documents: **no account**, **no server**, 
 - 🔁 **Plays well with others** — open DOCX and Markdown files, export to DOCX, PDF, Markdown, PNG, SVG and JSON.
 - ⚡ **Blazing fast** — Next.js 16 with prerendering and the React Compiler: a keystroke takes under a millisecond, even in a 12,000-word document.
 - 🌗 **Light, dark, everywhere** — light and dark themes on desktop, tablet and phone.
-
-> 🇮🇹 The interface is currently in Italian.
+- 🌍 **Speaks your language** — the whole interface in 🇮🇹 Italian, 🇬🇧 English, 🇪🇸 Spanish, 🇫🇷 French, 🇩🇪 German and 🇧🇷 Portuguese. It picks the one your browser asks for, and you can switch any time.
 
 ---
 
@@ -154,6 +153,22 @@ Nothing is sent to external services: models are downloaded once and then work o
 
 Just **drag a file** onto the window to open it. 🪄
 
+### 🌍 Languages
+
+The whole interface is available in **Italian 🇮🇹, English 🇬🇧, Spanish 🇪🇸, French 🇫🇷, German
+🇩🇪 and Portuguese 🇧🇷**.
+
+- 🔎 **It finds you** — the first visit follows the language your browser and system ask
+  for; anything unknown falls back to English.
+- 🔁 **Switch any time** — the appearance menu (top right) and the command palette (`⌘K`)
+  change language and remember the choice.
+- 🔗 **Shareable** — the language lives in the address (`/en/…`, `/de/…`), so a link always
+  opens in the language it was shared in.
+- 📦 **Nothing wasted** — each page downloads only the phrases it needs.
+
+Adding a phrase? Wrap it in `t("…")` and run `pnpm i18n` to update the catalogs in
+`lib/i18n/catalog/`. 🧵
+
 ---
 
 ## 🚀 Quick start
@@ -188,6 +203,7 @@ Then open 👉 **http://localhost:3000** — a sample board, wireframe and docum
 | `pnpm check`    | ✅ Checks types, lint and formatting                   |
 | `pnpm test:e2e` | 🧪 Runs the tests in real browsers (Chrome and Safari) |
 | `pnpm format`   | 💅 Formats the code                                    |
+| `pnpm i18n`     | 🌍 Updates the translation catalogs                    |
 
 ---
 

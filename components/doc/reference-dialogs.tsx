@@ -13,9 +13,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { CAPTION_LABELS } from "@/lib/doc-fields"
+import { captionLabels } from "@/lib/doc-fields"
 import {
-  AUTHORITY_CATEGORIES,
+  authorityCategories,
   captionContent,
   captionTarget,
   type CaptionOptions,
@@ -24,6 +24,7 @@ import {
 import { PAGE_NUMBER_FORMATS } from "@/lib/header-footer"
 import { cn } from "@/lib/utils"
 
+import { useT } from "@/lib/i18n/client"
 const selectClass =
   "h-8 w-full min-w-0 rounded-md border border-input bg-transparent px-2 text-sm text-foreground"
 
@@ -64,14 +65,16 @@ export function CaptionDialog({
   onClose: () => void
   editor: Editor
 }) {
+  const t = useT()
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogContent className="gap-0 p-0 sm:max-w-[440px]">
         <DialogHeader className="border-b border-border px-5 py-4">
-          <DialogTitle>Didascalia</DialogTitle>
+          <DialogTitle>{t("Didascalia")}</DialogTitle>
           <DialogDescription>
-            Il numero si aggiorna da solo quando aggiungi o sposti figure e
-            tabelle.
+            {t(
+              "Il numero si aggiorna da solo quando aggiungi o sposti figure e tabelle."
+            )}
           </DialogDescription>
         </DialogHeader>
         {open ? <CaptionForm editor={editor} onClose={onClose} /> : null}
@@ -87,16 +90,17 @@ function CaptionForm({
   editor: Editor
   onClose: () => void
 }) {
+  const t = useT()
   const [target] = React.useState(() => captionTarget(editor.state))
   const [custom, setCustom] = React.useState<string[]>(readLabels)
   const [newLabel, setNewLabel] = React.useState<string | null>(null)
   const [options, setOptions] = React.useState<CaptionOptions>(() => ({
     label:
       target.kind === "table"
-        ? "Tabella"
+        ? t("Tabella")
         : target.kind === "mathBlock"
-          ? "Equazione"
-          : "Figura",
+          ? t("Equazione")
+          : t("Figura"),
     text: "",
     // come in Word: le tabelle hanno la didascalia sopra, le figure sotto
     position: target.kind === "table" ? "above" : "below",
@@ -106,8 +110,8 @@ function CaptionForm({
   const set = (patch: Partial<CaptionOptions>) =>
     setOptions((o) => ({ ...o, ...patch }))
   const labels = [
-    ...CAPTION_LABELS,
-    ...custom.filter((l) => !CAPTION_LABELS.includes(l)),
+    ...captionLabels(),
+    ...custom.filter((l) => !captionLabels().includes(l)),
   ]
 
   return (
@@ -128,19 +132,21 @@ function CaptionForm({
         </div>
         <label className="block space-y-1">
           <span className="text-xs text-muted-foreground">
-            Testo della didascalia
+            {t("Testo della didascalia")}
           </span>
           <Input
             autoFocus
             value={options.text}
             onChange={(e) => set({ text: e.target.value })}
-            placeholder="Es. Andamento delle vendite nel 2026"
+            placeholder={t("Es. Andamento delle vendite nel 2026")}
             className="h-8 text-sm"
           />
         </label>
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block space-y-1">
-            <span className="text-xs text-muted-foreground">Etichetta</span>
+            <span className="text-xs text-muted-foreground">
+              {t("Etichetta")}
+            </span>
             <select
               value={options.label}
               onChange={(e) => set({ label: e.target.value })}
@@ -154,7 +160,9 @@ function CaptionForm({
             </select>
           </label>
           <label className="block space-y-1">
-            <span className="text-xs text-muted-foreground">Posizione</span>
+            <span className="text-xs text-muted-foreground">
+              {t("Posizione")}
+            </span>
             <select
               value={options.position}
               onChange={(e) =>
@@ -162,12 +170,14 @@ function CaptionForm({
               }
               className={selectClass}
             >
-              <option value="above">Sopra l&apos;elemento selezionato</option>
-              <option value="below">Sotto l&apos;elemento selezionato</option>
+              <option value="above">{t("Sopra l'elemento selezionato")}</option>
+              <option value="below">{t("Sotto l'elemento selezionato")}</option>
             </select>
           </label>
           <label className="block space-y-1">
-            <span className="text-xs text-muted-foreground">Numerazione</span>
+            <span className="text-xs text-muted-foreground">
+              {t("Numerazione")}
+            </span>
             <select
               value={options.format}
               onChange={(e) => set({ format: e.target.value })}
@@ -188,7 +198,7 @@ function CaptionForm({
               checked={options.excludeLabel}
               onChange={(e) => set({ excludeLabel: e.target.checked })}
             />
-            Escludi l&apos;etichetta
+            {t("Escludi l'etichetta")}
           </label>
         </div>
         {newLabel === null ? (
@@ -198,14 +208,14 @@ function CaptionForm({
             size="sm"
             onClick={() => setNewLabel("")}
           >
-            Nuova etichetta…
+            {t("Nuova etichetta…")}
           </Button>
         ) : (
           <div className="flex items-center gap-2">
             <Input
               value={newLabel}
               onChange={(e) => setNewLabel(e.target.value)}
-              placeholder="Es. Grafico, Schema, Foto"
+              placeholder={t("Es. Grafico, Schema, Foto")}
               className="h-8 text-sm"
             />
             <Button
@@ -221,16 +231,16 @@ function CaptionForm({
                 setNewLabel(null)
               }}
             >
-              Aggiungi
+              {t("Aggiungi")}
             </Button>
           </div>
         )}
       </div>
       <DialogFooter className="border-t border-border px-5 py-3">
         <Button type="button" variant="ghost" onClick={onClose}>
-          Annulla
+          {t("Annulla")}
         </Button>
-        <Button type="submit">Inserisci</Button>
+        <Button type="submit">{t("Inserisci")}</Button>
       </DialogFooter>
     </form>
   )
@@ -249,17 +259,24 @@ export function MarkEntryDialog({
   editor: Editor
   kind: IndexKind
 }) {
+  const t = useT()
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogContent className="gap-0 p-0 sm:max-w-[440px]">
         <DialogHeader className="border-b border-border px-5 py-4">
           <DialogTitle>
-            {kind === "authority" ? "Segna citazione" : "Segna voce di indice"}
+            {kind === "authority"
+              ? t("Segna citazione")
+              : t("Segna voce di indice")}
           </DialogTitle>
           <DialogDescription>
             {kind === "authority"
-              ? "La citazione compare nell'indice delle autorità, divisa per categoria."
-              : "La voce compare nell'indice analitico con il numero di pagina."}
+              ? t(
+                  "La citazione compare nell'indice delle autorità, divisa per categoria."
+                )
+              : t(
+                  "La voce compare nell'indice analitico con il numero di pagina."
+                )}
           </DialogDescription>
         </DialogHeader>
         {open ? (
@@ -279,6 +296,7 @@ function MarkEntryForm({
   kind: IndexKind
   onClose: () => void
 }) {
+  const t = useT()
   const [selected] = React.useState(() =>
     editor.state.doc
       .textBetween(editor.state.selection.from, editor.state.selection.to, " ")
@@ -286,11 +304,11 @@ function MarkEntryForm({
   )
   const [entry, setEntry] = React.useState(selected)
   const [sub, setSub] = React.useState("")
-  const [category, setCategory] = React.useState(AUTHORITY_CATEGORIES[0])
+  const [category, setCategory] = React.useState(() => authorityCategories()[0])
 
   const mark = (all: boolean) => {
     if (!selected) {
-      toast.info("Seleziona prima il testo da segnare")
+      toast.info(t("Seleziona prima il testo da segnare"))
       return
     }
     const done = editor
@@ -299,7 +317,11 @@ function MarkEntryForm({
       .markIndexEntry({ entry, sub, kind, category, all })
       .run()
     if (done) {
-      toast.success(all ? `«${selected}» segnata ovunque` : "Voce segnata")
+      toast.success(
+        all
+          ? t("«{selected}» segnata ovunque", { selected })
+          : t("Voce segnata")
+      )
       onClose()
     }
   }
@@ -309,7 +331,7 @@ function MarkEntryForm({
       <div className="space-y-3 px-5 py-4">
         <label className="block space-y-1">
           <span className="text-xs text-muted-foreground">
-            {kind === "authority" ? "Citazione breve" : "Voce principale"}
+            {kind === "authority" ? t("Citazione breve") : t("Voce principale")}
           </span>
           <Input
             autoFocus
@@ -320,13 +342,15 @@ function MarkEntryForm({
         </label>
         {kind === "authority" ? (
           <label className="block space-y-1">
-            <span className="text-xs text-muted-foreground">Categoria</span>
+            <span className="text-xs text-muted-foreground">
+              {t("Categoria")}
+            </span>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               className={selectClass}
             >
-              {AUTHORITY_CATEGORIES.map((c) => (
+              {authorityCategories().map((c) => (
                 <option key={c} value={c}>
                   {c}
                 </option>
@@ -335,24 +359,28 @@ function MarkEntryForm({
           </label>
         ) : (
           <label className="block space-y-1">
-            <span className="text-xs text-muted-foreground">Sottovoce</span>
+            <span className="text-xs text-muted-foreground">
+              {t("Sottovoce")}
+            </span>
             <Input
               value={sub}
               onChange={(e) => setSub(e.target.value)}
-              placeholder="Facoltativa"
+              placeholder={t("Facoltativa")}
               className="h-8 text-sm"
             />
           </label>
         )}
         {!selected ? (
           <p className={cn("text-xs text-destructive")}>
-            Nessun testo selezionato: chiudi, seleziona una parola e riprova.
+            {t(
+              "Nessun testo selezionato: chiudi, seleziona una parola e riprova."
+            )}
           </p>
         ) : null}
       </div>
       <DialogFooter className="border-t border-border px-5 py-3">
         <Button type="button" variant="ghost" onClick={onClose}>
-          Chiudi
+          {t("Chiudi")}
         </Button>
         <Button
           type="button"
@@ -360,14 +388,14 @@ function MarkEntryForm({
           disabled={!selected || !entry.trim()}
           onClick={() => mark(true)}
         >
-          Segna tutto
+          {t("Segna tutto")}
         </Button>
         <Button
           type="button"
           disabled={!selected || !entry.trim()}
           onClick={() => mark(false)}
         >
-          Segna
+          {t("Segna")}
         </Button>
       </DialogFooter>
     </div>

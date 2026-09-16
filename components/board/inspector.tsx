@@ -86,25 +86,101 @@ import {
 import { formatMm } from "@/lib/page"
 import type { Selection } from "./board-canvas"
 
+import { useT, tr } from "@/lib/i18n/client"
 const HEADS: { value: ArrowHead; label: string }[] = [
-  { value: "none", label: "Nessuna" },
-  { value: "arrow", label: "Freccia" },
-  { value: "triangle", label: "Triangolo" },
-  { value: "hollow", label: "Triangolo vuoto" },
-  { value: "open", label: "Aperta" },
-  { value: "circle", label: "Cerchio" },
-  { value: "hollowCircle", label: "Cerchio vuoto" },
-  { value: "diamond", label: "Rombo" },
-  { value: "hollowDiamond", label: "Rombo vuoto" },
-  { value: "bar", label: "Barra" },
+  {
+    value: "none",
+    get label() {
+      return tr("Nessuna")
+    },
+  },
+  {
+    value: "arrow",
+    get label() {
+      return tr("Freccia")
+    },
+  },
+  {
+    value: "triangle",
+    get label() {
+      return tr("Triangolo")
+    },
+  },
+  {
+    value: "hollow",
+    get label() {
+      return tr("Triangolo vuoto")
+    },
+  },
+  {
+    value: "open",
+    get label() {
+      return tr("Aperta")
+    },
+  },
+  {
+    value: "circle",
+    get label() {
+      return tr("Cerchio")
+    },
+  },
+  {
+    value: "hollowCircle",
+    get label() {
+      return tr("Cerchio vuoto")
+    },
+  },
+  {
+    value: "diamond",
+    get label() {
+      return tr("Rombo")
+    },
+  },
+  {
+    value: "hollowDiamond",
+    get label() {
+      return tr("Rombo vuoto")
+    },
+  },
+  {
+    value: "bar",
+    get label() {
+      return tr("Barra")
+    },
+  },
 ]
 
 const SIDES: { value: Side; label: string }[] = [
-  { value: "auto", label: "Auto" },
-  { value: "top", label: "Alto" },
-  { value: "right", label: "Destra" },
-  { value: "bottom", label: "Basso" },
-  { value: "left", label: "Sinistra" },
+  {
+    value: "auto",
+    get label() {
+      return tr("Auto")
+    },
+  },
+  {
+    value: "top",
+    get label() {
+      return tr("Alto")
+    },
+  },
+  {
+    value: "right",
+    get label() {
+      return tr("Destra")
+    },
+  },
+  {
+    value: "bottom",
+    get label() {
+      return tr("Basso")
+    },
+  },
+  {
+    value: "left",
+    get label() {
+      return tr("Sinistra")
+    },
+  },
 ]
 
 // le etichette mostrate nella casella chiusa: Base UI altrimenti mostra il valore
@@ -115,21 +191,39 @@ const FRAME_ITEMS = Object.fromEntries(
   Object.entries(FRAME_SPECS).map(([key, spec]) => [key, spec.label])
 )
 const PAGE_ITEMS = {
-  infinite: "Infinita",
+  get infinite() {
+    return tr("Infinita")
+  },
   ...Object.fromEntries(
     Object.entries(PAGE_FORMATS).map(([key, format]) => [key, format.label])
   ),
 }
 
 const KIND_LABEL: Record<string, string> = {
-  chart: "Grafico",
-  shape: "Elemento",
-  frame: "Frame",
-  section: "Sezione",
-  table: "Tabella",
-  icon: "Icona",
-  wire: "Componente",
-  draw: "Tratto",
+  get chart() {
+    return tr("Grafico")
+  },
+  get shape() {
+    return tr("Elemento")
+  },
+  get frame() {
+    return tr("Frame")
+  },
+  get section() {
+    return tr("Sezione")
+  },
+  get table() {
+    return tr("Tabella")
+  },
+  get icon() {
+    return tr("Icona")
+  },
+  get wire() {
+    return tr("Componente")
+  },
+  get draw() {
+    return tr("Tratto")
+  },
 }
 
 function HeadSelect({
@@ -198,6 +292,7 @@ function WireProps({
   node: BoardNode
   onPatch: (props: Record<string, string | number | boolean>) => void
 }) {
+  const t = useT()
   const kind = node.wire
   if (!kind) return null
   const p = node.wireProps ?? {}
@@ -208,20 +303,20 @@ function WireProps({
   return (
     <>
       {has("variant") ? (
-        <Row label="Variante" stacked>
+        <Row label={t("Variante")} stacked>
           <Segmented
             value={String(p.variant ?? "primary")}
             onChange={(v) => set("variant", v)}
             items={[
-              { value: "primary", label: "Pieno" },
-              { value: "outline", label: "Bordo" },
-              { value: "ghost", label: "Piatto" },
+              { value: "primary", label: t("Pieno") },
+              { value: "outline", label: t("Bordo") },
+              { value: "ghost", label: t("Piatto") },
             ]}
           />
         </Row>
       ) : null}
       {has("checked") ? (
-        <Row label="Selezionato">
+        <Row label={t("Selezionato")}>
           <Switch
             checked={Boolean(p.checked)}
             onCheckedChange={(v) => set("checked", v)}
@@ -230,7 +325,7 @@ function WireProps({
       ) : null}
       {has("value") ? (
         <SliderRow
-          label="Valore"
+          label={t("Valore")}
           value={Number(p.value ?? 0)}
           min={0}
           max={kind === "rating" ? 5 : kind === "stepper" ? 99 : 100}
@@ -240,7 +335,9 @@ function WireProps({
       ) : null}
       {has("rows") ? (
         <SliderRow
-          label={kind === "paragraph" ? "Righe" : "Elementi"}
+          label={
+            kind === "paragraph" ? t("Righe||righe di testo") : t("Elementi")
+          }
           value={Number(p.rows ?? 4)}
           min={1}
           max={10}
@@ -250,7 +347,7 @@ function WireProps({
       ) : null}
       {has("lines") ? (
         <SliderRow
-          label="Righe"
+          label={t("Righe||righe di testo")}
           value={Number(p.lines ?? 4)}
           min={1}
           max={12}
@@ -259,7 +356,7 @@ function WireProps({
         />
       ) : null}
       {has("avatar") ? (
-        <Row label="Avatar">
+        <Row label={t("Avatar")}>
           <Switch
             checked={Boolean(p.avatar)}
             onCheckedChange={(v) => set("avatar", v)}
@@ -267,32 +364,32 @@ function WireProps({
         </Row>
       ) : null}
       {has("type") ? (
-        <Row label="Tipo" stacked>
+        <Row label={t("Tipo")} stacked>
           <Segmented
             value={String(p.type ?? "bar")}
             onChange={(v) => set("type", v)}
             items={[
-              { value: "bar", label: "Barre" },
-              { value: "line", label: "Linea" },
-              { value: "pie", label: "Torta" },
+              { value: "bar", label: t("Barre") },
+              { value: "line", label: t("Linea") },
+              { value: "pie", label: t("Torta") },
             ]}
           />
         </Row>
       ) : null}
       {has("shape") ? (
-        <Row label="Forma" stacked>
+        <Row label={t("Forma")} stacked>
           <Segmented
             value={String(p.shape ?? "circle")}
             onChange={(v) => set("shape", v)}
             items={[
-              { value: "circle", label: "Tondo" },
-              { value: "square", label: "Quadrato" },
+              { value: "circle", label: t("Tondo") },
+              { value: "square", label: t("Quadrato") },
             ]}
           />
         </Row>
       ) : null}
       {has("placeholder") ? (
-        <Row label="Segnaposto" stacked>
+        <Row label={t("Segnaposto")} stacked>
           <Input
             className="h-8 text-xs"
             value={String(p.placeholder ?? "")}
@@ -301,7 +398,7 @@ function WireProps({
         </Row>
       ) : null}
       {has("icon") ? (
-        <Row label="Icona">
+        <Row label={t("Icona")}>
           <Popover>
             <PopoverTrigger
               render={
@@ -317,7 +414,7 @@ function WireProps({
                 size={14}
                 strokeWidth={2}
               />
-              Cambia
+              {t("Cambia")}
             </PopoverTrigger>
             <PopoverContent align="end" className="w-auto p-0">
               <IconPanel onPick={(name) => set("icon", name)} />
@@ -342,6 +439,7 @@ export function BoardInspector({
   selection: Selection
   setSelection: (s: Selection) => void
 }) {
+  const t = useT()
   // solo le azioni, che non cambiano mai: iscriversi a tutto lo store
   // ridisegnava il pannello a ogni fotogramma di un trascinamento
   const store = getWorkspace()
@@ -370,7 +468,7 @@ export function BoardInspector({
   const bgColors = [
     {
       value: AUTO_BG,
-      label: "Auto (segue il tema)",
+      label: t("Auto (segue il tema)"),
       swatch: "linear-gradient(135deg,#ffffff 50%,#18181b 50%)",
     },
     ...BACKGROUNDS.map((b) => ({ value: b.value, label: b.label })),
@@ -384,12 +482,12 @@ export function BoardInspector({
           <Section
             title={
               nodes.length > 1
-                ? `${nodes.length} elementi`
-                : (KIND_LABEL[kind] ?? "Elemento")
+                ? t("{count} elementi", { count: nodes.length })
+                : (KIND_LABEL[kind] ?? t("Elemento"))
             }
           >
             {kind === "wire" ? (
-              <Row label="Componente" stacked>
+              <Row label={t("Componente")} stacked>
                 <Select
                   value={first.wire}
                   items={WIRE_ITEMS}
@@ -419,7 +517,7 @@ export function BoardInspector({
             ) : null}
 
             {kind === "frame" ? (
-              <Row label="Dispositivo" stacked>
+              <Row label={t("Dispositivo")} stacked>
                 <Select
                   value={first.frame ?? "plain"}
                   items={FRAME_ITEMS}
@@ -449,7 +547,7 @@ export function BoardInspector({
             ) : null}
 
             {kind === "icon" ? (
-              <Row label="Simbolo" stacked>
+              <Row label={t("Simbolo")} stacked>
                 <Popover>
                   <PopoverTrigger
                     render={
@@ -484,7 +582,7 @@ export function BoardInspector({
             ) : null}
 
             {kind !== "chart" ? (
-              <Row label="Colore" stacked>
+              <Row label={t("Colore")} stacked>
                 <ColorGrid
                   columns={5}
                   value={first?.color ?? "white"}
@@ -506,7 +604,7 @@ export function BoardInspector({
             ) : null}
 
             {kind === "shape" ? (
-              <Row label="Forma" stacked>
+              <Row label={t("Forma")} stacked>
                 <ShapeGrid
                   value={first?.shape}
                   onChange={(s) => patchNodes({ shape: s })}
@@ -516,7 +614,7 @@ export function BoardInspector({
 
             {kind === "icon" || kind === "draw" ? (
               <SliderRow
-                label="Spessore"
+                label={t("Spessore")}
                 value={first?.strokeWidth ?? (kind === "icon" ? 1.8 : 3)}
                 min={0.5}
                 max={kind === "icon" ? 4 : 24}
@@ -528,7 +626,7 @@ export function BoardInspector({
 
             {kind === "draw" ? (
               <SliderRow
-                label="Opacità"
+                label={t("Opacità")}
                 value={Math.round((first?.opacity ?? 1) * 100)}
                 min={10}
                 max={100}
@@ -540,7 +638,7 @@ export function BoardInspector({
 
             {kind === "table" && first.table ? (
               <>
-                <Row label="Righe">
+                <Row label={t("Righe")}>
                   <div className="flex items-center gap-1">
                     <Button
                       variant="outline"
@@ -580,7 +678,7 @@ export function BoardInspector({
                     </Button>
                   </div>
                 </Row>
-                <Row label="Colonne">
+                <Row label={t("Colonne")}>
                   <div className="flex items-center gap-1">
                     <Button
                       variant="outline"
@@ -620,7 +718,7 @@ export function BoardInspector({
                     </Button>
                   </div>
                 </Row>
-                <Row label="Intestazione">
+                <Row label={t("Intestazione")}>
                   <Switch
                     checked={first.table.header}
                     onCheckedChange={(v) =>
@@ -628,7 +726,7 @@ export function BoardInspector({
                     }
                   />
                 </Row>
-                <Row label="Righe alternate">
+                <Row label={t("Righe alternate")}>
                   <Switch
                     checked={first.table.striped}
                     onCheckedChange={(v) =>
@@ -649,7 +747,7 @@ export function BoardInspector({
             {kind !== "icon" && kind !== "draw" ? (
               <>
                 <SliderRow
-                  label="Smussatura"
+                  label={t("Smussatura")}
                   value={first?.radius ?? theme.cornerRadius}
                   min={0}
                   max={48}
@@ -661,8 +759,10 @@ export function BoardInspector({
                     onClick={() => patchNodes({ radius: null })}
                     className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
                   >
-                    <RotateCcw className="size-3" /> usa il valore della board (
-                    {theme.cornerRadius}px)
+                    <RotateCcw className="size-3" />{" "}
+                    {t("usa il valore della board ({radius} px)", {
+                      radius: theme.cornerRadius,
+                    })}
                   </button>
                 ) : null}
               </>
@@ -670,12 +770,12 @@ export function BoardInspector({
           </Section>
 
           {hasText ? (
-            <Section title="Testo">
+            <Section title={t("Testo")}>
               {kind === "wire" &&
               ["navbar", "tabs", "breadcrumb", "sidebarNav", "footer"].includes(
                 first.wire ?? ""
               ) ? (
-                <Row label="Voci (separate da |)" stacked>
+                <Row label={t("Voci (separate da |)")} stacked>
                   <Input
                     className="h-8 text-xs"
                     value={first.text}
@@ -685,11 +785,11 @@ export function BoardInspector({
                   />
                 </Row>
               ) : (
-                <Row label="Contenuto" stacked>
+                <Row label={t("Contenuto")} stacked>
                   <Input
                     className="h-8 text-xs"
                     value={first.text}
-                    placeholder="Testo…"
+                    placeholder={t("Testo…")}
                     onChange={(e) =>
                       patchNodes({ text: e.target.value }, false)
                     }
@@ -697,7 +797,7 @@ export function BoardInspector({
                 </Row>
               )}
               <SliderRow
-                label="Dimensione"
+                label={t("Dimensione")}
                 value={first?.fontSize ?? 15}
                 min={9}
                 max={64}
@@ -743,13 +843,13 @@ export function BoardInspector({
               </div>
               {kind === "shape" || kind === "table" || kind === "frame" ? (
                 <>
-                  <Row label="Contorno">
+                  <Row label={t("Contorno")}>
                     <Switch
                       checked={!!first?.outline}
                       onCheckedChange={(v) => patchNodes({ outline: v })}
                     />
                   </Row>
-                  <Row label="Ombra">
+                  <Row label={t("Ombra")}>
                     <Switch
                       checked={!!first?.shadow}
                       onCheckedChange={(v) => patchNodes({ shadow: v })}
@@ -760,7 +860,7 @@ export function BoardInspector({
             </Section>
           ) : null}
 
-          <Section title="Azioni">
+          <Section title={t("Azioni")}>
             <div className="flex gap-1.5">
               <Button
                 variant="outline"
@@ -777,7 +877,7 @@ export function BoardInspector({
                   setSelection({ nodes: ids, edges: [] })
                 }}
               >
-                <Copy className="size-3.5" /> Duplica
+                <Copy className="size-3.5" /> {t("Duplica")}
               </Button>
               <Button
                 variant="outline"
@@ -793,7 +893,7 @@ export function BoardInspector({
                   setSelection({ nodes: [], edges: [] })
                 }}
               >
-                <Trash2 className="size-3.5" /> Elimina
+                <Trash2 className="size-3.5" /> {t("Elimina")}
               </Button>
             </div>
             <div className="flex gap-1.5">
@@ -806,7 +906,7 @@ export function BoardInspector({
                   store.reorder(fileId, selection.nodes, "front")
                 }}
               >
-                <Plus className="size-3.5 rotate-45" /> Davanti
+                <Plus className="size-3.5 rotate-45" /> {t("Davanti")}
               </Button>
               <Button
                 variant="outline"
@@ -817,7 +917,7 @@ export function BoardInspector({
                   store.reorder(fileId, selection.nodes, "back")
                 }}
               >
-                Dietro
+                {t("Dietro")}
               </Button>
             </div>
           </Section>
@@ -827,9 +927,13 @@ export function BoardInspector({
       {/* ------------------------------ ARCHI ----------------------------- */}
       {edges.length > 0 ? (
         <Section
-          title={edges.length > 1 ? `${edges.length} connettori` : "Connettore"}
+          title={
+            edges.length > 1
+              ? t("{count} connettori", { count: edges.length })
+              : t("Connettore")
+          }
         >
-          <Row label="Percorso" stacked>
+          <Row label={t("Percorso")} stacked>
             <Segmented<EdgeRouting>
               value={
                 (firstEdge?.routing ?? theme.arrows.routing) as EdgeRouting
@@ -839,35 +943,35 @@ export function BoardInspector({
                 {
                   value: "straight",
                   icon: <RoutingIcon type="straight" />,
-                  title: "Dritto",
+                  title: t("Dritto"),
                 },
                 {
                   value: "elbow",
                   icon: <RoutingIcon type="elbow" />,
-                  title: "A gomito",
+                  title: t("A gomito"),
                 },
                 {
                   value: "curved",
                   icon: <RoutingIcon type="curved" />,
-                  title: "Curvo",
+                  title: t("Curvo"),
                 },
               ]}
             />
           </Row>
-          <Row label="Punta">
+          <Row label={t("Punta")}>
             <HeadSelect
               value={(firstEdge?.head ?? theme.arrows.head) as ArrowHead}
               onChange={(v) => patchEdges({ head: v })}
             />
           </Row>
-          <Row label="Coda">
+          <Row label={t("Coda")}>
             <HeadSelect
               reversed
               value={(firstEdge?.tail ?? theme.arrows.tail) as ArrowHead}
               onChange={(v) => patchEdges({ tail: v })}
             />
           </Row>
-          <Row label="Linea" stacked>
+          <Row label={t("Linea")} stacked>
             <Segmented<LineStyle>
               value={(firstEdge?.style ?? theme.arrows.style) as LineStyle}
               onChange={(v) => patchEdges({ style: v })}
@@ -875,35 +979,35 @@ export function BoardInspector({
                 {
                   value: "solid",
                   icon: <LineStyleIcon type="solid" />,
-                  title: "Continua",
+                  title: t("Continua"),
                 },
                 {
                   value: "dashed",
                   icon: <LineStyleIcon type="dashed" />,
-                  title: "Tratteggiata",
+                  title: t("Tratteggiata"),
                 },
                 {
                   value: "dotted",
                   icon: <LineStyleIcon type="dotted" />,
-                  title: "Punteggiata",
+                  title: t("Punteggiata"),
                 },
                 {
                   value: "sketch",
                   icon: <LineStyleIcon type="sketch" />,
-                  title: "Schizzo",
+                  title: t("Schizzo"),
                 },
               ]}
             />
           </Row>
           <SliderRow
-            label="Spessore"
+            label={t("Spessore")}
             value={firstEdge?.width ?? theme.arrows.width}
             min={1}
             max={8}
             onChange={(v) => patchEdges({ width: v }, false)}
             onCommit={() => snap()}
           />
-          <Row label="Colore" stacked>
+          <Row label={t("Colore")} stacked>
             <ColorGrid
               columns={5}
               value={firstEdge?.color ?? theme.arrows.color}
@@ -911,16 +1015,16 @@ export function BoardInspector({
               onChange={(v) => patchEdges({ color: v })}
             />
           </Row>
-          <Row label="Etichetta" stacked>
+          <Row label={t("Etichetta")} stacked>
             <Input
               className="h-8 text-xs"
               value={firstEdge?.label ?? ""}
-              placeholder="Nessuna"
+              placeholder={t("Nessuna")}
               onChange={(e) => patchEdges({ label: e.target.value }, false)}
             />
           </Row>
           <div className="flex gap-2">
-            <Row label="Da">
+            <Row label={t("Da")}>
               <Select
                 items={SIDES}
                 value={firstEdge?.fromSide ?? "auto"}
@@ -942,7 +1046,7 @@ export function BoardInspector({
                 </SelectContent>
               </Select>
             </Row>
-            <Row label="A">
+            <Row label={t("A")}>
               <Select
                 items={SIDES}
                 value={firstEdge?.toSide ?? "auto"}
@@ -978,26 +1082,26 @@ export function BoardInspector({
             }
             className="flex items-center gap-1 text-[11px] text-muted-foreground hover:text-foreground"
           >
-            <RotateCcw className="size-3" /> usa lo stile della board
+            <RotateCcw className="size-3" /> {t("usa lo stile della board")}
           </button>
         </Section>
       ) : null}
 
       {/* ------------------------------ BOARD ----------------------------- */}
       {/* la modalità sta nella barra in alto: qui era un doppione */}
-      <Section title="Board">
+      <Section title={t("Board")}>
         <FontPicker
           value={theme.font}
           onChange={(v) => setTheme(fileId, { font: v })}
         />
         <SliderRow
-          label="Smussatura card"
+          label={t("Smussatura card")}
           value={theme.cornerRadius}
           min={0}
           max={40}
           onChange={(v) => setTheme(fileId, { cornerRadius: v })}
         />
-        <Row label="Forma predefinita" stacked>
+        <Row label={t("Forma predefinita")} stacked>
           <ShapeGrid
             value={theme.defaultShape}
             onChange={(s) => setTheme(fileId, { defaultShape: s })}
@@ -1005,8 +1109,8 @@ export function BoardInspector({
         </Row>
       </Section>
 
-      <Section title="Pagina">
-        <Row label="Formato" stacked>
+      <Section title={t("Pagina")}>
+        <Row label={t("Formato")} stacked>
           <Select
             items={PAGE_ITEMS}
             value={theme.page.format}
@@ -1022,9 +1126,9 @@ export function BoardInspector({
             <SelectContent>
               <SelectItem value="infinite" className="text-xs">
                 <span className="flex w-full items-center justify-between gap-6">
-                  <span>Infinita</span>
+                  <span>{t("Infinita")}</span>
                   <span className="text-[10px] text-muted-foreground">
-                    nessun limite
+                    {t("nessun limite")}
                   </span>
                 </span>
               </SelectItem>
@@ -1045,34 +1149,36 @@ export function BoardInspector({
         </Row>
         {theme.page.format !== "infinite" ? (
           <>
-            <Row label="Orientamento" stacked>
+            <Row label={t("Orientamento")} stacked>
               <Segmented<"portrait" | "landscape">
                 value={theme.page.orientation}
                 onChange={(v) =>
                   setTheme(fileId, { page: { ...theme.page, orientation: v } })
                 }
                 items={[
-                  { value: "portrait", label: "Verticale" },
-                  { value: "landscape", label: "Orizzontale" },
+                  { value: "portrait", label: t("Verticale") },
+                  { value: "landscape", label: t("Orizzontale") },
                 ]}
               />
             </Row>
             <p className="text-[11px] leading-snug text-muted-foreground">
-              {
-                "Il foglio è l'area su cui lavori: definisce anche il riquadro dell'esportazione e la misura del PDF"
-              }
               {(() => {
                 const mm = formatMm(theme.page.format, theme.page.orientation)
                 return mm
-                  ? ` (${Math.round(mm[0])}×${Math.round(mm[1])} mm).`
-                  : "."
+                  ? t(
+                      "Il foglio è l'area su cui lavori: definisce anche il riquadro dell'esportazione e la misura del PDF ({width}×{height} mm).",
+                      { width: Math.round(mm[0]), height: Math.round(mm[1]) }
+                    )
+                  : t(
+                      "Il foglio è l'area su cui lavori: definisce anche il riquadro dell'esportazione e la misura del PDF."
+                    )
               })()}
             </p>
           </>
         ) : null}
       </Section>
 
-      <Section title="Sfondo">
+      <Section title={t("Sfondo")}>
         <ColorGrid
           columns={7}
           value={theme.background}
@@ -1083,7 +1189,7 @@ export function BoardInspector({
           value={theme.background}
           onChange={(v) => setTheme(fileId, { background: v })}
         />
-        <Row label="Trama" stacked>
+        <Row label={t("Trama")} stacked>
           <Segmented<BackgroundPattern>
             value={theme.pattern}
             onChange={(v) => setTheme(fileId, { pattern: v })}
@@ -1091,34 +1197,34 @@ export function BoardInspector({
               {
                 value: "plain",
                 icon: <PatternIcon type="plain" />,
-                title: "Nessuna",
+                title: t("Nessuna"),
               },
               {
                 value: "dots",
                 icon: <PatternIcon type="dots" />,
-                title: "Punti",
+                title: t("Punti"),
               },
               {
                 value: "grid",
                 icon: <PatternIcon type="grid" />,
-                title: "Griglia",
+                title: t("Griglia"),
               },
               {
                 value: "cross",
                 icon: <PatternIcon type="cross" />,
-                title: "Croci",
+                title: t("Croci"),
               },
               {
                 value: "lines",
                 icon: <PatternIcon type="lines" />,
-                title: "Righe",
+                title: t("Righe||motivo di sfondo a righe"),
               },
             ]}
           />
         </Row>
         {theme.pattern !== "plain" ? (
           <SliderRow
-            label="Intensità trama"
+            label={t("Intensità trama")}
             value={Math.round(theme.patternOpacity * 100)}
             min={10}
             max={100}
@@ -1129,20 +1235,20 @@ export function BoardInspector({
       </Section>
 
       <Section
-        title="Frecce"
+        title={t("Frecce")}
         action={
           <button
             onClick={() =>
               setTheme(fileId, { arrows: { ...defaultBoardTheme.arrows } })
             }
             className="text-[11px] text-muted-foreground hover:text-foreground"
-            title="Ripristina"
+            title={t("Ripristina")}
           >
             <RotateCcw className="size-3" />
           </button>
         }
       >
-        <Row label="Percorso" stacked>
+        <Row label={t("Percorso")} stacked>
           <Segmented<EdgeRouting>
             value={theme.arrows.routing}
             onChange={(v) =>
@@ -1152,22 +1258,22 @@ export function BoardInspector({
               {
                 value: "straight",
                 icon: <RoutingIcon type="straight" />,
-                title: "Dritto",
+                title: t("Dritto"),
               },
               {
                 value: "elbow",
                 icon: <RoutingIcon type="elbow" />,
-                title: "A gomito",
+                title: t("A gomito"),
               },
               {
                 value: "curved",
                 icon: <RoutingIcon type="curved" />,
-                title: "Curvo",
+                title: t("Curvo"),
               },
             ]}
           />
         </Row>
-        <Row label="Punta">
+        <Row label={t("Punta")}>
           <HeadSelect
             value={theme.arrows.head}
             onChange={(v) =>
@@ -1175,7 +1281,7 @@ export function BoardInspector({
             }
           />
         </Row>
-        <Row label="Coda">
+        <Row label={t("Coda")}>
           <HeadSelect
             reversed
             value={theme.arrows.tail}
@@ -1184,7 +1290,7 @@ export function BoardInspector({
             }
           />
         </Row>
-        <Row label="Linea" stacked>
+        <Row label={t("Linea")} stacked>
           <Segmented<LineStyle>
             value={theme.arrows.style}
             onChange={(v) =>
@@ -1194,28 +1300,28 @@ export function BoardInspector({
               {
                 value: "solid",
                 icon: <LineStyleIcon type="solid" />,
-                title: "Continua",
+                title: t("Continua"),
               },
               {
                 value: "dashed",
                 icon: <LineStyleIcon type="dashed" />,
-                title: "Tratteggiata",
+                title: t("Tratteggiata"),
               },
               {
                 value: "dotted",
                 icon: <LineStyleIcon type="dotted" />,
-                title: "Punteggiata",
+                title: t("Punteggiata"),
               },
               {
                 value: "sketch",
                 icon: <LineStyleIcon type="sketch" />,
-                title: "Schizzo",
+                title: t("Schizzo"),
               },
             ]}
           />
         </Row>
         <SliderRow
-          label="Spessore"
+          label={t("Spessore")}
           value={theme.arrows.width}
           min={1}
           max={8}
@@ -1224,7 +1330,7 @@ export function BoardInspector({
           }
         />
         <SliderRow
-          label="Raggio spigoli"
+          label={t("Raggio spigoli")}
           value={theme.arrows.cornerRadius}
           min={0}
           max={28}
@@ -1232,7 +1338,7 @@ export function BoardInspector({
             setTheme(fileId, { arrows: { ...theme.arrows, cornerRadius: v } })
           }
         />
-        <Row label="Colore" stacked>
+        <Row label={t("Colore")} stacked>
           <ColorGrid
             columns={5}
             value={theme.arrows.color}

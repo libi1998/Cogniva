@@ -423,12 +423,42 @@ body {
 .doc-prose ol[data-levels="outline"] ol ol {
   list-style-type: decimal;
 }
+/* le parole della numerazione seguono la lingua del documento (lang del foglio);
+   le stesse sono in NUMBERING_WORDS (lib/doc-typography.ts) per il .docx */
+.doc-prose {
+  --doc-article: "Article ";
+  --doc-section: "Section ";
+  --doc-chapter: "Chapter ";
+}
+.doc-prose:lang(it) {
+  --doc-article: "Articolo ";
+  --doc-section: "Sezione ";
+  --doc-chapter: "Capitolo ";
+}
+.doc-prose:lang(es) {
+  --doc-article: "Artículo ";
+  --doc-section: "Sección ";
+  --doc-chapter: "Capítulo ";
+}
+.doc-prose:lang(fr) {
+  --doc-chapter: "Chapitre ";
+}
+.doc-prose:lang(de) {
+  --doc-article: "Artikel ";
+  --doc-section: "Abschnitt ";
+  --doc-chapter: "Kapitel ";
+}
+.doc-prose:lang(pt) {
+  --doc-article: "Artigo ";
+  --doc-section: "Seção ";
+  --doc-chapter: "Capítulo ";
+}
 .doc-prose ol[data-levels="article"] {
   padding-left: 0;
   list-style-position: inside;
 }
 .doc-prose ol[data-levels="article"] > li::marker {
-  content: "Articolo " counter(list-item) " ";
+  content: var(--doc-article) counter(list-item) " ";
   font-weight: 700;
 }
 .doc-prose ol[data-levels="article"] ol {
@@ -436,7 +466,7 @@ body {
   list-style-position: outside;
 }
 .doc-prose ol[data-levels="article"] ol > li::marker {
-  content: "Sezione " counters(list-item, ".0") " ";
+  content: var(--doc-section) counters(list-item, ".0") " ";
 }
 .doc-prose ol[data-levels="article"] ol ol > li::marker {
   content: "(" counter(list-item, lower-alpha) ") ";
@@ -446,7 +476,7 @@ body {
   list-style-position: inside;
 }
 .doc-prose ol[data-levels="chapter"] > li::marker {
-  content: "Capitolo " counter(list-item) " ";
+  content: var(--doc-chapter) counter(list-item) " ";
   font-weight: 700;
 }
 .doc-prose ol[data-levels="chapter"] ol {

@@ -3,6 +3,7 @@
 import * as React from "react"
 import { STORAGE, readStorage } from "./storage"
 
+import { tr } from "@/lib/i18n/client"
 /**
  * I componenti aggiuntivi di Cogniva. Come in Word si aggiungono da una
  * raccolta e si aprono in un riquadro accanto al documento, ma sono tutti
@@ -13,12 +14,26 @@ import { STORAGE, readStorage } from "./storage"
 export type AddinId =
   "qr" | "readability" | "placeholder" | "signature" | "wikipedia" | "openverse"
 
+export type AddinCategory = "content" | "writing" | "research"
+
+export const CATEGORY_LABELS: Record<AddinCategory, string> = {
+  get content() {
+    return tr("Contenuti")
+  },
+  get writing() {
+    return tr("Scrittura")
+  },
+  get research() {
+    return tr("Ricerca")
+  },
+}
+
 export type AddinInfo = {
   id: AddinId
   name: string
   tagline: string
   description: string
-  category: "Contenuti" | "Scrittura" | "Ricerca"
+  category: AddinCategory
   /** cosa può fare con il documento */
   permissions: string[]
   /** i servizi a cui si collega; nessuno = funziona offline */
@@ -28,63 +43,117 @@ export type AddinInfo = {
 export const ADDINS: AddinInfo[] = [
   {
     id: "qr",
-    name: "Codice QR",
-    tagline: "Link, Wi-Fi, e-mail e telefono in un codice da inquadrare",
-    description:
-      "Crea codici QR a partire dal testo selezionato o da un indirizzo, con colori e correzione degli errori regolabili, e li inserisce come immagine.",
-    category: "Contenuti",
-    permissions: ["Legge la selezione", "Inserisce immagini"],
+    get name() {
+      return tr("Codice QR")
+    },
+    get tagline() {
+      return tr("Link, Wi-Fi, e-mail e telefono in un codice da inquadrare")
+    },
+    get description() {
+      return tr(
+        "Crea codici QR a partire dal testo selezionato o da un indirizzo, con colori e correzione degli errori regolabili, e li inserisce come immagine."
+      )
+    },
+    category: "content",
+    get permissions() {
+      return [tr("Legge la selezione"), tr("Inserisce immagini")]
+    },
     network: [],
   },
   {
     id: "readability",
-    name: "Leggibilità",
-    tagline: "Indice Gulpease, Flesch e frasi da semplificare",
-    description:
-      "Misura quanto è facile leggere il documento con l'indice adatto alla lingua (Gulpease per l'italiano, Flesch per l'inglese…) e indica le frasi troppo lunghe.",
-    category: "Scrittura",
-    permissions: ["Legge il documento", "Seleziona il testo"],
+    get name() {
+      return tr("Leggibilità")
+    },
+    get tagline() {
+      return tr("Indice Gulpease, Flesch e frasi da semplificare")
+    },
+    get description() {
+      return tr(
+        "Misura quanto è facile leggere il documento con l'indice adatto alla lingua (Gulpease per l'italiano, Flesch per l'inglese…) e indica le frasi troppo lunghe."
+      )
+    },
+    category: "writing",
+    get permissions() {
+      return [tr("Legge il documento"), tr("Seleziona il testo")]
+    },
     network: [],
   },
   {
     id: "placeholder",
-    name: "Testo segnaposto",
-    tagline: "Paragrafi di prova, come =lorem() in Word",
-    description:
-      "Genera testo di prova in italiano o lorem ipsum, anche con titoli ed elenchi, per impaginare prima di avere i contenuti.",
-    category: "Scrittura",
-    permissions: ["Inserisce testo"],
+    get name() {
+      return tr("Testo segnaposto")
+    },
+    get tagline() {
+      return tr("Paragrafi di prova, come =lorem() in Word")
+    },
+    get description() {
+      return tr(
+        "Genera testo di prova in italiano o lorem ipsum, anche con titoli ed elenchi, per impaginare prima di avere i contenuti."
+      )
+    },
+    category: "writing",
+    get permissions() {
+      return [tr("Inserisce testo")]
+    },
     network: [],
   },
   {
     id: "signature",
-    name: "Firma",
-    tagline: "Firma a mano con mouse, dito o penna",
-    description:
-      "Disegna una firma e la inserisce come immagine trasparente, ritagliata sul tratto.",
-    category: "Contenuti",
-    permissions: ["Inserisce immagini"],
+    get name() {
+      return tr("Firma")
+    },
+    get tagline() {
+      return tr("Firma a mano con mouse, dito o penna")
+    },
+    get description() {
+      return tr(
+        "Disegna una firma e la inserisce come immagine trasparente, ritagliata sul tratto."
+      )
+    },
+    category: "content",
+    get permissions() {
+      return [tr("Inserisce immagini")]
+    },
     network: [],
   },
   {
     id: "wikipedia",
     name: "Wikipedia",
-    tagline: "Cerca una voce e inserisci il riassunto con la fonte",
-    description:
-      "Cerca su Wikipedia nella lingua del documento e inserisce il riassunto della voce con l'attribuzione richiesta dalla licenza CC BY-SA.",
-    category: "Ricerca",
-    permissions: ["Legge la selezione", "Inserisce testo e collegamenti"],
+    get tagline() {
+      return tr("Cerca una voce e inserisci il riassunto con la fonte")
+    },
+    get description() {
+      return tr(
+        "Cerca su Wikipedia nella lingua del documento e inserisce il riassunto della voce con l'attribuzione richiesta dalla licenza CC BY-SA."
+      )
+    },
+    category: "research",
+    get permissions() {
+      return [tr("Legge la selezione"), tr("Inserisce testo e collegamenti")]
+    },
     network: ["wikipedia.org"],
   },
   {
     id: "openverse",
-    name: "Immagini libere",
-    tagline: "Milioni di immagini Creative Commons da Openverse",
-    description:
-      "Cerca immagini con licenza Creative Commons o di pubblico dominio e le inserisce con autore e licenza nella didascalia.",
-    category: "Ricerca",
-    permissions: ["Inserisce immagini e didascalie"],
-    network: ["api.openverse.org", "siti delle immagini"],
+    get name() {
+      return tr("Immagini libere")
+    },
+    get tagline() {
+      return tr("Milioni di immagini Creative Commons da Openverse")
+    },
+    get description() {
+      return tr(
+        "Cerca immagini con licenza Creative Commons o di pubblico dominio e le inserisce con autore e licenza nella didascalia."
+      )
+    },
+    category: "research",
+    get permissions() {
+      return [tr("Inserisce immagini e didascalie")]
+    },
+    get network() {
+      return ["api.openverse.org", tr("siti delle immagini")]
+    },
   },
 ]
 

@@ -11,6 +11,7 @@ import {
 } from "@/lib/citations"
 import type { CitationStyle, DocSource } from "@/lib/types"
 
+import { tr as translate } from "@/lib/i18n/client"
 declare module "@tiptap/core" {
   interface Storage {
     citation: CitationStorage
@@ -249,8 +250,9 @@ export const Bibliography = Node.create({
           : [
               Object.assign(document.createElement("p"), {
                 className: "doc-bib-empty",
-                textContent:
-                  "Nessuna fonte: aggiungile da Riferimenti › Gestisci fonti.",
+                textContent: translate(
+                  "Nessuna fonte: aggiungile da Riferimenti › Gestisci fonti."
+                ),
               }),
             ]
         dom.removeAttribute("data-gaps")

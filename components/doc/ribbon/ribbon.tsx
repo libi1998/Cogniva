@@ -16,16 +16,18 @@ import { ReviewTab } from "./review-tab"
 import type { RibbonCtx } from "./shared"
 import { ViewTab } from "./view-tab"
 
+import { useT } from "@/lib/i18n/client"
+import { N_ } from "@/lib/i18n/config"
 const TABS = [
-  { key: "home", label: "Home", Body: HomeTab },
-  { key: "insert", label: "Inserisci", Body: InsertTab },
-  { key: "draw", label: "Disegno", Body: DrawTab },
-  { key: "layout", label: "Layout", Body: LayoutTab },
-  { key: "design", label: "Progettazione", Body: DesignTab },
-  { key: "references", label: "Riferimenti", Body: ReferencesTab },
-  { key: "mailings", label: "Corrispondenza", Body: MailingsTab },
-  { key: "review", label: "Revisione", Body: ReviewTab },
-  { key: "view", label: "Visualizza", Body: ViewTab },
+  { key: "home", label: N_("Home"), Body: HomeTab },
+  { key: "insert", label: N_("Inserisci"), Body: InsertTab },
+  { key: "draw", label: N_("Disegno"), Body: DrawTab },
+  { key: "layout", label: N_("Layout"), Body: LayoutTab },
+  { key: "design", label: N_("Progettazione"), Body: DesignTab },
+  { key: "references", label: N_("Riferimenti"), Body: ReferencesTab },
+  { key: "mailings", label: N_("Corrispondenza"), Body: MailingsTab },
+  { key: "review", label: N_("Revisione"), Body: ReviewTab },
+  { key: "view", label: N_("Visualizza"), Body: ViewTab },
 ] as const
 type TabKey = (typeof TABS)[number]["key"]
 
@@ -79,6 +81,7 @@ function subscribe(listener: () => void) {
  * mentre si scrive.
  */
 export function Ribbon({ ctx }: { ctx: RibbonCtx | null }) {
+  const t = useT()
   const state = React.useSyncExternalStore(subscribe, readPrefs, () => DEFAULT)
   const update = (next: Partial<Prefs>) => writePrefs({ ...state, ...next })
 
@@ -92,38 +95,42 @@ export function Ribbon({ ctx }: { ctx: RibbonCtx | null }) {
     >
       <div
         role="tablist"
-        aria-label="Schede"
+        aria-label={t("Schede")}
         className="flex h-9 items-end gap-1 overflow-x-auto px-2"
       >
-        {TABS.map((t) => (
+        {TABS.map((tab) => (
           <button
-            key={t.key}
+            key={tab.key}
             type="button"
             role="tab"
             data-safe=""
-            aria-selected={t.key === state.tab}
+            aria-selected={tab.key === state.tab}
             onMouseDown={(e) => e.preventDefault()}
             // un clic apre la scheda (e la barra, se era compressa); il
             // doppio clic comprime, come in Word
-            onClick={() => update({ tab: t.key, collapsed: false })}
+            onClick={() => update({ tab: tab.key, collapsed: false })}
             onDoubleClick={() =>
-              t.key === state.tab && update({ collapsed: !state.collapsed })
+              tab.key === state.tab && update({ collapsed: !state.collapsed })
             }
             className={cn(
               "relative h-8 shrink-0 rounded-t-md px-3 text-[13px] transition-colors",
-              t.key === state.tab
+              tab.key === state.tab
                 ? "font-semibold text-foreground after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:rounded-full after:bg-primary"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
             )}
           >
-            {t.label}
+            {t(tab.label)}
           </button>
         ))}
         <button
           type="button"
           data-safe=""
-          title={state.collapsed ? "Mostra la barra" : "Comprimi la barra"}
-          aria-label={state.collapsed ? "Mostra la barra" : "Comprimi la barra"}
+          title={
+            state.collapsed ? t("Mostra la barra") : t("Comprimi la barra")
+          }
+          aria-label={
+            state.collapsed ? t("Mostra la barra") : t("Comprimi la barra")
+          }
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => update({ collapsed: !state.collapsed })}
           className="mb-1 ml-auto flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -139,7 +146,7 @@ export function Ribbon({ ctx }: { ctx: RibbonCtx | null }) {
       {!state.collapsed ? (
         <div
           role="tabpanel"
-          aria-label={active.label}
+          aria-label={t(active.label)}
           className="ribbon-body flex h-[88px] items-stretch overflow-x-auto overflow-y-hidden px-1 pt-1.5 pb-1"
         >
           {ctx ? <Body ctx={ctx} /> : null}

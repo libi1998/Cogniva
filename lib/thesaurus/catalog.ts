@@ -1,3 +1,4 @@
+import { tr } from "@/lib/i18n/client"
 /**
  * I dizionari dei sinonimi, gli stessi di LibreOffice (formato MyThes). Si
  * scaricano alla prima ricerca dalla loro origine pubblica, fissata a un
@@ -24,7 +25,9 @@ export type ThesaurusSource = {
 export const THESAURI: ThesaurusSource[] = [
   {
     lang: "it",
-    label: "Italiano",
+    get label() {
+      return tr("Italiano")
+    },
     url: `${JSDELIVR}/it_IT/th_it_IT_v2.dat`,
     sha256: "96af44562d73ec56dbaacce04588f6a3b7569d581542d9518f64b7c5b1926bcf",
     bytes: 2126707,
@@ -34,17 +37,23 @@ export const THESAURI: ThesaurusSource[] = [
   },
   {
     lang: "en",
-    label: "Inglese",
+    get label() {
+      return tr("Inglese")
+    },
     url: `${JSDELIVR}/en/th_en_US_v2.dat`,
     sha256: "8a3e4637450b7277428da248f0a604b5c92942bc30507220c051181462340f39",
     bytes: 18553257,
-    license: "Licenza WordNet (Princeton)",
+    get license() {
+      return tr("Licenza WordNet (Princeton)")
+    },
     credit: "WordNet, Princeton University; Kevin Atkinson",
     home: "https://github.com/LibreOffice/dictionaries/tree/master/en",
   },
   {
     lang: "fr",
-    label: "Francese",
+    get label() {
+      return tr("Francese")
+    },
     url: `${JSDELIVR}/fr_FR/dictionaries/thes_fr.dat`,
     sha256: "52efa736c37f98d7f0abfe5dd4345b6f712880ca0ca664c15a8168d9475a0b46",
     bytes: 4801627,
@@ -54,7 +63,9 @@ export const THESAURI: ThesaurusSource[] = [
   },
   {
     lang: "de",
-    label: "Tedesco",
+    get label() {
+      return tr("Tedesco")
+    },
     url: `${GITHUB}/de/th_de_DE_v2.dat`,
     sha256: "cae18340c59738350b8abe7d7822edb76a8f26d177c3f7cdc68fb0187ca25693",
     bytes: 31662751,
@@ -64,7 +75,9 @@ export const THESAURI: ThesaurusSource[] = [
   },
   {
     lang: "es",
-    label: "Spagnolo",
+    get label() {
+      return tr("Spagnolo")
+    },
     url: `${JSDELIVR}/es/th_es_v2.dat`,
     sha256: "ee0b7ad7dfede636aa5d5509cbbcbab59bef4cb8cbdff01f9528b15bd139b889",
     bytes: 2876858,
@@ -74,11 +87,15 @@ export const THESAURI: ThesaurusSource[] = [
   },
   {
     lang: "pt",
-    label: "Portoghese",
+    get label() {
+      return tr("Portoghese")
+    },
     url: `${JSDELIVR}/pt_PT/th_pt_PT.dat`,
     sha256: "daa89fee61347f401f005f3efd17fa8878eeeabd903ff4e684ab4bc1a53df2fd",
     bytes: 3052378,
-    license: "CC BY 3.0 e altre licenze libere",
+    get license() {
+      return tr("CC BY 3.0 e altre licenze libere")
+    },
     credit: "Tiago F. Santos, Onto.PT, PAPEL",
     home: "https://github.com/LibreOffice/dictionaries/tree/master/pt_PT",
   },

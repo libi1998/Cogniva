@@ -43,6 +43,7 @@ import {
   withStyle,
 } from "./style-actions"
 
+import { useT } from "@/lib/i18n/client"
 export type StyleTools = {
   editor: Editor
   theme: DocTheme
@@ -163,23 +164,24 @@ function StyleMenuItems({
   style: DocStyle
   tools: StyleTools
 }) {
+  const t = useT()
   const actions = useStyleActions(tools)
   const overridden = Boolean(tools.theme.styles?.[style.id])
   return (
     <>
       <DropdownMenuLabel className="truncate">{style.name}</DropdownMenuLabel>
       <DropdownMenuItem onClick={() => actions.apply(style.id)}>
-        <Paintbrush className="size-4" /> Applica
+        <Paintbrush className="size-4" /> {t("Applica")}
       </DropdownMenuItem>
       <DropdownMenuItem onClick={() => actions.updateFromSelection(style.id)}>
         <RotateCcw className="size-4 -scale-x-100" />
-        <span className="truncate">Aggiorna in base alla selezione</span>
+        <span className="truncate">{t("Aggiorna in base alla selezione")}</span>
       </DropdownMenuItem>
       <DropdownMenuItem onClick={() => actions.modify(style.id)}>
-        <Pencil className="size-4" /> Modifica…
+        <Pencil className="size-4" /> {t("Modifica…")}
       </DropdownMenuItem>
       <DropdownMenuItem onClick={() => actions.duplicate(style.id)}>
-        <Copy className="size-4" /> Duplica
+        <Copy className="size-4" /> {t("Duplica")}
       </DropdownMenuItem>
       <DropdownMenuItem onClick={() => actions.toggleGallery(style.id)}>
         {style.hidden ? (
@@ -187,11 +189,13 @@ function StyleMenuItems({
         ) : (
           <EyeOff className="size-4" />
         )}
-        {style.hidden ? "Aggiungi alla raccolta" : "Rimuovi dalla raccolta"}
+        {style.hidden
+          ? t("Aggiungi alla raccolta")
+          : t("Rimuovi dalla raccolta")}
       </DropdownMenuItem>
       {style.builtin && overridden ? (
         <DropdownMenuItem onClick={() => actions.reset(style.id)}>
-          <RotateCcw className="size-4" /> Ripristina predefinito
+          <RotateCcw className="size-4" /> {t("Ripristina predefinito")}
         </DropdownMenuItem>
       ) : null}
       {!style.builtin ? (
@@ -201,7 +205,7 @@ function StyleMenuItems({
             variant="destructive"
             onClick={() => actions.remove(style.id)}
           >
-            <Trash2 className="size-4" /> Elimina lo stile
+            <Trash2 className="size-4" /> {t("Elimina lo stile")}
           </DropdownMenuItem>
         </>
       ) : null}
@@ -222,13 +226,14 @@ function StyleCard({
   compact?: boolean
   onApply: () => void
 }) {
+  const t = useT()
   const [menu, setMenu] = React.useState<{ x: number; y: number } | null>(null)
   const active = tools.current === style.id
   return (
     <>
       <button
         type="button"
-        title={`${style.name} · clic destro per modificare`}
+        title={t("{name} · clic destro per modificare", { name: style.name })}
         onMouseDown={(e) => e.preventDefault()}
         onClick={onApply}
         onContextMenu={(e) => {
@@ -287,6 +292,7 @@ export function StyleGallery({
   tools: StyleTools
   onOpenPane: () => void
 }) {
+  const t = useT()
   const actions = useStyleActions(tools)
   const styles = listStyles(tools.theme)
   const shown = styles.filter((s) => !s.hidden)
@@ -314,8 +320,8 @@ export function StyleGallery({
           render={
             <button
               type="button"
-              title="Tutti gli stili"
-              aria-label="Tutti gli stili"
+              title={t("Tutti gli stili")}
+              aria-label={t("Tutti gli stili")}
               onMouseDown={(e) => e.preventDefault()}
               className="flex h-[58px] w-5 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
             />
@@ -328,7 +334,7 @@ export function StyleGallery({
           className="w-[300px] p-2"
           finalFocus={false}
         >
-          <DropdownMenuLabel className="px-0">Stili</DropdownMenuLabel>
+          <DropdownMenuLabel className="px-0">{t("Stili")}</DropdownMenuLabel>
           <div className="grid max-h-[320px] grid-cols-3 gap-1.5 overflow-y-auto p-0.5">
             {shown.map((style) => (
               <StyleCard
@@ -341,13 +347,14 @@ export function StyleGallery({
           </div>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={actions.create}>
-            <Plus className="size-4" /> Crea uno stile…
+            <Plus className="size-4" /> {t("Crea uno stile…")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={actions.clear}>
-            <RemoveFormatting className="size-4" /> Cancella formattazione
+            <RemoveFormatting className="size-4" />{" "}
+            {t("Cancella formattazione")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onOpenPane}>
-            <Pencil className="size-4" /> Riquadro Stili…
+            <Pencil className="size-4" /> {t("Riquadro Stili…")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -365,6 +372,7 @@ export function StylesPane({
   tools: StyleTools
   onClose: () => void
 }) {
+  const t = useT()
   const actions = useStyleActions(tools)
   const [preview, setPreview] = React.useState(true)
   // il menu di una riga si apre anche con il clic destro, come in Word
@@ -374,11 +382,11 @@ export function StylesPane({
   return (
     <div className="flex h-full min-h-0 flex-col">
       <div className="flex h-11 shrink-0 items-center justify-between border-b border-border px-3">
-        <span className="text-sm font-semibold">Stili</span>
+        <span className="text-sm font-semibold">{t("Stili")}</span>
         <button
           type="button"
           onClick={onClose}
-          aria-label="Chiudi il riquadro Stili"
+          aria-label={t("Chiudi il riquadro Stili")}
           className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
         >
           <X className="size-4" />
@@ -414,7 +422,7 @@ export function StylesPane({
               {style.hidden ? (
                 <EyeOff
                   className="size-3 shrink-0 text-muted-foreground"
-                  aria-label="Non in raccolta"
+                  aria-label={t("Non in raccolta")}
                 />
               ) : null}
               <DropdownMenu
@@ -425,7 +433,7 @@ export function StylesPane({
                   render={
                     <button
                       type="button"
-                      aria-label={`Opzioni per ${style.name}`}
+                      aria-label={t("Opzioni per {name}", { name: style.name })}
                       className="flex size-7 shrink-0 items-center justify-center rounded-md text-muted-foreground opacity-0 transition group-hover:opacity-100 hover:bg-background focus-visible:opacity-100 data-popup-open:opacity-100 pointer-coarse:opacity-100"
                     />
                   }
@@ -451,7 +459,7 @@ export function StylesPane({
             checked={preview}
             onChange={(e) => setPreview(e.target.checked)}
           />
-          Mostra anteprima
+          {t("Mostra anteprima")}
         </label>
         <div className="flex gap-1.5">
           <button
@@ -459,14 +467,14 @@ export function StylesPane({
             onClick={actions.create}
             className="flex h-8 flex-1 items-center justify-center gap-1.5 rounded-md border border-border text-xs hover:bg-muted"
           >
-            <Plus className="size-3.5" /> Nuovo stile
+            <Plus className="size-3.5" /> {t("Nuovo stile")}
           </button>
           <button
             type="button"
             onClick={actions.clear}
             className="flex h-8 flex-1 items-center justify-center gap-1.5 rounded-md border border-border text-xs hover:bg-muted"
           >
-            <RemoveFormatting className="size-3.5" /> Cancella formato
+            <RemoveFormatting className="size-3.5" /> {t("Cancella formato")}
           </button>
         </div>
       </div>

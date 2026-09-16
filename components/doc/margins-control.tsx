@@ -5,6 +5,8 @@ import { Link2, Link2Off } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { clampMargin, type DocMargins, type MarginSide } from "@/lib/types"
 
+import { useT, tr } from "@/lib/i18n/client"
+import { N_ } from "@/lib/i18n/config"
 /** pixel CSS in un centimetro */
 const CM = 96 / 2.54
 const toCm = (px: number) => Math.round((px / CM) * 10) / 10
@@ -12,17 +14,53 @@ const toPx = (cm: number) => clampMargin(cm * CM)
 
 /** I margini predefiniti di Word, in centimetri */
 const PRESETS: { label: string; cm: [number, number, number, number] }[] = [
-  { label: "Normali", cm: [2.5, 2.5, 2.5, 2.5] },
-  { label: "Stretti", cm: [1.27, 1.27, 1.27, 1.27] },
-  { label: "Moderati", cm: [2.54, 1.91, 2.54, 1.91] },
-  { label: "Larghi", cm: [2.54, 5.08, 2.54, 5.08] },
+  {
+    get label() {
+      return tr("Normali")
+    },
+    cm: [2.5, 2.5, 2.5, 2.5],
+  },
+  {
+    get label() {
+      return tr("Stretti")
+    },
+    cm: [1.27, 1.27, 1.27, 1.27],
+  },
+  {
+    get label() {
+      return tr("Moderati")
+    },
+    cm: [2.54, 1.91, 2.54, 1.91],
+  },
+  {
+    get label() {
+      return tr("Larghi")
+    },
+    cm: [2.54, 5.08, 2.54, 5.08],
+  },
 ]
 
+/** Il lato dentro una frase («Margine superiore»), accordato in ogni lingua */
+const SIDE_NAMES: Record<MarginSide, string> = {
+  top: N_("superiore||lato del margine"),
+  right: N_("destro||lato del margine"),
+  bottom: N_("inferiore||lato del margine"),
+  left: N_("sinistro||lato del margine"),
+}
+
 const LABELS: Record<MarginSide, string> = {
-  top: "Superiore",
-  right: "Destro",
-  bottom: "Inferiore",
-  left: "Sinistro",
+  get top() {
+    return tr("Superiore")
+  },
+  get right() {
+    return tr("Destro")
+  },
+  get bottom() {
+    return tr("Inferiore")
+  },
+  get left() {
+    return tr("Sinistro")
+  },
 }
 
 function CmInput({
@@ -34,6 +72,7 @@ function CmInput({
   value: number
   onChange: (px: number) => void
 }) {
+  const t = useT()
   // mentre si scrive il testo resta com'è: «2,» non deve diventare «2»
   const [draft, setDraft] = React.useState<string | null>(null)
   const shown = draft ?? String(toCm(value)).replace(".", ",")
@@ -45,11 +84,15 @@ function CmInput({
 
   return (
     <label className="flex flex-col items-center gap-0.5">
-      <span className="sr-only">Margine {LABELS[side].toLowerCase()}</span>
+      <span className="sr-only">
+        {t("Margine {side}", { side: t(SIDE_NAMES[side]) })}
+      </span>
       <input
         inputMode="decimal"
         value={shown}
-        title={`${LABELS[side]} · ↑↓ per 0,1 cm, ⇧ per 1 cm`}
+        title={t("{side} · ↑↓ per 0,1 cm, ⇧ per 1 cm", {
+          side: LABELS[side],
+        })}
         onFocus={(e) => e.currentTarget.select()}
         onChange={(e) => {
           setDraft(e.target.value)
@@ -80,6 +123,7 @@ export function MarginsControl({
   margins: DocMargins
   onChange: (margins: DocMargins) => void
 }) {
+  const t = useT()
   const [linked, setLinked] = React.useState(
     () =>
       margins.top === margins.right &&
@@ -153,7 +197,12 @@ export function MarginsControl({
             <button
               key={p.label}
               type="button"
-              title={`${p.label}: ${p.cm.map((c) => String(c).replace(".", ",")).join(" · ")} cm`}
+              title={t("{label}: {values} cm", {
+                label: p.label,
+                values: p.cm
+                  .map((c) => String(c).replace(".", ","))
+                  .join(" · "),
+              })}
               onClick={() => {
                 setLinked(top === right && right === bottom && bottom === left)
                 onChange({ top, right, bottom, left })
@@ -177,8 +226,8 @@ export function MarginsControl({
           aria-pressed={linked}
           title={
             linked
-              ? "Margini collegati: cambiandone uno cambiano tutti"
-              : "Collega i quattro margini"
+              ? t("Margini collegati: cambiandone uno cambiano tutti")
+              : t("Collega i quattro margini")
           }
           onClick={() => {
             if (!linked) {
@@ -199,10 +248,10 @@ export function MarginsControl({
           ) : (
             <Link2Off className="size-3.5" />
           )}
-          Uguali
+          {t("Uguali")}
         </button>
         <p className="text-[10px] leading-snug text-muted-foreground">
-          Centimetri. Si trascinano anche dalle maniglie dei righelli.
+          {t("Centimetri. Si trascinano anche dalle maniglie dei righelli.")}
         </p>
       </div>
     </div>

@@ -13,6 +13,7 @@ import { defaultChart, parseChartAttr, type ChartType } from "@/lib/chart"
 import { cn } from "@/lib/utils"
 import { DocContentWidthContext, PaperDarkContext } from "./render-theme"
 
+import { useT } from "@/lib/i18n/client"
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     chart: {
@@ -31,6 +32,7 @@ function ChartView({
   editor,
   updateAttributes,
 }: NodeViewProps) {
+  const t = useT()
   const spec = React.useMemo(
     () => parseChartAttr(node.attrs.spec),
     [node.attrs.spec]
@@ -98,7 +100,7 @@ function ChartView({
           <span
             role="presentation"
             className="doc-chart-resize"
-            title="Trascina per cambiare l'altezza"
+            title={t("Trascina per cambiare l'altezza")}
             onPointerDown={startResize}
           />
         ) : null}

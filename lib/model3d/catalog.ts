@@ -1,3 +1,4 @@
+import { tr } from "@/lib/i18n/client"
 /**
  * Modelli 3D: le forme pronte, le visualizzazioni predefinite (come la
  * raccolta «Visualizzazioni modello 3D» di Word) e i controlli sui file.
@@ -19,18 +20,78 @@ export type Shape3D =
   | "ring"
 
 export const SHAPES_3D: { value: Shape3D; label: string }[] = [
-  { value: "cube", label: "Cubo" },
-  { value: "sphere", label: "Sfera" },
-  { value: "cylinder", label: "Cilindro" },
-  { value: "cone", label: "Cono" },
-  { value: "pyramid", label: "Piramide" },
-  { value: "torus", label: "Ciambella" },
-  { value: "knot", label: "Nodo" },
-  { value: "capsule", label: "Capsula" },
-  { value: "gem", label: "Gemma" },
-  { value: "dodecahedron", label: "Dodecaedro" },
-  { value: "octahedron", label: "Ottaedro" },
-  { value: "ring", label: "Anello" },
+  {
+    value: "cube",
+    get label() {
+      return tr("Cubo")
+    },
+  },
+  {
+    value: "sphere",
+    get label() {
+      return tr("Sfera")
+    },
+  },
+  {
+    value: "cylinder",
+    get label() {
+      return tr("Cilindro")
+    },
+  },
+  {
+    value: "cone",
+    get label() {
+      return tr("Cono")
+    },
+  },
+  {
+    value: "pyramid",
+    get label() {
+      return tr("Piramide")
+    },
+  },
+  {
+    value: "torus",
+    get label() {
+      return tr("Ciambella")
+    },
+  },
+  {
+    value: "knot",
+    get label() {
+      return tr("Nodo")
+    },
+  },
+  {
+    value: "capsule",
+    get label() {
+      return tr("Capsula")
+    },
+  },
+  {
+    value: "gem",
+    get label() {
+      return tr("Gemma")
+    },
+  },
+  {
+    value: "dodecahedron",
+    get label() {
+      return tr("Dodecaedro")
+    },
+  },
+  {
+    value: "octahedron",
+    get label() {
+      return tr("Ottaedro")
+    },
+  },
+  {
+    value: "ring",
+    get label() {
+      return tr("Anello")
+    },
+  },
 ]
 
 export const isShape3D = (value: string): value is Shape3D =>
@@ -41,30 +102,76 @@ export type View3D = { yaw: number; pitch: number; zoom: number }
 export const DEFAULT_VIEW: View3D = { yaw: 35, pitch: 22, zoom: 1 }
 
 export const VIEW_PRESETS: { label: string; title?: string; view: View3D }[] = [
-  { label: "Frontale", view: { yaw: 0, pitch: 0, zoom: 1 } },
-  { label: "Posteriore", view: { yaw: 180, pitch: 0, zoom: 1 } },
-  { label: "Sinistra", view: { yaw: -90, pitch: 0, zoom: 1 } },
-  { label: "Destra", view: { yaw: 90, pitch: 0, zoom: 1 } },
-  { label: "Dall'alto", view: { yaw: 0, pitch: 89, zoom: 1 } },
-  { label: "Dal basso", view: { yaw: 0, pitch: -89, zoom: 1 } },
   {
-    label: "Alto a sinistra",
-    title: "Isometrica in alto a sinistra",
+    get label() {
+      return tr("Frontale")
+    },
+    view: { yaw: 0, pitch: 0, zoom: 1 },
+  },
+  {
+    get label() {
+      return tr("Posteriore")
+    },
+    view: { yaw: 180, pitch: 0, zoom: 1 },
+  },
+  {
+    get label() {
+      return tr("Sinistra")
+    },
+    view: { yaw: -90, pitch: 0, zoom: 1 },
+  },
+  {
+    get label() {
+      return tr("Destra")
+    },
+    view: { yaw: 90, pitch: 0, zoom: 1 },
+  },
+  {
+    get label() {
+      return tr("Dall'alto")
+    },
+    view: { yaw: 0, pitch: 89, zoom: 1 },
+  },
+  {
+    get label() {
+      return tr("Dal basso")
+    },
+    view: { yaw: 0, pitch: -89, zoom: 1 },
+  },
+  {
+    get label() {
+      return tr("Alto a sinistra")
+    },
+    get title() {
+      return tr("Isometrica in alto a sinistra")
+    },
     view: { yaw: -45, pitch: 35, zoom: 1 },
   },
   {
-    label: "Alto a destra",
-    title: "Isometrica in alto a destra",
+    get label() {
+      return tr("Alto a destra")
+    },
+    get title() {
+      return tr("Isometrica in alto a destra")
+    },
     view: { yaw: 45, pitch: 35, zoom: 1 },
   },
   {
-    label: "Basso a sinistra",
-    title: "Isometrica in basso a sinistra",
+    get label() {
+      return tr("Basso a sinistra")
+    },
+    get title() {
+      return tr("Isometrica in basso a sinistra")
+    },
     view: { yaw: -45, pitch: -30, zoom: 1 },
   },
   {
-    label: "Basso a destra",
-    title: "Isometrica in basso a destra",
+    get label() {
+      return tr("Basso a destra")
+    },
+    get title() {
+      return tr("Isometrica in basso a destra")
+    },
     view: { yaw: 45, pitch: -30, zoom: 1 },
   },
 ]
@@ -89,12 +196,12 @@ export function safeModelSrc(src: string) {
 export function readModelFile(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     if (!/\.(glb|gltf)$/i.test(file.name)) {
-      reject(new Error("Scegli un modello glTF (.glb o .gltf)."))
+      reject(new Error(tr("Scegli un modello glTF (.glb o .gltf).")))
       return
     }
     if (file.size > MAX_MODEL_BYTES) {
       reject(
-        new Error("Il modello supera i 40 MB: riducilo prima di inserirlo.")
+        new Error(tr("Il modello supera i 40 MB: riducilo prima di inserirlo."))
       )
       return
     }
@@ -106,7 +213,8 @@ export function readModelFile(file: File): Promise<string> {
         : "model/gltf+json"
       resolve(raw.replace(/^data:[^;,]*/, `data:${type}`))
     }
-    reader.onerror = () => reject(new Error("Non riesco a leggere il file."))
+    reader.onerror = () =>
+      reject(new Error(tr("Non riesco a leggere il file.")))
     reader.readAsDataURL(file)
   })
 }

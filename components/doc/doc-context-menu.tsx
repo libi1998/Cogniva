@@ -46,6 +46,7 @@ import {
 } from "@/lib/thesaurus/client"
 import { wordAtSelection } from "@/lib/word-at"
 
+import { useT } from "@/lib/i18n/client"
 export function DocContextMenu({
   editor,
   point,
@@ -63,6 +64,7 @@ export function DocContextMenu({
   language: string
   onThesaurus: (word: string) => void
 }) {
+  const t = useT()
   // confronto superficiale: il menu non si ridisegna a ogni salvataggio
   const boards = useStore(
     useShallow((s) => s.files.filter((f) => f.kind === "board"))
@@ -102,14 +104,14 @@ export function DocContextMenu({
           disabled={!hasSelection}
           onClick={run(() => document.execCommand("copy"))}
         >
-          <Copy className="size-4" /> Copia
+          <Copy className="size-4" /> {t("Copia")}
           <DropdownMenuShortcut>⌘C</DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuItem
           disabled={!hasSelection}
           onClick={run(() => document.execCommand("cut"))}
         >
-          <Scissors className="size-4" /> Taglia
+          <Scissors className="size-4" /> {t("Taglia")}
           <DropdownMenuShortcut>⌘X</DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuItem
@@ -122,7 +124,7 @@ export function DocContextMenu({
             }
           })}
         >
-          <ClipboardPaste className="size-4" /> Incolla
+          <ClipboardPaste className="size-4" /> {t("Incolla")}
           <DropdownMenuShortcut>⌘V</DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuItem
@@ -136,11 +138,12 @@ export function DocContextMenu({
             }
           })}
         >
-          <ClipboardType className="size-4" /> Incolla senza formattazione
+          <ClipboardType className="size-4" />{" "}
+          {t("Incolla senza formattazione")}
           <DropdownMenuShortcut>⇧⌘V</DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={run(onComment)}>
-          <MessageSquarePlus className="size-4" /> Nuovo commento
+          <MessageSquarePlus className="size-4" /> {t("Nuovo commento")}
           <DropdownMenuShortcut>⌥⌘M</DropdownMenuShortcut>
         </DropdownMenuItem>
 
@@ -159,33 +162,33 @@ export function DocContextMenu({
         <DropdownMenuItem
           onClick={run(() => editor.chain().focus().toggleBold().run())}
         >
-          <Bold className="size-4" /> Grassetto
+          <Bold className="size-4" /> {t("Grassetto")}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={run(() => editor.chain().focus().toggleItalic().run())}
         >
-          <Italic className="size-4" /> Corsivo
+          <Italic className="size-4" /> {t("Corsivo")}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={run(() => editor.chain().focus().toggleStrike().run())}
         >
-          <Strikethrough className="size-4" /> Barrato
+          <Strikethrough className="size-4" /> {t("Barrato")}
         </DropdownMenuItem>
         <DropdownMenuItem
           disabled={!hasSelection}
           onClick={run(() => editor.chain().focus().changeCase("upper").run())}
         >
-          <CaseUpper className="size-4" /> TUTTO MAIUSCOLO
+          <CaseUpper className="size-4" /> {t("TUTTO MAIUSCOLO")}
         </DropdownMenuItem>
         <DropdownMenuItem
           disabled={!hasSelection}
           onClick={run(() => editor.chain().focus().changeCase("lower").run())}
         >
-          <CaseLower className="size-4" /> tutto minuscolo
+          <CaseLower className="size-4" /> {t("tutto minuscolo")}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={run(() => {
-            const url = window.prompt("Indirizzo del link", "https://")
+            const url = window.prompt(t("Indirizzo del link"), "https://")
             if (url)
               editor
                 .chain()
@@ -195,60 +198,60 @@ export function DocContextMenu({
                 .run()
           })}
         >
-          <Link2 className="size-4" /> Link
+          <Link2 className="size-4" /> {t("Link")}
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
-            <Heading1 className="size-4" /> Trasforma in
+            <Heading1 className="size-4" /> {t("Trasforma in")}
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
             <DropdownMenuItem
               onClick={run(() => editor.chain().focus().setParagraph().run())}
             >
-              Paragrafo
+              {t("Paragrafo")}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={run(() =>
                 editor.chain().focus().toggleHeading({ level: 1 }).run()
               )}
             >
-              <Heading1 className="size-4" /> Titolo 1
+              <Heading1 className="size-4" /> {t("Titolo 1")}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={run(() =>
                 editor.chain().focus().toggleHeading({ level: 2 }).run()
               )}
             >
-              <Heading2 className="size-4" /> Titolo 2
+              <Heading2 className="size-4" /> {t("Titolo 2")}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={run(() =>
                 editor.chain().focus().toggleBulletList().run()
               )}
             >
-              <List className="size-4" /> Elenco
+              <List className="size-4" /> {t("Elenco")}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={run(() => editor.chain().focus().toggleTaskList().run())}
             >
-              <ListChecks className="size-4" /> Da fare
+              <ListChecks className="size-4" /> {t("Da fare")}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={run(() =>
                 editor.chain().focus().toggleBlockquote().run()
               )}
             >
-              <Quote className="size-4" /> Citazione
+              <Quote className="size-4" /> {t("Citazione")}
             </DropdownMenuItem>
           </DropdownMenuSubContent>
         </DropdownMenuSub>
 
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>
-            <Shapes className="size-4" /> Inserisci board
+            <Shapes className="size-4" /> {t("Inserisci board")}
           </DropdownMenuSubTrigger>
           <DropdownMenuSubContent className="max-h-64 overflow-y-auto">
             {boards.length ? (
@@ -262,7 +265,7 @@ export function DocContextMenu({
                 </DropdownMenuItem>
               ))
             ) : (
-              <DropdownMenuItem disabled>Nessuna board</DropdownMenuItem>
+              <DropdownMenuItem disabled>{t("Nessuna board")}</DropdownMenuItem>
             )}
           </DropdownMenuSubContent>
         </DropdownMenuSub>
@@ -287,6 +290,7 @@ function SynonymsMenu({
   onPick: (fn: () => void) => () => void
   onThesaurus: (word: string) => void
 }) {
+  const t = useT()
   const [target] = React.useState(() => wordAtSelection(editor))
   const [terms, setTerms] = React.useState<string[] | null>(null)
   const available = Boolean(thesaurusFor(language))
@@ -321,7 +325,7 @@ function SynonymsMenu({
   return (
     <DropdownMenuSub>
       <DropdownMenuSubTrigger>
-        <BookA className="size-4" /> Sinonimi
+        <BookA className="size-4" /> {t("Sinonimi")}
       </DropdownMenuSubTrigger>
       <DropdownMenuSubContent className="w-52">
         {terms === null ? null : terms.length ? (
@@ -349,11 +353,13 @@ function SynonymsMenu({
             </DropdownMenuItem>
           ))
         ) : (
-          <DropdownMenuItem disabled>Nessun suggerimento</DropdownMenuItem>
+          <DropdownMenuItem disabled>
+            {t("Nessun suggerimento")}
+          </DropdownMenuItem>
         )}
         {terms?.length ? <DropdownMenuSeparator /> : null}
         <DropdownMenuItem onClick={() => onThesaurus(target.text)}>
-          <BookA className="size-4" /> Thesaurus…
+          <BookA className="size-4" /> {t("Thesaurus…")}
           <DropdownMenuShortcut>⇧F7</DropdownMenuShortcut>
         </DropdownMenuItem>
       </DropdownMenuSubContent>

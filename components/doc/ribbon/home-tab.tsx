@@ -95,6 +95,7 @@ import { AddinsGroup } from "../addins/addins-group"
 import { StyleGallery, type StyleTools } from "../styles-panel"
 import { resolveStyle, styleFontLabel, styleFontStack } from "@/lib/doc-styles"
 
+import { useT } from "@/lib/i18n/client"
 /** Menu di un comando «diviso»: la parte grande applica, la freccia sceglie */
 function SplitColor({
   icon,
@@ -115,6 +116,7 @@ function SplitColor({
   onPick: (value: string) => void
   active?: boolean
 }) {
+  const t = useT()
   return (
     <span className="flex items-center">
       <RibbonButton
@@ -136,7 +138,7 @@ function SplitColor({
         className="w-[196px]"
         trigger={
           <RibbonButton
-            title={`${title}: scegli il colore`}
+            title={t("{title}: scegli il colore", { title })}
             className="w-3.5 rounded-l-none"
             icon={<ChevronDown className="size-3 opacity-60" />}
           />
@@ -165,6 +167,7 @@ function SplitMenu({
   menuClassName?: string
   children: React.ReactNode
 }) {
+  const t = useT()
   return (
     <span className="flex items-center">
       <RibbonButton
@@ -178,7 +181,7 @@ function SplitMenu({
         className={menuClassName ?? "w-56"}
         trigger={
           <RibbonButton
-            title={`${title}: altre opzioni`}
+            title={t("{title}: altre opzioni", { title })}
             className="w-3.5 rounded-l-none"
             icon={<ChevronDown className="size-3 opacity-60" />}
           />
@@ -292,6 +295,7 @@ async function pasteRich(ctx: RibbonCtx) {
 }
 
 export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
+  const t = useT()
   const { editor, st, theme, painter, dictation } = ctx
   const [fontColor, setFontColor] = React.useState(TEXT_COLORS[1].value)
   const [highlight, setHighlight] = React.useState(HIGHLIGHTS[4].value)
@@ -344,16 +348,16 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
 
   return (
     <>
-      <RibbonGroup label="Annulla">
+      <RibbonGroup label={t("Annulla||annulla l'ultima modifica")}>
         <RibbonRows>
           <RibbonButton
-            title="Annulla ⌘Z"
+            title={t("Annulla ⌘Z")}
             disabled={!st.canUndo}
             icon={<Undo2 className="size-4" />}
             onClick={() => chain().undo().run()}
           />
           <RibbonButton
-            title="Ripristina ⇧⌘Z"
+            title={t("Ripristina ⇧⌘Z")}
             disabled={!st.canRedo}
             icon={<Redo2 className="size-4" />}
             onClick={() => chain().redo().run()}
@@ -361,12 +365,12 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label="Appunti">
+      <RibbonGroup label={t("Appunti")}>
         <span className="flex flex-col items-center">
           <RibbonButton
             large
-            label="Incolla"
-            title="Incolla ⌘V"
+            label={t("Incolla")}
+            title={t("Incolla ⌘V")}
             icon={<ClipboardPaste className="size-5" />}
             onClick={() => void pasteRich(ctx)}
             className="h-[42px]"
@@ -375,14 +379,15 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
             className="w-60"
             trigger={
               <RibbonButton
-                title="Opzioni incolla"
+                title={t("Opzioni incolla")}
                 className="h-4 w-full"
                 icon={<ChevronDown className="size-3 opacity-60" />}
               />
             }
           >
             <DropdownMenuItem onClick={() => void pasteRich(ctx)}>
-              <ClipboardPaste className="size-4" /> Mantieni formattazione
+              <ClipboardPaste className="size-4" />{" "}
+              {t("Mantieni formattazione")}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={async () => {
@@ -393,14 +398,14 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                 }
               }}
             >
-              <ClipboardType className="size-4" /> Mantieni solo il testo
+              <ClipboardType className="size-4" /> {t("Mantieni solo il testo")}
             </DropdownMenuItem>
           </RibbonMenu>
         </span>
         <RibbonRows>
           <RibbonButton
             compact
-            title="Taglia ⌘X"
+            title={t("Taglia ⌘X")}
             icon={<Scissors className="size-4" />}
             onClick={() => {
               editor.commands.focus()
@@ -409,7 +414,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
           />
           <RibbonButton
             compact
-            title="Copia ⌘C"
+            title={t("Copia ⌘C")}
             icon={<Copy className="size-4" />}
             onClick={() => {
               editor.commands.focus()
@@ -420,8 +425,8 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
             compact
             title={
               painter.armed
-                ? "Seleziona il testo da formattare (⎋ annulla)"
-                : "Copia formato"
+                ? t("Seleziona il testo da formattare (⎋ annulla)")
+                : t("Copia formato")
             }
             active={painter.armed}
             icon={<Paintbrush className="size-4" />}
@@ -430,7 +435,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label="Carattere">
+      <RibbonGroup label={t("Carattere")}>
         <RibbonRows>
           <RibbonRow>
             <FontCombo
@@ -447,36 +452,36 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
             />
             <SizeCombo pt={pt} onPick={setPt} />
             <RibbonButton
-              title="Aumenta dimensione carattere"
+              title={t("Aumenta dimensione carattere")}
               icon={<AArrowUp className="size-4" />}
               onClick={() => setPt(stepSize(pt, 1))}
             />
             <RibbonButton
-              title="Riduci dimensione carattere"
+              title={t("Riduci dimensione carattere")}
               icon={<AArrowDown className="size-4" />}
               onClick={() => setPt(stepSize(pt, -1))}
             />
             <RibbonButton
-              title="Cancella tutta la formattazione"
+              title={t("Cancella tutta la formattazione")}
               icon={<RemoveFormatting className="size-4" />}
               onClick={() => clearFormatting(editor)}
             />
           </RibbonRow>
           <RibbonRow>
             <RibbonButton
-              title="Grassetto ⌘B"
+              title={t("Grassetto ⌘B")}
               active={st.bold}
               icon={<Bold className="size-4" />}
               onClick={() => chain().toggleBold().run()}
             />
             <RibbonButton
-              title="Corsivo ⌘I"
+              title={t("Corsivo ⌘I")}
               active={st.italic}
               icon={<Italic className="size-4" />}
               onClick={() => chain().toggleItalic().run()}
             />
             <SplitMenu
-              title="Sottolineato ⌘U"
+              title={t("Sottolineato ⌘U")}
               active={underlined}
               icon={<Underline className="size-4" />}
               onApply={() =>
@@ -489,7 +494,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
               }
               menuClassName="w-52"
             >
-              <DropdownMenuLabel>Stile sottolineatura</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("Stile sottolineatura")}</DropdownMenuLabel>
               {UNDERLINE_STYLES.map((u) => (
                 <DropdownMenuItem
                   key={u.value}
@@ -519,7 +524,9 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                 </DropdownMenuItem>
               ))}
               <DropdownMenuSeparator />
-              <DropdownMenuLabel>Colore sottolineatura</DropdownMenuLabel>
+              <DropdownMenuLabel>
+                {t("Colore sottolineatura")}
+              </DropdownMenuLabel>
               <SwatchGrid
                 colors={TEXT_COLORS}
                 value={decorationColor}
@@ -537,19 +544,19 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
               />
             </SplitMenu>
             <RibbonButton
-              title="Barrato"
+              title={t("Barrato")}
               active={st.strike}
               icon={<Strikethrough className="size-4" />}
               onClick={() => chain().toggleStrike().run()}
             />
             <RibbonButton
-              title="Pedice"
+              title={t("Pedice")}
               active={st.subscript}
               icon={<Subscript className="size-4" />}
               onClick={() => chain().toggleSubscript().run()}
             />
             <RibbonButton
-              title="Apice"
+              title={t("Apice")}
               active={st.superscript}
               icon={<Superscript className="size-4" />}
               onClick={() => chain().toggleSuperscript().run()}
@@ -558,26 +565,26 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
               className="w-56"
               trigger={
                 <RibbonButton
-                  title="Maiuscole/minuscole"
+                  title={t("Maiuscole/minuscole")}
                   chevron
                   icon={<CaseSensitive className="size-4" />}
                 />
               }
             >
               <DropdownMenuItem onClick={() => setCase("sentence")}>
-                Normale frase.
+                {t("Normale frase.")}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setCase("title")}>
-                Tutte Iniziali Maiuscole
+                {t("Tutte Iniziali Maiuscole")}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setCase("lower")}>
-                tutto minuscolo
+                {t("tutto minuscolo")}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setCase("upper")}>
-                TUTTO MAIUSCOLO
+                {t("TUTTO MAIUSCOLO")}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => setCase("toggle")}>
-                iNVERTI mAIUSCOLE/mINUSCOLE
+                {t("iNVERTI mAIUSCOLE/mINUSCOLE")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -587,7 +594,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                 className={cn(st.smallCaps && "bg-accent")}
               >
                 <span style={{ fontVariantCaps: "small-caps" }}>
-                  Maiuscoletto
+                  {t("Maiuscoletto")}
                 </span>
               </DropdownMenuItem>
             </RibbonMenu>
@@ -595,7 +602,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
               className="w-[260px]"
               trigger={
                 <RibbonButton
-                  title="Effetti testo e tipografia"
+                  title={t("Effetti testo e tipografia")}
                   chevron
                   active={Boolean(
                     st.textShadow || st.textStroke || st.textFill
@@ -604,7 +611,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                 />
               }
             >
-              <DropdownMenuLabel>Effetti testo</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("Effetti testo")}</DropdownMenuLabel>
               <PickGrid
                 items={TEXT_EFFECT_PRESETS}
                 columns={4}
@@ -641,20 +648,20 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                           : undefined,
                     }}
                   >
-                    A
+                    {t("A")}
                   </span>
                 )}
               />
               <DropdownMenuSeparator />
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger>Contorno</DropdownMenuSubTrigger>
+                <DropdownMenuSubTrigger>{t("Contorno")}</DropdownMenuSubTrigger>
                 <DropdownMenuSubContent className="w-[196px]">
                   <DropdownMenuItem
                     onClick={() =>
                       effects({ textStroke: null, textFill: null })
                     }
                   >
-                    Nessun contorno
+                    {t("Nessun contorno")}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() =>
@@ -664,9 +671,11 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                       })
                     }
                   >
-                    Solo contorno (vuoto)
+                    {t("Solo contorno (vuoto)")}
                   </DropdownMenuItem>
-                  <DropdownMenuLabel>Colore del contorno</DropdownMenuLabel>
+                  <DropdownMenuLabel>
+                    {t("Colore del contorno")}
+                  </DropdownMenuLabel>
                   <SwatchGrid
                     colors={TEXT_COLORS.slice(1)}
                     value={st.textStroke.split(" ").slice(1).join(" ")}
@@ -677,7 +686,9 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger>Ombreggiatura</DropdownMenuSubTrigger>
+                <DropdownMenuSubTrigger>
+                  {t("Ombreggiatura")}
+                </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent className="w-52">
                   {SHADOW_PRESETS.map((shadow) => (
                     <DropdownMenuItem
@@ -691,7 +702,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                         className="w-5 text-center text-base font-bold"
                         style={{ textShadow: shadow.value ?? undefined }}
                       >
-                        A
+                        {t("A")}
                       </span>
                       {shadow.label}
                     </DropdownMenuItem>
@@ -699,7 +710,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger>Bagliore</DropdownMenuSubTrigger>
+                <DropdownMenuSubTrigger>{t("Bagliore")}</DropdownMenuSubTrigger>
                 <DropdownMenuSubContent className="w-48">
                   {GLOW_COLORS.map((glow) => (
                     <DropdownMenuItem
@@ -720,7 +731,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                             : undefined,
                         }}
                       >
-                        A
+                        {t("A")}
                       </span>
                       {glow.label}
                     </DropdownMenuItem>
@@ -728,7 +739,9 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger>Stili numerici</DropdownMenuSubTrigger>
+                <DropdownMenuSubTrigger>
+                  {t("Stili numerici")}
+                </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent className="w-60">
                   {NUMERIC_STYLES.map((n) => (
                     <DropdownMenuItem
@@ -750,7 +763,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger>Legature</DropdownMenuSubTrigger>
+                <DropdownMenuSubTrigger>{t("Legature")}</DropdownMenuSubTrigger>
                 <DropdownMenuSubContent className="w-60">
                   {LIGATURE_STYLES.map((l) => (
                     <DropdownMenuItem
@@ -766,7 +779,9 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
               <DropdownMenuSub>
-                <DropdownMenuSubTrigger>Set stilistici</DropdownMenuSubTrigger>
+                <DropdownMenuSubTrigger>
+                  {t("Set stilistici")}
+                </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent className="w-56">
                   {STYLISTIC_SETS.map((set) => (
                     <DropdownMenuItem
@@ -785,11 +800,11 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
               <DropdownMenuItem
                 onClick={() => chain().clearTextEffects().run()}
               >
-                <RemoveFormatting /> Cancella effetti testo
+                <RemoveFormatting /> {t("Cancella effetti testo")}
               </DropdownMenuItem>
             </RibbonMenu>
             <SplitColor
-              title="Colore evidenziazione testo"
+              title={t("Colore evidenziazione testo")}
               icon={<Highlighter className="size-4" />}
               color={highlight}
               colors={HIGHLIGHTS}
@@ -808,7 +823,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
               }}
             />
             <SplitColor
-              title="Colore carattere"
+              title={t("Colore carattere")}
               icon={<Baseline className="size-4" />}
               color={fontColor}
               colors={TEXT_COLORS}
@@ -825,17 +840,19 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label="Paragrafo">
+      <RibbonGroup label={t("Paragrafo")}>
         <RibbonRows>
           <RibbonRow>
             <SplitMenu
-              title="Elenco puntato"
+              title={t("Elenco puntato")}
               active={st.bulletList}
               icon={<List className="size-4" />}
               onApply={() => chain().toggleBulletList().run()}
               menuClassName="w-[236px]"
             >
-              <DropdownMenuLabel>Raccolta punti elenco</DropdownMenuLabel>
+              <DropdownMenuLabel>
+                {t("Raccolta punti elenco")}
+              </DropdownMenuLabel>
               <PickGrid
                 items={BULLET_STYLES}
                 columns={4}
@@ -856,19 +873,19 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                   <DropdownMenuItem
                     onClick={() => chain().toggleBulletList().run()}
                   >
-                    <Minus /> Nessun elenco
+                    <Minus /> {t("Nessun elenco")}
                   </DropdownMenuItem>
                 </>
               ) : null}
             </SplitMenu>
             <SplitMenu
-              title="Elenco numerato"
+              title={t("Elenco numerato")}
               active={st.orderedList}
               icon={<ListOrdered className="size-4" />}
               onApply={() => chain().toggleOrderedList().run()}
               menuClassName="w-[260px]"
             >
-              <DropdownMenuLabel>Raccolta numerazione</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("Raccolta numerazione")}</DropdownMenuLabel>
               <PickGrid
                 items={NUMBER_STYLES}
                 columns={4}
@@ -884,7 +901,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                   <DropdownMenuSeparator />
                   <div className="flex items-center justify-between gap-2 px-2 py-1.5 text-xs">
                     <span className="text-muted-foreground">
-                      Imposta valore numerazione
+                      {t("Imposta valore numerazione")}
                     </span>
                     <input
                       type="number"
@@ -904,7 +921,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                   <DropdownMenuItem
                     onClick={() => chain().setListStart(1).run()}
                   >
-                    Ricomincia da 1
+                    {t("Ricomincia da 1")}
                   </DropdownMenuItem>
                 </>
               ) : null}
@@ -913,14 +930,14 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
               className="w-[284px]"
               trigger={
                 <RibbonButton
-                  title="Elenco a più livelli"
+                  title={t("Elenco a più livelli")}
                   chevron
                   active={Boolean(st.listLevels)}
                   icon={<ListTree className="size-4" />}
                 />
               }
             >
-              <DropdownMenuLabel>Raccolta elenchi</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("Raccolta elenchi")}</DropdownMenuLabel>
               <PickGrid
                 items={LIST_LEVELS}
                 columns={3}
@@ -936,38 +953,38 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
               <DropdownMenuItem
                 onClick={() => chain().sinkListItem("listItem").run()}
               >
-                <ListIndentIncrease /> Livello successivo (Tab)
+                <ListIndentIncrease /> {t("Livello successivo (Tab)")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => chain().liftListItem("listItem").run()}
               >
-                <ListIndentDecrease /> Livello precedente (⇧Tab)
+                <ListIndentDecrease /> {t("Livello precedente (⇧Tab)")}
               </DropdownMenuItem>
             </RibbonMenu>
             <RibbonButton
-              title="Elenco di controllo"
+              title={t("Elenco di controllo")}
               active={st.taskList}
               icon={<ListChecks className="size-4" />}
               onClick={() => chain().toggleTaskList().run()}
             />
             <RibbonButton
-              title="Riduci rientro ⇧Tab"
+              title={t("Riduci rientro ⇧Tab")}
               icon={<ListIndentDecrease className="size-4" />}
               onClick={() => chain().outdent().run()}
             />
             <RibbonButton
-              title="Aumenta rientro Tab"
+              title={t("Aumenta rientro Tab")}
               icon={<ListIndentIncrease className="size-4" />}
               onClick={() => chain().indent().run()}
             />
             <RibbonButton
-              title="Ordina: paragrafi, voci di elenco o righe di tabella"
+              title={t("Ordina: paragrafi, voci di elenco o righe di tabella")}
               icon={<ArrowDownAZ className="size-4" />}
               onClick={() => setSortOpen(true)}
             />
             <RibbonButton
               data-safe=""
-              title="Mostra/nascondi segni di formattazione ¶"
+              title={t("Mostra/nascondi segni di formattazione ¶")}
               active={theme.marks}
               icon={<Pilcrow className="size-4" />}
               onClick={() => ctx.setTheme({ marks: !theme.marks })}
@@ -975,25 +992,25 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
           </RibbonRow>
           <RibbonRow>
             <RibbonButton
-              title="Allinea a sinistra"
+              title={t("Allinea a sinistra")}
               active={st.align === "left"}
               icon={<AlignLeft className="size-4" />}
               onClick={() => chain().setTextAlign("left").run()}
             />
             <RibbonButton
-              title="Centra"
+              title={t("Centra")}
               active={st.align === "center"}
               icon={<AlignCenter className="size-4" />}
               onClick={() => chain().setTextAlign("center").run()}
             />
             <RibbonButton
-              title="Allinea a destra"
+              title={t("Allinea a destra")}
               active={st.align === "right"}
               icon={<AlignRight className="size-4" />}
               onClick={() => chain().setTextAlign("right").run()}
             />
             <RibbonButton
-              title="Giustifica"
+              title={t("Giustifica")}
               active={st.align === "justify"}
               icon={<AlignJustify className="size-4" />}
               onClick={() => chain().setTextAlign("justify").run()}
@@ -1002,13 +1019,13 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
               className="w-44"
               trigger={
                 <RibbonButton
-                  title="Interlinea"
+                  title={t("Interlinea")}
                   chevron
                   icon={<UnfoldVertical className="size-4" />}
                 />
               }
             >
-              <DropdownMenuLabel>Interlinea</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("Interlinea")}</DropdownMenuLabel>
               {LINE_HEIGHTS.map((l) => (
                 <DropdownMenuItem
                   key={l.value}
@@ -1019,7 +1036,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                 </DropdownMenuItem>
               ))}
               <DropdownMenuItem onClick={() => chain().unsetLineHeight().run()}>
-                Predefinita dello stile
+                {t("Predefinita dello stile")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -1030,8 +1047,8 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                 }
               >
                 {before > 0
-                  ? "Rimuovi spazio prima del paragrafo"
-                  : "Aggiungi spazio prima del paragrafo"}
+                  ? t("Rimuovi spazio prima del paragrafo")
+                  : t("Aggiungi spazio prima del paragrafo")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() =>
@@ -1041,8 +1058,8 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                 }
               >
                 {after > 0
-                  ? "Rimuovi spazio dopo il paragrafo"
-                  : "Aggiungi spazio dopo il paragrafo"}
+                  ? t("Rimuovi spazio dopo il paragrafo")
+                  : t("Aggiungi spazio dopo il paragrafo")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -1050,11 +1067,11 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                   ctx.openStyleDialog({ mode: "modify", id: st.styleId })
                 }
               >
-                Opzioni interlinea dello stile…
+                {t("Opzioni interlinea dello stile…")}
               </DropdownMenuItem>
             </RibbonMenu>
             <SplitColor
-              title="Sfondo"
+              title={t("Sfondo")}
               icon={<PaintBucket className="size-4" />}
               color={shading}
               colors={SHADINGS}
@@ -1076,21 +1093,21 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
               className="w-48"
               trigger={
                 <RibbonButton
-                  title="Bordi"
+                  title={t("Bordi")}
                   chevron
                   active={st.paragraphBorder !== "none"}
                   icon={<SquareDashed className="size-4" />}
                 />
               }
             >
-              <DropdownMenuLabel>Bordi del paragrafo</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("Bordi del paragrafo")}</DropdownMenuLabel>
               {(
                 [
-                  ["none", "Nessun bordo"],
-                  ["bottom", "Bordo inferiore"],
-                  ["top", "Bordo superiore"],
-                  ["left", "Barra a sinistra"],
-                  ["box", "Bordo esterno"],
+                  ["none", t("Nessun bordo")],
+                  ["bottom", t("Bordo inferiore")],
+                  ["top", t("Bordo superiore")],
+                  ["left", t("Barra a sinistra")],
+                  ["box", t("Bordo esterno")],
                 ] as [ParagraphBorder, string][]
               ).map(([value, label]) => (
                 <DropdownMenuItem
@@ -1131,14 +1148,14 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
               <DropdownMenuItem
                 onClick={() => chain().setHorizontalRule().run()}
               >
-                <Minus /> Linea orizzontale
+                <Minus /> {t("Linea orizzontale")}
               </DropdownMenuItem>
             </RibbonMenu>
           </RibbonRow>
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label="Stili">
+      <RibbonGroup label={t("Stili")}>
         <StyleGallery
           tools={styleTools}
           onOpenPane={() => ctx.setStylesPane(true)}
@@ -1146,21 +1163,21 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
         <RibbonButton
           large
           data-safe=""
-          label="Riquadro Stili"
-          title="Tutti gli stili: applica, modifica, crea"
+          label={t("Riquadro Stili")}
+          title={t("Tutti gli stili: applica, modifica, crea")}
           active={ctx.stylesPane}
           icon={<Palette className="size-5" />}
           onClick={() => ctx.setStylesPane(!ctx.stylesPane)}
         />
       </RibbonGroup>
 
-      <RibbonGroup label="Modifica">
+      <RibbonGroup label={t("Modifica")}>
         <RibbonRows>
           <RibbonButton
             compact
             data-safe=""
-            label="Trova"
-            title="Trova ⌘F"
+            label={t("Trova")}
+            title={t("Trova ⌘F")}
             icon={<Search className="size-4" />}
             onClick={() => ctx.onFind("find")}
             className="justify-start"
@@ -1168,8 +1185,8 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
           <RibbonButton
             compact
             data-safe=""
-            label="Sostituisci"
-            title="Sostituisci"
+            label={t("Sostituisci")}
+            title={t("Sostituisci")}
             icon={<Replace className="size-4" />}
             onClick={() => ctx.onFind("replace")}
             className="justify-start"
@@ -1179,7 +1196,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
             trigger={
               <RibbonButton
                 compact
-                label="Seleziona"
+                label={t("Seleziona")}
                 chevron
                 icon={<MousePointer2 className="size-4" />}
                 className="justify-start"
@@ -1187,26 +1204,30 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
             }
           >
             <DropdownMenuItem onClick={() => chain().selectAll().run()}>
-              <TextSelect className="size-4" /> Seleziona tutto
+              <TextSelect className="size-4" /> {t("Seleziona tutto")}
               <span className="ml-auto text-xs text-muted-foreground">⌘A</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={selectObject}>
-              <MousePointer2 className="size-4" /> Seleziona oggetti
+              <MousePointer2 className="size-4" /> {t("Seleziona oggetti")}
             </DropdownMenuItem>
           </RibbonMenu>
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label="Voce">
+      <RibbonGroup label={t("Voce")}>
         <RibbonButton
           large
-          label={dictation.listening ? "In ascolto…" : "Dettatura"}
+          label={dictation.listening ? t("In ascolto…") : t("Dettatura")}
           title={
             dictation.supported
               ? dictation.listening
-                ? "Interrompi la dettatura"
-                : "Detta il testo al microfono. Punteggiatura a voce: «virgola», «punto», «a capo», «nuovo paragrafo»"
-              : "Dettatura non disponibile in questo browser: usa Chrome, Edge o Safari"
+                ? t("Interrompi la dettatura")
+                : t(
+                    "Detta il testo al microfono. Punteggiatura a voce: «virgola», «punto», «a capo», «nuovo paragrafo»"
+                  )
+              : t(
+                  "Dettatura non disponibile in questo browser: usa Chrome, Edge o Safari"
+                )
           }
           disabled={!dictation.supported}
           active={dictation.listening}

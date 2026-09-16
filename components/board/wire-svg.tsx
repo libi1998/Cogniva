@@ -4,6 +4,7 @@ import * as React from "react"
 import { ICONS } from "@/lib/icon-library"
 import type { BoardNode, WireKind } from "@/lib/types"
 
+import { useT } from "@/lib/i18n/client"
 /* Palette a bassa fedeltà: le variabili vengono risolte anche nell'SVG esportato */
 const C = {
   surface: "var(--card)",
@@ -129,6 +130,7 @@ export function WireSvg({
   accentText: string
   radius: number
 }) {
+  const t = useT()
   const kind = (node.wire ?? "button") as WireKind
   const w = node.w
   const h = node.h
@@ -326,7 +328,7 @@ export function WireSvg({
             />
           ) : null}
           <Txt x={px} y={top + fh / 2} size={fs} font={font} color={C.faint}>
-            {String(prop(node, "placeholder", "Testo…"))}
+            {String(prop(node, "placeholder", t("Testo…")))}
           </Txt>
           {kind === "select" ? (
             <Icon
@@ -369,7 +371,7 @@ export function WireSvg({
             strokeWidth={1.5}
           />
           <Txt x={10} y={top + 16} size={fs} font={font} color={C.faint}>
-            {String(prop(node, "placeholder", "Scrivi…"))}
+            {String(prop(node, "placeholder", t("Scrivi…")))}
           </Txt>
         </>
       )
@@ -756,7 +758,7 @@ export function WireSvg({
             font={font}
             color="#fff"
           >
-            Apri
+            {t("Apri")}
           </Txt>
         </>
       )
@@ -845,7 +847,7 @@ export function WireSvg({
             font={font}
             color={C.strong}
           >
-            {label || "Settembre"}
+            {label || t("Settembre")}
           </Txt>
           <Icon
             name="chevron-right"
@@ -1094,7 +1096,7 @@ export function WireSvg({
             font={font}
             color={C.faint}
           >
-            Annulla
+            {t("Annulla")}
           </Txt>
           <rect
             x={w - 100}
@@ -1113,7 +1115,7 @@ export function WireSvg({
             font={font}
             color="#fff"
           >
-            Conferma
+            {t("Conferma")}
           </Txt>
         </>
       )

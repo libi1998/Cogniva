@@ -1,6 +1,7 @@
 import type { TranslateRequest, TranslateResponse } from "./translate.worker"
 import { MODEL_DOWNLOAD_MB, translateRoute } from "./models"
 
+import { tr } from "@/lib/i18n/client"
 export type LocalProgress =
   | { phase: "download"; fraction: number; model?: string }
   | { phase: "translate"; done: number; total: number }
@@ -50,13 +51,13 @@ function getWorker() {
         job.resolve(message.texts)
       } else {
         waiting.delete(message.id)
-        job.reject(new Error(message.message))
+        job.reject(new Error(tr(message.message)))
       }
     }
   )
   worker.addEventListener("error", (event) => {
     for (const [id, job] of waiting) {
-      job.reject(new Error(event.message || "Il traduttore si è fermato"))
+      job.reject(new Error(event.message || tr("Il traduttore si è fermato")))
       waiting.delete(id)
     }
     worker?.terminate()
@@ -80,7 +81,9 @@ export function translateLocally(
   const steps = translateRoute(source, target)
   if (!steps) {
     return Promise.reject(
-      new Error("Questa coppia di lingue non ha un modello sul dispositivo.")
+      new Error(
+        tr("Questa coppia di lingue non ha un modello sul dispositivo.")
+      )
     )
   }
   if (!steps.length) return Promise.resolve(texts)
@@ -97,7 +100,7 @@ export function cancelLocalTranslation() {
   worker.terminate()
   worker = null
   for (const [id, job] of waiting) {
-    job.reject(new DOMException("Traduzione annullata", "AbortError"))
+    job.reject(new DOMException(tr("Traduzione annullata"), "AbortError"))
     waiting.delete(id)
   }
 }

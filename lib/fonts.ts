@@ -9,6 +9,7 @@ import {
   JetBrains_Mono,
 } from "next/font/google"
 import { FONT_CATALOG } from "./font-catalog"
+import { tr } from "@/lib/i18n/client"
 
 // Inter è anche il carattere dell'interfaccia (tema scelto nel preset)
 const inter = Inter({
@@ -86,12 +87,42 @@ export type FontKey = string
 export type FontGroup = "word" | "sans" | "serif" | "mono" | "display" | "hand"
 
 export const FONT_GROUPS: { value: FontGroup; label: string }[] = [
-  { value: "word", label: "Compatibili con Word" },
-  { value: "sans", label: "Sans serif" },
-  { value: "serif", label: "Serif" },
-  { value: "mono", label: "Monospazio" },
-  { value: "display", label: "Decorativi" },
-  { value: "hand", label: "Scritti a mano" },
+  {
+    value: "word",
+    get label() {
+      return tr("Compatibili con i .docx")
+    },
+  },
+  {
+    value: "sans",
+    get label() {
+      return tr("Sans serif")
+    },
+  },
+  {
+    value: "serif",
+    get label() {
+      return tr("Serif")
+    },
+  },
+  {
+    value: "mono",
+    get label() {
+      return tr("Monospazio")
+    },
+  },
+  {
+    value: "display",
+    get label() {
+      return tr("Decorativi")
+    },
+  },
+  {
+    value: "hand",
+    get label() {
+      return tr("Scritti a mano")
+    },
+  },
 ]
 
 export type FontOption = {
@@ -110,7 +141,9 @@ const BUILT_IN: FontOption[] = [
   {
     key: "inter",
     label: "Inter",
-    hint: "Neutro",
+    get hint() {
+      return tr("Neutro")
+    },
     stack: "var(--font-sans), ui-sans-serif, system-ui, sans-serif",
     scale: 1,
     group: "sans",
@@ -119,7 +152,9 @@ const BUILT_IN: FontOption[] = [
   {
     key: "manrope",
     label: "Manrope",
-    hint: "Classico",
+    get hint() {
+      return tr("Classico")
+    },
     stack: "var(--font-manrope), ui-sans-serif, system-ui, sans-serif",
     scale: 1,
     group: "sans",
@@ -128,7 +163,9 @@ const BUILT_IN: FontOption[] = [
   {
     key: "space",
     label: "Space Grotesk",
-    hint: "Tecnico",
+    get hint() {
+      return tr("Tecnico")
+    },
     stack: "var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif",
     scale: 1,
     group: "sans",
@@ -137,7 +174,9 @@ const BUILT_IN: FontOption[] = [
   {
     key: "poppins",
     label: "Poppins",
-    hint: "Geometrico",
+    get hint() {
+      return tr("Geometrico")
+    },
     stack: "var(--font-poppins), ui-sans-serif, system-ui, sans-serif",
     scale: 0.97,
     group: "sans",
@@ -146,7 +185,9 @@ const BUILT_IN: FontOption[] = [
   {
     key: "lora",
     label: "Lora",
-    hint: "Serif",
+    get hint() {
+      return tr("Serif")
+    },
     stack: "var(--font-lora), ui-serif, Georgia, serif",
     scale: 0.98,
     group: "serif",
@@ -155,7 +196,9 @@ const BUILT_IN: FontOption[] = [
   {
     key: "caveat",
     label: "Caveat",
-    hint: "Manoscritto",
+    get hint() {
+      return tr("Manoscritto")
+    },
     stack: "var(--font-caveat), ui-serif, cursive",
     scale: 1.28,
     group: "hand",
@@ -164,7 +207,9 @@ const BUILT_IN: FontOption[] = [
   {
     key: "architects",
     label: "Architects Daughter",
-    hint: "Schizzo",
+    get hint() {
+      return tr("Schizzo")
+    },
     stack: "var(--font-architects), ui-serif, cursive",
     scale: 0.94,
     group: "hand",
@@ -173,7 +218,9 @@ const BUILT_IN: FontOption[] = [
   {
     key: "jetbrains",
     label: "JetBrains Mono",
-    hint: "Monospazio",
+    get hint() {
+      return tr("Monospazio")
+    },
     stack: "var(--font-jetbrains), ui-monospace, monospace",
     scale: 0.94,
     group: "mono",
@@ -181,14 +228,14 @@ const BUILT_IN: FontOption[] = [
   },
 ]
 
-const HINTS: Record<FontGroup, string> = {
+const hints = (): Record<FontGroup, string> => ({
   word: "",
-  sans: "Sans serif",
-  serif: "Serif",
-  mono: "Monospazio",
-  display: "Decorativo",
-  hand: "A mano",
-}
+  sans: tr("Sans serif"),
+  serif: tr("Serif"),
+  mono: tr("Monospazio"),
+  display: tr("Decorativo"),
+  hand: tr("A mano"),
+})
 
 /** Tutti i caratteri, in ordine alfabetico dentro a ogni gruppo */
 export const FONTS: FontOption[] = [
@@ -196,7 +243,11 @@ export const FONTS: FontOption[] = [
   ...FONT_CATALOG.map((f) => ({
     key: f.key,
     label: f.label,
-    hint: f.group === "word" ? `come ${f.label}` : HINTS[f.group],
+    get hint() {
+      return f.group === "word"
+        ? tr("come {name}", { name: f.label })
+        : hints()[f.group]
+    },
     stack: f.stack,
     scale: f.scale,
     group: f.group,
@@ -205,7 +256,8 @@ export const FONTS: FontOption[] = [
 ].sort((a, b) => {
   const ga = FONT_GROUPS.findIndex((g) => g.value === a.group)
   const gb = FONT_GROUPS.findIndex((g) => g.value === b.group)
-  return ga - gb || a.label.localeCompare(b.label, "it")
+  // i nomi dei caratteri sono nomi propri: ordine uguale in ogni lingua
+  return ga - gb || a.label.localeCompare(b.label, "en")
 })
 
 export const fontMap: Record<string, FontOption> = Object.fromEntries(

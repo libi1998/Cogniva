@@ -30,6 +30,8 @@ import { useStore } from "@/lib/store"
 import type { CitationStyle, DocSource, SourceKind } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
+import { useT, useRegion } from "@/lib/i18n/client"
+import { tr } from "@/lib/i18n/client"
 const NO_SOURCES: DocSource[] = []
 
 export function useDocSources(fileId: string) {
@@ -44,10 +46,10 @@ function fieldsFor(kind: SourceKind) {
   return {
     publisher:
       kind === "article"
-        ? "Rivista"
+        ? tr("Rivista")
         : kind === "web"
-          ? "Nome del sito"
-          : "Editore",
+          ? tr("Nome del sito")
+          : tr("Editore"),
     showCity: kind === "book" || kind === "report",
     showVolume: kind === "article",
     showPages: kind === "article",
@@ -96,6 +98,8 @@ export function SourcesDialog({
   /** se presente, il pulsante «Cita» inserisce la fonte nel testo */
   onCite?: (id: string) => void
 }) {
+  const t = useT()
+  const region = useRegion()
   const sources = useDocSources(fileId)
   const update = useStore((s) => s.updateDocSources)
   const [picked, setPicked] = React.useState<string | null>(null)
@@ -132,10 +136,11 @@ export function SourcesDialog({
     >
       <DialogContent className="max-h-[88dvh] overflow-hidden p-0 sm:max-w-3xl">
         <DialogHeader className="border-b border-border px-5 pt-4 pb-3">
-          <DialogTitle>Gestisci fonti</DialogTitle>
+          <DialogTitle>{t("Gestisci fonti")}</DialogTitle>
           <DialogDescription>
-            Le fonti di questo documento: citale nel testo e raccoglile nella
-            bibliografia.
+            {t(
+              "Le fonti di questo documento: citale nel testo e raccoglile nella bibliografia."
+            )}
           </DialogDescription>
         </DialogHeader>
 
@@ -160,7 +165,7 @@ export function SourcesDialog({
                 ))
               ) : (
                 <p className="px-2 py-3 text-xs text-muted-foreground">
-                  Nessuna fonte. Aggiungi la prima.
+                  {t("Nessuna fonte. Aggiungi la prima.")}
                 </p>
               )}
             </div>
@@ -170,7 +175,7 @@ export function SourcesDialog({
                 className="h-8 flex-1 gap-1.5 text-xs"
                 onClick={create}
               >
-                <BookPlus className="size-3.5" /> Nuova fonte
+                <BookPlus className="size-3.5" /> {t("Nuova fonte")}
               </Button>
               <Button
                 size="sm"
@@ -178,8 +183,8 @@ export function SourcesDialog({
                 className="h-8 text-xs text-destructive hover:text-destructive"
                 disabled={!current}
                 onClick={remove}
-                title="Elimina la fonte"
-                aria-label="Elimina la fonte"
+                title={t("Elimina la fonte")}
+                aria-label={t("Elimina la fonte")}
               >
                 <Trash2 className="size-3.5" />
               </Button>
@@ -189,7 +194,7 @@ export function SourcesDialog({
           {current ? (
             <div className="max-h-[62dvh] space-y-3 overflow-y-auto p-5">
               <div className="grid grid-cols-2 gap-3">
-                <Field label="Tipo di fonte">
+                <Field label={t("Tipo di fonte")}>
                   <Select
                     items={SOURCE_KINDS}
                     value={current.kind}
@@ -207,7 +212,7 @@ export function SourcesDialog({
                     </SelectContent>
                   </Select>
                 </Field>
-                <Field label="Anno">
+                <Field label={t("Anno")}>
                   <Input
                     className="h-8 text-xs"
                     inputMode="numeric"
@@ -217,16 +222,16 @@ export function SourcesDialog({
                   />
                 </Field>
               </div>
-              <Field label="Autori (Cognome, Nome; Cognome, Nome)">
+              <Field label={t("Autori (Cognome, Nome; Cognome, Nome)")}>
                 <Input
                   autoFocus={!current.title && !current.authors}
                   className="h-8 text-xs"
                   value={current.authors}
-                  placeholder="Rossi, Mario; Bianchi, Luca"
+                  placeholder={t("Rossi, Mario; Bianchi, Luca")}
                   onChange={(e) => patch({ authors: e.target.value })}
                 />
               </Field>
-              <Field label="Titolo">
+              <Field label={t("Titolo")}>
                 <Input
                   className="h-8 text-xs"
                   value={current.title}
@@ -245,7 +250,7 @@ export function SourcesDialog({
                   />
                 </Field>
                 {f.showCity ? (
-                  <Field label="Città">
+                  <Field label={t("Città")}>
                     <Input
                       className="h-8 text-xs"
                       value={current.city}
@@ -256,14 +261,14 @@ export function SourcesDialog({
               </div>
               {f.showVolume ? (
                 <div className="grid grid-cols-2 gap-3">
-                  <Field label="Volume">
+                  <Field label={t("Volume")}>
                     <Input
                       className="h-8 text-xs"
                       value={current.volume}
                       onChange={(e) => patch({ volume: e.target.value })}
                     />
                   </Field>
-                  <Field label="Pagine">
+                  <Field label={t("Pagine")}>
                     <Input
                       className="h-8 text-xs"
                       value={current.pages}
@@ -286,11 +291,18 @@ export function SourcesDialog({
                   />
                 </Field>
                 {f.showAccessed ? (
-                  <Field label="Consultato il">
+                  <Field label={t("Consultato il")}>
                     <Input
                       className="h-8 text-xs"
                       value={current.accessed}
-                      placeholder="3 marzo 2025"
+                      placeholder={new Date(2025, 2, 3).toLocaleDateString(
+                        region,
+                        {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        }
+                      )}
                       onChange={(e) => patch({ accessed: e.target.value })}
                     />
                   </Field>
@@ -299,7 +311,7 @@ export function SourcesDialog({
 
               <div className="rounded-lg border border-border bg-muted/40 p-3 text-xs">
                 <p className="mb-1 font-medium text-muted-foreground">
-                  Anteprima
+                  {t("Anteprima")}
                 </p>
                 <p>{inTextCitation(style, current, "")}</p>
                 <p className="mt-1.5 pl-6 -indent-6 leading-relaxed">
@@ -323,14 +335,14 @@ export function SourcesDialog({
                       onOpenChange(false)
                     }}
                   >
-                    <Quote className="size-3.5" /> Cita questa fonte
+                    <Quote className="size-3.5" /> {t("Cita questa fonte")}
                   </Button>
                 </div>
               ) : null}
             </div>
           ) : (
             <div className="flex items-center justify-center p-10 text-xs text-muted-foreground">
-              Scegli una fonte o creane una nuova.
+              {t("Scegli una fonte o creane una nuova.")}
             </div>
           )}
         </div>

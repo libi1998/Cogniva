@@ -1,5 +1,6 @@
 "use client"
 
+import { tr } from "@/lib/i18n/client"
 /**
  * Esportazione in SVG / PNG / PDF.
  *
@@ -364,7 +365,8 @@ export async function elementToPngBlob(
   })
   const blob = await new Promise<Blob>((resolve, reject) =>
     canvas.toBlob(
-      (b) => (b ? resolve(b) : reject(new Error("Conversione PNG fallita"))),
+      (b) =>
+        b ? resolve(b) : reject(new Error(tr("Conversione PNG fallita"))),
       "image/png"
     )
   )
@@ -396,7 +398,7 @@ export async function printSvg(
   const doc = frame.contentDocument
   if (!doc) {
     frame.remove()
-    throw new Error("Impossibile preparare la stampa")
+    throw new Error(tr("Impossibile preparare la stampa"))
   }
 
   doc.open()

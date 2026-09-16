@@ -41,6 +41,7 @@ import {
 import type { BoardData } from "@/lib/types"
 import type { Selection } from "./board-canvas"
 
+import { useT } from "@/lib/i18n/client"
 export type MenuState = {
   type: "canvas" | "node" | "edge"
   id?: string
@@ -75,6 +76,7 @@ export function BoardContextMenu({
   onEditText: (id: string) => void
   worldAt: (cx: number, cy: number) => { x: number; y: number }
 }) {
+  const t = useT()
   const store = getWorkspace()
   if (!state) return null
 
@@ -150,7 +152,7 @@ export function BoardContextMenu({
         {state.type === "canvas" ? (
           <>
             <DropdownMenuItem onClick={run(onPaste)}>
-              <CornerUpLeft className="size-4" /> Incolla
+              <CornerUpLeft className="size-4" /> {t("Incolla")}
               <DropdownMenuShortcut>⌘V</DropdownMenuShortcut>
             </DropdownMenuItem>
             <DropdownMenuItem
@@ -161,43 +163,43 @@ export function BoardContextMenu({
                 })
               )}
             >
-              <Group className="size-4" /> Seleziona tutto
+              <Group className="size-4" /> {t("Seleziona tutto")}
               <DropdownMenuShortcut>⌘A</DropdownMenuShortcut>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>
-                <SquarePlus className="size-4" /> Aggiungi qui
+                <SquarePlus className="size-4" /> {t("Aggiungi qui")}
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent>
                 <DropdownMenuItem
                   onClick={addAt({ kind: "shape", shape: "rounded" })}
                 >
-                  Card
+                  {t("Card")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={addAt({ kind: "shape", shape: "note" })}
                 >
-                  Post-it
+                  {t("Post-it")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={addAt({ kind: "shape", shape: "text" })}
                 >
-                  Testo
+                  {t("Testo")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={addAt({ kind: "section" })}>
-                  Sezione
+                  {t("Sezione")}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={addAt({ kind: "frame", frame: "plain" })}
                 >
-                  Frame
+                  {t("Frame")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={addAt({ kind: "table" })}>
-                  Tabella
+                  {t("Tabella")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={addAt({ kind: "chart" })}>
-                  Grafico
+                  {t("Grafico")}
                 </DropdownMenuItem>
               </DropdownMenuSubContent>
             </DropdownMenuSub>
@@ -208,39 +210,40 @@ export function BoardContextMenu({
           <>
             {node.kind !== "icon" && node.kind !== "draw" ? (
               <DropdownMenuItem onClick={run(() => onEditText(node.id))}>
-                <Pencil className="size-4" /> Modifica testo
+                <Pencil className="size-4" /> {t("Modifica testo")}
                 <DropdownMenuShortcut>⏎</DropdownMenuShortcut>
               </DropdownMenuItem>
             ) : null}
             <DropdownMenuItem onClick={run(onCopy)}>
-              <Copy className="size-4" /> Copia
+              <Copy className="size-4" /> {t("Copia")}
               <DropdownMenuShortcut>⌘C</DropdownMenuShortcut>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={run(onCut)}>
-              <Scissors className="size-4" /> Taglia
+              <Scissors className="size-4" /> {t("Taglia")}
               <DropdownMenuShortcut>⌘X</DropdownMenuShortcut>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={run(onDuplicate)}>
-              <Copy className="size-4" /> Duplica
+              <Copy className="size-4" /> {t("Duplica")}
               <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>
-                <BringToFront className="size-4" /> Ordina
+                <BringToFront className="size-4" />{" "}
+                {t("Ordina||ordine di sovrapposizione")}
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent>
                 <DropdownMenuItem onClick={reorder("front")}>
-                  <BringToFront className="size-4" /> Porta davanti
+                  <BringToFront className="size-4" /> {t("Porta davanti")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={reorder("forward")}>
-                  Porta avanti
+                  {t("Porta avanti")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={reorder("backward")}>
-                  Porta indietro
+                  {t("Porta indietro")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={reorder("back")}>
-                  <SendToBack className="size-4" /> Porta in fondo
+                  <SendToBack className="size-4" /> {t("Porta in fondo")}
                 </DropdownMenuItem>
               </DropdownMenuSubContent>
             </DropdownMenuSub>
@@ -248,36 +251,36 @@ export function BoardContextMenu({
             {node.kind === "table" ? (
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger>
-                  <Table2 className="size-4" /> Tabella
+                  <Table2 className="size-4" /> {t("Tabella")}
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
                   <DropdownMenuItem
                     onClick={patchTable((t) => tableAddRow(t!))}
                   >
-                    <Rows3 className="size-4" /> Aggiungi riga
+                    <Rows3 className="size-4" /> {t("Aggiungi riga")}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={patchTable((t) => tableAddCol(t!))}
                   >
-                    <Columns3 className="size-4" /> Aggiungi colonna
+                    <Columns3 className="size-4" /> {t("Aggiungi colonna")}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={patchTable((t) => tableRemoveRow(t!, t!.rows - 1))}
                   >
-                    Rimuovi ultima riga
+                    {t("Rimuovi ultima riga")}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={patchTable((t) => tableRemoveCol(t!, t!.cols - 1))}
                   >
-                    Rimuovi ultima colonna
+                    {t("Rimuovi ultima colonna")}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={patchTable((t) => ({ ...t!, header: !t!.header }))}
                   >
                     {node.table?.header
-                      ? "Togli intestazione"
-                      : "Aggiungi intestazione"}
+                      ? t("Togli intestazione")
+                      : t("Aggiungi intestazione")}
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={patchTable((t) => ({
@@ -285,7 +288,9 @@ export function BoardContextMenu({
                       striped: !t!.striped,
                     }))}
                   >
-                    {node.table?.striped ? "Righe uniformi" : "Righe alternate"}
+                    {node.table?.striped
+                      ? t("Righe uniformi")
+                      : t("Righe alternate")}
                   </DropdownMenuItem>
                 </DropdownMenuSubContent>
               </DropdownMenuSub>
@@ -302,7 +307,7 @@ export function BoardContextMenu({
               ) : (
                 <Lock className="size-4" />
               )}
-              {node.locked ? "Sblocca" : "Blocca"}
+              {node.locked ? t("Sblocca") : t("Blocca")}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
@@ -313,7 +318,7 @@ export function BoardContextMenu({
                 setSelection({ nodes: [], edges: [] })
               })}
             >
-              <Trash2 className="size-4" /> Elimina
+              <Trash2 className="size-4" /> {t("Elimina")}
               <DropdownMenuShortcut>⌫</DropdownMenuShortcut>
             </DropdownMenuItem>
           </>
@@ -332,7 +337,7 @@ export function BoardContextMenu({
                 })
               })}
             >
-              <ArrowLeftRight className="size-4" /> Inverti direzione
+              <ArrowLeftRight className="size-4" /> {t("Inverti direzione")}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={run(() => {
@@ -343,7 +348,7 @@ export function BoardContextMenu({
                 })
               })}
             >
-              <ArrowUpDown className="size-4" /> Inverti le punte
+              <ArrowUpDown className="size-4" /> {t("Inverti le punte")}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={run(() => {
@@ -358,7 +363,8 @@ export function BoardContextMenu({
                 })
               })}
             >
-              <CornerUpLeft className="size-4" /> Usa lo stile della board
+              <CornerUpLeft className="size-4" />{" "}
+              {t("Usa lo stile della board")}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
@@ -369,7 +375,7 @@ export function BoardContextMenu({
                 setSelection({ nodes: [], edges: [] })
               })}
             >
-              <Trash2 className="size-4" /> Elimina
+              <Trash2 className="size-4" /> {t("Elimina")}
             </DropdownMenuItem>
           </>
         ) : null}

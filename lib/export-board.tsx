@@ -20,6 +20,7 @@ import { fontMap } from "./fonts"
 import { formatMm, formatPx, pxToMm } from "./page"
 import type { BoardData } from "./types"
 
+import { tr } from "@/lib/i18n/client"
 export type ExportFormat = "svg" | "png" | "pdf"
 
 /**
@@ -87,7 +88,7 @@ async function renderBoardSvg(
       )
     })
     const svg = holder.querySelector("svg")
-    if (!svg) throw new Error("Anteprima non disponibile")
+    if (!svg) throw new Error(tr("Anteprima non disponibile"))
     svg.setAttribute("xmlns", "http://www.w3.org/2000/svg")
     svg.setAttribute("width", String(width))
     svg.setAttribute("height", String(height))
@@ -166,7 +167,8 @@ async function rasterize(
     const img = new Image()
     await new Promise<void>((resolve, reject) => {
       img.onload = () => resolve()
-      img.onerror = () => reject(new Error("Impossibile rasterizzare la board"))
+      img.onerror = () =>
+        reject(new Error(tr("Impossibile rasterizzare la board")))
       img.src = url
     })
     // i font incorporati devono essere pronti prima di disegnare
@@ -175,13 +177,15 @@ async function rasterize(
     canvas.width = Math.round(width * scale)
     canvas.height = Math.round(height * scale)
     const ctx = canvas.getContext("2d")
-    if (!ctx) throw new Error("Canvas non disponibile")
+    if (!ctx) throw new Error(tr("Canvas non disponibile"))
     ctx.scale(scale, scale)
     ctx.drawImage(img, 0, 0, width, height)
     return await new Promise<Blob>((resolve, reject) =>
       canvas.toBlob(
         (blob) =>
-          blob ? resolve(blob) : reject(new Error("Conversione PNG fallita")),
+          blob
+            ? resolve(blob)
+            : reject(new Error(tr("Conversione PNG fallita"))),
         "image/png"
       )
     )

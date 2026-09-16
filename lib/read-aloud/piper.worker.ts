@@ -1,6 +1,7 @@
 /// <reference lib="webworker" />
 import * as ort from "onnxruntime-web/wasm"
 import { VOICE_CACHE } from "./voices"
+import { N_ } from "../i18n/config"
 
 /**
  * La sintesi delle voci neurali, in un thread a parte: riceve i fonemi di una
@@ -49,7 +50,7 @@ async function sha256(bytes: ArrayBuffer) {
 async function download(url: string, id: number) {
   const response = await fetch(url)
   if (!response.ok || !response.body) {
-    throw new Error(`Download della voce non riuscito (${response.status})`)
+    throw new Error(N_("Download della voce non riuscito"))
   }
   const total = Number(response.headers.get("content-length")) || 0
   const reader = response.body.getReader()
@@ -87,7 +88,9 @@ async function modelBytes(url: string, hash: string, id: number) {
   }
   const bytes = await download(url, id)
   if ((await sha256(bytes)) !== hash) {
-    throw new Error("Il file della voce non è integro: riprova il download.")
+    throw new Error(
+      N_("Il file della voce non è integro: riprova il download.")
+    )
   }
   await cache
     ?.put(
@@ -129,7 +132,7 @@ addEventListener("message", async (event: MessageEvent<PiperRequest>) => {
       return
     }
     const hash = hashes.get(message.model)
-    if (!hash) throw new Error("Voce non caricata")
+    if (!hash) throw new Error(N_("Voce non caricata"))
     const model = await session(message.model, hash, message.id)
     const feeds: Record<string, ort.Tensor> = {
       input: new ort.Tensor(

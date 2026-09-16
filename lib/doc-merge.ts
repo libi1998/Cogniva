@@ -1,29 +1,64 @@
 import { Node, mergeAttributes, type JSONContent } from "@tiptap/core"
 import type { Editor } from "@tiptap/core"
 import type { MergeData, MergeRule } from "./types"
-
+import { currentLocale, tr } from "@/lib/i18n/client"
+import { N_, stripContext } from "@/lib/i18n/config"
 /**
  * Stampa unione della scheda Corrispondenza: campi «Nome», regole
  * Se…Allora…Altrimenti, elenco destinatari (anche da CSV), anteprima dei
  * risultati e documento unito. Più buste ed etichette.
  */
 
-export const DEFAULT_FIELDS = [
-  "Titolo",
-  "Nome",
-  "Cognome",
-  "Società",
-  "Indirizzo",
-  "CAP",
-  "Città",
-  "Provincia",
-  "Email",
-]
+/** I campi di un elenco destinatari nuovo, con un nome in ogni lingua */
+export type MergeFieldKey =
+  | "title"
+  | "first"
+  | "last"
+  | "company"
+  | "address"
+  | "zip"
+  | "city"
+  | "region"
+  | "email"
+
+const FIELD_SOURCES: Record<MergeFieldKey, string> = {
+  title: N_("Titolo||titolo di cortesia, come Sig. o Dott."),
+  first: N_("Nome||nome di battesimo"),
+  last: N_("Cognome"),
+  company: N_("Società"),
+  address: N_("Indirizzo"),
+  zip: N_("CAP"),
+  city: N_("Città"),
+  region: N_("Provincia"),
+  email: N_("Email"),
+}
+
+/** Il nome della colonna nella lingua dell'interfaccia */
+export const fieldName = (key: MergeFieldKey) => tr(FIELD_SOURCES[key])
+
+export const defaultFields = () =>
+  (Object.keys(FIELD_SOURCES) as MergeFieldKey[]).map(fieldName)
+
+/**
+ * La colonna di un elenco che corrisponde a un campo: con il nome nella
+ * lingua attiva oppure in italiano (gli elenchi creati prima delle lingue).
+ */
+export function findField(
+  fields: string[],
+  key: MergeFieldKey
+): string | undefined {
+  const names = new Set(
+    [fieldName(key), stripContext(FIELD_SOURCES[key])].map((n) =>
+      n.toLocaleLowerCase()
+    )
+  )
+  return fields.find((f) => names.has(f.trim().toLocaleLowerCase()))
+}
 
 export function emptyMerge(type: MergeData["type"] = "letters"): MergeData {
   return {
     type,
-    fields: [...DEFAULT_FIELDS],
+    fields: defaultFields(),
     rows: [],
     excluded: [],
     preview: -1,
@@ -107,13 +142,48 @@ export function toCsv(merge: MergeData) {
 /* --------------------------------- regole -------------------------------- */
 
 export const RULE_OPS: { value: MergeRule["op"]; label: string }[] = [
-  { value: "eq", label: "Uguale a" },
-  { value: "ne", label: "Diverso da" },
-  { value: "lt", label: "Minore di" },
-  { value: "gt", label: "Maggiore di" },
-  { value: "contains", label: "Contiene" },
-  { value: "empty", label: "È vuoto" },
-  { value: "filled", label: "Non è vuoto" },
+  {
+    value: "eq",
+    get label() {
+      return tr("Uguale a")
+    },
+  },
+  {
+    value: "ne",
+    get label() {
+      return tr("Diverso da")
+    },
+  },
+  {
+    value: "lt",
+    get label() {
+      return tr("Minore di")
+    },
+  },
+  {
+    value: "gt",
+    get label() {
+      return tr("Maggiore di")
+    },
+  },
+  {
+    value: "contains",
+    get label() {
+      return tr("Contiene")
+    },
+  },
+  {
+    value: "empty",
+    get label() {
+      return tr("È vuoto")
+    },
+  },
+  {
+    value: "filled",
+    get label() {
+      return tr("Non è vuoto")
+    },
+  },
 ]
 
 export function testRule(row: Record<string, string>, rule: MergeRule) {
@@ -125,7 +195,7 @@ export function testRule(row: Record<string, string>, rule: MergeRule) {
     value !== "" && other !== "" && Number.isFinite(a) && Number.isFinite(b)
   const cmp = numeric
     ? a - b
-    : value.localeCompare(other, "it", { sensitivity: "base" })
+    : value.localeCompare(other, currentLocale(), { sensitivity: "base" })
   switch (rule.op) {
     case "eq":
       return cmp === 0
@@ -235,18 +305,23 @@ export function usedFields(content: JSONContent): string[] {
 
 /** Il testo di un record per un'etichetta o una busta (blocco indirizzo) */
 export function addressText(row: Record<string, string>) {
-  const line = (...parts: string[]) =>
-    parts
-      .map((p) => (row[p] ?? "").trim())
-      .filter(Boolean)
-      .join(" ")
+  const fields = Object.keys(row)
+  const value = (key: MergeFieldKey) => {
+    const name = findField(fields, key)
+    return name ? (row[name] ?? "").trim() : ""
+  }
+  const join = (...parts: string[]) => parts.filter(Boolean).join(" ")
+  const region = value("region")
+  // ogni paese scrive la località a modo suo
+  const place =
+    currentLocale() === "en"
+      ? join([value("city"), region].filter(Boolean).join(", "), value("zip"))
+      : join(value("zip"), value("city"), region ? `(${region})` : "")
   return [
-    line("Titolo", "Nome", "Cognome"),
-    line("Società"),
-    line("Indirizzo"),
-    [line("CAP", "Città"), row.Provincia ? `(${row.Provincia})` : ""]
-      .filter(Boolean)
-      .join(" "),
+    join(value("title"), value("first"), value("last")),
+    value("company"),
+    value("address"),
+    place,
   ]
     .filter(Boolean)
     .join("\n")
@@ -262,10 +337,24 @@ export const ENVELOPES: {
   {
     format: "dl",
     label: "DL",
-    hint: "110 × 220 mm · lettera A4 piegata in tre",
+    get hint() {
+      return tr("110 × 220 mm · lettera A4 piegata in tre")
+    },
   },
-  { format: "c5", label: "C5", hint: "162 × 229 mm · A4 piegato a metà" },
-  { format: "c6", label: "C6", hint: "114 × 162 mm · A5 piegato a metà" },
+  {
+    format: "c5",
+    label: "C5",
+    get hint() {
+      return tr("162 × 229 mm · A4 piegato a metà")
+    },
+  },
+  {
+    format: "c6",
+    label: "C6",
+    get hint() {
+      return tr("114 × 162 mm · A5 piegato a metà")
+    },
+  },
 ]
 
 export type LabelProduct = {
@@ -283,7 +372,9 @@ export type LabelProduct = {
 export const LABEL_PRODUCTS: LabelProduct[] = [
   {
     id: "l7160",
-    label: "Avery L7160 · 21 per foglio",
+    get label() {
+      return tr("Avery L7160 · 21 per foglio")
+    },
     cols: 3,
     rows: 7,
     w: 63.5,
@@ -293,7 +384,9 @@ export const LABEL_PRODUCTS: LabelProduct[] = [
   },
   {
     id: "l7163",
-    label: "Avery L7163 · 14 per foglio",
+    get label() {
+      return tr("Avery L7163 · 14 per foglio")
+    },
     cols: 2,
     rows: 7,
     w: 99.1,
@@ -303,7 +396,9 @@ export const LABEL_PRODUCTS: LabelProduct[] = [
   },
   {
     id: "l7159",
-    label: "Avery L7159 · 24 per foglio",
+    get label() {
+      return tr("Avery L7159 · 24 per foglio")
+    },
     cols: 3,
     rows: 8,
     w: 63.5,
@@ -313,7 +408,9 @@ export const LABEL_PRODUCTS: LabelProduct[] = [
   },
   {
     id: "l7165",
-    label: "Avery L7165 · 8 per foglio",
+    get label() {
+      return tr("Avery L7165 · 8 per foglio")
+    },
     cols: 2,
     rows: 4,
     w: 99.1,
@@ -323,7 +420,9 @@ export const LABEL_PRODUCTS: LabelProduct[] = [
   },
   {
     id: "3474",
-    label: "Avery 3474 · 24 per foglio",
+    get label() {
+      return tr("Avery 3474 · 24 per foglio")
+    },
     cols: 3,
     rows: 8,
     w: 70,
@@ -333,7 +432,9 @@ export const LABEL_PRODUCTS: LabelProduct[] = [
   },
   {
     id: "tico",
-    label: "Tico A4 · 12 per foglio",
+    get label() {
+      return tr("Tico A4 · 12 per foglio")
+    },
     cols: 2,
     rows: 6,
     w: 105,
@@ -479,8 +580,8 @@ export const MergeField = Node.create<Record<string, never>, MergeSettings>({
       const view = mergeNodeView(editor, (row) => {
         const name = String(current.attrs.name)
         return row
-          ? { text: row[name] ?? "", title: `Campo «${name}»` }
-          : { text: `«${name}»`, title: "Campo unione" }
+          ? { text: row[name] ?? "", title: tr("Campo «{name}»", { name }) }
+          : { text: `«${name}»`, title: tr("Campo unione") }
       })
       return {
         dom: view.dom,
@@ -557,8 +658,18 @@ export const MergeIf = Node.create({
         const a = current.attrs
         const op =
           RULE_OPS.find((o) => o.value === a.op)?.label.toLowerCase() ?? a.op
-        const title = `Se «${a.field}» ${op} ${a.value} allora «${a.then}» altrimenti «${a.otherwise}»`
-        if (!row) return { text: `«Se ${a.field}…»`, title }
+        const title = tr(
+          "Se «{field}» {op} {value} allora «{then}» altrimenti «{otherwise}»",
+          {
+            field: a.field,
+            op,
+            value: a.value,
+            then: a.then,
+            otherwise: a.otherwise,
+          }
+        )
+        if (!row)
+          return { text: tr("«Se {field}…»", { field: a.field }), title }
         const ok = testRule(row, { field: a.field, op: a.op, value: a.value })
         return { text: String(ok ? a.then : a.otherwise), title }
       })

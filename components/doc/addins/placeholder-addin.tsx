@@ -6,27 +6,58 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import type { AddinApi } from "./api"
 
+import { useT, tr, useLocale } from "@/lib/i18n/client"
+import { LOCALE_NAMES, N_ } from "@/lib/i18n/config"
 /**
  * Testo di prova, come =lorem() e =rand() in Word. Le frasi italiane sono
  * scritte per Cogniva e parlano di impaginazione, così il segnaposto è anche
  * un piccolo promemoria.
  */
 
-const ITALIAN = [
-  "Un buon documento comincia da una struttura chiara: titoli brevi, paragrafi compatti e un'idea per ogni blocco.",
-  "Gli stili tengono insieme l'aspetto del testo, così basta cambiarne uno per aggiornare tutte le parti che lo usano.",
-  "Prima di rifinire i dettagli conviene scrivere di getto, lasciando a dopo la scelta delle parole migliori.",
-  "Le immagini aiutano quando spiegano qualcosa che il testo farebbe fatica a dire, non quando riempiono spazio.",
-  "Un elenco puntato rende evidenti i passaggi, ma troppi elenchi di fila spezzano il ritmo della lettura.",
-  "Il margine bianco non è spazio sprecato: dà respiro alla pagina e guida l'occhio verso ciò che conta.",
-  "Le note a piè di pagina ospitano i dettagli che interessano a pochi, senza interrompere tutti gli altri.",
-  "Rileggere ad alta voce fa scoprire le frasi troppo lunghe e le ripetizioni che sfuggono a una lettura silenziosa.",
-  "Un sommario aggiornato permette di muoversi in un documento lungo come in un libro ben rilegato.",
-  "Le revisioni tengono traccia di chi ha cambiato cosa, così le decisioni si prendono guardando le modifiche.",
-  "Una tabella funziona quando i dati si confrontano per righe e colonne; per un solo numero basta una frase.",
-  "Il titolo del documento dovrebbe dire in poche parole che cosa troverà chi lo apre.",
-  "I colori del tema danno coerenza a grafici, forme e intestazioni senza doverli scegliere ogni volta.",
-  "Quando il contenuto è pronto, l'esportazione in PDF o in Word conserva l'impaginazione così com'è.",
+/** frasi scritte per Cogniva, tradotte nella lingua dell'interfaccia */
+const NATIVE = [
+  N_(
+    "Un buon documento comincia da una struttura chiara: titoli brevi, paragrafi compatti e un'idea per ogni blocco."
+  ),
+  N_(
+    "Gli stili tengono insieme l'aspetto del testo, così basta cambiarne uno per aggiornare tutte le parti che lo usano."
+  ),
+  N_(
+    "Prima di rifinire i dettagli conviene scrivere di getto, lasciando a dopo la scelta delle parole migliori."
+  ),
+  N_(
+    "Le immagini aiutano quando spiegano qualcosa che il testo farebbe fatica a dire, non quando riempiono spazio."
+  ),
+  N_(
+    "Un elenco puntato rende evidenti i passaggi, ma troppi elenchi di fila spezzano il ritmo della lettura."
+  ),
+  N_(
+    "Il margine bianco non è spazio sprecato: dà respiro alla pagina e guida l'occhio verso ciò che conta."
+  ),
+  N_(
+    "Le note a piè di pagina ospitano i dettagli che interessano a pochi, senza interrompere tutti gli altri."
+  ),
+  N_(
+    "Rileggere ad alta voce fa scoprire le frasi troppo lunghe e le ripetizioni che sfuggono a una lettura silenziosa."
+  ),
+  N_(
+    "Un sommario aggiornato permette di muoversi in un documento lungo come in un libro ben rilegato."
+  ),
+  N_(
+    "Le revisioni tengono traccia di chi ha cambiato cosa, così le decisioni si prendono guardando le modifiche."
+  ),
+  N_(
+    "Una tabella funziona quando i dati si confrontano per righe e colonne; per un solo numero basta una frase."
+  ),
+  N_(
+    "Il titolo del documento dovrebbe dire in poche parole che cosa troverà chi lo apre."
+  ),
+  N_(
+    "I colori del tema danno coerenza a grafici, forme e intestazioni senza doverli scegliere ogni volta."
+  ),
+  N_(
+    "Quando il contenuto è pronto, l'esportazione in PDF o in Word conserva l'impaginazione così com'è."
+  ),
 ]
 
 const LOREM = [
@@ -45,12 +76,12 @@ const LOREM = [
 ]
 
 export function placeholderContent(
-  kind: "italian" | "lorem",
+  kind: "native" | "lorem",
   paragraphs: number,
   sentences: number,
   structured: boolean
 ): JSONContent[] {
-  const pool = kind === "italian" ? ITALIAN : LOREM
+  const pool = kind === "native" ? NATIVE.map((line) => tr(line)) : LOREM
   let cursor = 0
   const sentence = () => pool[cursor++ % pool.length]!
   const para = (): JSONContent => ({
@@ -72,9 +103,9 @@ export function placeholderContent(
           {
             type: "text",
             text:
-              kind === "italian"
-                ? `Sezione ${i / 2 + 1}`
-                : `Lorem ipsum ${i / 2 + 1}`,
+              kind === "native"
+                ? tr("Sezione {number}", { number: i / 2 + 1 })
+                : tr("Lorem ipsum {number}", { number: i / 2 + 1 }),
           },
         ],
       })
@@ -101,9 +132,9 @@ export function placeholderContent(
 }
 
 export function PlaceholderAddin({ api }: { api: AddinApi }) {
-  const [kind, setKind] = React.useState<"italian" | "lorem">(
-    api.language.startsWith("it") ? "italian" : "lorem"
-  )
+  const t = useT()
+  const locale = useLocale()
+  const [kind, setKind] = React.useState<"native" | "lorem">("native")
   const [paragraphs, setParagraphs] = React.useState(3)
   const [sentences, setSentences] = React.useState(4)
   const [structured, setStructured] = React.useState(false)
@@ -137,7 +168,7 @@ export function PlaceholderAddin({ api }: { api: AddinApi }) {
       <div className="grid grid-cols-2 gap-1 rounded-md bg-muted p-0.5">
         {(
           [
-            ["italian", "Italiano"],
+            ["native", LOCALE_NAMES[locale]],
             ["lorem", "Lorem ipsum"],
           ] as const
         ).map(([value, label]) => (
@@ -156,15 +187,15 @@ export function PlaceholderAddin({ api }: { api: AddinApi }) {
           </button>
         ))}
       </div>
-      {number("Paragrafi", paragraphs, setParagraphs, 12)}
-      {number("Frasi per paragrafo", sentences, setSentences, 8)}
+      {number(t("Paragrafi"), paragraphs, setParagraphs, 12)}
+      {number(t("Frasi per paragrafo"), sentences, setSentences, 8)}
       <label className="flex items-center gap-2 text-xs">
         <input
           type="checkbox"
           checked={structured}
           onChange={(e) => setStructured(e.target.checked)}
         />
-        Con titoli ed elenchi puntati
+        {t("Con titoli ed elenchi puntati")}
       </label>
       <p className="rounded-md border border-border bg-muted/40 p-2 text-xs text-muted-foreground">
         {preview}…
@@ -178,10 +209,12 @@ export function PlaceholderAddin({ api }: { api: AddinApi }) {
           )
         }
       >
-        Inserisci testo segnaposto
+        {t("Inserisci testo segnaposto")}
       </Button>
       <p className="text-[11px] text-muted-foreground">
-        Suggerimento: in Word si ottiene lo stesso con =lorem() e =rand().
+        {t(
+          "Suggerimento: in Word si ottiene lo stesso con =lorem() e =rand()."
+        )}
       </p>
     </div>
   )

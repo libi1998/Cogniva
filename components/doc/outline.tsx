@@ -5,10 +5,12 @@ import { useEditorState } from "@tiptap/react"
 import { ListTree } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+import { useT } from "@/lib/i18n/client"
 type Entry = { level: number; text: string; pos: number }
 
 /** Riquadro di spostamento: i titoli del documento, cliccabili */
 export function DocOutline({ editor }: { editor: Editor | null }) {
+  const t = useT()
   const data = useEditorState({
     editor,
     selector: ({ editor: e }) => {
@@ -39,7 +41,7 @@ export function DocOutline({ editor }: { editor: Editor | null }) {
   return (
     <div className="flex h-full w-full flex-col">
       <div className="flex h-9 shrink-0 items-center gap-1.5 border-b border-border px-3 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-        <ListTree className="size-3.5" /> Struttura
+        <ListTree className="size-3.5" /> {t("Struttura")}
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto p-2">
         {data.entries.length ? (
@@ -64,12 +66,14 @@ export function DocOutline({ editor }: { editor: Editor | null }) {
               )}
               style={{ paddingLeft: 8 + Math.max(0, entry.level - 1) * 12 }}
             >
-              {entry.text || <span className="opacity-40">Senza titolo</span>}
+              {entry.text || (
+                <span className="opacity-40">{t("Senza titolo")}</span>
+              )}
             </button>
           ))
         ) : (
           <p className="px-2 py-6 text-center text-xs text-muted-foreground">
-            Usa i titoli per creare la struttura del documento.
+            {t("Usa i titoli per creare la struttura del documento.")}
           </p>
         )}
       </div>

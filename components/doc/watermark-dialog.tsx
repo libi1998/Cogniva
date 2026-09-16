@@ -24,6 +24,7 @@ import { fontStack } from "@/lib/fonts"
 import type { DocTheme, DocWatermark } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
+import { useT, tr } from "@/lib/i18n/client"
 type Mode = "none" | "image" | "text"
 
 const COLORS = [
@@ -56,7 +57,7 @@ function readImage(file: File): Promise<string> {
     }
     img.onerror = () => {
       URL.revokeObjectURL(url)
-      reject(new Error("Immagine non valida"))
+      reject(new Error(tr("Immagine non valida")))
     }
     img.src = url
   })
@@ -94,6 +95,7 @@ function WatermarkForm({
   setTheme: (patch: Partial<DocTheme>) => void
   onClose: () => void
 }) {
+  const t = useT()
   const initial = theme.watermark
   const [mode, setMode] = React.useState<Mode>(
     !initial ? "text" : initial.image ? "image" : "text"
@@ -130,9 +132,11 @@ function WatermarkForm({
       className="flex min-h-0 flex-col"
     >
       <DialogHeader className="border-b border-border px-5 py-4">
-        <DialogTitle>Filigrana personalizzata</DialogTitle>
+        <DialogTitle>{t("Filigrana personalizzata")}</DialogTitle>
         <DialogDescription>
-          Compare dietro al testo su ogni pagina, anche in stampa e nel PDF.
+          {t(
+            "Compare dietro al testo su ogni pagina, anche in stampa e nel PDF."
+          )}
         </DialogDescription>
       </DialogHeader>
 
@@ -140,14 +144,14 @@ function WatermarkForm({
         <div className="space-y-3">
           <div
             role="radiogroup"
-            aria-label="Tipo di filigrana"
+            aria-label={t("Tipo di filigrana")}
             className="flex gap-1 rounded-lg bg-muted p-0.5"
           >
             {(
               [
-                ["none", "Nessuna"],
-                ["image", "Immagine"],
-                ["text", "Testo"],
+                ["none", t("Nessuna")],
+                ["image", t("Immagine")],
+                ["text", t("Testo")],
               ] as const
             ).map(([value, label]) => (
               <button
@@ -182,7 +186,7 @@ function WatermarkForm({
                   try {
                     set({ image: await readImage(file) })
                   } catch {
-                    toast.error("Non riesco a leggere questa immagine")
+                    toast.error(t("Non riesco a leggere questa immagine"))
                   }
                 }}
               />
@@ -193,10 +197,10 @@ function WatermarkForm({
                 onClick={() => fileRef.current?.click()}
               >
                 <ImageUp />{" "}
-                {draft.image ? "Cambia immagine…" : "Seleziona immagine…"}
+                {draft.image ? t("Cambia immagine…") : t("Seleziona immagine…")}
               </Button>
               <label className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
-                Dimensione
+                {t("Dimensione")}
                 <select
                   value={String(draft.scale)}
                   onChange={(e) => set({ scale: Number(e.target.value) })}
@@ -204,7 +208,9 @@ function WatermarkForm({
                 >
                   {[0.3, 0.45, 0.6, 0.8, 1].map((n) => (
                     <option key={n} value={n}>
-                      {Math.round(n * 100)}% della pagina
+                      {t("{percent}% della pagina", {
+                        percent: Math.round(n * 100),
+                      })}
                     </option>
                   ))}
                 </select>
@@ -217,7 +223,7 @@ function WatermarkForm({
                     set({ opacity: e.target.checked ? 0.25 : 0.9 })
                   }
                 />
-                Dilavata
+                {t("Dilavata")}
               </label>
             </div>
           ) : null}
@@ -225,7 +231,9 @@ function WatermarkForm({
           {mode === "text" ? (
             <div className="space-y-2.5">
               <label className="block space-y-1">
-                <span className="text-xs text-muted-foreground">Testo</span>
+                <span className="text-xs text-muted-foreground">
+                  {t("Testo")}
+                </span>
                 <Input
                   value={draft.text}
                   list="watermark-presets"
@@ -240,14 +248,18 @@ function WatermarkForm({
                 </datalist>
               </label>
               <div className="space-y-1">
-                <span className="text-xs text-muted-foreground">Carattere</span>
+                <span className="text-xs text-muted-foreground">
+                  {t("Carattere")}
+                </span>
                 <FontPicker
                   value={draft.font ?? theme.headingFont ?? theme.font}
                   onChange={(font) => set({ font })}
                 />
               </div>
               <div className="space-y-1">
-                <span className="text-xs text-muted-foreground">Colore</span>
+                <span className="text-xs text-muted-foreground">
+                  {t("Colore")}
+                </span>
                 <div className="flex items-center gap-1.5">
                   {COLORS.map((c) => (
                     <button
@@ -272,7 +284,7 @@ function WatermarkForm({
                 </div>
               </div>
               <label className="flex items-center gap-3 text-xs text-muted-foreground">
-                Trasparenza
+                {t("Trasparenza")}
                 <input
                   type="range"
                   min={5}
@@ -288,11 +300,11 @@ function WatermarkForm({
                 </span>
               </label>
               <div className="flex items-center gap-3 text-xs text-muted-foreground">
-                Layout
+                {t("Layout")}
                 {(
                   [
-                    ["diagonal", "Diagonale"],
-                    ["horizontal", "Orizzontale"],
+                    ["diagonal", t("Diagonale")],
+                    ["horizontal", t("Orizzontale")],
                   ] as const
                 ).map(([value, label]) => (
                   <label key={value} className="flex items-center gap-1.5">
@@ -315,10 +327,10 @@ function WatermarkForm({
 
       <DialogFooter className="border-t border-border px-5 py-3">
         <Button type="button" variant="ghost" onClick={onClose}>
-          Annulla
+          {t("Annulla")}
         </Button>
         <Button type="button" variant="outline" onClick={() => apply(false)}>
-          Applica
+          {t("Applica")}
         </Button>
         <Button type="submit">OK</Button>
       </DialogFooter>

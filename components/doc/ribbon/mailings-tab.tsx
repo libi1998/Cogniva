@@ -70,6 +70,7 @@ import {
 import { RibbonButton, RibbonGroup, RibbonMenu, RibbonRows } from "./ribbon-ui"
 import type { RibbonCtx } from "./shared"
 
+import { useT, tr } from "@/lib/i18n/client"
 type MailDialog =
   | "recipients"
   | "address"
@@ -87,19 +88,39 @@ const MERGE_TYPES: { value: MergeData["type"]; label: string; hint: string }[] =
   [
     {
       value: "letters",
-      label: "Lettere",
-      hint: "Una lettera per destinatario",
+      get label() {
+        return tr("Lettere")
+      },
+      get hint() {
+        return tr("Una lettera per destinatario")
+      },
     },
-    { value: "envelopes", label: "Buste", hint: "Una busta per destinatario" },
+    {
+      value: "envelopes",
+      get label() {
+        return tr("Buste")
+      },
+      get hint() {
+        return tr("Una busta per destinatario")
+      },
+    },
     {
       value: "labels",
-      label: "Etichette",
-      hint: "Fogli di etichette con gli indirizzi",
+      get label() {
+        return tr("Etichette")
+      },
+      get hint() {
+        return tr("Fogli di etichette con gli indirizzi")
+      },
     },
     {
       value: "normal",
-      label: "Documento normale di Word",
-      hint: "Togli la stampa unione",
+      get label() {
+        return tr("Documento normale di Word")
+      },
+      get hint() {
+        return tr("Togli la stampa unione")
+      },
     },
   ]
 
@@ -136,6 +157,7 @@ function createDoc(
  * anteprima dei risultati e documento finale.
  */
 export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
+  const t = useT()
   const { editor, theme, merge } = ctx
   const router = useRouter()
   const [dialog, setDialog] = React.useState<MailDialog>(null)
@@ -161,10 +183,10 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
 
   const finalize = (action: "edit" | "print") => {
     if (!merge || !hasRecipients) {
-      toast.info("Scegli prima i destinatari")
+      toast.info(t("Scegli prima i destinatari"))
       return
     }
-    const title = `${ctx.title || "Documento"} — unione`
+    const title = t("{title} — unione", { title: ctx.title || "Documento" })
     let id: string
     if (merge.type === "labels") {
       id = createDoc(
@@ -189,8 +211,12 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
     }
     toast.success(
       action === "print"
-        ? `Documento unito con ${included.length} destinatari: premi ⌘P per stamparlo`
-        : `Documento unito con ${included.length} destinatari`
+        ? t("Documento unito con {count} destinatari: premi ⌘P per stamparlo", {
+            count: included.length,
+          })
+        : t("Documento unito con {count} destinatari", {
+            count: included.length,
+          })
     )
     open(id)
   }
@@ -233,7 +259,9 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
       )
     })
     const id = createDoc(
-      recipients.length > 1 ? `Buste — ${ctx.title}` : "Busta",
+      recipients.length > 1
+        ? t("Buste — {title}", { title: ctx.title })
+        : t("Busta"),
       { type: "doc", content },
       {
         format: request.format,
@@ -246,7 +274,7 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
         },
       }
     )
-    toast.success("Busta creata")
+    toast.success(t("Busta creata"))
     open(id)
   }
 
@@ -258,7 +286,7 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
           () => request.text
         )
     const id = createDoc(
-      "Etichette",
+      t("Etichette"),
       {
         type: "doc",
         content: [labelsContent(texts, request.product), { type: "paragraph" }],
@@ -269,13 +297,13 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
         margins: labelsMargins(request.product),
       }
     )
-    toast.success("Foglio di etichette creato")
+    toast.success(t("Foglio di etichette creato"))
     open(id)
   }
 
   const checkErrors = () => {
     if (!merge) {
-      toast.info("Nessuna stampa unione in corso")
+      toast.info(t("Nessuna stampa unione in corso"))
       return
     }
     const used = usedFields(editor.getJSON())
@@ -290,16 +318,22 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
           ] as const
       )
       .filter(([, n]) => n > 0)
-    if (!used.length) toast.info("Il documento non contiene campi unione")
+    if (!used.length) toast.info(t("Il documento non contiene campi unione"))
     else if (!missing.length && !empty.length)
-      toast.success(`Nessun errore: ${included.length} documenti pronti`)
+      toast.success(
+        t("Nessun errore: {count} documenti pronti", { count: included.length })
+      )
     else
       toast.warning(
         [
           missing.length
-            ? `Campi non presenti nell'elenco: ${missing.join(", ")}`
+            ? t("Campi non presenti nell'elenco: {fields}", {
+                fields: missing.join(", "),
+              })
             : "",
-          ...empty.map(([f, n]) => `«${f}» vuoto per ${n} destinatari`),
+          ...empty.map(([f, n]) =>
+            t("«{field}» vuoto per {count} destinatari", { field: f, count: n })
+          ),
         ]
           .filter(Boolean)
           .join(" · "),
@@ -309,29 +343,29 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
 
   return (
     <>
-      <RibbonGroup label="Crea">
+      <RibbonGroup label={t("Crea")}>
         <RibbonButton
           large
-          label="Buste"
+          label={t("Buste")}
           icon={<Mail className="size-5" />}
           onClick={() => setDialog("envelope")}
         />
         <RibbonButton
           large
-          label="Etichette"
+          label={t("Etichette")}
           icon={<Tags className="size-5" />}
           onClick={() => setDialog("labels")}
         />
       </RibbonGroup>
 
-      <RibbonGroup label="Inizia stampa unione" safe>
+      <RibbonGroup label={t("Inizia stampa unione")} safe>
         <RibbonMenu
           className="w-64"
           trigger={
             <RibbonButton
               large
               chevron
-              label="Inizia stampa unione"
+              label={t("Inizia stampa unione")}
               active={Boolean(merge && merge.type !== "normal")}
               icon={<MailPlus className="size-5" />}
             />
@@ -357,7 +391,7 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
           ))}
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setDialog("email")}>
-            <AtSign /> Messaggi email
+            <AtSign /> {t("Messaggi email")}
           </DropdownMenuItem>
         </RibbonMenu>
         <RibbonMenu
@@ -366,32 +400,32 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
             <RibbonButton
               large
               chevron
-              label="Seleziona destinatari"
+              label={t("Seleziona destinatari")}
               icon={<Users className="size-5" />}
             />
           }
         >
           <DropdownMenuItem onClick={() => setDialog("recipients")}>
-            Digita nuovo elenco…
+            {t("Digita nuovo elenco…")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setDialog("recipients")}>
-            Usa elenco esistente (CSV)…
+            {t("Usa elenco esistente (CSV)…")}
           </DropdownMenuItem>
         </RibbonMenu>
         <RibbonButton
           large
-          label="Modifica elenco destinatari"
+          label={t("Modifica elenco destinatari")}
           disabled={!merge?.rows.length}
           icon={<UserRoundPen className="size-5" />}
           onClick={() => setDialog("recipients")}
         />
       </RibbonGroup>
 
-      <RibbonGroup label="Composizione e inserimento campi">
+      <RibbonGroup label={t("Composizione e inserimento campi")}>
         <RibbonButton
           large
           data-safe=""
-          label="Evidenzia campi unione"
+          label={t("Evidenzia campi unione")}
           disabled={!merge}
           active={Boolean(merge?.highlight)}
           icon={<Highlighter className="size-5" />}
@@ -401,14 +435,14 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
         />
         <RibbonButton
           large
-          label="Blocco indirizzo"
+          label={t("Blocco indirizzo")}
           disabled={!merge}
           icon={<BookUser className="size-5" />}
           onClick={() => setDialog("address")}
         />
         <RibbonButton
           large
-          label="Riga saluto"
+          label={t("Riga saluto")}
           disabled={!merge}
           icon={<MessageSquareText className="size-5" />}
           onClick={() => setDialog("greeting")}
@@ -420,14 +454,14 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
               <RibbonButton
                 compact
                 chevron
-                label="Inserisci campo unione"
+                label={t("Inserisci campo unione")}
                 disabled={!merge}
                 icon={<ListChecks className="size-4" />}
                 className="justify-start"
               />
             }
           >
-            <DropdownMenuLabel>Campi</DropdownMenuLabel>
+            <DropdownMenuLabel>{t("Campi")}</DropdownMenuLabel>
             {(merge?.fields ?? []).map((field) => (
               <DropdownMenuItem
                 key={field}
@@ -445,7 +479,7 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
               <RibbonButton
                 compact
                 chevron
-                label="Regole"
+                label={t("Regole")}
                 disabled={!merge}
                 icon={<Split className="size-4" />}
                 className="justify-start"
@@ -453,19 +487,19 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
             }
           >
             <DropdownMenuItem onClick={() => setDialog("rule-if")}>
-              Se… Allora… Altrimenti…
+              {t("Se… Allora… Altrimenti…")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setDialog("rule-skip")}>
-              Salta record se…
+              {t("Salta record se…")}
             </DropdownMenuItem>
           </RibbonMenu>
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label="Anteprima risultati" safe>
+      <RibbonGroup label={t("Anteprima risultati")} safe>
         <RibbonButton
           large
-          label="Anteprima risultati"
+          label={t("Anteprima risultati")}
           disabled={!hasRecipients}
           active={previewing}
           icon={<Eye className="size-5" />}
@@ -477,13 +511,13 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
         <RibbonRows>
           <div className="flex items-center gap-0.5">
             <RibbonButton
-              title="Primo record"
+              title={t("Primo record")}
               disabled={!previewing || position <= 0}
               icon={<ChevronFirst className="size-4" />}
               onClick={() => goTo(0)}
             />
             <RibbonButton
-              title="Record precedente"
+              title={t("Record precedente")}
               disabled={!previewing || position <= 0}
               icon={<ChevronLeft className="size-4" />}
               onClick={() => goTo(position - 1)}
@@ -492,13 +526,13 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
               {previewing ? `${position + 1} / ${included.length}` : "—"}
             </span>
             <RibbonButton
-              title="Record successivo"
+              title={t("Record successivo")}
               disabled={!previewing || position >= included.length - 1}
               icon={<ChevronRight className="size-4" />}
               onClick={() => goTo(position + 1)}
             />
             <RibbonButton
-              title="Ultimo record"
+              title={t("Ultimo record")}
               disabled={!previewing || position >= included.length - 1}
               icon={<ChevronLast className="size-4" />}
               onClick={() => goTo(included.length - 1)}
@@ -509,7 +543,7 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
               render={
                 <RibbonButton
                   compact
-                  label="Trova destinatario"
+                  label={t("Trova destinatario")}
                   disabled={!hasRecipients}
                   icon={<Search className="size-4" />}
                   className="justify-start"
@@ -524,7 +558,7 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
               <Input
                 autoFocus
                 value={search}
-                placeholder="Nome, città, email…"
+                placeholder={t("Nome, città, email…")}
                 onChange={(e) => setSearch(e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key !== "Enter" || !merge) return
@@ -540,18 +574,18 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
                     )
                   )
                   if (hit) setMerge({ ...merge, preview: hit.index })
-                  else toast.info("Nessun destinatario trovato")
+                  else toast.info(t("Nessun destinatario trovato"))
                 }}
                 className="h-8 text-sm"
               />
               <p className="text-[11px] text-muted-foreground">
-                Invio per il prossimo risultato
+                {t("Invio per il prossimo risultato")}
               </p>
             </PopoverContent>
           </Popover>
           <RibbonButton
             compact
-            label="Controlla errori"
+            label={t("Controlla errori")}
             disabled={!merge}
             icon={<AlertCircle className="size-4" />}
             className="justify-start"
@@ -560,27 +594,27 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label="Completa">
+      <RibbonGroup label={t("Completa")}>
         <RibbonMenu
           className="w-60"
           trigger={
             <RibbonButton
               large
               chevron
-              label="Finalizza e unisci"
+              label={t("Finalizza e unisci")}
               disabled={!hasRecipients}
               icon={<FileStack className="size-5" />}
             />
           }
         >
           <DropdownMenuItem onClick={() => finalize("edit")}>
-            <FileStack /> Modifica singoli documenti…
+            <FileStack /> {t("Modifica singoli documenti…")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => finalize("print")}>
-            <Printer /> Stampa documenti…
+            <Printer /> {t("Stampa documenti…")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setDialog("email")}>
-            <AtSign /> Invia messaggi email…
+            <AtSign /> {t("Invia messaggi email…")}
           </DropdownMenuItem>
         </RibbonMenu>
       </RibbonGroup>

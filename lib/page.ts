@@ -1,6 +1,7 @@
 import type { PageFormat } from "./types"
 import { PAGE_FORMATS } from "./types"
 
+import { tr } from "@/lib/i18n/client"
 const MM_TO_PX = 96 / 25.4
 const PX_TO_MM = 25.4 / 96
 
@@ -34,8 +35,14 @@ export function formatLabel(
   format: PageFormat | "infinite",
   orientation: Orientation
 ) {
-  if (format === "infinite") return "Infinita"
+  if (format === "infinite") return tr("Infinita")
   const mm = formatMm(format, orientation)
   const name = PAGE_FORMATS[format]?.label ?? format
-  return mm ? `${name} · ${Math.round(mm[0])}×${Math.round(mm[1])} mm` : name
+  return mm
+    ? tr("{name} · {width}×{height} mm", {
+        name,
+        width: Math.round(mm[0]),
+        height: Math.round(mm[1]),
+      })
+    : name
 }

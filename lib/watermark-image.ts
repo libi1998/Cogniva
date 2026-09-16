@@ -1,6 +1,7 @@
 import { fontStack } from "./fonts"
 import type { DocTheme, DocWatermark } from "./types"
 
+import { tr } from "@/lib/i18n/client"
 /**
  * La filigrana disegnata come immagine grande quanto la pagina, per Word: un
  * PNG trasparente dietro al testo, nell'intestazione di ogni pagina. È lo
@@ -24,7 +25,8 @@ function loadImage(src: string) {
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const img = new Image()
     img.onload = () => resolve(img)
-    img.onerror = () => reject(new Error("Immagine della filigrana non valida"))
+    img.onerror = () =>
+      reject(new Error(tr("Immagine della filigrana non valida")))
     img.src = src
   })
 }

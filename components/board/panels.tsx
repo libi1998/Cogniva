@@ -5,12 +5,13 @@ import { Frame, Search, StickyNote, Type } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { shapePath } from "@/lib/shapes"
-import { FRAME_SPECS, SHAPE_LABEL, WIRE_GROUPS, WIRE_SPECS } from "@/lib/items"
+import { FRAME_SPECS, SHAPE_LABEL, WIRE_SPECS, wireGroups } from "@/lib/items"
 import { ICON_CATEGORIES, ICONS } from "@/lib/icon-library"
 import { Glyph } from "./glyph"
 import type { FrameKind, NodeShape, WireKind } from "@/lib/types"
 import { SHAPE_KEYS } from "@/lib/types"
 
+import { useT } from "@/lib/i18n/client"
 export function ShapeGlyph({
   shape,
   size = 22,
@@ -103,6 +104,7 @@ export function FramePanel({ onPick }: { onPick: (f: FrameKind) => void }) {
 }
 
 export function WirePanel({ onPick }: { onPick: (w: WireKind) => void }) {
+  const t = useT()
   const [q, setQ] = React.useState("")
   const keys = Object.keys(WIRE_SPECS) as WireKind[]
   const filtered = keys.filter((k) =>
@@ -115,13 +117,13 @@ export function WirePanel({ onPick }: { onPick: (w: WireKind) => void }) {
         <Input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Cerca componente…"
+          placeholder={t("Cerca componente…")}
           className="h-8 border-transparent bg-muted pl-7 text-xs"
         />
       </div>
       <ScrollArea className="h-[300px]">
         <div className="p-1.5">
-          {WIRE_GROUPS.map((g) => {
+          {wireGroups().map((g) => {
             const items = filtered.filter((k) => WIRE_SPECS[k].group === g)
             if (!items.length) return null
             return (
@@ -145,7 +147,7 @@ export function WirePanel({ onPick }: { onPick: (w: WireKind) => void }) {
           })}
           {!filtered.length ? (
             <p className="px-2 py-6 text-center text-xs text-muted-foreground">
-              Nessun componente
+              {t("Nessun componente")}
             </p>
           ) : null}
         </div>
@@ -155,12 +157,13 @@ export function WirePanel({ onPick }: { onPick: (w: WireKind) => void }) {
 }
 
 export function IconPanel({ onPick }: { onPick: (name: string) => void }) {
+  const t = useT()
   const [q, setQ] = React.useState("")
   const query = q.toLowerCase().trim()
   const cats = query
     ? [
         {
-          label: "Risultati",
+          label: t("Risultati"),
           icons: Object.keys(ICONS).filter((n) => n.includes(query)),
         },
       ]
@@ -172,7 +175,7 @@ export function IconPanel({ onPick }: { onPick: (name: string) => void }) {
         <Input
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Cerca fra 250+ icone…"
+          placeholder={t("Cerca fra 250+ icone…")}
           className="h-8 border-transparent bg-muted pl-7 text-xs"
         />
       </div>
@@ -181,7 +184,7 @@ export function IconPanel({ onPick }: { onPick: (name: string) => void }) {
           {cats.map((c) => (
             <div key={c.label} className="mb-3">
               <div className="pb-1.5 text-[10px] font-semibold tracking-wide text-muted-foreground uppercase">
-                {c.label}
+                {t(c.label)}
               </div>
               <div className="grid grid-cols-8 gap-0.5">
                 {c.icons.map((name) => (

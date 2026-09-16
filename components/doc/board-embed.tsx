@@ -1,5 +1,6 @@
 "use client"
 
+import type { Route } from "next"
 import * as React from "react"
 import Link from "next/link"
 import { Node, mergeAttributes } from "@tiptap/core"
@@ -17,12 +18,14 @@ import { AUTO_CANVAS, resolveColor } from "@/lib/use-theme"
 import { useDocDark } from "./render-theme"
 import { cn } from "@/lib/utils"
 
+import { useT, hrefFor } from "@/lib/i18n/client"
 function BoardEmbedView({
   node,
   updateAttributes,
   deleteNode,
   editor,
 }: NodeViewProps) {
+  const t = useT()
   const boardId = node.attrs.boardId as string | null
   const snapshot = node.attrs.snapshot as string | null
   const caption = (node.attrs.caption as string) ?? ""
@@ -82,7 +85,7 @@ function BoardEmbedView({
             className="flex items-center justify-center text-xs"
             style={{ height, color: "var(--doc-muted)" }}
           >
-            Board non disponibile
+            {t("Board non disponibile")}
           </div>
         )}
 
@@ -93,7 +96,7 @@ function BoardEmbedView({
               onClick={() =>
                 updateAttributes({ height: Math.max(140, height - 60) })
               }
-              title="Riduci"
+              title={t("Riduci")}
             >
               <Minus className="size-3.5" />
             </button>
@@ -102,15 +105,15 @@ function BoardEmbedView({
               onClick={() =>
                 updateAttributes({ height: Math.min(900, height + 60) })
               }
-              title="Ingrandisci"
+              title={t("Ingrandisci")}
             >
               <Plus className="size-3.5" />
             </button>
             {boardId ? (
               <Link
-                href={`/board/${boardId}`}
+                href={hrefFor(`/board/${boardId}`) as Route}
                 className="flex size-6 items-center justify-center rounded-md text-muted-foreground hover:bg-muted"
-                title="Apri la board"
+                title={t("Apri la board")}
               >
                 <ExternalLink className="size-3.5" />
               </Link>
@@ -118,7 +121,7 @@ function BoardEmbedView({
             <button
               className="flex size-6 items-center justify-center rounded-md text-destructive hover:bg-muted"
               onClick={() => deleteNode()}
-              title="Rimuovi"
+              title={t("Rimuovi")}
             >
               <Trash2 className="size-3.5" />
             </button>
@@ -132,7 +135,7 @@ function BoardEmbedView({
           readOnly={!editable}
           onChange={(e) => updateAttributes({ caption: e.target.value })}
           onKeyDown={(e) => e.stopPropagation()}
-          placeholder="Didascalia…"
+          placeholder={t("Didascalia…")}
           className={cn(
             "mt-1.5 w-full bg-transparent text-center text-[0.82em] outline-none",
             "placeholder:opacity-40"

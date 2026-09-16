@@ -1,5 +1,6 @@
 import { whim } from "./palette"
 
+import { tr, currentRegion } from "@/lib/i18n/client"
 /**
  * Grafici come in Word ed Excel: un foglio dati (categorie × serie) e un tipo
  * di rappresentazione. Lo stesso modello serve ai documenti e alle board, e il
@@ -37,14 +38,54 @@ export type ChartSpec = {
 }
 
 export const CHART_TYPES: { value: ChartType; label: string }[] = [
-  { value: "column", label: "Istogramma" },
-  { value: "bar", label: "Barre" },
-  { value: "line", label: "Linee" },
-  { value: "area", label: "Area" },
-  { value: "pie", label: "Torta" },
-  { value: "doughnut", label: "Anello" },
-  { value: "radar", label: "Radar" },
-  { value: "scatter", label: "Dispersione" },
+  {
+    value: "column",
+    get label() {
+      return tr("Istogramma")
+    },
+  },
+  {
+    value: "bar",
+    get label() {
+      return tr("Barre")
+    },
+  },
+  {
+    value: "line",
+    get label() {
+      return tr("Linee")
+    },
+  },
+  {
+    value: "area",
+    get label() {
+      return tr("Area")
+    },
+  },
+  {
+    value: "pie",
+    get label() {
+      return tr("Torta")
+    },
+  },
+  {
+    value: "doughnut",
+    get label() {
+      return tr("Anello")
+    },
+  },
+  {
+    value: "radar",
+    get label() {
+      return tr("Radar")
+    },
+  },
+  {
+    value: "scatter",
+    get label() {
+      return tr("Dispersione")
+    },
+  },
 ]
 
 export const CHART_PALETTES: Record<
@@ -52,7 +93,9 @@ export const CHART_PALETTES: Record<
   { label: string; colors: string[] }
 > = {
   vivid: {
-    label: "Vivaci",
+    get label() {
+      return tr("Vivaci")
+    },
     colors: [
       whim.blue[400],
       whim.hotPink[400],
@@ -65,7 +108,9 @@ export const CHART_PALETTES: Record<
     ],
   },
   cool: {
-    label: "Freddi",
+    get label() {
+      return tr("Freddi")
+    },
     colors: [
       whim.teal[600],
       whim.blue[400],
@@ -78,7 +123,9 @@ export const CHART_PALETTES: Record<
     ],
   },
   warm: {
-    label: "Caldi",
+    get label() {
+      return tr("Caldi")
+    },
     colors: [
       whim.orange[400],
       whim.hotPink[400],
@@ -91,7 +138,9 @@ export const CHART_PALETTES: Record<
     ],
   },
   mono: {
-    label: "Monocromatico",
+    get label() {
+      return tr("Monocromatico")
+    },
     colors: [
       whim.blue[700],
       whim.blue[500],
@@ -123,16 +172,16 @@ export function defaultChart(type: ChartType = "column"): ChartSpec {
   const pie = type === "pie" || type === "doughnut"
   return {
     type,
-    title: "Titolo del grafico",
+    title: tr("Titolo del grafico"),
     categories: pie
       ? ["1° trim.", "2° trim.", "3° trim.", "4° trim."]
       : ["Categoria 1", "Categoria 2", "Categoria 3", "Categoria 4"],
     series: pie
-      ? [{ name: "Vendite", color: null, values: [8.2, 3.2, 1.4, 1.2] }]
+      ? [{ name: tr("Vendite"), color: null, values: [8.2, 3.2, 1.4, 1.2] }]
       : [
-          { name: "Serie 1", color: null, values: [4.3, 2.5, 3.5, 4.5] },
-          { name: "Serie 2", color: null, values: [2.4, 4.4, 1.8, 2.8] },
-          { name: "Serie 3", color: null, values: [2, 2, 3, 5] },
+          { name: tr("Serie 1"), color: null, values: [4.3, 2.5, 3.5, 4.5] },
+          { name: tr("Serie 2"), color: null, values: [2.4, 4.4, 1.8, 2.8] },
+          { name: tr("Serie 3"), color: null, values: [2, 2, 3, 5] },
         ],
     stacked: false,
     legend: "bottom",
@@ -274,12 +323,12 @@ export function niceScale(min: number, max: number, ticks = 5) {
 }
 
 export function formatValue(v: number) {
-  const abs = Math.abs(v)
-  if (abs >= 1e9)
-    return `${(v / 1e9).toLocaleString("it-IT", { maximumFractionDigits: 1 })} Mld`
-  if (abs >= 1e6)
-    return `${(v / 1e6).toLocaleString("it-IT", { maximumFractionDigits: 1 })} Mln`
-  if (abs >= 1e4)
-    return `${(v / 1e3).toLocaleString("it-IT", { maximumFractionDigits: 1 })}k`
-  return v.toLocaleString("it-IT", { maximumFractionDigits: 2 })
+  const region = currentRegion()
+  // 1,2 Mrd · 3,4 M · 12 k: le abbreviazioni della lingua attiva
+  if (Math.abs(v) >= 1e4)
+    return new Intl.NumberFormat(region, {
+      notation: "compact",
+      maximumFractionDigits: 1,
+    }).format(v)
+  return v.toLocaleString(region, { maximumFractionDigits: 2 })
 }

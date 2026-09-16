@@ -1,5 +1,6 @@
 import type { CitationStyle, DocSource, SourceKind } from "./types"
 
+import { tr, currentLocale } from "@/lib/i18n/client"
 /**
  * Citazioni e bibliografia negli stili che offre Word. Le funzioni restituiscono
  * pezzi di testo con il corsivo segnato, così le usano sia l'editor (DOM) sia
@@ -7,25 +8,68 @@ import type { CitationStyle, DocSource, SourceKind } from "./types"
  */
 
 export const CITATION_STYLES: { value: CitationStyle; label: string }[] = [
-  { value: "apa", label: "APA (7ª ed.)" },
-  { value: "mla", label: "MLA (9ª ed.)" },
-  { value: "chicago", label: "Chicago (autore-data)" },
+  {
+    value: "apa",
+    get label() {
+      return tr("APA (7ª ed.)")
+    },
+  },
+  {
+    value: "mla",
+    get label() {
+      return tr("MLA (9ª ed.)")
+    },
+  },
+  {
+    value: "chicago",
+    get label() {
+      return tr("Chicago (autore-data)")
+    },
+  },
   { value: "iso690", label: "ISO 690" },
 ]
 
 export const SOURCE_KINDS: { value: SourceKind; label: string }[] = [
-  { value: "book", label: "Libro" },
-  { value: "article", label: "Articolo di rivista" },
-  { value: "web", label: "Sito web" },
-  { value: "report", label: "Rapporto" },
+  {
+    value: "book",
+    get label() {
+      return tr("Libro")
+    },
+  },
+  {
+    value: "article",
+    get label() {
+      return tr("Articolo di rivista")
+    },
+  },
+  {
+    value: "web",
+    get label() {
+      return tr("Sito web")
+    },
+  },
+  {
+    value: "report",
+    get label() {
+      return tr("Rapporto")
+    },
+  },
 ]
 
 /** Il titolo della bibliografia che usa ogni stile */
 export const BIBLIOGRAPHY_TITLES: Record<CitationStyle, string> = {
-  apa: "Riferimenti bibliografici",
-  mla: "Opere citate",
-  chicago: "Bibliografia",
-  iso690: "Bibliografia",
+  get apa() {
+    return tr("Riferimenti bibliografici")
+  },
+  get mla() {
+    return tr("Opere citate")
+  },
+  get chicago() {
+    return tr("Bibliografia")
+  },
+  get iso690() {
+    return tr("Bibliografia")
+  },
 }
 
 export type Piece = { text: string; italic?: boolean }
@@ -76,9 +120,9 @@ export function inTextCitation(
   source: DocSource | undefined,
   pages = ""
 ): string {
-  if (!source) return "(Fonte mancante)"
+  if (!source) return tr("(Fonte mancante)")
   const people = parseAuthors(source.authors)
-  const title = source.title.trim() || "Senza titolo"
+  const title = source.title.trim() || tr("Senza titolo")
   const p = pages.trim()
 
   const lead = (and: string, upper = false, etAl = 3) => {
@@ -103,7 +147,7 @@ export function inTextCitation(
 /** Voce della bibliografia */
 export function referenceEntry(style: CitationStyle, s: DocSource): Piece[] {
   const people = parseAuthors(s.authors)
-  const title = s.title.trim() || "Senza titolo"
+  const title = s.title.trim() || tr("Senza titolo")
   const y = year(s)
   const pub = s.publisher.trim()
   const city = s.city.trim()
@@ -187,7 +231,7 @@ export function referenceEntry(style: CitationStyle, s: DocSource): Piece[] {
   const names = people.map((x) =>
     x.first ? `${x.last.toUpperCase()}, ${x.first}` : x.last.toUpperCase()
   )
-  t(names.length ? `${joinNames(names, "e")}. ` : "")
+  t(names.length ? `${joinNames(names, tr("e"))}. ` : "")
   if (s.kind === "article") {
     t(`${title}. `)
     t(pub, true)
@@ -196,8 +240,12 @@ export function referenceEntry(style: CitationStyle, s: DocSource): Piece[] {
     t(title, true)
     t(" [online]. ")
     t(`${pub ? `${pub}, ` : ""}${y}`)
-    t(s.accessed.trim() ? ` [consultato il ${s.accessed.trim()}]. ` : ". ")
-    t(url ? `Disponibile da: ${url}` : "")
+    t(
+      s.accessed.trim()
+        ? ` [${tr("consultato il {date}", { date: s.accessed.trim() })}]. `
+        : ". "
+    )
+    t(url ? tr("Disponibile da: {url}", { url }) : "")
   } else {
     t(title, true)
     t(`. ${city ? `${city}: ` : ""}${pub ? `${pub}, ` : ""}${y}.`)
@@ -210,7 +258,9 @@ export function sortSources(list: DocSource[]) {
   const key = (s: DocSource) =>
     (parseAuthors(s.authors)[0]?.last ?? s.title).toLocaleLowerCase("it")
   return [...list].sort(
-    (a, b) => key(a).localeCompare(key(b), "it") || a.year.localeCompare(b.year)
+    (a, b) =>
+      key(a).localeCompare(key(b), currentLocale()) ||
+      a.year.localeCompare(b.year)
   )
 }
 
@@ -233,5 +283,5 @@ export function emptySource(id: string): DocSource {
 /** Etichetta breve di una fonte nei menu */
 export function sourceLabel(s: DocSource) {
   const who = parseAuthors(s.authors)[0]?.last
-  return `${who ? `${who}, ` : ""}${s.title || "Senza titolo"}${s.year ? ` (${s.year})` : ""}`
+  return `${who ? `${who}, ` : ""}${s.title || tr("Senza titolo")}${s.year ? ` (${s.year})` : ""}`
 }

@@ -2024,9 +2024,12 @@ export const ICONS: Record<string, IconNode> = {
   ],
 }
 
+import { N_ } from "@/lib/i18n/config"
+
+/** Le etichette sono gli id delle categorie: si traducono dove si mostrano */
 export const ICON_CATEGORIES: { label: string; icons: string[] }[] = [
   {
-    label: "Interfaccia",
+    label: N_("Interfaccia"),
     icons: [
       "search",
       "settings",
@@ -2088,7 +2091,7 @@ export const ICON_CATEGORIES: { label: string; icons: string[] }[] = [
     ],
   },
   {
-    label: "Persone",
+    label: N_("Persone"),
     icons: [
       "user",
       "users",
@@ -2104,7 +2107,7 @@ export const ICON_CATEGORIES: { label: string; icons: string[] }[] = [
     ],
   },
   {
-    label: "File",
+    label: N_("File"),
     icons: [
       "file",
       "file-text",
@@ -2134,7 +2137,7 @@ export const ICON_CATEGORIES: { label: string; icons: string[] }[] = [
     ],
   },
   {
-    label: "Comunicazione",
+    label: N_("Comunicazione"),
     icons: [
       "mail",
       "mail-open",
@@ -2154,7 +2157,7 @@ export const ICON_CATEGORIES: { label: string; icons: string[] }[] = [
     ],
   },
   {
-    label: "Commercio",
+    label: N_("Commercio"),
     icons: [
       "shopping-cart",
       "shopping-bag",
@@ -2174,7 +2177,7 @@ export const ICON_CATEGORIES: { label: string; icons: string[] }[] = [
     ],
   },
   {
-    label: "Dati",
+    label: N_("Dati"),
     icons: [
       "chart-column",
       "chart-bar",
@@ -2198,7 +2201,7 @@ export const ICON_CATEGORIES: { label: string; icons: string[] }[] = [
     ],
   },
   {
-    label: "Tempo",
+    label: N_("Tempo"),
     icons: [
       "calendar",
       "calendar-days",
@@ -2212,7 +2215,7 @@ export const ICON_CATEGORIES: { label: string; icons: string[] }[] = [
     ],
   },
   {
-    label: "Luoghi",
+    label: N_("Luoghi"),
     icons: [
       "map",
       "map-pin",
@@ -2233,7 +2236,7 @@ export const ICON_CATEGORIES: { label: string; icons: string[] }[] = [
     ],
   },
   {
-    label: "Stato",
+    label: N_("Stato"),
     icons: [
       "circle-check",
       "circle-x",
@@ -2262,7 +2265,7 @@ export const ICON_CATEGORIES: { label: string; icons: string[] }[] = [
     ],
   },
   {
-    label: "Sviluppo",
+    label: N_("Sviluppo"),
     icons: [
       "code",
       "code-xml",
@@ -2291,7 +2294,7 @@ export const ICON_CATEGORIES: { label: string; icons: string[] }[] = [
     ],
   },
   {
-    label: "Sistema",
+    label: N_("Sistema"),
     icons: [
       "play",
       "pause",
@@ -2324,7 +2327,7 @@ export const ICON_CATEGORIES: { label: string; icons: string[] }[] = [
     ],
   },
   {
-    label: "Flusso",
+    label: N_("Flusso"),
     icons: [
       "arrow-right",
       "arrow-left",

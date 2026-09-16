@@ -6,6 +6,7 @@ import { sentencesOf, wordsOf } from "@/lib/read-aloud/text"
 import { cn } from "@/lib/utils"
 import type { AddinApi } from "./api"
 
+import { useT, tr } from "@/lib/i18n/client"
 /**
  * Indici di leggibilità, ciascuno per la sua lingua: Gulpease (italiano),
  * Flesch Reading Ease (inglese), Kandel-Moles (francese), Fernández Huerta
@@ -76,18 +77,24 @@ function analyse(api: AddinApi): Report {
   const asl = wds / n
   const asw = syl / wds
   const table: Record<string, { name: string; value: number }> = {
-    it: { name: "Indice Gulpease", value: 89 + (300 * n - 10 * letters) / wds },
+    it: {
+      name: tr("Indice Gulpease"),
+      value: 89 + (300 * n - 10 * letters) / wds,
+    },
     en: {
-      name: "Flesch Reading Ease",
+      name: tr("Flesch Reading Ease"),
       value: 206.835 - 1.015 * asl - 84.6 * asw,
     },
-    fr: { name: "Kandel e Moles", value: 207 - 1.015 * asl - 73.6 * asw },
+    fr: { name: tr("Kandel e Moles"), value: 207 - 1.015 * asl - 73.6 * asw },
     es: {
-      name: "Fernández Huerta",
+      name: tr("Fernández Huerta"),
       value: 206.84 - 0.6 * (asw * 100) - 1.02 * ((n / wds) * 100),
     },
     de: { name: "Amstad", value: 180 - asl - 58.5 * asw },
-    pt: { name: "Flesch (Martins)", value: 248.835 - 1.015 * asl - 84.6 * asw },
+    pt: {
+      name: tr("Flesch (Martins)"),
+      value: 248.835 - 1.015 * asl - 84.6 * asw,
+    },
   }
   const chosen = table[lang] ?? table.it!
   return {
@@ -105,18 +112,19 @@ function analyse(api: AddinApi): Report {
 function verdict(report: Report, lang: string) {
   const v = report.index
   if (lang === "it") {
-    if (v >= 80) return "Facile anche per chi ha la licenza elementare"
-    if (v >= 60) return "Facile per chi ha la licenza media"
-    if (v >= 40) return "Facile per chi ha un diploma superiore"
-    return "Difficile: frasi e parole da accorciare"
+    if (v >= 80) return tr("Facile anche per chi ha la licenza elementare")
+    if (v >= 60) return tr("Facile per chi ha la licenza media")
+    if (v >= 40) return tr("Facile per chi ha un diploma superiore")
+    return tr("Difficile: frasi e parole da accorciare")
   }
-  if (v >= 80) return "Molto facile"
-  if (v >= 60) return "Abbastanza facile"
-  if (v >= 40) return "Impegnativo"
-  return "Difficile: frasi e parole da accorciare"
+  if (v >= 80) return tr("Molto facile")
+  if (v >= 60) return tr("Abbastanza facile")
+  if (v >= 40) return tr("Impegnativo")
+  return tr("Difficile: frasi e parole da accorciare")
 }
 
 export function ReadabilityAddin({ api }: { api: AddinApi }) {
+  const t = useT()
   const [report, setReport] = React.useState<Report>(() => analyse(api))
   const lang = api.language.slice(0, 2).toLowerCase()
   const tone =
@@ -146,7 +154,7 @@ export function ReadabilityAddin({ api }: { api: AddinApi }) {
           onClick={() => setReport(analyse(api))}
           className="flex h-8 items-center gap-1 rounded-md border border-border px-2 text-xs hover:bg-muted"
         >
-          <RefreshCw className="size-3.5" /> Ricalcola
+          <RefreshCw className="size-3.5" /> {t("Ricalcola")}
         </button>
       </div>
       {report.words ? (
@@ -160,14 +168,14 @@ export function ReadabilityAddin({ api }: { api: AddinApi }) {
           <p className="text-sm">{verdict(report, lang)}</p>
           <dl className="grid grid-cols-2 gap-2 text-xs">
             {[
-              ["Parole", report.words],
-              ["Frasi", report.sentences],
+              [t("Parole"), report.words],
+              [t("Frasi"), report.sentences],
               [
-                "Parole per frase",
+                t("Parole per frase"),
                 String(report.wordsPerSentence).replace(".", ","),
               ],
-              ["Parole lunghe", `${report.longWords}%`],
-              ["Tempo di lettura", `${report.minutes} min`],
+              [t("Parole lunghe"), `${report.longWords}%`],
+              [t("Tempo di lettura"), `${report.minutes} min`],
             ].map(([k, v]) => (
               <div
                 key={String(k)}
@@ -180,7 +188,7 @@ export function ReadabilityAddin({ api }: { api: AddinApi }) {
           </dl>
           <section>
             <h3 className="mb-1 text-xs font-semibold">
-              Frasi da semplificare
+              {t("Frasi da semplificare")}
             </h3>
             {report.hard.length ? (
               <ul className="space-y-1">
@@ -200,7 +208,7 @@ export function ReadabilityAddin({ api }: { api: AddinApi }) {
                     >
                       <span className="line-clamp-2">{h.text}</span>
                       <span className="text-[11px] text-muted-foreground">
-                        {h.words} parole
+                        {t("{count} parole", { count: h.words })}
                       </span>
                     </button>
                   </li>
@@ -208,14 +216,14 @@ export function ReadabilityAddin({ api }: { api: AddinApi }) {
               </ul>
             ) : (
               <p className="text-xs text-muted-foreground">
-                Nessuna frase oltre le 25 parole.
+                {t("Nessuna frase oltre le 25 parole.")}
               </p>
             )}
           </section>
         </>
       ) : (
         <p className="text-xs text-muted-foreground">
-          Il documento è ancora vuoto.
+          {t("Il documento è ancora vuoto.")}
         </p>
       )}
     </div>

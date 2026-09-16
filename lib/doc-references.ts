@@ -3,6 +3,7 @@ import type { Node as PMNode } from "@tiptap/pm/model"
 import { NodeSelection, type EditorState } from "@tiptap/pm/state"
 import { textWithFields } from "./doc-fields"
 
+import { tr as translate, currentLocale } from "@/lib/i18n/client"
 /**
  * Scheda Riferimenti: didascalie numerate, indice delle figure, voci
  * dell'indice analitico e delle autorità con i loro indici. Tutto si calcola
@@ -109,12 +110,12 @@ export function captionEntries(state: EditorState, label: string) {
 
 export type IndexKind = "index" | "authority"
 
-export const AUTHORITY_CATEGORIES = [
-  "Casi",
-  "Leggi",
-  "Regolamenti",
-  "Trattati",
-  "Altre fonti",
+export const authorityCategories = () => [
+  translate("Casi"),
+  translate("Leggi"),
+  translate("Regolamenti"),
+  translate("Trattati"),
+  translate("Altre fonti"),
 ]
 
 declare module "@tiptap/core" {
@@ -280,7 +281,7 @@ export function indexItems(doc: PMNode, kind: IndexKind): IndexItem[] {
     }
     return true
   })
-  const collator = new Intl.Collator("it", {
+  const collator = new Intl.Collator(currentLocale(), {
     sensitivity: "base",
     numeric: true,
   })
@@ -304,8 +305,8 @@ export const FigureIndex = Node.create({
   addAttributes() {
     return {
       label: {
-        default: "Figura",
-        parseHTML: (el) => el.getAttribute("data-label") ?? "Figura",
+        default: translate("Figura"),
+        parseHTML: (el) => el.getAttribute("data-label") ?? translate("Figura"),
         renderHTML: (a) => ({ "data-label": a.label }),
       },
     }

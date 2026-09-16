@@ -17,6 +17,7 @@ import {
 import { rememberFont, useRecentFonts } from "@/lib/recent-fonts"
 import { cn } from "@/lib/utils"
 
+import { useT, tr } from "@/lib/i18n/client"
 type Row =
   | { kind: "header"; label: string }
   | { kind: "font"; font: FontOption; id: string }
@@ -33,7 +34,7 @@ export function fontRows(query: string, recent: string[]): Row[] {
   const rows: Row[] = []
   const recents = recent.map((k) => fontMap[k]).filter(Boolean)
   if (recents.length) {
-    rows.push({ kind: "header", label: "Usati di recente" })
+    rows.push({ kind: "header", label: tr("Usati di recente") })
     for (const font of recents) {
       rows.push({ kind: "font", font, id: `recent-${font.key}` })
     }
@@ -66,6 +67,7 @@ export function FontPicker({
    */
   specials?: { key: string; label: string; stack: string }[]
 }) {
+  const t = useT()
   const [open, setOpen] = React.useState(false)
   const [query, setQuery] = React.useState("")
   const recent = useRecentFonts()
@@ -76,7 +78,7 @@ export function FontPicker({
   const rows: Row[] = [
     ...(specials.length && !query.trim()
       ? [
-          { kind: "header" as const, label: "Caratteri del tema" },
+          { kind: "header" as const, label: t("Caratteri del tema") },
           ...specials.map((s) => ({
             kind: "font" as const,
             id: `special-${s.key}`,
@@ -135,7 +137,9 @@ export function FontPicker({
           <input
             autoFocus
             value={query}
-            placeholder={`Cerca fra ${FONTS.length} caratteri`}
+            placeholder={t("Cerca fra {count} caratteri", {
+              count: FONTS.length,
+            })}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => {
               if (e.key !== "Enter") return
@@ -166,7 +170,7 @@ export function FontPicker({
             )
           ) : (
             <p className="px-2 py-3 text-xs text-muted-foreground">
-              Nessun carattere trovato
+              {t("Nessun carattere trovato")}
             </p>
           )}
         </div>

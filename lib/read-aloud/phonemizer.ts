@@ -1,3 +1,4 @@
+import { tr } from "@/lib/i18n/client"
 /**
  * Dal testo ai fonemi con espeak-ng (piper-phonemize compilato in
  * WebAssembly). Il codice arriva dalla sua CDN pubblica, a una versione
@@ -36,12 +37,14 @@ function loadScript() {
         window as unknown as { createPiperPhonemize?: CreatePhonemize }
       ).createPiperPhonemize
       if (create) resolve(create)
-      else reject(new Error("Fonetizzatore non disponibile"))
+      else reject(new Error(tr("Fonetizzatore non disponibile")))
     }
     script.onerror = () =>
       reject(
         new Error(
-          "Non riesco a scaricare il fonetizzatore: serve la rete la prima volta."
+          tr(
+            "Non riesco a scaricare il fonetizzatore: serve la rete la prima volta."
+          )
         )
       )
     document.head.append(script)

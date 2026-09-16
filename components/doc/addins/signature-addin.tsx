@@ -6,12 +6,28 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import type { AddinApi } from "./api"
 
+import { useT, tr } from "@/lib/i18n/client"
 type Point = { x: number; y: number; p: number }
 
 const INKS = [
-  { value: "#111827", label: "Nero" },
-  { value: "#1d4ed8", label: "Blu" },
-  { value: "#0f766e", label: "Verde petrolio" },
+  {
+    value: "#111827",
+    get label() {
+      return tr("Nero")
+    },
+  },
+  {
+    value: "#1d4ed8",
+    get label() {
+      return tr("Blu")
+    },
+  },
+  {
+    value: "#0f766e",
+    get label() {
+      return tr("Verde petrolio")
+    },
+  },
 ]
 
 /** Il tratto disegnato, liscio: curve che passano per i punti medi */
@@ -93,6 +109,7 @@ function trimmed(canvas: HTMLCanvasElement) {
 }
 
 export function SignatureAddin({ api }: { api: AddinApi }) {
+  const t = useT()
   const canvasRef = React.useRef<HTMLCanvasElement>(null)
   const [strokes, setStrokes] = React.useState<Point[][]>([])
   const current = React.useRef<Point[] | null>(null)
@@ -130,13 +147,13 @@ export function SignatureAddin({ api }: { api: AddinApi }) {
   return (
     <div className="space-y-3 p-3">
       <p className="text-xs text-muted-foreground">
-        Firma nel riquadro con il mouse, il dito o la penna.
+        {t("Firma nel riquadro con il mouse, il dito o la penna.")}
       </p>
       <canvas
         ref={canvasRef}
         width={320 * scale}
         height={160 * scale}
-        aria-label="Riquadro della firma"
+        aria-label={t("Riquadro della firma")}
         data-testid="signature-canvas"
         className="h-40 w-full touch-none rounded-lg border border-dashed border-border bg-white"
         onPointerDown={(e) => {
@@ -160,7 +177,9 @@ export function SignatureAddin({ api }: { api: AddinApi }) {
             key={c.value}
             type="button"
             title={c.label}
-            aria-label={`Inchiostro ${c.label.toLowerCase()}`}
+            aria-label={t("Inchiostro {color}", {
+              color: c.label.toLowerCase(),
+            })}
             onClick={() => setInk(c.value)}
             className={cn(
               "size-6 rounded-full ring-offset-2 ring-offset-background",
@@ -170,7 +189,7 @@ export function SignatureAddin({ api }: { api: AddinApi }) {
           />
         ))}
         <label className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
-          Tratto
+          {t("Tratto")}
           <input
             type="range"
             min={1}
@@ -190,7 +209,7 @@ export function SignatureAddin({ api }: { api: AddinApi }) {
           disabled={!strokes.length}
           onClick={() => setStrokes((s) => s.slice(0, -1))}
         >
-          <Undo2 className="size-3.5" /> Annulla tratto
+          <Undo2 className="size-3.5" /> {t("Annulla tratto")}
         </Button>
         <Button
           type="button"
@@ -200,12 +219,13 @@ export function SignatureAddin({ api }: { api: AddinApi }) {
           disabled={!strokes.length}
           onClick={() => setStrokes([])}
         >
-          <Eraser className="size-3.5" /> Cancella
+          <Eraser className="size-3.5" /> {t("Cancella")}
         </Button>
       </div>
       <label className="block space-y-1">
         <span className="flex justify-between text-xs font-medium text-muted-foreground">
-          Larghezza nel documento <span className="tabular-nums">{width}%</span>
+          {t("Larghezza nel documento")}{" "}
+          <span className="tabular-nums">{width}%</span>
         </span>
         <input
           type="range"
@@ -223,10 +243,10 @@ export function SignatureAddin({ api }: { api: AddinApi }) {
         onClick={() => {
           const canvas = canvasRef.current
           const src = canvas ? trimmed(canvas) : null
-          if (src) api.insertImage(src, "Firma", `${width}%`)
+          if (src) api.insertImage(src, t("Firma"), `${width}%`)
         }}
       >
-        Inserisci firma
+        {t("Inserisci firma")}
       </Button>
     </div>
   )

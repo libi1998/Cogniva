@@ -125,20 +125,22 @@ import {
 import { CHART_ICONS } from "@/components/shared/chart-editor"
 import { CHART_TYPES } from "@/lib/chart"
 
+import { useT, tr, currentRegion } from "@/lib/i18n/client"
 /** Griglia per scegliere righe e colonne passandoci sopra, come in Word */
 function TableGrid({
   onPick,
 }: {
   onPick: (rows: number, cols: number) => void
 }) {
+  const t = useT()
   const [hover, setHover] = React.useState({ r: 0, c: 0 })
   const close = useCloseRibbonMenu()
   return (
     <div className="p-2">
       <p className="mb-1.5 text-xs text-muted-foreground">
         {hover.r && hover.c
-          ? `Tabella ${hover.c}×${hover.r}`
-          : "Inserisci tabella"}
+          ? t("Tabella {columns}×{rows}", { columns: hover.c, rows: hover.r })
+          : t("Inserisci tabella")}
       </p>
       <div
         className="grid gap-[3px]"
@@ -153,7 +155,10 @@ function TableGrid({
             <button
               key={i}
               type="button"
-              aria-label={`${c} colonne per ${r} righe`}
+              aria-label={t("{columns} colonne per {rows} righe", {
+                columns: c,
+                rows: r,
+              })}
               onMouseDown={(e) => e.preventDefault()}
               onMouseEnter={() => setHover({ r, c })}
               onClick={() => {
@@ -175,6 +180,7 @@ function TableGrid({
 }
 
 function LinkPopover({ ctx }: { ctx: RibbonCtx }) {
+  const t = useT()
   const { editor, st } = ctx
   const [open, setOpen] = React.useState(false)
   const [url, setUrl] = React.useState("")
@@ -213,8 +219,8 @@ function LinkPopover({ ctx }: { ctx: RibbonCtx }) {
         render={
           <RibbonButton
             large
-            label="Collegamento"
-            title="Inserisci collegamento"
+            label={t("Collegamento")}
+            title={t("Inserisci collegamento")}
             active={st.link}
             icon={<Link2 className="size-5" />}
           />
@@ -225,7 +231,7 @@ function LinkPopover({ ctx }: { ctx: RibbonCtx }) {
         className="w-72 space-y-2 p-3"
         finalFocus={false}
       >
-        <p className="text-xs font-medium">Indirizzo del collegamento</p>
+        <p className="text-xs font-medium">{t("Indirizzo del collegamento")}</p>
         <Input
           autoFocus
           value={url}
@@ -237,7 +243,7 @@ function LinkPopover({ ctx }: { ctx: RibbonCtx }) {
         {bookmarks.length ? (
           <div className="space-y-1">
             <p className="text-[11px] text-muted-foreground">
-              Posizione nel documento
+              {t("Posizione nel documento")}
             </p>
             <div className="max-h-32 overflow-y-auto rounded-md border border-border">
               {bookmarks.map((b) => (
@@ -269,11 +275,11 @@ function LinkPopover({ ctx }: { ctx: RibbonCtx }) {
                 setOpen(false)
               }}
             >
-              Rimuovi
+              {t("Rimuovi")}
             </Button>
           ) : null}
           <Button size="sm" className="h-7 text-xs" onClick={apply}>
-            Applica
+            {t("Applica")}
           </Button>
         </div>
       </PopoverContent>
@@ -282,6 +288,7 @@ function LinkPopover({ ctx }: { ctx: RibbonCtx }) {
 }
 
 function VideoPopover({ ctx }: { ctx: RibbonCtx }) {
+  const t = useT()
   const [open, setOpen] = React.useState(false)
   const [url, setUrl] = React.useState("")
   const info = url.trim() ? parseVideo(url) : null
@@ -300,8 +307,8 @@ function VideoPopover({ ctx }: { ctx: RibbonCtx }) {
         render={
           <RibbonButton
             large
-            label="Video online"
-            title="YouTube, Vimeo, Loom, Dailymotion o un file video"
+            label={t("Video online")}
+            title={t("YouTube, Vimeo, Loom, Dailymotion o un file video")}
             icon={<Video className="size-5" />}
           />
         }
@@ -311,7 +318,7 @@ function VideoPopover({ ctx }: { ctx: RibbonCtx }) {
         className="w-80 space-y-2 p-3"
         finalFocus={false}
       >
-        <p className="text-xs font-medium">Indirizzo del video</p>
+        <p className="text-xs font-medium">{t("Indirizzo del video")}</p>
         <Input
           autoFocus
           value={url}
@@ -323,9 +330,16 @@ function VideoPopover({ ctx }: { ctx: RibbonCtx }) {
         <p className="text-[11px] leading-snug text-muted-foreground">
           {url.trim()
             ? info
-              ? `Video ${info.provider === "File" ? "da file" : `di ${info.provider}`} riconosciuto`
-              : "Indirizzo non riconosciuto"
-            : "Incolla il link di YouTube, Vimeo, Loom, Dailymotion o di un file .mp4"}
+              ? t("Video {provider} riconosciuto", {
+                  provider:
+                    info.provider === "File"
+                      ? "da file"
+                      : `di ${info.provider}`,
+                })
+              : t("Indirizzo non riconosciuto")
+            : t(
+                "Incolla il link di YouTube, Vimeo, Loom, Dailymotion o di un file .mp4"
+              )}
         </p>
         <div className="flex justify-end">
           <Button
@@ -334,7 +348,7 @@ function VideoPopover({ ctx }: { ctx: RibbonCtx }) {
             disabled={!info}
             onClick={apply}
           >
-            Inserisci
+            {t("Inserisci")}
           </Button>
         </div>
       </PopoverContent>
@@ -343,12 +357,42 @@ function VideoPopover({ ctx }: { ctx: RibbonCtx }) {
 }
 
 const PAGE_NUMBERS: { value: PageNumberPosition; label: string }[] = [
-  { value: "top-left", label: "Inizio pagina, a sinistra" },
-  { value: "top-center", label: "Inizio pagina, al centro" },
-  { value: "top-right", label: "Inizio pagina, a destra" },
-  { value: "bottom-left", label: "Fine pagina, a sinistra" },
-  { value: "bottom-center", label: "Fine pagina, al centro" },
-  { value: "bottom-right", label: "Fine pagina, a destra" },
+  {
+    value: "top-left",
+    get label() {
+      return tr("Inizio pagina, a sinistra")
+    },
+  },
+  {
+    value: "top-center",
+    get label() {
+      return tr("Inizio pagina, al centro")
+    },
+  },
+  {
+    value: "top-right",
+    get label() {
+      return tr("Inizio pagina, a destra")
+    },
+  },
+  {
+    value: "bottom-left",
+    get label() {
+      return tr("Fine pagina, a sinistra")
+    },
+  },
+  {
+    value: "bottom-center",
+    get label() {
+      return tr("Fine pagina, al centro")
+    },
+  },
+  {
+    value: "bottom-right",
+    get label() {
+      return tr("Fine pagina, a destra")
+    },
+  },
 ]
 
 type InsertDialog =
@@ -368,7 +412,7 @@ type InsertDialog =
 /** Una schermata di una finestra o dello schermo, come immagine */
 async function captureScreen(): Promise<string | null> {
   if (!navigator.mediaDevices?.getDisplayMedia) {
-    toast.error("Il browser non permette di catturare lo schermo")
+    toast.error(tr("Il browser non permette di catturare lo schermo"))
     return null
   }
   let stream: MediaStream | null = null
@@ -392,7 +436,7 @@ async function captureScreen(): Promise<string | null> {
   } catch (error) {
     // chi annulla la scelta della finestra non ha fatto niente di sbagliato
     if (!(error instanceof DOMException && error.name === "NotAllowedError")) {
-      toast.error("Schermata non riuscita")
+      toast.error(tr("Schermata non riuscita"))
     }
     return null
   } finally {
@@ -481,6 +525,7 @@ const SHAPE_ICONS: Record<Shape3D, React.ReactNode> = {
 
 /** «Modelli 3D»: un file glTF dal dispositivo o dal web, o una forma pronta */
 function Models3DMenu({ ctx, accent }: { ctx: RibbonCtx; accent: string }) {
+  const t = useT()
   const input = React.useRef<HTMLInputElement>(null)
   const insert = (
     attrs: Parameters<RibbonCtx["editor"]["commands"]["insertModel3d"]>[0]
@@ -495,7 +540,7 @@ function Models3DMenu({ ctx, accent }: { ctx: RibbonCtx; accent: string }) {
         type="file"
         accept={MODEL_ACCEPT}
         className="hidden"
-        aria-label="Scegli un modello 3D"
+        aria-label={t("Scegli un modello 3D")}
         data-testid="model3d-file"
         onChange={(e) => {
           const file = e.target.files?.[0]
@@ -505,7 +550,7 @@ function Models3DMenu({ ctx, accent }: { ctx: RibbonCtx; accent: string }) {
             .then((src) => insert({ src, name: file.name }))
             .catch((error: unknown) =>
               toast.error(
-                error instanceof Error ? error.message : "File non valido"
+                error instanceof Error ? error.message : t("File non valido")
               )
             )
         }}
@@ -516,31 +561,33 @@ function Models3DMenu({ ctx, accent }: { ctx: RibbonCtx; accent: string }) {
           <RibbonButton
             large
             chevron
-            label="Modelli 3D"
-            title="Modelli glTF da ruotare nel documento, o forme 3D pronte"
+            label={t("Modelli 3D")}
+            title={t(
+              "Modelli glTF da ruotare nel documento, o forme 3D pronte"
+            )}
             icon={<Rotate3d className="size-5" />}
           />
         }
       >
         <DropdownMenuItem onClick={() => input.current?.click()}>
-          Da questo dispositivo… (.glb, .gltf)
+          {t("Da questo dispositivo… (.glb, .gltf)")}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => {
             const url = window.prompt(
-              "Indirizzo del modello (.glb)",
+              t("Indirizzo del modello (.glb)"),
               "https://"
             )
             const src = url ? safeModelSrc(url) : ""
             if (src) insert({ src, name: src.split("/").pop() ?? "" })
             else if (url)
-              toast.error("Serve un indirizzo https a un file .glb o .gltf")
+              toast.error(t("Serve un indirizzo https a un file .glb o .gltf"))
           }}
         >
-          Da un indirizzo web…
+          {t("Da un indirizzo web…")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuLabel>Forme 3D</DropdownMenuLabel>
+        <DropdownMenuLabel>{t("Forme 3D")}</DropdownMenuLabel>
         <MenuGrid columns={4}>
           {SHAPES_3D.map((shape) => (
             <GridButton
@@ -562,6 +609,7 @@ function Models3DMenu({ ctx, accent }: { ctx: RibbonCtx; accent: string }) {
 }
 
 export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
+  const t = useT()
   const { editor, st, theme, setTheme } = ctx
   const boards = useStore(
     useShallow((s) => s.files.filter((f) => f.kind === "board"))
@@ -573,7 +621,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
   const close = () => setDialog(null)
 
   const today = () =>
-    new Date().toLocaleDateString("it-IT", {
+    new Date().toLocaleDateString(currentRegion(), {
       day: "numeric",
       month: "long",
       year: "numeric",
@@ -583,7 +631,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
     const title = docTitleText(editor.state.doc) ?? ""
     const parts = coverContent(design, {
       title,
-      author: getAuthor() || "[Nome dell'autore]",
+      author: getAuthor() || tr("[Nome dell'autore]"),
       date: today(),
     })
     const chain = editor.chain().focus()
@@ -626,7 +674,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
     const store = getWorkspace()
     const boardId = store.createFile(
       "board",
-      `SmartArt — ${template?.label ?? "Elemento grafico"}`
+      `SmartArt — ${template?.label ?? t("Elemento grafico")}`
     )
     const { drafts, edges } = smartArtBoard(id)
     const ids = store.addNodes(
@@ -640,39 +688,41 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
       if (from && to) store.addEdge(boardId, { ...edge, from, to })
     }
     ctx.onInsertBoard(boardId)
-    toast.success("SmartArt inserito: aprilo per modificare testi e colori")
+    toast.success(t("SmartArt inserito: aprilo per modificare testi e colori"))
   }
 
   const insertFromFile = (file: File) =>
     readDocNodes(file)
       .then((nodes) => {
         if (nodes.length) body().insertContent(nodes).run()
-        else toast.info("Il file non contiene testo da inserire")
+        else toast.info(t("Il file non contiene testo da inserire"))
       })
       .catch((error: unknown) =>
         toast.error(
           error instanceof Error
             ? error.message
-            : "Non riesco a leggere il file"
+            : t("Non riesco a leggere il file")
         )
       )
 
   return (
     <>
-      <RibbonGroup label="Pagine">
+      <RibbonGroup label={t("Pagine")}>
         <RibbonMenu
           className="w-[300px]"
           trigger={
             <RibbonButton
               large
               chevron
-              label="Frontespizio"
-              title="Una prima pagina con titolo, sottotitolo, autore e data"
+              label={t("Frontespizio")}
+              title={t(
+                "Una prima pagina con titolo, sottotitolo, autore e data"
+              )}
               icon={<FilePlus2 className="size-5" />}
             />
           }
         >
-          <DropdownMenuLabel>Predefiniti</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("Predefiniti")}</DropdownMenuLabel>
           <MenuGrid columns={3}>
             {COVER_DESIGNS.map((design) => (
               <GridButton
@@ -693,14 +743,14 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
             disabled={!hasCover(editor.state)}
             onClick={() => editor.chain().focus().removeCover().run()}
           >
-            <Trash2 /> Rimuovi frontespizio corrente
+            <Trash2 /> {t("Rimuovi frontespizio corrente")}
           </DropdownMenuItem>
         </RibbonMenu>
         <RibbonRows>
           <RibbonButton
             compact
-            label="Pagina vuota"
-            title="Una pagina bianca nel punto del cursore"
+            label={t("Pagina vuota")}
+            title={t("Una pagina bianca nel punto del cursore")}
             icon={<RectangleHorizontal className="size-4 rotate-90" />}
             className="justify-start"
             onClick={() =>
@@ -715,8 +765,8 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
           />
           <RibbonButton
             compact
-            label="Interruzione di pagina"
-            title="Il testo riparte dalla pagina successiva ⌘↵"
+            label={t("Interruzione di pagina")}
+            title={t("Il testo riparte dalla pagina successiva ⌘↵")}
             icon={<SquareSplitVertical className="size-4" />}
             className="justify-start"
             onClick={() => body().setPageBreak().run()}
@@ -724,14 +774,14 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label="Tabelle">
+      <RibbonGroup label={t("Tabelle")}>
         <RibbonMenu
           className="w-auto"
           trigger={
             <RibbonButton
               large
               chevron
-              label="Tabella"
+              label={t("Tabella")}
               icon={<Table2 className="size-5" />}
             />
           }
@@ -758,7 +808,9 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
                 )
               if (rows.length < 1 || rows.every((r) => r.length < 2)) {
                 toast.info(
-                  "Seleziona righe con le colonne separate da tabulazione, «;» o «|»"
+                  t(
+                    "Seleziona righe con le colonne separate da tabulazione, «;» o «|»"
+                  )
                 )
                 return
               }
@@ -788,25 +840,38 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
                 .run()
             }}
           >
-            <Table2 /> Converti testo in tabella
+            <Table2 /> {t("Converti testo in tabella")}
           </DropdownMenuItem>
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
-              <Sparkles /> Tabelle veloci
+              <Sparkles /> {t("Tabelle veloci")}
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent className="w-56">
               {(
                 [
                   [
-                    "Elenco con intestazioni",
-                    ["Voce", "Descrizione", "Stato"],
+                    t("Elenco con intestazioni"),
+                    [
+                      t("Voce||riga di una tabella"),
+                      t("Descrizione"),
+                      t("Stato"),
+                    ],
                     4,
                   ],
-                  ["Matrice 3×3", ["", "Colonna A", "Colonna B"], 3],
-                  ["Settimana", ["Lun", "Mar", "Mer", "Gio", "Ven"], 2],
+                  ["Matrice 3×3", ["", t("Colonna A"), t("Colonna B")], 3],
+                  [
+                    t("Settimana"),
+                    [t("Lun"), t("Mar"), t("Mer"), t("Gio"), t("Ven")],
+                    2,
+                  ],
                   [
                     "Budget",
-                    ["Voce", "Previsto", "Effettivo", "Differenza"],
+                    [
+                      t("Voce||riga di una tabella"),
+                      t("Previsto"),
+                      t("Effettivo"),
+                      t("Differenza"),
+                    ],
                     5,
                   ],
                 ] as [string, string[], number][]
@@ -850,30 +915,33 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonMenu>
       </RibbonGroup>
 
-      <RibbonGroup label="Illustrazioni">
+      <RibbonGroup label={t("Illustrazioni")}>
         <RibbonMenu
           className="w-60"
           trigger={
             <RibbonButton
               large
               chevron
-              label="Immagini"
+              label={t("Immagini")}
               icon={<ImageIcon className="size-5" />}
             />
           }
         >
           <DropdownMenuItem onClick={ctx.pickImage}>
-            Da questo dispositivo…
+            {t("Da questo dispositivo…")}
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => {
-              const url = window.prompt("Indirizzo dell'immagine", "https://")
+              const url = window.prompt(
+                t("Indirizzo dell'immagine"),
+                "https://"
+              )
               if (url && /^https:\/\//i.test(url.trim())) {
                 body().setImage({ src: url.trim() }).run()
               }
             }}
           >
-            Da un indirizzo web…
+            {t("Da un indirizzo web…")}
           </DropdownMenuItem>
         </RibbonMenu>
         <RibbonMenu
@@ -882,7 +950,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
             <RibbonButton
               large
               chevron
-              label="Forme"
+              label={t("Forme")}
               icon={<Shapes className="size-5" />}
             />
           }
@@ -921,30 +989,30 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
         <RibbonRows>
           <RibbonButton
             compact
-            label="Icone"
+            label={t("Icone")}
             icon={<Star className="size-4" />}
             className="justify-start"
             onClick={() => setDialog("icons")}
           />
           <RibbonButton
             compact
-            label="SmartArt"
-            title="Elenchi, processi, cicli, gerarchie e matrici"
+            label={t("SmartArt")}
+            title={t("Elenchi, processi, cicli, gerarchie e matrici")}
             icon={<Network className="size-4" />}
             className="justify-start"
             onClick={() => setDialog("smartart")}
           />
           <RibbonButton
             compact
-            label="Schermata"
-            title="Cattura una finestra o lo schermo e inseriscila"
+            label={t("Schermata")}
+            title={t("Cattura una finestra o lo schermo e inseriscila")}
             icon={<MonitorUp className="size-4" />}
             className="justify-start"
             onClick={async () => {
               const src = await captureScreen()
               if (src) {
                 ctx.openPanel()
-                insertImage(src, "Schermata", "100%")
+                insertImage(src, t("Schermata"), "100%")
               }
             }}
           />
@@ -955,13 +1023,15 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
             <RibbonButton
               large
               chevron
-              label="Grafico"
-              title="Istogrammi, linee, torte e altro: i dati si incollano da Excel"
+              label={t("Grafico")}
+              title={t(
+                "Istogrammi, linee, torte e altro: i dati si incollano da Excel"
+              )}
               icon={<ChartColumnBig className="size-5" />}
             />
           }
         >
-          <DropdownMenuLabel>Inserisci grafico</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("Inserisci grafico")}</DropdownMenuLabel>
           {CHART_TYPES.map((type) => (
             <DropdownMenuItem
               key={type.value}
@@ -982,13 +1052,13 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
             <RibbonButton
               large
               chevron
-              label="Board"
-              title="Incorpora una board"
+              label={t("Board")}
+              title={t("Incorpora una board")}
               icon={<Puzzle className="size-5" />}
             />
           }
         >
-          <DropdownMenuLabel>Incorpora una board</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("Incorpora una board")}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {boards.length ? (
             boards.map((b) => (
@@ -1001,28 +1071,28 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
               </DropdownMenuItem>
             ))
           ) : (
-            <DropdownMenuItem disabled>Nessuna board</DropdownMenuItem>
+            <DropdownMenuItem disabled>{t("Nessuna board")}</DropdownMenuItem>
           )}
         </RibbonMenu>
       </RibbonGroup>
 
-      <RibbonGroup label="Elementi multimediali">
+      <RibbonGroup label={t("Elementi multimediali")}>
         <VideoPopover ctx={ctx} />
       </RibbonGroup>
 
-      <RibbonGroup label="Collegamenti">
+      <RibbonGroup label={t("Collegamenti")}>
         <LinkPopover ctx={ctx} />
         <RibbonRows>
           <RibbonButton
             compact
-            label="Segnalibro"
+            label={t("Segnalibro")}
             icon={<BookMarked className="size-4" />}
             className="justify-start"
             onClick={() => setDialog("bookmark")}
           />
           <RibbonButton
             compact
-            label="Riferimento incrociato"
+            label={t("Riferimento incrociato")}
             icon={<TextQuote className="size-4" />}
             className="justify-start"
             onClick={() => setDialog("crossref")}
@@ -1030,19 +1100,19 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label="Commenti">
+      <RibbonGroup label={t("Commenti")}>
         <RibbonButton
           large
-          label="Commento"
-          title="Aggiungi un commento al testo selezionato"
+          label={t("Commento")}
+          title={t("Aggiungi un commento al testo selezionato")}
           icon={<MessageSquarePlus className="size-5" />}
           onClick={() => ctx.comments.add()}
         />
       </RibbonGroup>
 
-      <RibbonGroup label="Intestazione e piè di pagina" safe>
+      <RibbonGroup label={t("Intestazione e piè di pagina")} safe>
         <BandMenu
-          label="Intestazione"
+          label={t("Intestazione")}
           icon={<PanelTop className="size-5" />}
           active={Boolean(theme.header)}
           presets={HEADER_PRESETS}
@@ -1051,7 +1121,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
           onRemove={() => setTheme({ header: "" })}
         />
         <BandMenu
-          label="Piè di pagina"
+          label={t("Piè di pagina")}
           icon={<PanelBottom className="size-5" />}
           active={Boolean(theme.footer)}
           presets={FOOTER_PRESETS}
@@ -1065,13 +1135,13 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
             <RibbonButton
               large
               chevron
-              label="Numero di pagina"
+              label={t("Numero di pagina")}
               active={theme.pageNumbers !== "none"}
               icon={<Hash className="size-5" />}
             />
           }
         >
-          <DropdownMenuLabel>Posizione</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("Posizione")}</DropdownMenuLabel>
           {PAGE_NUMBERS.map((p) => (
             <DropdownMenuItem
               key={p.value}
@@ -1086,12 +1156,12 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
               editor.chain().focus().insertField({ kind: "page" }).run()
             }
           >
-            Posizione corrente (campo nel testo)
+            {t("Posizione corrente (campo nel testo)")}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
-              Formato numeri di pagina
+              {t("Formato numeri di pagina")}
             </DropdownMenuSubTrigger>
             <DropdownMenuSubContent className="w-48">
               {PAGE_NUMBER_FORMATS.map((f) => (
@@ -1107,7 +1177,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
               ))}
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => setDialog("footer")}>
-                Inizia da…
+                {t("Inizia da…")}
               </DropdownMenuItem>
             </DropdownMenuSubContent>
           </DropdownMenuSub>
@@ -1115,24 +1185,24 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
             disabled={theme.pageNumbers === "none"}
             onClick={() => setTheme({ pageNumbers: "none" })}
           >
-            <Trash2 /> Rimuovi numeri di pagina
+            <Trash2 /> {t("Rimuovi numeri di pagina")}
           </DropdownMenuItem>
         </RibbonMenu>
       </RibbonGroup>
 
-      <RibbonGroup label="Testo">
+      <RibbonGroup label={t("Testo")}>
         <RibbonMenu
           className="w-64"
           trigger={
             <RibbonButton
               large
               chevron
-              label="Casella di testo"
+              label={t("Casella di testo")}
               icon={<SquareDashedText className="size-5" />}
             />
           }
         >
-          <DropdownMenuLabel>Caselle predefinite</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("Caselle predefinite")}</DropdownMenuLabel>
           {TEXT_BOX_PRESETS.map((preset) => (
             <DropdownMenuItem
               key={preset.id}
@@ -1154,7 +1224,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
               <DropdownMenuItem
                 onClick={() => editor.chain().focus().removeTextBox().run()}
               >
-                <Trash2 /> Togli la casella (il testo resta)
+                <Trash2 /> {t("Togli la casella (il testo resta)")}
               </DropdownMenuItem>
             </>
           ) : null}
@@ -1166,7 +1236,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
               <RibbonButton
                 compact
                 chevron
-                label="Parti rapide"
+                label={t("Parti rapide")}
                 icon={<FileInput className="size-4" />}
                 className="justify-start"
               />
@@ -1174,16 +1244,16 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
           >
             <DropdownMenuSub>
               <DropdownMenuSubTrigger>
-                Proprietà documento
+                {t("Proprietà documento")}
               </DropdownMenuSubTrigger>
               <DropdownMenuSubContent className="w-48">
                 {(
                   [
-                    ["title", "Titolo"],
-                    ["author", "Autore"],
-                    ["date", "Data"],
-                    ["pages", "Numero di pagine"],
-                    ["words", "Numero di parole"],
+                    ["title", t("Titolo")],
+                    ["author", t("Autore")],
+                    ["date", t("Data")],
+                    ["pages", t("Numero di pagine")],
+                    ["words", t("Numero di parole")],
                   ] as const
                 ).map(([kind, label]) => (
                   <DropdownMenuItem
@@ -1205,7 +1275,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
               </DropdownMenuSubContent>
             </DropdownMenuSub>
             <DropdownMenuItem onClick={() => setDialog("field")}>
-              Campo…
+              {t("Campo…")}
             </DropdownMenuItem>
           </RibbonMenu>
           <RibbonMenu
@@ -1214,13 +1284,13 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
               <RibbonButton
                 compact
                 chevron
-                label="WordArt"
+                label={t("WordArt")}
                 icon={<WholeWord className="size-4" />}
                 className="justify-start"
               />
             }
           >
-            <DropdownMenuLabel>WordArt</DropdownMenuLabel>
+            <DropdownMenuLabel>{t("WordArt")}</DropdownMenuLabel>
             <MenuGrid columns={4}>
               {WORDART_PRESETS.map((preset) => (
                 <GridButton
@@ -1260,7 +1330,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
                           : undefined,
                     }}
                   >
-                    A
+                    {t("A")}
                   </span>
                 </GridButton>
               ))}
@@ -1272,7 +1342,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
               <RibbonButton
                 compact
                 chevron
-                label="Capolettera"
+                label={t("Capolettera")}
                 icon={<CaseUpper className="size-4" />}
                 className="justify-start"
               />
@@ -1281,35 +1351,35 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
             <DropdownMenuItem
               onClick={() => editor.chain().focus().setDropCap(null).run()}
             >
-              Nessuno
+              {t("Nessuno")}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => editor.chain().focus().setDropCap("drop").run()}
             >
-              Interno
+              {t("Interno")}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => editor.chain().focus().setDropCap("margin").run()}
             >
-              Nel margine
+              {t("Nel margine")}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => setDialog("dropcap")}>
-              Opzioni capolettera…
+              {t("Opzioni capolettera…")}
             </DropdownMenuItem>
           </RibbonMenu>
         </RibbonRows>
         <RibbonRows>
           <RibbonButton
             compact
-            label="Riga della firma"
+            label={t("Riga della firma")}
             icon={<PenLine className="size-4" />}
             className="justify-start"
             onClick={() => setDialog("signature")}
           />
           <RibbonButton
             compact
-            label="Data e ora"
+            label={t("Data e ora")}
             icon={<CalendarDays className="size-4" />}
             className="justify-start"
             onClick={() => setDialog("datetime")}
@@ -1320,17 +1390,17 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
               <RibbonButton
                 compact
                 chevron
-                label="Oggetto"
+                label={t("Oggetto")}
                 icon={<FileInput className="size-4" />}
                 className="justify-start"
               />
             }
           >
             <DropdownMenuItem onClick={() => fileRef.current?.click()}>
-              Testo da file… (.docx, .md, .txt, .html)
+              {t("Testo da file… (.docx, .md, .txt, .html)")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => body().setHorizontalRule().run()}>
-              <Minus /> Linea orizzontale
+              <Minus /> {t("Linea orizzontale")}
             </DropdownMenuItem>
           </RibbonMenu>
         </RibbonRows>
@@ -1347,15 +1417,17 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
         />
       </RibbonGroup>
 
-      <RibbonGroup label="Simboli">
+      <RibbonGroup label={t("Simboli")}>
         <RibbonMenu
           className="w-[320px]"
           trigger={
             <RibbonButton
               large
               chevron
-              label="Equazione"
-              title="Formule matematiche; scrivendo $x^2$ nel testo diventa una formula"
+              label={t("Equazione")}
+              title={t(
+                "Formule matematiche; scrivendo $x^2$ nel testo diventa una formula"
+              )}
               icon={<Sigma className="size-5" />}
             />
           }
@@ -1366,7 +1438,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
               body().insertMath("", true).run()
             }}
           >
-            Inserisci nuova equazione
+            {t("Inserisci nuova equazione")}
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => {
@@ -1374,10 +1446,10 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
               editor.chain().focus().insertMath("", false).run()
             }}
           >
-            Equazione nel testo
+            {t("Equazione nel testo")}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuLabel>Predefinite</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("Predefinite")}</DropdownMenuLabel>
           <div className="max-h-80 overflow-y-auto">
             {BUILTIN_EQUATIONS.map((eq) => (
               <DropdownMenuItem
@@ -1405,12 +1477,12 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
             <RibbonButton
               large
               chevron
-              label="Simbolo"
+              label={t("Simbolo")}
               icon={<Omega className="size-5" />}
             />
           }
         >
-          <DropdownMenuLabel>Simboli</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("Simboli")}</DropdownMenuLabel>
           <div className="grid grid-cols-10 gap-0.5 p-1">
             {SYMBOLS.map((sym) => (
               <DropdownMenuItem
@@ -1425,7 +1497,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
           </div>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => setDialog("symbols")}>
-            <Omega /> Altri simboli…
+            <Omega /> {t("Altri simboli…")}
           </DropdownMenuItem>
         </RibbonMenu>
         <RibbonMenu
@@ -1434,12 +1506,12 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
             <RibbonButton
               large
               chevron
-              label="Emoji"
+              label={t("Emoji")}
               icon={<Smile className="size-5" />}
             />
           }
         >
-          <DropdownMenuLabel>Emoji</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("Emoji")}</DropdownMenuLabel>
           <div className="grid grid-cols-10 gap-0.5 p-1">
             {EMOJI.map((emoji) => (
               <DropdownMenuItem
@@ -1538,6 +1610,7 @@ function BandMenu({
   onEdit: () => void
   onRemove: () => void
 }) {
+  const t = useT()
   return (
     <RibbonMenu
       className="w-64"
@@ -1545,7 +1618,7 @@ function BandMenu({
         <RibbonButton large chevron label={label} active={active} icon={icon} />
       }
     >
-      <DropdownMenuLabel>Predefiniti</DropdownMenuLabel>
+      <DropdownMenuLabel>{t("Predefiniti")}</DropdownMenuLabel>
       {presets.map((preset) => (
         <DropdownMenuItem
           key={preset.label}
@@ -1561,10 +1634,10 @@ function BandMenu({
       ))}
       <DropdownMenuSeparator />
       <DropdownMenuItem onClick={onEdit}>
-        Modifica {label.toLowerCase()}…
+        {t("Modifica {item}…", { item: label.toLocaleLowerCase() })}
       </DropdownMenuItem>
       <DropdownMenuItem disabled={!active} onClick={onRemove}>
-        <Trash2 /> Rimuovi {label.toLowerCase()}
+        <Trash2 /> {t("Rimuovi {item}", { item: label.toLocaleLowerCase() })}
       </DropdownMenuItem>
     </RibbonMenu>
   )

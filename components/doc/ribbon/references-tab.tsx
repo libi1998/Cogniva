@@ -33,11 +33,12 @@ import { cn } from "@/lib/utils"
 import { CrossRefDialog } from "../insert-dialogs"
 import { CaptionDialog, MarkEntryDialog } from "../reference-dialogs"
 import { applyDocStyle } from "../style-actions"
-import { CAPTION_LABELS } from "@/lib/doc-fields"
+import { captionLabels } from "@/lib/doc-fields"
 import type { IndexKind } from "@/lib/doc-references"
 import { RibbonButton, RibbonGroup, RibbonMenu, RibbonRows } from "./ribbon-ui"
 import { atBody, type RibbonCtx } from "./shared"
 
+import { useT } from "@/lib/i18n/client"
 function positionsOf(ctx: RibbonCtx, type: string) {
   const out: number[] = []
   ctx.editor.state.doc.descendants((n, pos) => {
@@ -50,6 +51,7 @@ function positionsOf(ctx: RibbonCtx, type: string) {
 type RefDialog = "caption" | "crossref" | "index" | "authority" | null
 
 export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
+  const t = useT()
   const { editor, st, theme, setTheme } = ctx
   const tocs = positionsOf(ctx, "toc")
   const notes = positionsOf(ctx, "footnote")
@@ -67,37 +69,39 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
     )
     chain.run()
   }
-  const refresh = (what: string) => {
+  const refresh = (message: string) => {
     // gli indici si ricalcolano a ogni modifica: qui si ridisegnano e basta
     editor.view.dispatch(editor.state.tr.setMeta("addToHistory", false))
-    toast.success(`${what} aggiornato`)
+    toast.success(message)
   }
   const indexKinds: [IndexKind, string][] = [
-    ["index", "Indice analitico"],
-    ["authority", "Indice delle autorità"],
+    ["index", t("Indice analitico")],
+    ["authority", t("Indice delle autorità")],
   ]
 
   return (
     <>
-      <RibbonGroup label="Sommario">
+      <RibbonGroup label={t("Sommario")}>
         <RibbonMenu
           className="w-64"
           trigger={
             <RibbonButton
               large
               chevron
-              label="Sommario"
-              title="Sommario dai titoli: si aggiorna da solo mentre scrivi"
+              label={t("Sommario")}
+              title={t(
+                "Sommario dai titoli: si aggiorna da solo mentre scrivi"
+              )}
               icon={<ListTree className="size-5" />}
             />
           }
         >
-          <DropdownMenuLabel>Predefiniti</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("Predefiniti")}</DropdownMenuLabel>
           {(
             [
-              ["card", "Automatico 1", "Riquadro colorato, senza pagine"],
-              ["classic", "Automatico 2", "Puntini e numeri di pagina"],
-              ["simple", "Semplice", "Solo i titoli"],
+              ["card", t("Automatico 1"), t("Riquadro colorato, senza pagine")],
+              ["classic", t("Automatico 2"), t("Puntini e numeri di pagina")],
+              ["simple", t("Semplice"), t("Solo i titoli")],
             ] as const
           ).map(([variant, label, hint]) => (
             <DropdownMenuItem
@@ -115,7 +119,7 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />
-          <DropdownMenuLabel>Livelli mostrati</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("Livelli mostrati")}</DropdownMenuLabel>
           {[1, 2, 3].map((levels) => (
             <DropdownMenuItem
               key={levels}
@@ -138,8 +142,8 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
               }
             >
               {levels === 1
-                ? "Solo Titolo 1"
-                : `Titoli fino al livello ${levels}`}
+                ? t("Solo Titolo 1")
+                : t("Titoli fino al livello {levels}", { levels })}
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />
@@ -147,7 +151,7 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
             disabled={!tocs.length}
             onClick={() => removeNodes("toc")}
           >
-            <Trash2 /> Rimuovi sommario
+            <Trash2 /> {t("Rimuovi sommario")}
           </DropdownMenuItem>
         </RibbonMenu>
         <RibbonRows>
@@ -157,8 +161,8 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
               <RibbonButton
                 compact
                 chevron
-                label="Aggiungi testo"
-                title="Il paragrafo compare nel sommario al livello scelto"
+                label={t("Aggiungi testo")}
+                title={t("Il paragrafo compare nel sommario al livello scelto")}
                 icon={<Type className="size-4" />}
                 className="justify-start"
               />
@@ -170,7 +174,7 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
                 !st.heading1 && !st.heading2 && !st.heading3 && "bg-accent"
               )}
             >
-              Non mostrare nel sommario
+              {t("Non mostrare nel sommario")}
             </DropdownMenuItem>
             {([1, 2, 3] as const).map((level) => (
               <DropdownMenuItem
@@ -184,37 +188,37 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
                       : st.heading3) && "bg-accent"
                 )}
               >
-                Livello {level}
+                {t("Livello {level}", { level })}
               </DropdownMenuItem>
             ))}
           </RibbonMenu>
           <RibbonButton
             compact
             data-safe=""
-            label="Aggiorna sommario"
+            label={t("Aggiorna sommario")}
             disabled={!tocs.length}
             icon={<RefreshCw className="size-4" />}
             className="justify-start"
-            onClick={() => refresh("Sommario")}
+            onClick={() => refresh(t("Sommario aggiornato"))}
           />
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label="Citazioni e bibliografia">
+      <RibbonGroup label={t("Citazioni e bibliografia")}>
         <RibbonMenu
           className="w-72"
           trigger={
             <RibbonButton
               large
               chevron
-              label="Inserisci citazione"
+              label={t("Inserisci citazione")}
               icon={<Quote className="size-5" />}
             />
           }
         >
           {ctx.sources.length ? (
             <>
-              <DropdownMenuLabel>Fonti del documento</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("Fonti del documento")}</DropdownMenuLabel>
               <div className="max-h-72 overflow-y-auto">
                 {ctx.sources.map((source) => (
                   <DropdownMenuItem
@@ -237,13 +241,13 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
             </>
           ) : null}
           <DropdownMenuItem onClick={() => ctx.openSources(null, true)}>
-            <BookPlus className="size-4" /> Aggiungi nuova fonte…
+            <BookPlus className="size-4" /> {t("Aggiungi nuova fonte…")}
           </DropdownMenuItem>
         </RibbonMenu>
         <RibbonRows>
           <RibbonButton
             data-safe=""
-            label="Gestisci fonti"
+            label={t("Gestisci fonti")}
             icon={<Library className="size-4" />}
             className="justify-start"
             onClick={() => ctx.openSources()}
@@ -254,13 +258,18 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
               <RibbonButton
                 data-safe=""
                 chevron
-                label={`Stile: ${CITATION_STYLES.find((x) => x.value === theme.citationStyle)?.label.split(" ")[0] ?? "APA"}`}
+                label={t("Stile: {style}", {
+                  style:
+                    CITATION_STYLES.find(
+                      (x) => x.value === theme.citationStyle
+                    )?.label.split(" ")[0] ?? "APA",
+                })}
                 icon={<Palette className="size-4" />}
                 className="justify-start"
               />
             }
           >
-            <DropdownMenuLabel>Stile delle citazioni</DropdownMenuLabel>
+            <DropdownMenuLabel>{t("Stile delle citazioni")}</DropdownMenuLabel>
             {CITATION_STYLES.map((option) => (
               <DropdownMenuItem
                 key={option.value}
@@ -274,8 +283,10 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
             ))}
           </RibbonMenu>
           <RibbonButton
-            label="Bibliografia"
-            title="Elenco delle fonti citate, ordinato e formattato nello stile scelto"
+            label={t("Bibliografia")}
+            title={t(
+              "Elenco delle fonti citate, ordinato e formattato nello stile scelto"
+            )}
             icon={<BookOpenText className="size-4" />}
             className="justify-start"
             onClick={() => {
@@ -286,11 +297,13 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label="Note">
+      <RibbonGroup label={t("Note")}>
         <RibbonButton
           large
-          label="Inserisci nota a piè di pagina"
-          title="Nota numerata nel testo, scritta in fondo alla sua pagina (⌥⌘F)"
+          label={t("Inserisci nota a piè di pagina")}
+          title={t(
+            "Nota numerata nel testo, scritta in fondo alla sua pagina (⌥⌘F)"
+          )}
           icon={<NotebookPen className="size-5" />}
           onClick={() => {
             ctx.openPanel()
@@ -299,8 +312,10 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
         />
         <RibbonRows>
           <RibbonButton
-            label="Inserisci nota di chiusura"
-            title="Nota raccolta in fondo al documento, numerata i, ii, iii (⌥⌘D)"
+            label={t("Inserisci nota di chiusura")}
+            title={t(
+              "Nota raccolta in fondo al documento, numerata i, ii, iii (⌥⌘D)"
+            )}
             icon={<ArrowDownToLine className="size-4" />}
             className="justify-start"
             onClick={() => {
@@ -309,7 +324,7 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
             }}
           />
           <RibbonButton
-            label="Nota successiva"
+            label={t("Nota successiva")}
             disabled={notes.length === 0}
             icon={<StickyNote className="size-4" />}
             className="justify-start"
@@ -326,7 +341,7 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
           />
           <RibbonButton
             data-safe=""
-            label="Mostra note"
+            label={t("Mostra note")}
             disabled={notes.length === 0}
             icon={<ListOrdered className="size-4" />}
             className="justify-start"
@@ -338,11 +353,13 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
           />
         </RibbonRows>
       </RibbonGroup>
-      <RibbonGroup label="Didascalie">
+      <RibbonGroup label={t("Didascalie")}>
         <RibbonButton
           large
-          label="Inserisci didascalia"
-          title="Etichetta numerata sotto o sopra figure, tabelle ed equazioni"
+          label={t("Inserisci didascalia")}
+          title={t(
+            "Etichetta numerata sotto o sopra figure, tabelle ed equazioni"
+          )}
           icon={<Captions className="size-5" />}
           onClick={() => setDialog("caption")}
         />
@@ -353,40 +370,40 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
               <RibbonButton
                 compact
                 chevron
-                label="Inserisci indice delle figure"
+                label={t("Inserisci indice delle figure")}
                 icon={<Images className="size-4" />}
                 className="justify-start"
               />
             }
           >
-            <DropdownMenuLabel>Etichetta</DropdownMenuLabel>
-            {CAPTION_LABELS.map((label) => (
+            <DropdownMenuLabel>{t("Etichetta")}</DropdownMenuLabel>
+            {captionLabels().map((label) => (
               <DropdownMenuItem
                 key={label}
                 onClick={() =>
                   atBody(editor, st).insertFigureIndex(label).run()
                 }
               >
-                {label === "Figura"
-                  ? "Figure"
-                  : label === "Tabella"
-                    ? "Tabelle"
-                    : "Equazioni"}
+                {label === t("Figura")
+                  ? t("Figure")
+                  : label === t("Tabella")
+                    ? t("Tabelle")
+                    : t("Equazioni")}
               </DropdownMenuItem>
             ))}
           </RibbonMenu>
           <RibbonButton
             compact
             data-safe=""
-            label="Aggiorna tabella"
+            label={t("Aggiorna tabella")}
             disabled={!positionsOf(ctx, "figureIndex").length}
             icon={<RefreshCw className="size-4" />}
             className="justify-start"
-            onClick={() => refresh("Indice delle figure")}
+            onClick={() => refresh(t("Indice delle figure aggiornato"))}
           />
           <RibbonButton
             compact
-            label="Riferimento incrociato"
+            label={t("Riferimento incrociato")}
             icon={<TextQuote className="size-4" />}
             className="justify-start"
             onClick={() => setDialog("crossref")}
@@ -400,8 +417,10 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
           <RibbonGroup key={kind} label={label}>
             <RibbonButton
               large
-              label={kind === "authority" ? "Segna citazione" : "Segna voce"}
-              title="Seleziona il testo e segnalo per l'indice"
+              label={
+                kind === "authority" ? t("Segna citazione") : t("Segna voce")
+              }
+              title={t("Seleziona il testo e segnalo per l'indice")}
               icon={
                 kind === "authority" ? (
                   <Gavel className="size-5" />
@@ -416,8 +435,8 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
                 compact
                 label={
                   kind === "authority"
-                    ? "Inserisci indice delle autorità"
-                    : "Inserisci indice"
+                    ? t("Inserisci indice delle autorità")
+                    : t("Inserisci indice")
                 }
                 icon={<FileSearch className="size-4" />}
                 className="justify-start"
@@ -426,20 +445,26 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
               <RibbonButton
                 compact
                 data-safe=""
-                label="Aggiorna indice"
+                label={t("Aggiorna indice")}
                 disabled={!count}
                 icon={<RefreshCw className="size-4" />}
                 className="justify-start"
-                onClick={() => refresh(label)}
+                onClick={() =>
+                  refresh(
+                    kind === "authority"
+                      ? t("Indice delle autorità aggiornato")
+                      : t("Indice analitico aggiornato")
+                  )
+                }
               />
               <RibbonButton
                 compact
-                label="Togli le voci segnate"
+                label={t("Togli le voci segnate")}
                 icon={<Trash2 className="size-4" />}
                 className="justify-start"
                 onClick={() => {
                   if (!editor.chain().focus().removeIndexEntries(kind).run()) {
-                    toast.info("Nessuna voce segnata")
+                    toast.info(t("Nessuna voce segnata"))
                   }
                 }}
               />

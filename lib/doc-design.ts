@@ -2,6 +2,7 @@ import { BUILTIN_STYLES, type DocStyleDef } from "./doc-styles"
 import { readStorage, STORAGE } from "./storage"
 import { defaultDocTheme, type DocTheme, type DocWatermark } from "./types"
 
+import { tr, currentRegion } from "@/lib/i18n/client"
 /**
  * Le raccolte della scheda Progettazione: temi, tipi di carattere, colori,
  * spaziatura dei paragrafi e filigrane, più «Imposta come predefinito».
@@ -36,7 +37,9 @@ export const DESIGN_THEMES: DocDesignTheme[] = [
   },
   {
     id: "editorial",
-    name: "Editoriale",
+    get name() {
+      return tr("Editoriale")
+    },
     font: "source-serif-4",
     headingFont: "playfair-display",
     accent: "orange",
@@ -44,7 +47,9 @@ export const DESIGN_THEMES: DocDesignTheme[] = [
   },
   {
     id: "modern",
-    name: "Moderno",
+    get name() {
+      return tr("Moderno")
+    },
     font: "inter",
     headingFont: "plus-jakarta-sans",
     accent: "purple",
@@ -52,7 +57,9 @@ export const DESIGN_THEMES: DocDesignTheme[] = [
   },
   {
     id: "academic",
-    name: "Accademico",
+    get name() {
+      return tr("Accademico")
+    },
     font: "source-serif-4",
     headingFont: "libre-baskerville",
     accent: "gray",
@@ -60,7 +67,9 @@ export const DESIGN_THEMES: DocDesignTheme[] = [
   },
   {
     id: "technical",
-    name: "Tecnico",
+    get name() {
+      return tr("Tecnico")
+    },
     font: "ibm-plex-sans",
     headingFont: "space",
     accent: "teal",
@@ -68,7 +77,9 @@ export const DESIGN_THEMES: DocDesignTheme[] = [
   },
   {
     id: "elegant",
-    name: "Elegante",
+    get name() {
+      return tr("Elegante")
+    },
     font: "lora",
     headingFont: "cormorant-garamond",
     accent: "hotPink",
@@ -76,7 +87,9 @@ export const DESIGN_THEMES: DocDesignTheme[] = [
   },
   {
     id: "fresh",
-    name: "Fresco",
+    get name() {
+      return tr("Fresco")
+    },
     font: "dm-sans",
     headingFont: "outfit",
     accent: "green",
@@ -84,7 +97,9 @@ export const DESIGN_THEMES: DocDesignTheme[] = [
   },
   {
     id: "geometric",
-    name: "Geometrico",
+    get name() {
+      return tr("Geometrico")
+    },
     font: "poppins",
     headingFont: "poppins",
     accent: "orange",
@@ -92,7 +107,9 @@ export const DESIGN_THEMES: DocDesignTheme[] = [
   },
   {
     id: "journal",
-    name: "Giornale",
+    get name() {
+      return tr("Giornale")
+    },
     font: "newsreader",
     headingFont: "fraunces",
     accent: "gray",
@@ -100,7 +117,9 @@ export const DESIGN_THEMES: DocDesignTheme[] = [
   },
   {
     id: "clean",
-    name: "Essenziale",
+    get name() {
+      return tr("Essenziale")
+    },
     font: "geist",
     headingFont: "geist",
     accent: "gray",
@@ -108,7 +127,9 @@ export const DESIGN_THEMES: DocDesignTheme[] = [
   },
   {
     id: "soft",
-    name: "Morbido",
+    get name() {
+      return tr("Morbido")
+    },
     font: "figtree",
     headingFont: "sora",
     accent: "pink",
@@ -132,39 +153,121 @@ export function activeDesignTheme(theme: DocTheme) {
 export const FONT_PAIRS: { name: string; heading: string; body: string }[] = [
   { name: "Cogniva", heading: "manrope", body: "manrope" },
   { name: "Office", heading: "calibri", body: "calibri" },
-  { name: "Office classico", heading: "cambria", body: "calibri" },
+  {
+    get name() {
+      return tr("Office classico")
+    },
+    heading: "cambria",
+    body: "calibri",
+  },
   { name: "Arial", heading: "arial", body: "arial" },
   {
-    name: "Times New Roman",
+    get name() {
+      return tr("Times New Roman")
+    },
     heading: "times-new-roman",
     body: "times-new-roman",
   },
   { name: "Georgia", heading: "georgia", body: "georgia" },
   { name: "Inter", heading: "inter", body: "inter" },
-  { name: "Moderno", heading: "plus-jakarta-sans", body: "inter" },
+  {
+    get name() {
+      return tr("Moderno")
+    },
+    heading: "plus-jakarta-sans",
+    body: "inter",
+  },
   { name: "Geist", heading: "geist", body: "geist" },
   { name: "Grotesk", heading: "bricolage-grotesque", body: "instrument-sans" },
   { name: "Instrument", heading: "instrument-serif", body: "instrument-sans" },
-  { name: "Editoriale", heading: "playfair-display", body: "source-serif-4" },
-  { name: "Giornale", heading: "fraunces", body: "newsreader" },
-  { name: "Accademico", heading: "libre-baskerville", body: "source-serif-4" },
-  { name: "Elegante", heading: "cormorant-garamond", body: "lora" },
+  {
+    get name() {
+      return tr("Editoriale")
+    },
+    heading: "playfair-display",
+    body: "source-serif-4",
+  },
+  {
+    get name() {
+      return tr("Giornale")
+    },
+    heading: "fraunces",
+    body: "newsreader",
+  },
+  {
+    get name() {
+      return tr("Accademico")
+    },
+    heading: "libre-baskerville",
+    body: "source-serif-4",
+  },
+  {
+    get name() {
+      return tr("Elegante")
+    },
+    heading: "cormorant-garamond",
+    body: "lora",
+  },
   { name: "DM", heading: "dm-serif-display", body: "dm-sans" },
-  { name: "Geometrico", heading: "poppins", body: "poppins" },
-  { name: "Fresco", heading: "outfit", body: "dm-sans" },
-  { name: "Morbido", heading: "sora", body: "figtree" },
+  {
+    get name() {
+      return tr("Geometrico")
+    },
+    heading: "poppins",
+    body: "poppins",
+  },
+  {
+    get name() {
+      return tr("Fresco")
+    },
+    heading: "outfit",
+    body: "dm-sans",
+  },
+  {
+    get name() {
+      return tr("Morbido")
+    },
+    heading: "sora",
+    body: "figtree",
+  },
   { name: "Montserrat", heading: "montserrat", body: "open-sans" },
   { name: "Roboto", heading: "roboto-slab", body: "roboto" },
-  { name: "Tecnico", heading: "space", body: "ibm-plex-sans" },
-  { name: "Codice", heading: "jetbrains", body: "inter" },
-  { name: "Poster", heading: "bebas-neue", body: "work-sans" },
-  { name: "Leggibile", heading: "lexend", body: "lexend" },
   {
-    name: "Accessibile",
+    get name() {
+      return tr("Tecnico")
+    },
+    heading: "space",
+    body: "ibm-plex-sans",
+  },
+  {
+    get name() {
+      return tr("Codice")
+    },
+    heading: "jetbrains",
+    body: "inter",
+  },
+  { name: "Poster", heading: "bebas-neue", body: "work-sans" },
+  {
+    get name() {
+      return tr("Leggibile")
+    },
+    heading: "lexend",
+    body: "lexend",
+  },
+  {
+    get name() {
+      return tr("Accessibile")
+    },
     heading: "atkinson-hyperlegible-next",
     body: "atkinson-hyperlegible-next",
   },
-  { name: "A mano", heading: "caveat", body: "nunito" },
+  {
+    get name() {
+      return tr("A mano")
+    },
+    heading: "caveat",
+    body: "nunito",
+  },
 ]
 
 /** «Spaziatura paragrafo»: valori di «Normale» (punti e interlinea) */
@@ -174,41 +277,74 @@ export const SPACING_PRESETS: {
   hint: string
   props: { spaceBefore?: number; spaceAfter?: number; lineHeight?: number }
 }[] = [
-  { id: "default", name: "Predefinita", hint: "Dello stile", props: {} },
+  {
+    id: "default",
+    get name() {
+      return tr("Predefinita")
+    },
+    get hint() {
+      return tr("Dello stile")
+    },
+    props: {},
+  },
   {
     id: "none",
-    name: "Nessuna spaziatura paragrafo",
-    hint: "Prima 0 · Dopo 0 · Interlinea 1",
+    get name() {
+      return tr("Nessuna spaziatura paragrafo")
+    },
+    get hint() {
+      return tr("Prima 0 · Dopo 0 · Interlinea 1")
+    },
     props: { spaceBefore: 0, spaceAfter: 0, lineHeight: 1 },
   },
   {
     id: "compact",
-    name: "Compatta",
-    hint: "Prima 0 · Dopo 4 pt · Interlinea 1",
+    get name() {
+      return tr("Compatta")
+    },
+    get hint() {
+      return tr("Prima 0 · Dopo 4 pt · Interlinea 1")
+    },
     props: { spaceBefore: 0, spaceAfter: 4, lineHeight: 1 },
   },
   {
     id: "tight",
-    name: "Stretta",
-    hint: "Prima 0 · Dopo 6 pt · Interlinea 1,15",
+    get name() {
+      return tr("Stretta")
+    },
+    get hint() {
+      return tr("Prima 0 · Dopo 6 pt · Interlinea 1,15")
+    },
     props: { spaceBefore: 0, spaceAfter: 6, lineHeight: 1.15 },
   },
   {
     id: "open",
-    name: "Aperta",
-    hint: "Prima 0 · Dopo 10 pt · Interlinea 1,15",
+    get name() {
+      return tr("Aperta")
+    },
+    get hint() {
+      return tr("Prima 0 · Dopo 10 pt · Interlinea 1,15")
+    },
     props: { spaceBefore: 0, spaceAfter: 10, lineHeight: 1.15 },
   },
   {
     id: "relaxed",
-    name: "Rilassata",
-    hint: "Prima 0 · Dopo 6 pt · Interlinea 1,5",
+    get name() {
+      return tr("Rilassata")
+    },
+    get hint() {
+      return tr("Prima 0 · Dopo 6 pt · Interlinea 1,5")
+    },
     props: { spaceBefore: 0, spaceAfter: 6, lineHeight: 1.5 },
   },
   {
     id: "double",
-    name: "Doppia",
-    hint: "Prima 0 · Dopo 8 pt · Interlinea 2",
+    get name() {
+      return tr("Doppia")
+    },
+    get hint() {
+      return tr("Prima 0 · Dopo 8 pt · Interlinea 2")
+    },
     props: { spaceBefore: 0, spaceAfter: 8, lineHeight: 2 },
   },
 ]
@@ -261,14 +397,70 @@ export function withStyleSet(
 /* ------------------------------- filigrana ------------------------------- */
 
 export const WATERMARK_PRESETS: { group: string; text: string }[] = [
-  { group: "Riservatezza", text: "RISERVATO" },
-  { group: "Riservatezza", text: "CONFIDENZIALE" },
-  { group: "Riservatezza", text: "NON COPIARE" },
-  { group: "Stato", text: "BOZZA" },
-  { group: "Stato", text: "ESEMPIO" },
-  { group: "Stato", text: "APPROVATO" },
-  { group: "Urgenza", text: "URGENTE" },
-  { group: "Urgenza", text: "IMPORTANTE" },
+  {
+    get group() {
+      return tr("Riservatezza")
+    },
+    get text() {
+      return tr("RISERVATO")
+    },
+  },
+  {
+    get group() {
+      return tr("Riservatezza")
+    },
+    get text() {
+      return tr("CONFIDENZIALE")
+    },
+  },
+  {
+    get group() {
+      return tr("Riservatezza")
+    },
+    get text() {
+      return tr("NON COPIARE")
+    },
+  },
+  {
+    get group() {
+      return tr("Stato")
+    },
+    get text() {
+      return tr("BOZZA")
+    },
+  },
+  {
+    get group() {
+      return tr("Stato")
+    },
+    get text() {
+      return tr("ESEMPIO")
+    },
+  },
+  {
+    get group() {
+      return tr("Stato")
+    },
+    get text() {
+      return tr("APPROVATO")
+    },
+  },
+  {
+    get group() {
+      return tr("Urgenza")
+    },
+    get text() {
+      return tr("URGENTE")
+    },
+  },
+  {
+    get group() {
+      return tr("Urgenza")
+    },
+    get text() {
+      return tr("IMPORTANTE")
+    },
+  },
 ]
 
 /**
@@ -288,7 +480,9 @@ export function watermarkFontSize(
 
 export function newWatermark(patch: Partial<DocWatermark> = {}): DocWatermark {
   return {
-    text: "BOZZA",
+    get text() {
+      return tr("BOZZA")
+    },
     font: null,
     color: "#a1a1aa",
     opacity: 0.35,
@@ -359,5 +553,10 @@ export function hasDesignDefaults() {
 
 /** Il tema di un documento nuovo: i valori iniziali più quelli predefiniti */
 export function newDocTheme(): DocTheme {
-  return { ...defaultDocTheme, ...readDesignDefaults() }
+  // un documento nuovo è nella lingua di chi lo crea
+  return {
+    ...defaultDocTheme,
+    language: currentRegion(),
+    ...readDesignDefaults(),
+  }
 }

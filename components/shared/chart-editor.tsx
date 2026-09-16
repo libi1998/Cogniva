@@ -44,6 +44,7 @@ import { cn } from "@/lib/utils"
 import { Row, Segmented } from "./inspector-ui"
 import { ChartSvg } from "./chart-graphic"
 
+import { useT } from "@/lib/i18n/client"
 export const CHART_ICONS: Record<ChartType, React.ReactNode> = {
   column: <ChartColumnBig className="size-4" />,
   bar: <ChartBarBig className="size-4" />,
@@ -66,6 +67,7 @@ export function ChartOptions({
   spec: ChartSpec
   onChange: (next: ChartSpec) => void
 }) {
+  const t = useT()
   const [editing, setEditing] = React.useState(false)
   const set = (patch: Partial<ChartSpec>) => onChange({ ...spec, ...patch })
   const radial = spec.type === "pie" || spec.type === "doughnut"
@@ -74,7 +76,7 @@ export function ChartOptions({
 
   return (
     <div className="space-y-3">
-      <Row label="Tipo di grafico" stacked>
+      <Row label={t("Tipo di grafico")} stacked>
         <div className="grid grid-cols-4 gap-1">
           {CHART_TYPES.map((t) => (
             <button
@@ -99,11 +101,11 @@ export function ChartOptions({
         </div>
       </Row>
 
-      <Row label="Titolo" stacked>
+      <Row label={t("Titolo")} stacked>
         <Input
           className="h-8 text-xs"
           value={spec.title}
-          placeholder="Senza titolo"
+          placeholder={t("Senza titolo")}
           onChange={(e) => set({ title: e.target.value })}
         />
       </Row>
@@ -115,24 +117,24 @@ export function ChartOptions({
         onMouseDown={(e) => e.preventDefault()}
         onClick={() => setEditing(true)}
       >
-        <Table2 className="size-3.5" /> Modifica dati…
+        <Table2 className="size-3.5" /> {t("Modifica dati…")}
       </Button>
 
-      <Row label="Legenda" stacked>
+      <Row label={t("Legenda")} stacked>
         <Segmented<ChartSpec["legend"]>
           size="sm"
           value={spec.legend}
           onChange={(legend) => set({ legend })}
           items={[
-            { value: "none", label: "No" },
-            { value: "top", label: "Sopra" },
-            { value: "bottom", label: "Sotto" },
-            { value: "right", label: "Destra" },
+            { value: "none", label: t("No") },
+            { value: "top", label: t("Sopra") },
+            { value: "bottom", label: t("Sotto") },
+            { value: "right", label: t("Destra") },
           ]}
         />
       </Row>
 
-      <Row label="Colori" stacked>
+      <Row label={t("Colori")} stacked>
         <div className="grid grid-cols-2 gap-1">
           {(Object.keys(CHART_PALETTES) as ChartPalette[]).map((key) => (
             <button
@@ -170,28 +172,30 @@ export function ChartOptions({
       <div className="space-y-2 text-xs">
         {stackable ? (
           <Toggle
-            label="In pila"
+            label={t("In pila")}
             checked={spec.stacked}
             onChange={(stacked) => set({ stacked })}
           />
         ) : null}
         <Toggle
           label={
-            radial ? "Valori al posto delle percentuali" : "Etichette dati"
+            radial
+              ? t("Valori al posto delle percentuali")
+              : t("Etichette dati")
           }
           checked={spec.labels}
           onChange={(labels) => set({ labels })}
         />
         {!radial && spec.type !== "radar" ? (
           <Toggle
-            label="Griglia"
+            label={t("Griglia")}
             checked={spec.grid}
             onChange={(grid) => set({ grid })}
           />
         ) : null}
         {spec.type === "line" || spec.type === "area" ? (
           <Toggle
-            label="Linee morbide"
+            label={t("Linee morbide")}
             checked={spec.smooth}
             onChange={(smooth) => set({ smooth })}
           />
@@ -200,19 +204,19 @@ export function ChartOptions({
 
       {!radial && spec.type !== "radar" ? (
         <div className="grid grid-cols-2 gap-2">
-          <Row label="Asse X" stacked>
+          <Row label={t("Asse X")} stacked>
             <Input
               className="h-8 text-xs"
               value={spec.xTitle}
-              placeholder="Titolo"
+              placeholder={t("Titolo")}
               onChange={(e) => set({ xTitle: e.target.value })}
             />
           </Row>
-          <Row label="Asse Y" stacked>
+          <Row label={t("Asse Y")} stacked>
             <Input
               className="h-8 text-xs"
               value={spec.yTitle}
-              placeholder="Titolo"
+              placeholder={t("Titolo")}
               onChange={(e) => set({ yTitle: e.target.value })}
             />
           </Row>
@@ -261,6 +265,7 @@ function ChartDataDialog({
   spec: ChartSpec
   onChange: (next: ChartSpec) => void
 }) {
+  const t = useT()
   // mentre si scrive un numero resta il testo («3,»): si converte uscendo
   const [drafts, setDrafts] = React.useState<Record<string, string>>({})
   const radial = spec.type === "pie" || spec.type === "doughnut"
@@ -315,15 +320,20 @@ function ChartDataDialog({
   const paste = (text: string) => {
     const table = parseTable(text)
     if (!table) {
-      toast.error("Negli appunti non c'è una tabella", {
-        description: "Copia almeno due righe e due colonne da Excel o Fogli.",
+      toast.error(t("Negli appunti non c'è una tabella"), {
+        description: t(
+          "Copia almeno due righe e due colonne da Excel o Fogli."
+        ),
       })
       return false
     }
     setDrafts({})
     onChange({ ...spec, ...table })
     toast.success(
-      `Incollate ${table.categories.length} righe e ${table.series.length} serie`
+      t("Incollate {rows} righe e {series} serie", {
+        rows: table.categories.length,
+        series: table.series.length,
+      })
     )
     return true
   }
@@ -332,10 +342,11 @@ function ChartDataDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[90dvh] overflow-hidden p-0 sm:max-w-4xl">
         <DialogHeader className="border-b border-border px-5 pt-4 pb-3">
-          <DialogTitle>Dati del grafico</DialogTitle>
+          <DialogTitle>{t("Dati del grafico")}</DialogTitle>
           <DialogDescription>
-            Ogni riga è una categoria, ogni colonna una serie. Puoi incollare
-            una tabella copiata da Excel, Numbers o Google Fogli.
+            {t(
+              "Ogni riga è una categoria, ogni colonna una serie. Puoi incollare una tabella copiata da Excel, Numbers o Google Fogli."
+            )}
           </DialogDescription>
         </DialogHeader>
         <div className="grid min-h-0 gap-0 md:grid-cols-[1fr_320px]">
@@ -352,7 +363,7 @@ function ChartDataDialog({
                 <tr>
                   <th className="w-8" />
                   <th className="min-w-[120px] px-1 pb-1 text-left text-[11px] font-medium text-muted-foreground">
-                    Categoria
+                    {t("Categoria")}
                   </th>
                   {spec.series.map((s, si) => (
                     <th key={si} className="min-w-[96px] px-1 pb-1">
@@ -363,7 +374,9 @@ function ChartDataDialog({
                         />
                         <input
                           value={s.name}
-                          aria-label={`Nome della serie ${si + 1}`}
+                          aria-label={t("Nome della serie {number}", {
+                            number: si + 1,
+                          })}
                           onChange={(e) =>
                             onChange({
                               ...spec,
@@ -377,8 +390,8 @@ function ChartDataDialog({
                         {spec.series.length > 1 ? (
                           <button
                             type="button"
-                            aria-label="Elimina la serie"
-                            title="Elimina la serie"
+                            aria-label={t("Elimina la serie")}
+                            title={t("Elimina la serie")}
                             onClick={() => removeSeries(si)}
                             className="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-destructive"
                           >
@@ -392,8 +405,8 @@ function ChartDataDialog({
                     {radial ? null : (
                       <button
                         type="button"
-                        aria-label="Aggiungi una serie"
-                        title="Aggiungi una serie"
+                        aria-label={t("Aggiungi una serie")}
+                        title={t("Aggiungi una serie")}
                         onClick={addSeries}
                         className="flex size-6 items-center justify-center rounded-md border border-dashed border-border text-muted-foreground hover:bg-muted"
                       >
@@ -410,8 +423,8 @@ function ChartDataDialog({
                       {spec.categories.length > 1 ? (
                         <button
                           type="button"
-                          aria-label="Elimina la riga"
-                          title="Elimina la riga"
+                          aria-label={t("Elimina la riga")}
+                          title={t("Elimina la riga")}
                           onClick={() => removeRow(ci)}
                           className="flex size-5 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-destructive"
                         >
@@ -429,7 +442,9 @@ function ChartDataDialog({
                         ) : null}
                         <input
                           value={cat}
-                          aria-label={`Categoria ${ci + 1}`}
+                          aria-label={t("Categoria {number}", {
+                            number: ci + 1,
+                          })}
                           onChange={(e) =>
                             onChange({
                               ...spec,
@@ -475,7 +490,7 @@ function ChartDataDialog({
                 className="h-7 gap-1 text-xs"
                 onClick={addRow}
               >
-                <Plus className="size-3.5" /> Riga
+                <Plus className="size-3.5" /> {t("Riga")}
               </Button>
               <Button
                 variant="outline"
@@ -486,15 +501,15 @@ function ChartDataDialog({
                     paste(await navigator.clipboard.readText())
                   } catch {
                     toast.error(
-                      "Il browser non permette di leggere gli appunti",
+                      t("Il browser non permette di leggere gli appunti"),
                       {
-                        description: "Clicca in una cella e premi ⌘V.",
+                        description: t("Clicca in una cella e premi ⌘V."),
                       }
                     )
                   }
                 }}
               >
-                <ClipboardPaste className="size-3.5" /> Incolla da Excel
+                <ClipboardPaste className="size-3.5" /> {t("Incolla da Excel")}
               </Button>
               <Button
                 variant="ghost"
@@ -503,19 +518,19 @@ function ChartDataDialog({
                 onClick={async () => {
                   try {
                     await navigator.clipboard.writeText(toTable(spec))
-                    toast.success("Dati copiati: incollali in Excel")
+                    toast.success(t("Dati copiati: incollali in Excel"))
                   } catch {
-                    toast.error("Copia non riuscita")
+                    toast.error(t("Copia non riuscita"))
                   }
                 }}
               >
-                <ClipboardCopy className="size-3.5" /> Copia i dati
+                <ClipboardCopy className="size-3.5" /> {t("Copia i dati")}
               </Button>
             </div>
           </div>
           <div className="hidden border-l border-border bg-muted/30 p-3 md:block">
             <p className="mb-2 text-[11px] font-medium text-muted-foreground">
-              Anteprima
+              {t("Anteprima")}
             </p>
             <div className="rounded-lg bg-background p-1 ring-1 ring-border">
               <ChartSvg spec={spec} width={290} height={230} dark={dark} />

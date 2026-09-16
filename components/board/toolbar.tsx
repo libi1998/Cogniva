@@ -41,6 +41,7 @@ import {
 import { toolKey, type Tool } from "./tools"
 import type { BoardMode, NodeShape } from "@/lib/types"
 
+import { useT } from "@/lib/i18n/client"
 function ToolButton({
   active,
   label,
@@ -136,6 +137,7 @@ export function BoardToolbar({
   onColor: (c: SwatchKey) => void
   mode: BoardMode
 }) {
+  const t = useT()
   const [open, setOpen] = React.useState<string | null>(null)
   const key = toolKey(tool)
 
@@ -150,7 +152,7 @@ export function BoardToolbar({
         open={open}
         setOpen={setOpen}
         id="shapes"
-        label="Forme"
+        label={t("Forme")}
         active={
           tool.t === "shape" && tool.shape !== "note" && tool.shape !== "text"
         }
@@ -159,7 +161,7 @@ export function BoardToolbar({
         <ShapePanel onPick={(s: NodeShape) => pick({ t: "shape", shape: s })} />
       </Flyout>
       <ToolButton
-        label="Connettore"
+        label={t("Connettore")}
         shortcut="C"
         active={tool.t === "connect"}
         onClick={() => pick({ t: "connect" })}
@@ -174,7 +176,7 @@ export function BoardToolbar({
       open={open}
       setOpen={setOpen}
       id="wire"
-      label="Componenti"
+      label={t("Componenti")}
       active={tool.t === "wire"}
       icon={<LayoutTemplate className="size-[18px]" />}
     >
@@ -189,7 +191,7 @@ export function BoardToolbar({
     <div className="pointer-events-none absolute top-3 bottom-[calc(max(0.75rem,env(safe-area-inset-bottom))+3.25rem)] left-[max(0.75rem,env(safe-area-inset-left))] z-20 flex items-center sm:top-4 sm:bottom-16 sm:left-4">
       <div className="pointer-events-auto flex max-h-full [scrollbar-width:none] flex-col items-center gap-1 overflow-y-auto overscroll-contain rounded-2xl border border-black/5 bg-card/95 p-1.5 shadow-[0_8px_28px_-8px_rgba(9,9,11,0.2)] backdrop-blur dark:border-white/10 dark:shadow-[0_8px_28px_-8px_rgba(0,0,0,0.6)]">
         <ToolButton
-          label="Seleziona"
+          label={t("Seleziona")}
           shortcut="V"
           active={tool.t === "select"}
           onClick={() => pick({ t: "select" })}
@@ -197,7 +199,7 @@ export function BoardToolbar({
           <MousePointer2 className="size-[18px]" />
         </ToolButton>
         <ToolButton
-          label="Mano"
+          label={t("Mano")}
           shortcut="H"
           active={tool.t === "hand"}
           onClick={() => pick({ t: "hand" })}
@@ -214,7 +216,7 @@ export function BoardToolbar({
               open={open}
               setOpen={setOpen}
               id="frames"
-              label="Frame"
+              label={t("Frame")}
               active={tool.t === "frame"}
               icon={<Frame className="size-[18px]" />}
             >
@@ -225,7 +227,7 @@ export function BoardToolbar({
         ) : mode === "card" ? (
           <>
             <ToolButton
-              label="Post-it"
+              label={t("Post-it")}
               shortcut="S"
               active={key === "shape:note"}
               onClick={() => pick({ t: "shape", shape: "note" })}
@@ -233,7 +235,7 @@ export function BoardToolbar({
               <StickyNote className="size-[18px]" />
             </ToolButton>
             <ToolButton
-              label="Card"
+              label={t("Card")}
               shortcut="R"
               active={key === "shape:rounded"}
               onClick={() => pick({ t: "shape", shape: "rounded" })}
@@ -246,7 +248,7 @@ export function BoardToolbar({
           <>
             {shapeTools}
             <ToolButton
-              label="Post-it"
+              label={t("Post-it")}
               shortcut="S"
               active={key === "shape:note"}
               onClick={() => pick({ t: "shape", shape: "note" })}
@@ -257,7 +259,7 @@ export function BoardToolbar({
         )}
 
         <ToolButton
-          label="Testo"
+          label={t("Testo")}
           shortcut="T"
           active={key === "shape:text"}
           onClick={() => pick({ t: "shape", shape: "text" })}
@@ -268,7 +270,7 @@ export function BoardToolbar({
         <div className="my-0.5 h-px w-6 bg-border" />
 
         <ToolButton
-          label="Sezione"
+          label={t("Sezione")}
           shortcut="G"
           active={tool.t === "section"}
           onClick={() => pick({ t: "section" })}
@@ -276,7 +278,7 @@ export function BoardToolbar({
           <SquareDashed className="size-[18px]" />
         </ToolButton>
         <ToolButton
-          label="Tabella"
+          label={t("Tabella")}
           shortcut="B"
           active={tool.t === "table"}
           onClick={() => pick({ t: "table" })}
@@ -284,7 +286,7 @@ export function BoardToolbar({
           <Table2 className="size-[18px]" />
         </ToolButton>
         <ToolButton
-          label="Grafico"
+          label={t("Grafico")}
           shortcut="K"
           active={tool.t === "chart"}
           onClick={() => pick({ t: "chart" })}
@@ -296,7 +298,7 @@ export function BoardToolbar({
             open={open}
             setOpen={setOpen}
             id="frames2"
-            label="Frame"
+            label={t("Frame")}
             active={tool.t === "frame"}
             icon={<Frame className="size-[18px]" />}
           >
@@ -308,7 +310,7 @@ export function BoardToolbar({
           open={open}
           setOpen={setOpen}
           id="icons"
-          label="Icone"
+          label={t("Icone")}
           active={tool.t === "icon"}
           icon={<Smile className="size-[18px]" />}
         >
@@ -319,7 +321,7 @@ export function BoardToolbar({
           open={open}
           setOpen={setOpen}
           id="draw"
-          label="Disegno"
+          label={t("Disegno")}
           active={tool.t === "draw"}
           icon={<PenLine className="size-[18px]" />}
         >
@@ -328,7 +330,7 @@ export function BoardToolbar({
               onClick={() => pick({ t: "draw", mode: "pen" })}
               className="flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left text-xs transition hover:bg-muted"
             >
-              <PenLine className="size-4 text-muted-foreground" /> Penna
+              <PenLine className="size-4 text-muted-foreground" /> {t("Penna")}
               <kbd className="ml-auto text-[10px] text-muted-foreground">P</kbd>
             </button>
             <button
@@ -336,13 +338,13 @@ export function BoardToolbar({
               className="flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left text-xs transition hover:bg-muted"
             >
               <Highlighter className="size-4 text-muted-foreground" />{" "}
-              Evidenziatore
+              {t("Evidenziatore")}
             </button>
             <button
               onClick={() => pick({ t: "draw", mode: "eraser" })}
               className="flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left text-xs transition hover:bg-muted"
             >
-              <Eraser className="size-4 text-muted-foreground" /> Gomma
+              <Eraser className="size-4 text-muted-foreground" /> {t("Gomma")}
               <kbd className="ml-auto text-[10px] text-muted-foreground">E</kbd>
             </button>
           </div>

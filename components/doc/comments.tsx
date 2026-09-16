@@ -13,6 +13,7 @@ import { commentRanges } from "@/lib/tiptap-extensions"
 import type { DocComment } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
+import { useT, timeAgo } from "@/lib/i18n/client"
 const NO_COMMENTS: DocComment[] = []
 
 /* ------------------------------- posizioni -------------------------------- */
@@ -53,6 +54,7 @@ export function useComments(
   editor: Editor | null,
   fileId: string
 ): CommentsController {
+  const t = useT()
   const stored = useStore((s) => {
     const f = s.files.find((x) => x.id === fileId)
     return f && f.kind === "doc"
@@ -129,7 +131,7 @@ export function useComments(
         while (start > 0 && word.test(text[start - 1])) start--
         while (end < text.length && word.test(text[end])) end++
         if (start === end) {
-          toast.info("Seleziona il testo da commentare")
+          toast.info(t("Seleziona il testo da commentare"))
           return
         }
         from = $pos.start() + start
@@ -242,18 +244,7 @@ export function pruneComments(editor: Editor, fileId: string) {
 
 /* --------------------------------- colonna -------------------------------- */
 
-const when = (time: number) => {
-  const minutes = Math.round((Date.now() - time) / 60000)
-  if (minutes < 1) return "adesso"
-  if (minutes < 60) return `${minutes} min fa`
-  const hours = Math.round(minutes / 60)
-  if (hours < 24) return `${hours} h fa`
-  return new Date(time).toLocaleDateString("it-IT", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  })
-}
+const when = (time: number) => timeAgo(time)
 
 const AVATAR_COLORS = [
   "#6759ff",
@@ -297,6 +288,7 @@ export function CommentsColumn({
    */
   stacked?: boolean
 }) {
+  const t = useT()
   const [anchors, setAnchors] = React.useState<Record<string, number>>({})
   const [heights, setHeights] = React.useState<Record<string, number>>({})
   const ids = ctl.list.map((c) => c.id).join(",")
@@ -390,7 +382,7 @@ export function CommentsColumn({
 
   return (
     <aside
-      aria-label="Commenti"
+      aria-label={t("Commenti")}
       className={cn(
         "doc-comments shrink-0",
         stacked ? "flex w-full flex-col gap-2" : "relative w-[248px]"
@@ -420,6 +412,7 @@ const CommentCard = React.forwardRef<
     ctl: CommentsController
   }
 >(function CommentCard({ comment: c, top, active, ctl }, ref) {
+  const t = useT()
   const [draft, setDraft] = React.useState("")
   const editing = ctl.editing === c.id
 
@@ -459,13 +452,13 @@ const CommentCard = React.forwardRef<
           <div className="truncate font-semibold">{c.author}</div>
           <div className="text-[10px] text-muted-foreground">
             {when(c.createdAt)}
-            {c.resolved ? " · risolto" : ""}
+            {c.resolved ? ` ${t("· risolto")}` : ""}
           </div>
         </div>
         <button
           type="button"
-          title={c.resolved ? "Riapri" : "Risolvi"}
-          aria-label={c.resolved ? "Riapri" : "Risolvi"}
+          title={c.resolved ? t("Riapri") : t("Risolvi")}
+          aria-label={c.resolved ? t("Riapri") : t("Risolvi")}
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => ctl.resolve(c.id, !c.resolved)}
           className="flex size-6 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -478,8 +471,8 @@ const CommentCard = React.forwardRef<
         </button>
         <button
           type="button"
-          title="Elimina commento"
-          aria-label="Elimina commento"
+          title={t("Elimina commento")}
+          aria-label={t("Elimina commento")}
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => ctl.remove(c.id)}
           className="flex size-6 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-destructive"
@@ -493,7 +486,7 @@ const CommentCard = React.forwardRef<
           autoFocus
           rows={3}
           value={c.text}
-          placeholder="Scrivi un commento…"
+          placeholder={t("Scrivi un commento…")}
           className="mt-2 min-h-0 text-xs"
           onChange={(e) => ctl.edit(c.id, e.target.value)}
           onBlur={finishEditing}
@@ -509,9 +502,11 @@ const CommentCard = React.forwardRef<
         <p
           className="mt-1.5 leading-relaxed break-words whitespace-pre-wrap"
           onDoubleClick={() => ctl.setEditing(c.id)}
-          title="Doppio clic per modificare"
+          title={t("Doppio clic per modificare")}
         >
-          {c.text || <span className="text-muted-foreground">Vuoto</span>}
+          {c.text || (
+            <span className="text-muted-foreground">{t("Vuoto")}</span>
+          )}
         </p>
       )}
 
@@ -535,8 +530,8 @@ const CommentCard = React.forwardRef<
           <CornerDownRight className="size-3.5 shrink-0 text-muted-foreground" />
           <input
             value={draft}
-            placeholder="Rispondi…"
-            aria-label="Rispondi"
+            placeholder={t("Rispondi…")}
+            aria-label={t("Rispondi")}
             onChange={(e) => setDraft(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {

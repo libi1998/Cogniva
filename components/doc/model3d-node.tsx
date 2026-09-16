@@ -18,6 +18,7 @@ import {
 import type { ModelSpec, Viewer } from "@/lib/model3d/viewer"
 import { cn } from "@/lib/utils"
 
+import { useT, tr } from "@/lib/i18n/client"
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     model3d: {
@@ -67,7 +68,7 @@ async function startViewer(
     viewer.resize(rect.width, rect.height)
     return viewer
   } catch {
-    callbacks.onError("Questo dispositivo non supporta WebGL.")
+    callbacks.onError(tr("Questo dispositivo non supporta WebGL."))
     return null
   }
 }
@@ -88,6 +89,7 @@ function Model3DView({
   getPos,
   updateAttributes,
 }: NodeViewProps) {
+  const t = useT()
   const attrs = node.attrs as Record<string, unknown>
   const width = Math.min(100, Math.max(20, num(attrs.width, 60)))
   const height = Math.min(900, Math.max(120, num(attrs.height, 320)))
@@ -269,7 +271,7 @@ function Model3DView({
         className="doc-model3d-frame"
         style={{ height, background: background || undefined }}
         role="img"
-        aria-label={alt || "Modello 3D"}
+        aria-label={alt || t("Modello 3D")}
         onPointerDown={select}
       >
         {poster ? (
@@ -293,7 +295,7 @@ function Model3DView({
           )}
         />
         {!spec ? (
-          <span className="doc-model3d-message">Modello non valido</span>
+          <span className="doc-model3d-message">{t("Modello non valido")}</span>
         ) : status === "loading" && visible && !poster ? (
           <span className="doc-model3d-message">
             <LoaderCircle className="size-5 animate-spin" />
@@ -306,13 +308,13 @@ function Model3DView({
         </span>
         {selected && status === "ready" ? (
           <span className="doc-model3d-hint" contentEditable={false}>
-            Trascina per ruotare · rotellina per lo zoom
+            {t("Trascina per ruotare · rotellina per lo zoom")}
           </span>
         ) : null}
         <span
           className="doc-model3d-grip"
           data-drag-handle=""
-          title="Trascina per spostare il modello"
+          title={t("Trascina per spostare il modello")}
           contentEditable={false}
         >
           <GripVertical className="size-4" />
@@ -378,7 +380,7 @@ export const Model3D = Node.create({
   },
   renderHTML({ node, HTMLAttributes }) {
     const poster = String(node.attrs.poster ?? "")
-    const alt = String(node.attrs.alt || node.attrs.name || "Modello 3D")
+    const alt = String(node.attrs.alt || node.attrs.name || tr("Modello 3D"))
     return [
       "figure",
       mergeAttributes(HTMLAttributes, { "data-model3d": "" }),
@@ -391,7 +393,7 @@ export const Model3D = Node.create({
     ]
   },
   renderText({ node }) {
-    return `[${String(node.attrs.alt || node.attrs.name || "Modello 3D")}]`
+    return `[${String(node.attrs.alt || node.attrs.name || tr("Modello 3D"))}]`
   },
   addCommands() {
     return {

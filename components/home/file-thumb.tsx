@@ -13,7 +13,9 @@ import {
 } from "@/lib/use-theme"
 import type { BoardData, DocData } from "@/lib/types"
 
+import { useT } from "@/lib/i18n/client"
 export function BoardThumb({ data }: { data: BoardData }) {
+  const t = useT()
   const dark = useIsDark()
   const background = resolveColor(data.theme.background, dark, AUTO_CANVAS)
 
@@ -23,7 +25,7 @@ export function BoardThumb({ data }: { data: BoardData }) {
         className="flex h-full w-full items-center justify-center text-xs"
         style={{ background, color: whim.base[500] }}
       >
-        Board vuota
+        {t("Board vuota")}
       </div>
     )
   }
@@ -72,6 +74,7 @@ function docText(content: unknown, limit = 240): string {
 }
 
 export function DocThumb({ data }: { data: DocData }) {
+  const t = useT()
   const dark = useIsDark()
   const text = docText(data.content)
   const title = docTitle(data.content)
@@ -108,7 +111,7 @@ export function DocThumb({ data }: { data: DocData }) {
           />
         )}
         <p className="text-[9px] leading-[1.5] opacity-70">
-          {text || "Documento vuoto"}
+          {text || t("Documento vuoto")}
         </p>
       </div>
     </div>

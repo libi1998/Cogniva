@@ -40,6 +40,21 @@ export function createAddinApi(
   }
 }
 
+/**
+ * Una frase tradotta con dei pezzi speciali (collegamenti, grassetti) al posto
+ * dei segnaposto: «Fonte: «{title}»…» → ["Fonte: «", {title}, "»…"]. L'ordine
+ * delle parole resta quello della lingua.
+ */
+export function richParts<T>(template: string, values: Record<string, T>) {
+  return template
+    .split(/(\{\w+\})/)
+    .filter(Boolean)
+    .map((piece) => {
+      const name = piece.match(/^\{(\w+)\}$/)?.[1]
+      return name && name in values ? values[name]! : piece
+    })
+}
+
 /** Un paragrafo con testo e, se servono, collegamenti */
 export function paragraph(
   parts: (string | { text: string; href?: string; italic?: boolean })[]

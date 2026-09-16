@@ -11,6 +11,7 @@ import type { StyleDialogRequest } from "../style-dialog"
 import type { InkController } from "../ink-layer"
 import type { DocMode } from "../view-modes"
 
+import { tr } from "@/lib/i18n/client"
 /** Il riquadro attività nella colonna di destra */
 export type TaskPane =
   | { kind: "thesaurus"; word: string; nonce: number }
@@ -70,16 +71,31 @@ export const CM = 96 / 2.54
 export const PT = 96 / 72
 
 export const TEXT_COLORS = [
-  { label: "Automatico", value: "" },
+  {
+    get label() {
+      return tr("Automatico")
+    },
+    value: "",
+  },
   ...SWATCHES.filter((s) => s.key !== "white").map((s) => ({
     label: s.label,
     value: s.solid,
   })),
-  { label: "Nero", value: whim.base[900] },
+  {
+    get label() {
+      return tr("Nero")
+    },
+    value: whim.base[900],
+  },
 ]
 
 export const HIGHLIGHTS = [
-  { label: "Nessuno", value: "" },
+  {
+    get label() {
+      return tr("Nessuno")
+    },
+    value: "",
+  },
   ...SWATCHES.filter((s) => s.key !== "white" && s.key !== "gray").map((s) => ({
     label: s.label,
     value: s.fill,
@@ -87,7 +103,12 @@ export const HIGHLIGHTS = [
 ]
 
 export const SHADINGS = [
-  { label: "Nessuno", value: "" },
+  {
+    get label() {
+      return tr("Nessuno")
+    },
+    value: "",
+  },
   ...SWATCHES.map((s) => ({ label: s.label, value: s.fill })),
 ]
 

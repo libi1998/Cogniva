@@ -1,5 +1,6 @@
 /// <reference lib="webworker" />
 import { THESAURUS_CACHE, type ThesaurusSource } from "./catalog"
+import { N_ } from "../i18n/config"
 
 /**
  * Carica e interroga un dizionario MyThes in un thread a parte: i file vanno
@@ -50,7 +51,7 @@ async function sha256(bytes: ArrayBuffer) {
 async function download(source: ThesaurusSource, id: number) {
   const response = await fetch(source.url)
   if (!response.ok || !response.body) {
-    throw new Error(`Download del dizionario non riuscito (${response.status})`)
+    throw new Error(N_("Download del dizionario non riuscito"))
   }
   const total = Number(response.headers.get("content-length")) || source.bytes
   const reader = response.body.getReader()
@@ -86,7 +87,7 @@ async function fileBytes(source: ThesaurusSource, id: number) {
   }
   const bytes = await download(source, id)
   if ((await sha256(bytes)) !== source.sha256) {
-    throw new Error("Il dizionario scaricato non è integro: riprova.")
+    throw new Error(N_("Il dizionario scaricato non è integro: riprova."))
   }
   await cache?.put(source.url, new Response(bytes)).catch(() => undefined)
   return bytes

@@ -35,6 +35,7 @@ import {
 } from "./ribbon-ui"
 import type { RibbonCtx } from "./shared"
 
+import { useT } from "@/lib/i18n/client"
 /** L'icona di una penna, col suo colore e spessore sotto */
 function PenIcon({ pen }: { pen: Pen }) {
   const Icon =
@@ -70,16 +71,19 @@ function PenOptions({
   onChange: (patch: Partial<Pen>) => void
   onRemove: () => void
 }) {
+  const t = useT()
   const close = useCloseRibbonMenu()
   return (
     <>
-      <DropdownMenuLabel>{PEN_LABELS[pen.kind]}: spessore</DropdownMenuLabel>
+      <DropdownMenuLabel>
+        {t("{pen}: spessore", { pen: PEN_LABELS[pen.kind] })}
+      </DropdownMenuLabel>
       <div className="flex items-center gap-1 px-1.5 pb-1.5">
         {PEN_WIDTHS[pen.kind].map((w) => (
           <button
             key={w}
             type="button"
-            title={`${String(w).replace(".", ",")} px`}
+            title={t("{width} px", { width: String(w).replace(".", ",") })}
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => onChange({ width: w })}
             className={cn(
@@ -99,7 +103,7 @@ function PenOptions({
           </button>
         ))}
       </div>
-      <DropdownMenuLabel>Colore</DropdownMenuLabel>
+      <DropdownMenuLabel>{t("Colore")}</DropdownMenuLabel>
       <div className="grid grid-cols-6 gap-1.5 px-1.5 pb-1.5">
         {PEN_COLORS.map((c) => (
           <button
@@ -121,7 +125,7 @@ function PenOptions({
         ))}
       </div>
       <label className="flex items-center justify-between gap-2 px-2 pb-2 text-xs text-muted-foreground">
-        Altri colori
+        {t("Altri colori")}
         <input
           type="color"
           value={pen.color}
@@ -131,7 +135,7 @@ function PenOptions({
       </label>
       <DropdownMenuSeparator />
       <DropdownMenuItem onClick={onRemove}>
-        <Trash2 /> Rimuovi questa penna
+        <Trash2 /> {t("Rimuovi questa penna")}
       </DropdownMenuItem>
     </>
   )
@@ -142,23 +146,24 @@ function PenOptions({
  * gomma, forme riconosciute dal tratto e riproduzione.
  */
 export function DrawTab({ ctx }: { ctx: RibbonCtx }) {
+  const t = useT()
   const { ink, theme, setTheme } = ctx
 
   return (
     <>
-      <RibbonGroup label="Strumenti di disegno" safe>
+      <RibbonGroup label={t("Strumenti di disegno")} safe>
         <RibbonButton
           large
-          label="Seleziona"
-          title="Torna al testo (⎋)"
+          label={t("Seleziona")}
+          title={t("Torna al testo (⎋)")}
           active={ink.tool === "select"}
           icon={<MousePointer2 className="size-5" />}
           onClick={() => ink.setTool("select")}
         />
         <RibbonButton
           large
-          label="Disegna con tocco"
-          title="Con il dito si disegna invece di scorrere la pagina"
+          label={t("Disegna con tocco")}
+          title={t("Con il dito si disegna invece di scorrere la pagina")}
           active={ink.touchDraw}
           icon={<Hand className="size-5" />}
           onClick={() => {
@@ -168,8 +173,8 @@ export function DrawTab({ ctx }: { ctx: RibbonCtx }) {
         />
         <RibbonButton
           large
-          label="Gomma"
-          title="Cancella i tratti su cui passi"
+          label={t("Gomma")}
+          title={t("Cancella i tratti su cui passi")}
           active={ink.tool === "eraser"}
           icon={<Eraser className="size-5" />}
           onClick={() =>
@@ -182,7 +187,10 @@ export function DrawTab({ ctx }: { ctx: RibbonCtx }) {
             return (
               <span key={pen.id} className="flex flex-col items-center">
                 <RibbonButton
-                  title={`${PEN_LABELS[pen.kind]} · ${String(pen.width).replace(".", ",")} px`}
+                  title={t("{pen} · {width} px", {
+                    pen: PEN_LABELS[pen.kind],
+                    width: String(pen.width).replace(".", ","),
+                  })}
                   active={active}
                   icon={<PenIcon pen={pen} />}
                   onClick={() =>
@@ -194,7 +202,7 @@ export function DrawTab({ ctx }: { ctx: RibbonCtx }) {
                   className="w-56"
                   trigger={
                     <RibbonButton
-                      title="Colore e spessore"
+                      title={t("Colore e spessore")}
                       className="h-4 w-9"
                       icon={<ChevronDown className="size-3 opacity-60" />}
                     />
@@ -218,7 +226,7 @@ export function DrawTab({ ctx }: { ctx: RibbonCtx }) {
               <RibbonButton
                 large
                 chevron
-                label="Aggiungi penna"
+                label={t("Aggiungi penna")}
                 icon={<Plus className="size-5" />}
               />
             }
@@ -237,17 +245,19 @@ export function DrawTab({ ctx }: { ctx: RibbonCtx }) {
             ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={ink.resetPens}>
-              <RotateCcw /> Ripristina le penne predefinite
+              <RotateCcw /> {t("Ripristina le penne predefinite")}
             </DropdownMenuItem>
           </RibbonMenu>
         </div>
       </RibbonGroup>
 
-      <RibbonGroup label="Converti" safe>
+      <RibbonGroup label={t("Converti")} safe>
         <RibbonButton
           large
-          label="Da input penna a forma"
-          title="Linee, triangoli, rettangoli e cerchi disegnati diventano forme precise"
+          label={t("Da input penna a forma")}
+          title={t(
+            "Linee, triangoli, rettangoli e cerchi disegnati diventano forme precise"
+          )}
           active={ink.toShape}
           icon={<Shapes className="size-5" />}
           onClick={() => {
@@ -257,11 +267,11 @@ export function DrawTab({ ctx }: { ctx: RibbonCtx }) {
         />
       </RibbonGroup>
 
-      <RibbonGroup label="Modifica" safe>
+      <RibbonGroup label={t("Modifica")} safe>
         <RibbonRows>
           <RibbonButton
             compact
-            label="Annulla tratto"
+            label={t("Annulla tratto")}
             icon={<Undo2 className="size-4" />}
             disabled={!ink.canUndo}
             className="justify-start"
@@ -269,21 +279,26 @@ export function DrawTab({ ctx }: { ctx: RibbonCtx }) {
           />
           <RibbonButton
             compact
-            label="Cancella tutto l'input penna"
+            label={t("Cancella tutto l'input penna")}
             icon={<Trash2 className="size-4" />}
             disabled={!ink.strokes.length}
             className="justify-start"
             onClick={() => {
               ink.clear()
-              toast("Disegni cancellati", {
-                action: { label: "Annulla", onClick: ink.undo },
+              toast(t("Disegni cancellati"), {
+                action: {
+                  label: t("Annulla||annulla l'ultima modifica"),
+                  onClick: ink.undo,
+                },
               })
             }}
           />
           <RibbonButton
             compact
             label={
-              theme.inkVisible ? "Nascondi input penna" : "Mostra input penna"
+              theme.inkVisible
+                ? t("Nascondi input penna")
+                : t("Mostra input penna")
             }
             icon={<SquarePen className="size-4" />}
             className="justify-start"
@@ -292,25 +307,28 @@ export function DrawTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label="Inserisci">
+      <RibbonGroup label={t("Inserisci")}>
         <RibbonButton
           large
-          label="Canvas di disegno"
-          title="Una board incorporata, con penne, forme e connettori"
+          label={t("Canvas di disegno")}
+          title={t("Una board incorporata, con penne, forme e connettori")}
           icon={<SquarePen className="size-5" />}
           onClick={() => {
-            const id = getWorkspace().createFile("board", "Canvas di disegno")
+            const id = getWorkspace().createFile(
+              "board",
+              t("Canvas di disegno")
+            )
             ctx.onInsertBoard(id)
-            toast.success("Canvas inserito: aprilo per disegnare")
+            toast.success(t("Canvas inserito: aprilo per disegnare"))
           }}
         />
       </RibbonGroup>
 
-      <RibbonGroup label="Riproduci" safe>
+      <RibbonGroup label={t("Riproduci")} safe>
         <RibbonButton
           large
-          label="Riproduzione input penna"
-          title="Ridisegna i tratti nell'ordine in cui sono stati fatti"
+          label={t("Riproduzione input penna")}
+          title={t("Ridisegna i tratti nell'ordine in cui sono stati fatti")}
           disabled={!ink.strokes.length || ink.replaying}
           icon={<Play className="size-5" />}
           onClick={ink.replay}

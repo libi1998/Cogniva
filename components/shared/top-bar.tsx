@@ -1,5 +1,6 @@
 "use client"
 
+import type { Route } from "next"
 import * as React from "react"
 import Link from "next/link"
 import { ArrowLeft, Search } from "lucide-react"
@@ -16,6 +17,7 @@ import { useDocumentTitle } from "@/lib/use-document-title"
 import { useStore } from "@/lib/store"
 import { cn } from "@/lib/utils"
 
+import { useT, hrefFor } from "@/lib/i18n/client"
 /**
  * La cornice della barra in alto, senza dati: la usano sia la barra vera sia
  * lo scheletro che si vede prima che lo spazio di lavoro sia caricato, così
@@ -28,6 +30,7 @@ export function TopBarFrame({
   children: React.ReactNode
   className?: string
 }) {
+  const t = useT()
   return (
     <header
       className={cn(
@@ -36,10 +39,10 @@ export function TopBarFrame({
       )}
     >
       <Link
-        href="/"
+        href={hrefFor("/") as Route}
         className="flex size-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
-        title="Tutti i file"
-        aria-label="Tutti i file"
+        title={t("Tutti i file")}
+        aria-label={t("Tutti i file")}
       >
         <ArrowLeft className="size-[18px]" />
       </Link>
@@ -50,23 +53,24 @@ export function TopBarFrame({
 
 /** Il pulsante della palette: testo sugli schermi larghi, lente sugli altri */
 export function CommandsButton() {
+  const t = useT()
   return (
     <>
       <button
         type="button"
         onClick={openCommandPalette}
-        title="Cerca comandi e file"
+        title={t("Cerca comandi e file")}
         className="hidden h-8 items-center gap-2 rounded-lg border border-border px-2.5 text-xs text-muted-foreground transition hover:bg-muted hover:text-foreground lg:flex"
       >
         <Search className="size-3.5" />
-        Comandi
+        {t("Comandi")}
         <Kbd>⌘K</Kbd>
       </button>
       <button
         type="button"
         onClick={openCommandPalette}
-        title="Cerca comandi e file"
-        aria-label="Cerca comandi e file"
+        title={t("Cerca comandi e file")}
+        aria-label={t("Cerca comandi e file")}
         className="flex size-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground lg:hidden"
       >
         <Search className="size-4" />
@@ -82,11 +86,12 @@ export function TopBar({
   fileId: string
   right?: React.ReactNode
 }) {
+  const t = useT()
   const file = useStore((s) => s.files.find((f) => f.id === fileId))
   const rename = useStore((s) => s.renameFile)
   const setIcon = useStore((s) => s.setIcon)
   const [open, setOpen] = React.useState(false)
-  useDocumentTitle(`${file?.title.trim() || "Senza titolo"} · Cogniva`)
+  useDocumentTitle(`${file?.title.trim() || t("Senza titolo")} · Cogniva`)
   if (!file) return null
 
   return (
@@ -96,8 +101,8 @@ export function TopBar({
           render={
             <button
               type="button"
-              title="Cambia icona"
-              aria-label="Cambia icona"
+              title={t("Cambia icona")}
+              aria-label={t("Cambia icona")}
               className="hidden size-8 shrink-0 items-center justify-center rounded-lg text-foreground/80 transition hover:bg-muted hover:text-foreground sm:flex"
             />
           }
@@ -115,7 +120,7 @@ export function TopBar({
       </Popover>
 
       <input
-        aria-label="Nome del file"
+        aria-label={t("Nome del file")}
         value={file.title}
         onChange={(e) => rename(fileId, e.target.value)}
         spellCheck={false}

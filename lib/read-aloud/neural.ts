@@ -2,6 +2,7 @@ import type { PiperRequest, PiperResponse } from "./piper.worker"
 import { phonemize } from "./phonemizer"
 import { VOICE_CACHE, type NeuralVoice } from "./voices"
 
+import { tr } from "@/lib/i18n/client"
 /**
  * Il lato «pagina» delle voci neurali: configurazione della voce, fonemi con
  * espeak-ng e sintesi nel worker. Un worker solo, riusato fra una lettura e
@@ -45,12 +46,12 @@ function getWorker() {
       job.resolve(message.pcm)
     } else {
       pending.delete(message.id)
-      job.reject(new Error(message.message))
+      job.reject(new Error(tr(message.message)))
     }
   })
   worker.addEventListener("error", (event) => {
     for (const [id, job] of pending) {
-      job.reject(new Error(event.message || "La voce si è fermata"))
+      job.reject(new Error(event.message || tr("La voce si è fermata")))
       pending.delete(id)
     }
     worker?.terminate()
@@ -80,7 +81,7 @@ async function fetchConfig(voice: NeuralVoice): Promise<VoiceConfig> {
   const hit = await cache?.match(voice.config)
   if (hit) return (await hit.json()) as VoiceConfig
   const response = await fetch(voice.config)
-  if (!response.ok) throw new Error("Configurazione della voce non trovata")
+  if (!response.ok) throw new Error(tr("Configurazione della voce non trovata"))
   await cache?.put(voice.config, response.clone()).catch(() => undefined)
   return (await response.json()) as VoiceConfig
 }
@@ -140,7 +141,7 @@ export function releaseVoices() {
   worker?.terminate()
   worker = null
   for (const [id, job] of pending) {
-    job.reject(new DOMException("Lettura interrotta", "AbortError"))
+    job.reject(new DOMException(tr("Lettura interrotta"), "AbortError"))
     pending.delete(id)
   }
 }

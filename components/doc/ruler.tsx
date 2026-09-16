@@ -3,6 +3,8 @@
 import * as React from "react"
 import { clampMargin, type MarginSide } from "@/lib/types"
 
+import { useT } from "@/lib/i18n/client"
+import { N_ } from "@/lib/i18n/config"
 /** pixel CSS in un centimetro */
 const CM = 96 / 2.54
 /** spessore del righello */
@@ -33,6 +35,7 @@ export function Ruler({
   end: number
   onMargin: (side: MarginSide, value: number) => void
 }) {
+  const t = useT()
   const [dragging, setDragging] = React.useState<"start" | "end" | null>(null)
   const horizontal = axis === "horizontal"
   const id = horizontal ? "doc-ruler" : "doc-ruler-y"
@@ -181,8 +184,10 @@ export function Ruler({
           <button
             key={which}
             type="button"
-            aria-label={`Margine ${LABELS[sides[which]]}`}
-            title={`Margine ${LABELS[sides[which]]} · trascina`}
+            aria-label={t("Margine {side}", { side: t(LABELS[sides[which]]) })}
+            title={t("Margine {side} · trascina", {
+              side: t(LABELS[sides[which]]),
+            })}
             onPointerDown={(e) => startDrag(which, e)}
             className={
               horizontal
@@ -216,8 +221,8 @@ export function Ruler({
 }
 
 const LABELS: Record<MarginSide, string> = {
-  top: "superiore",
-  right: "destro",
-  bottom: "inferiore",
-  left: "sinistro",
+  top: N_("superiore||lato del margine"),
+  right: N_("destro||lato del margine"),
+  bottom: N_("inferiore||lato del margine"),
+  left: N_("sinistro||lato del margine"),
 }

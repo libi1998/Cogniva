@@ -2,6 +2,24 @@ import type { BoardEdge, BoardNode, WFile } from "./types"
 import { defaultBoardTheme, defaultDocTheme, normalizeNode } from "./types"
 import { newTable, tableSize, WIRE_SPECS } from "./items"
 
+import { currentRegion, tr } from "@/lib/i18n/client"
+/** Una frase tradotta con dei pezzi formattati al posto dei segnaposto */
+function richText(
+  template: string,
+  values: Record<string, { text: string; marks?: { type: string }[] }>
+) {
+  return template
+    .split(/(\{\w+\})/)
+    .filter(Boolean)
+    .map((piece) => {
+      const name = piece.match(/^\{(\w+)\}$/)?.[1]
+      const value = name ? values[name] : undefined
+      return value
+        ? { type: "text", text: value.text, marks: value.marks }
+        : { type: "text", text: piece }
+    })
+}
+
 const node = (
   n: Partial<BoardNode> & { id: string; x: number; y: number }
 ): BoardNode => normalizeNode(n)
@@ -54,25 +72,25 @@ export function seedFiles(): WFile[] {
   const now = Date.now()
   const table = newTable(3, 4)
   table.cells = [
-    "Fase",
+    tr("Fase"),
     "Owner",
-    "Stato",
-    "Ricerca",
+    tr("Stato"),
+    tr("Ricerca||fase di un progetto"),
     "Marta",
-    "Fatto",
+    tr("Fatto"),
     "Wireframe",
     "Luca",
-    "In corso",
+    tr("In corso"),
     "Test",
     "Sara",
-    "Da fare",
+    tr("Da fare"),
   ]
   const tSize = tableSize(table)
 
   const board: WFile = {
     id: "demo-board",
     kind: "board",
-    title: "Onboarding — flusso",
+    title: tr("Onboarding — flusso"),
     icon: "shapes",
     createdAt: now - 86400000,
     updatedAt: now - 3600000,
@@ -92,7 +110,7 @@ export function seedFiles(): WFile[] {
           y: 120,
           w: 1300,
           h: 400,
-          text: "Percorso di attivazione",
+          text: tr("Percorso di attivazione"),
           color: "blue",
           align: "left",
           fontSize: 14,
@@ -103,30 +121,42 @@ export function seedFiles(): WFile[] {
           id: "n1",
           x: 80,
           y: 280,
-          text: "Visitatore",
+          text: tr("Visitatore"),
           shape: "pill",
           color: "gray",
           w: 160,
           h: 56,
         }),
-        node({ id: "n2", x: 320, y: 260, text: "Landing page", color: "blue" }),
+        node({
+          id: "n2",
+          x: 320,
+          y: 260,
+          text: tr("Landing page"),
+          color: "blue",
+        }),
         node({
           id: "n3",
           x: 600,
           y: 254,
-          text: "Ha un account?",
+          text: tr("Ha un account?"),
           shape: "diamond",
           color: "yellow",
           w: 170,
           h: 120,
         }),
-        node({ id: "n4", x: 880, y: 170, text: "Login", color: "teal" }),
-        node({ id: "n5", x: 880, y: 360, text: "Sign up", color: "purple" }),
+        node({ id: "n4", x: 880, y: 170, text: tr("Login"), color: "teal" }),
+        node({
+          id: "n5",
+          x: 880,
+          y: 360,
+          text: tr("Sign up"),
+          color: "purple",
+        }),
         node({
           id: "n6",
           x: 1150,
           y: 264,
-          text: "Dashboard",
+          text: tr("Dashboard"),
           color: "green",
           bold: true,
         }),
@@ -134,7 +164,7 @@ export function seedFiles(): WFile[] {
           id: "n7",
           x: 600,
           y: 580,
-          text: "Ricorda: testare il\ncopy della CTA",
+          text: tr("Ricorda: testare il\ncopy della CTA"),
           shape: "note",
           color: "yellow",
           w: 170,
@@ -171,7 +201,7 @@ export function seedFiles(): WFile[] {
           id: "db1",
           x: 320,
           y: 580,
-          text: "Utenti",
+          text: tr("Utenti"),
           shape: "cylinder",
           color: "teal",
           w: 150,
@@ -181,8 +211,20 @@ export function seedFiles(): WFile[] {
       edges: [
         edge({ id: "e1", from: "n1", to: "n2" }),
         edge({ id: "e2", from: "n2", to: "n3" }),
-        edge({ id: "e3", from: "n3", to: "n4", label: "sì", color: "#4eb22c" }),
-        edge({ id: "e4", from: "n3", to: "n5", label: "no", color: "#e5780b" }),
+        edge({
+          id: "e3",
+          from: "n3",
+          to: "n4",
+          label: tr("sì"),
+          color: "#4eb22c",
+        }),
+        edge({
+          id: "e4",
+          from: "n3",
+          to: "n5",
+          label: tr("no"),
+          color: "#e5780b",
+        }),
         edge({ id: "e5", from: "n4", to: "n6" }),
         edge({ id: "e6", from: "n5", to: "n6" }),
         edge({
@@ -208,7 +250,7 @@ export function seedFiles(): WFile[] {
   const wireboard: WFile = {
     id: "demo-wireframe",
     kind: "board",
-    title: "App — wireframe",
+    title: tr("App — wireframe"),
     icon: "smartphone",
     createdAt: now - 7200000,
     updatedAt: now - 600000,
@@ -230,7 +272,7 @@ export function seedFiles(): WFile[] {
           y: 80,
           w: 375,
           h: 812,
-          text: "Home",
+          text: tr("Home"),
           color: "white",
           align: "left",
           fontSize: 13,
@@ -240,14 +282,14 @@ export function seedFiles(): WFile[] {
         wire("w1", "navbar", 96, 150, {
           w: 343,
           h: 52,
-          text: "Cogniva|Cerca|Profilo",
+          text: tr("Cogniva|Cerca|Profilo"),
         }),
         wire("w2", "searchField", 96, 218, { w: 343 }),
-        wire("w3", "tabs", 96, 274, { w: 343, text: "Tutti|Board|Doc" }),
+        wire("w3", "tabs", 96, 274, { w: 343, text: tr("Tutti|Board|Doc") }),
         wire("w4", "card", 96, 330, {
           w: 343,
           h: 190,
-          text: "Onboarding — flusso",
+          text: tr("Onboarding — flusso"),
         }),
         wire("w5", "list", 96, 540, {
           w: 343,
@@ -257,7 +299,7 @@ export function seedFiles(): WFile[] {
         wire("w6", "button", 96, 764, {
           w: 343,
           h: 46,
-          text: "Crea nuovo",
+          text: tr("Crea nuovo"),
           wireProps: { variant: "primary" },
         }),
         node({
@@ -268,7 +310,7 @@ export function seedFiles(): WFile[] {
           y: 80,
           w: 900,
           h: 600,
-          text: "Dashboard",
+          text: tr("Dashboard"),
           color: "white",
           align: "left",
           fontSize: 13,
@@ -279,7 +321,7 @@ export function seedFiles(): WFile[] {
         wire("w8", "heading", 790, 140, {
           w: 320,
           h: 40,
-          text: "Buongiorno, Libo",
+          text: tr("Buongiorno, Libo"),
         }),
         wire("w9", "chart", 790, 196, {
           w: 400,
@@ -305,37 +347,33 @@ export function seedFiles(): WFile[] {
   const doc: WFile = {
     id: "demo-doc",
     kind: "doc",
-    title: "Product brief",
+    title: tr("Product brief"),
     icon: "file-text",
     createdAt: now - 43200000,
     updatedAt: now - 1800000,
     data: {
-      theme: { ...defaultDocTheme },
+      // il documento d'esempio è nella lingua dell'app, come i nuovi
+      theme: { ...defaultDocTheme, language: currentRegion() },
       content: {
         type: "doc",
         content: [
           {
             type: "docTitle",
-            content: [{ type: "text", text: "Product brief" }],
+            content: [{ type: "text", text: tr("Product brief") }],
           },
           {
             type: "paragraph",
-            content: [
-              {
-                type: "text",
-                text: "Un documento di esempio. Prova la barra degli strumenti in alto, oppure seleziona del testo per il menu contestuale. Gli ",
-              },
-              { type: "text", marks: [{ type: "bold" }], text: "Stili" },
-              {
-                type: "text",
-                text: " della scheda Home si modificano con un clic destro.",
-              },
-            ],
+            content: richText(
+              tr(
+                "Un documento di esempio. Prova la barra degli strumenti in alto, oppure seleziona del testo per il menu contestuale. Gli {styles} della scheda Home si modificano con un clic destro."
+              ),
+              { styles: { text: tr("Stili"), marks: [{ type: "bold" }] } }
+            ),
           },
           {
             type: "heading",
             attrs: { level: 2 },
-            content: [{ type: "text", text: "Obiettivi" }],
+            content: [{ type: "text", text: tr("Obiettivi") }],
           },
           {
             type: "taskList",
@@ -349,20 +387,8 @@ export function seedFiles(): WFile[] {
                     content: [
                       {
                         type: "text",
-                        text: "Definire il flusso di onboarding",
+                        text: tr("Definire il flusso di onboarding"),
                       },
-                    ],
-                  },
-                ],
-              },
-              {
-                type: "taskItem",
-                attrs: { checked: false },
-                content: [
-                  {
-                    type: "paragraph",
-                    content: [
-                      { type: "text", text: "Validare il copy con 5 utenti" },
                     ],
                   },
                 ],
@@ -376,7 +402,22 @@ export function seedFiles(): WFile[] {
                     content: [
                       {
                         type: "text",
-                        text: "Misurare il tasso di attivazione",
+                        text: tr("Validare il copy con 5 utenti"),
+                      },
+                    ],
+                  },
+                ],
+              },
+              {
+                type: "taskItem",
+                attrs: { checked: false },
+                content: [
+                  {
+                    type: "paragraph",
+                    content: [
+                      {
+                        type: "text",
+                        text: tr("Misurare il tasso di attivazione"),
                       },
                     ],
                   },
@@ -387,14 +428,14 @@ export function seedFiles(): WFile[] {
           {
             type: "heading",
             attrs: { level: 2 },
-            content: [{ type: "text", text: "Flusso" }],
+            content: [{ type: "text", text: tr("Flusso") }],
           },
           {
             type: "boardEmbed",
             attrs: {
               boardId: "demo-board",
               snapshot: null,
-              caption: "Onboarding — flusso",
+              caption: tr("Onboarding — flusso"),
               height: 320,
             },
           },
@@ -406,7 +447,9 @@ export function seedFiles(): WFile[] {
                 content: [
                   {
                     type: "text",
-                    text: "Se non riesci a spiegarlo in una frase, non è ancora pronto.",
+                    text: tr(
+                      "Se non riesci a spiegarlo in una frase, non è ancora pronto."
+                    ),
                   },
                 ],
               },

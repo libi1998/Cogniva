@@ -14,6 +14,7 @@ import {
 import { InputGroup, InputGroupAddon } from "@/components/ui/input-group"
 import { SearchIcon, CheckIcon } from "lucide-react"
 
+import { useT } from "@/lib/i18n/client"
 function Command({
   className,
   ...props
@@ -31,8 +32,8 @@ function Command({
 }
 
 function CommandDialog({
-  title = "Comandi",
-  description = "Cerca un comando da eseguire…",
+  title,
+  description,
   children,
   className,
   showCloseButton = false,
@@ -44,11 +45,14 @@ function CommandDialog({
   showCloseButton?: boolean
   children: React.ReactNode
 }) {
+  const t = useT()
   return (
     <Dialog {...props}>
       <DialogHeader className="sr-only">
-        <DialogTitle>{title}</DialogTitle>
-        <DialogDescription>{description}</DialogDescription>
+        <DialogTitle>{title ?? t("Comandi")}</DialogTitle>
+        <DialogDescription>
+          {description ?? t("Cerca un comando da eseguire…")}
+        </DialogDescription>
       </DialogHeader>
       <DialogContent
         className={cn(

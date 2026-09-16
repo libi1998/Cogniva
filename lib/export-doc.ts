@@ -12,6 +12,7 @@ import {
 import { PAGE_FORMATS, type DocTheme } from "./types"
 import { fontFromCss, fontMap } from "./fonts"
 
+import { tr } from "@/lib/i18n/client"
 const MM_TO_PX = 96 / 25.4
 
 export function pageSizePx(theme: DocTheme) {
@@ -171,7 +172,7 @@ export async function exportDoc({
   }
 
   const el = sheet
-  if (!el || !el.offsetWidth) throw new Error("Documento non trovato")
+  if (!el || !el.offsetWidth) throw new Error(tr("Documento non trovato"))
 
   // offsetWidth e scrollHeight ignorano lo zoom del foglio, il rettangolo del
   // client no: con la vista al 150% l'esportazione usciva una volta e mezza

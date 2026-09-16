@@ -2,8 +2,11 @@
 
 > Back to the [README](../README.md) for the overview and quick start.
 
-> 🇮🇹 Cogniva's interface is currently in Italian. This guide describes every feature in
-> English and quotes the Italian label in parentheses where it helps you find it.
+> 🌍 The interface speaks Italian, English, Spanish, French, German and Portuguese. It
+> opens in the language your browser asks for; the appearance menu (top right) switches it
+> and remembers the choice. Every page carries its language in the address — `/en/…`,
+> `/de/…` — so a link always opens in the language it was shared in. This guide uses the
+> English labels.
 
 **Boards** (an infinite canvas for diagrams, wireframes and brainstorming) and
 **documents** with a full ribbon toolbar, in a single app. No account and no server: files
@@ -84,13 +87,13 @@ the top.
 
 ### Three modes
 
-The switcher at the top (or the **Style** panel, _Stile_) changes the tools and defaults:
+The switcher at the top (or the **Style** panel) changes the tools and defaults:
 
-| Mode                      | What it's for                                        |
-| ------------------------- | ---------------------------------------------------- |
-| **Diagram** (_Diagramma_) | Flowchart shapes and connectors                      |
-| **Wireframe**             | Drag-and-drop UI components and device frames        |
-| **Cards** (_Card_)        | Sticky notes and cards, for brainstorming and kanban |
+| Mode          | What it's for                                        |
+| ------------- | ---------------------------------------------------- |
+| **Diagram**   | Flowchart shapes and connectors                      |
+| **Wireframe** | Drag-and-drop UI components and device frames        |
+| **Cards**     | Sticky notes and cards, for brainstorming and kanban |
 
 Every element stays available in every mode: only the toolbar order changes.
 
@@ -172,22 +175,22 @@ top bar rewrites the title on the page.
 Nine tabs. Only the open tab is rendered (the ribbon stays light while you
 type); the selected tab is remembered, and double-clicking a tab collapses the ribbon.
 
-| Tab                             | Groups                                                                                                                                                                                                                                                         |
-| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Home**                        | **Undo** · **Clipboard** · **Font** (typeable name and size, colors, highlight, change case) · **Paragraph** (lists, indents, alignment, line spacing, borders and shading) · editable **Styles** · **Editing** · **Voice** (dictation) · **Add-ins**          |
-| **Insert** (_Inserisci_)        | cover page, blank page, page break · table · pictures, shapes, icons, smart diagrams, screenshot, **chart**, **3D models**, board · **online video** · link, bookmark, cross-reference · comment · header, footer, page numbers · text, **equations**, symbols |
-| **Draw** (_Disegno_)            | pens, highlighter and eraser · ink to shape · drawing canvas · ink replay                                                                                                                                                                                      |
-| **Layout**                      | margins, orientation, size, columns · breaks, **line numbers**, hyphenation · indents and spacing · arrange: position, wrap text, bring forward/send backward, align, rotate, selection pane                                                                   |
-| **Design** (_Progettazione_)    | themes, style sets, colors, fonts, paragraph spacing, set as default · **watermark**, page color, page borders                                                                                                                                                 |
-| **References** (_Riferimenti_)  | table of contents · **citations and bibliography** (APA, MLA, Chicago, ISO 690) · **footnotes** and endnotes · captions, table of figures, cross-reference                                                                                                     |
-| **Mailings** (_Corrispondenza_) | envelopes and labels · **mail merge**: recipients, address block, greeting line, fields and rules · preview results · finish and merge                                                                                                                         |
-| **Review** (_Revisione_)        | spelling, **Thesaurus**, word count · **read aloud** · accessibility checker · **translate**, language · **comments** · **track changes** with accept/reject · compare · restrict editing · ink                                                                |
-| **View** (_Visualizza_)         | read mode, print layout, web layout, outline, draft · focus and immersive reader · ruler, gridlines, navigation pane · zoom, one page, multiple pages · new window, full screen                                                                                |
+| Tab            | Groups                                                                                                                                                                                                                                                         |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Home**       | **Undo** · **Clipboard** · **Font** (typeable name and size, colors, highlight, change case) · **Paragraph** (lists, indents, alignment, line spacing, borders and shading) · editable **Styles** · **Editing** · **Voice** (dictation) · **Add-ins**          |
+| **Insert**     | cover page, blank page, page break · table · pictures, shapes, icons, smart diagrams, screenshot, **chart**, **3D models**, board · **online video** · link, bookmark, cross-reference · comment · header, footer, page numbers · text, **equations**, symbols |
+| **Draw**       | pens, highlighter and eraser · ink to shape · drawing canvas · ink replay                                                                                                                                                                                      |
+| **Layout**     | margins, orientation, size, columns · breaks, **line numbers**, hyphenation · indents and spacing · arrange: position, wrap text, bring forward/send backward, align, rotate, selection pane                                                                   |
+| **Design**     | themes, style sets, colors, fonts, paragraph spacing, set as default · **watermark**, page color, page borders                                                                                                                                                 |
+| **References** | table of contents · **citations and bibliography** (APA, MLA, Chicago, ISO 690) · **footnotes** and endnotes · captions, table of figures, cross-reference                                                                                                     |
+| **Mailings**   | envelopes and labels · **mail merge**: recipients, address block, greeting line, fields and rules · preview results · finish and merge                                                                                                                         |
+| **Review**     | spelling, **Thesaurus**, word count · **read aloud** · accessibility checker · **translate**, language · **comments** · **track changes** with accept/reject · compare · restrict editing · ink                                                                |
+| **View**       | read mode, print layout, web layout, outline, draft · focus and immersive reader · ruler, gridlines, navigation pane · zoom, one page, multiple pages · new window, full screen                                                                                |
 
 Every command lives in exactly one place: file settings are in the tabs, and the panel on
 the right only shows what you're working on.
 
-### Style panel (_Stile_)
+### Style panel
 
 Contextual: it changes with the selection and never shows file settings.
 
@@ -283,7 +286,7 @@ Chicago author-date, ISO 690) rewrites citations and bibliography automatically.
 ### Charts
 
 Eight types, ready-made sample data and a data sheet where you can paste a table copied
-from any spreadsheet app (Italian-style numbers like "1.234,5" work too). The
+from any spreadsheet app (comma decimals like "1.234,5" work too). The
 drawing is SVG: it stays sharp at every zoom level, in print and in exports. The same
 charts are available on boards.
 
@@ -295,7 +298,7 @@ address.
 
 ### 3D models
 
-**Insert › 3D Models** (_Modelli 3D_): a glTF model (`.glb`, or `.gltf` with embedded data,
+**Insert › 3D Models**: a glTF model (`.glb`, or `.gltf` with embedded data,
 up to 40 MB) from your device or an https address, or one of twelve ready-made **3D
 shapes**. In the document you rotate it by dragging and zoom with the scroll wheel when
 it's selected; the Style panel has preset views (front, top, isometric…), zoom,
@@ -324,7 +327,7 @@ PNG and DOCX use a snapshot of the current view.
 
 ### Add-ins
 
-**Home › Add-ins** (_Componenti aggiuntivi_) opens the active add-ins in a pane next to the
+**Home › Add-ins** opens the active add-ins in a pane next to the
 document; the gallery adds and removes them (your choice is saved in the browser). They
 are all written in Cogniva, with no third-party code running in the page: **QR Code**
 (link, Wi-Fi, e-mail, phone), **Readability** (Gulpease, Flesch and the indexes for other
@@ -355,9 +358,9 @@ or all at once.
 
 ### More
 
-- **Dictation**: speak and the text appears at the cursor, in Italian. Punctuation is
-  spoken as words ("virgola", "punto", "punto interrogativo", "a capo", "nuovo
-  paragrafo"…), capitalization is automatic, the session restarts after pauses and the
+- **Dictation**: speak and the text appears at the cursor, in the document's language. Punctuation is
+  spoken as words in that language ("comma", "period", "question mark", "new line", "new
+  paragraph"… and their equivalents in the other five), capitalization is automatic, the session restarts after pauses and the
   status bar shows the incoming text while you speak. Where the browser allows it (recent
   Chrome) recognition happens on the device, without internet. The browser asks for
   microphone permission, and Firefox doesn't support dictation

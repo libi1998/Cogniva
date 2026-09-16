@@ -39,6 +39,7 @@ import { applyDocStyle } from "../style-actions"
 import { RibbonButton, RibbonGroup, RibbonMenu, RibbonRows } from "./ribbon-ui"
 import type { RibbonCtx } from "./shared"
 
+import { useT, tr, hrefFor } from "@/lib/i18n/client"
 const VIEWS: {
   value: DocView
   label: string
@@ -47,31 +48,50 @@ const VIEWS: {
 }[] = [
   {
     value: "print",
-    label: "Layout di stampa",
-    title: "Le pagine come verranno stampate",
+    get label() {
+      return tr("Layout di stampa")
+    },
+    get title() {
+      return tr("Le pagine come verranno stampate")
+    },
     icon: <RectangleVertical className="size-5" />,
   },
   {
     value: "web",
-    label: "Layout Web",
-    title: "Il testo a tutta larghezza, senza pagine",
+    get label() {
+      return tr("Layout Web")
+    },
+    get title() {
+      return tr("Il testo a tutta larghezza, senza pagine")
+    },
     icon: <Globe className="size-5" />,
   },
   {
     value: "outline",
-    label: "Struttura",
-    title: "I titoli rientrati per livello, da riordinare",
+    get label() {
+      return tr("Struttura")
+    },
+    get title() {
+      return tr("I titoli rientrati per livello, da riordinare")
+    },
     icon: <ListTree className="size-5" />,
   },
   {
     value: "draft",
-    label: "Bozza",
-    title: "Solo il testo: niente intestazioni, filigrana e oggetti liberi",
+    get label() {
+      return tr("Bozza")
+    },
+    get title() {
+      return tr(
+        "Solo il testo: niente intestazioni, filigrana e oggetti liberi"
+      )
+    },
     icon: <AlignJustify className="size-5" />,
   },
 ]
 
 export function ViewTab({ ctx }: { ctx: RibbonCtx }) {
+  const t = useT()
   const { editor, st, theme, setTheme, zoom, setZoom } = ctx
   const router = useRouter()
   const paged = Boolean(PAGE_FORMATS[theme.format].mm)
@@ -102,11 +122,13 @@ export function ViewTab({ ctx }: { ctx: RibbonCtx }) {
 
   return (
     <>
-      <RibbonGroup label="Visualizzazioni" safe>
+      <RibbonGroup label={t("Visualizzazioni")} safe>
         <RibbonButton
           large
-          label="Modalità lettura"
-          title="Solo lettura, testo più grande, niente barre (Esc per uscire)"
+          label={t("Modalità lettura")}
+          title={t(
+            "Solo lettura, testo più grande, niente barre (Esc per uscire)"
+          )}
           icon={<BookOpen className="size-5" />}
           onClick={() => ctx.setMode("reading")}
         />
@@ -123,59 +145,61 @@ export function ViewTab({ ctx }: { ctx: RibbonCtx }) {
         ))}
       </RibbonGroup>
 
-      <RibbonGroup label="Immersive" safe>
+      <RibbonGroup label={t("Immersive")} safe>
         <RibbonButton
           large
-          label="Modalità focus"
-          title="Solo il foglio, senza distrazioni (Esc per uscire)"
+          label={t("Modalità focus")}
+          title={t("Solo il foglio, senza distrazioni (Esc per uscire)")}
           icon={<Focus className="size-5" />}
           onClick={() => ctx.setMode("focus")}
         />
         <RibbonButton
           large
-          label="Lettura immersiva"
-          title="Larghezza della colonna, colore della pagina, spaziatura e messa a fuoco della riga"
+          label={t("Lettura immersiva")}
+          title={t(
+            "Larghezza della colonna, colore della pagina, spaziatura e messa a fuoco della riga"
+          )}
           icon={<TextSelect className="size-5" />}
           onClick={() => ctx.setMode("immersive")}
         />
       </RibbonGroup>
 
       {view === "outline" ? (
-        <RibbonGroup label="Struttura">
+        <RibbonGroup label={t("Struttura")}>
           <RibbonRows>
             <div className="flex items-center gap-0.5">
               <RibbonButton
-                title="Alza a Titolo 1"
+                title={t("Alza a Titolo 1")}
                 icon={<ChevronsLeft className="size-4" />}
                 onClick={() => applyDocStyle(editor, theme, "heading1")}
               />
               <RibbonButton
-                title="Promuovi"
+                title={t("Promuovi")}
                 icon={<ArrowUp className="size-4 -rotate-90" />}
                 onClick={promote}
               />
               <span className="w-16 text-center text-xs text-muted-foreground">
-                {level ? `Livello ${level}` : "Corpo"}
+                {level ? t("Livello {level}", { level }) : t("Corpo")}
               </span>
               <RibbonButton
-                title="Retrocedi"
+                title={t("Retrocedi")}
                 icon={<ArrowDown className="size-4 -rotate-90" />}
                 onClick={demote}
               />
               <RibbonButton
-                title="Abbassa a corpo del testo"
+                title={t("Abbassa a corpo del testo")}
                 icon={<ChevronsRight className="size-4" />}
                 onClick={() => applyDocStyle(editor, theme, "normal")}
               />
             </div>
             <div className="flex items-center gap-0.5">
               <RibbonButton
-                title="Sposta su"
+                title={t("Sposta su")}
                 icon={<ArrowUp className="size-4" />}
                 onClick={() => editor.chain().focus().moveBlock("up").run()}
               />
               <RibbonButton
-                title="Sposta giù"
+                title={t("Sposta giù")}
                 icon={<ArrowDown className="size-4" />}
                 onClick={() => editor.chain().focus().moveBlock("down").run()}
               />
@@ -187,20 +211,22 @@ export function ViewTab({ ctx }: { ctx: RibbonCtx }) {
                     chevron
                     label={
                       ctx.outlineLevel
-                        ? `Livello ${ctx.outlineLevel}`
-                        : "Tutti i livelli"
+                        ? t("Livello {outlineLevel}", {
+                            outlineLevel: ctx.outlineLevel,
+                          })
+                        : t("Tutti i livelli")
                     }
                   />
                 }
               >
-                <DropdownMenuLabel>Mostra livello</DropdownMenuLabel>
+                <DropdownMenuLabel>{t("Mostra livello")}</DropdownMenuLabel>
                 {[0, 1, 2, 3].map((n) => (
                   <DropdownMenuItem
                     key={n}
                     onClick={() => ctx.setOutlineLevel(n)}
                     className={cn(ctx.outlineLevel === n && "bg-accent")}
                   >
-                    {n ? `Livello ${n}` : "Tutti i livelli"}
+                    {n ? t("Livello {n}", { n }) : t("Tutti i livelli")}
                   </DropdownMenuItem>
                 ))}
               </RibbonMenu>
@@ -209,7 +235,7 @@ export function ViewTab({ ctx }: { ctx: RibbonCtx }) {
           <RibbonButton
             large
             data-safe=""
-            label="Chiudi Struttura"
+            label={t("Chiudi Struttura")}
             icon={<X className="size-5" />}
             onClick={() => {
               ctx.setOutlineLevel(0)
@@ -219,24 +245,24 @@ export function ViewTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonGroup>
       ) : null}
 
-      <RibbonGroup label="Mostra" safe>
+      <RibbonGroup label={t("Mostra")} safe>
         <RibbonButton
           large
-          label="Righello"
+          label={t("Righello")}
           active={theme.ruler}
           icon={<RulerIcon className="size-5" />}
           onClick={() => setTheme({ ruler: !theme.ruler })}
         />
         <RibbonButton
           large
-          label="Griglia"
+          label={t("Griglia")}
           active={theme.grid}
           icon={<Grid3x3 className="size-5" />}
           onClick={() => setTheme({ grid: !theme.grid })}
         />
         <RibbonButton
           large
-          label="Riquadro di spostamento"
+          label={t("Riquadro di spostamento")}
           active={ctx.outline}
           icon={<PanelsTopLeft className="size-5" />}
           onClick={() => ctx.setOutline(!ctx.outline)}
@@ -244,7 +270,9 @@ export function ViewTab({ ctx }: { ctx: RibbonCtx }) {
         <RibbonButton
           large
           label={
-            theme.inkVisible ? "Nascondi input penna" : "Mostra input penna"
+            theme.inkVisible
+              ? t("Nascondi input penna")
+              : t("Mostra input penna")
           }
           active={!theme.inkVisible}
           icon={<SquarePen className="size-5" />}
@@ -252,20 +280,20 @@ export function ViewTab({ ctx }: { ctx: RibbonCtx }) {
         />
       </RibbonGroup>
 
-      <RibbonGroup label="Zoom" safe>
+      <RibbonGroup label={t("Zoom")} safe>
         <RibbonMenu
           className="w-40"
           trigger={
             <RibbonButton
               large
               chevron
-              label="Zoom"
-              title={`Zoom: ${Math.round(zoom * 100)}%`}
+              label={t("Zoom")}
+              title={t("Zoom: {percent}%", { percent: Math.round(zoom * 100) })}
               icon={<Search className="size-5" />}
             />
           }
         >
-          <DropdownMenuLabel>Zoom</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("Zoom")}</DropdownMenuLabel>
           {ZOOM_STEPS.map((z) => (
             <DropdownMenuItem
               key={z}
@@ -286,10 +314,12 @@ export function ViewTab({ ctx }: { ctx: RibbonCtx }) {
         <RibbonRows>
           <RibbonButton
             compact
-            label="Una pagina"
+            label={t("Una pagina")}
             disabled={!paged || view !== "print"}
             title={
-              paged ? "Mostra la pagina intera" : "Serve un formato di pagina"
+              paged
+                ? t("Mostra la pagina intera")
+                : t("Serve un formato di pagina")
             }
             icon={<RectangleVertical className="size-4" />}
             className="justify-start"
@@ -297,16 +327,16 @@ export function ViewTab({ ctx }: { ctx: RibbonCtx }) {
           />
           <RibbonButton
             compact
-            label="Più pagine"
+            label={t("Più pagine")}
             disabled={!paged || view !== "print"}
-            title="Rimpicciolisce finché si vedono due pagine"
+            title={t("Rimpicciolisce finché si vedono due pagine")}
             icon={<Columns2 className="size-4" />}
             className="justify-start"
             onClick={() => ctx.fitPage(2)}
           />
           <RibbonButton
             compact
-            label="Larghezza pagina"
+            label={t("Larghezza pagina")}
             icon={<Maximize2 className="size-4" />}
             className="justify-start"
             onClick={ctx.fitWidth}
@@ -314,11 +344,11 @@ export function ViewTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label="Finestra" safe>
+      <RibbonGroup label={t("Finestra")} safe>
         <RibbonButton
           large
-          label="Nuova finestra"
-          title="Apre lo stesso documento in un'altra finestra"
+          label={t("Nuova finestra")}
+          title={t("Apre lo stesso documento in un'altra finestra")}
           icon={<AppWindow className="size-5" />}
           onClick={() =>
             window.open(window.location.href, "_blank", "noopener")
@@ -330,12 +360,12 @@ export function ViewTab({ ctx }: { ctx: RibbonCtx }) {
             <RibbonButton
               large
               chevron
-              label="Cambia finestra"
+              label={t("Cambia finestra")}
               icon={<Columns2 className="size-5" />}
             />
           }
         >
-          <DropdownMenuLabel>Documenti recenti</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("Documenti recenti")}</DropdownMenuLabel>
           {docs.map((d) => (
             <DropdownMenuItem
               key={d.id}
@@ -346,13 +376,13 @@ export function ViewTab({ ctx }: { ctx: RibbonCtx }) {
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => router.push("/")}>
-            Tutti i file
+          <DropdownMenuItem onClick={() => router.push(hrefFor("/") as Route)}>
+            {t("Tutti i file")}
           </DropdownMenuItem>
         </RibbonMenu>
         <RibbonButton
           large
-          label="Schermo intero"
+          label={t("Schermo intero")}
           icon={<Fullscreen className="size-5" />}
           onClick={() => {
             if (document.fullscreenElement) void document.exitFullscreen()

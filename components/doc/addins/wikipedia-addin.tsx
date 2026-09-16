@@ -4,22 +4,16 @@ import * as React from "react"
 import { ArrowLeft, ExternalLink, LoaderCircle, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { paragraph, type AddinApi } from "./api"
+import { paragraph, richParts, type AddinApi } from "./api"
 
+import { useT, tr, languageName, useLocale } from "@/lib/i18n/client"
 /**
  * Wikipedia: ricerca nella lingua del documento e riassunto della voce, con
  * l'attribuzione che la licenza CC BY-SA 4.0 chiede. Le ricerche vanno a
  * wikipedia.org, e il riquadro lo dice.
  */
 
-const LANGS = [
-  ["it", "Italiano"],
-  ["en", "Inglese"],
-  ["fr", "Francese"],
-  ["de", "Tedesco"],
-  ["es", "Spagnolo"],
-  ["pt", "Portoghese"],
-] as const
+const LANGS = ["it", "en", "fr", "de", "es", "pt"] as const
 
 type Hit = {
   key: string
@@ -51,7 +45,7 @@ async function searchWikipedia(
 ): Promise<Hit[]> {
   const url = `https://${lang}.wikipedia.org/w/rest.php/v1/search/title?q=${encodeURIComponent(q)}&limit=10`
   const response = await fetch(url, { signal })
-  if (!response.ok) throw new Error("Wikipedia non risponde")
+  if (!response.ok) throw new Error(tr("Wikipedia non risponde"))
   const data = (await response.json()) as {
     pages?: {
       key: string
@@ -72,7 +66,7 @@ async function summary(lang: string, key: string): Promise<Summary> {
   const response = await fetch(
     `https://${lang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(key)}`
   )
-  if (!response.ok) throw new Error("Voce non trovata")
+  if (!response.ok) throw new Error(tr("Voce non trovata"))
   const data = (await response.json()) as {
     title: string
     extract?: string
@@ -92,9 +86,11 @@ async function summary(lang: string, key: string): Promise<Summary> {
 }
 
 export function WikipediaAddin({ api }: { api: AddinApi }) {
+  const t = useT()
+  const locale = useLocale()
   const [lang, setLang] = React.useState(() => {
     const code = api.language.slice(0, 2)
-    return LANGS.some(([c]) => c === code) ? code : "it"
+    return (LANGS as readonly string[]).includes(code) ? code : "en"
   })
   const [query, setQuery] = React.useState(() =>
     api.selectionText().slice(0, 80)
@@ -120,7 +116,7 @@ export function WikipediaAddin({ api }: { api: AddinApi }) {
         })
         .catch((e: unknown) => {
           if (controller.signal.aborted) return
-          setError(e instanceof Error ? e.message : "Ricerca non riuscita")
+          setError(e instanceof Error ? e.message : t("Ricerca non riuscita"))
         })
         .finally(() => !controller.signal.aborted && setLoading(false))
     }, 300)
@@ -128,29 +124,31 @@ export function WikipediaAddin({ api }: { api: AddinApi }) {
       window.clearTimeout(timer)
       controller.abort()
     }
-  }, [query, lang])
+  }, [query, lang, t])
 
   const open = (hit: Hit) => {
     setLoading(true)
     summary(lang, hit.key)
       .then(setPage)
       .catch((e: unknown) =>
-        setError(e instanceof Error ? e.message : "Voce non disponibile")
+        setError(e instanceof Error ? e.message : t("Voce non disponibile"))
       )
       .finally(() => setLoading(false))
   }
 
   const credit = (p: Summary) =>
-    paragraph([
-      { text: "Fonte: ", italic: true },
-      { text: `«${p.title}»`, href: p.url, italic: true },
-      { text: ", Wikipedia, licenza ", italic: true },
-      {
-        text: "CC BY-SA 4.0",
-        href: "https://creativecommons.org/licenses/by-sa/4.0/deed.it",
-        italic: true,
-      },
-    ])
+    paragraph(
+      richParts(t("Fonte: «{title}», Wikipedia, licenza {license}"), {
+        title: { text: p.title, href: p.url, italic: true },
+        license: {
+          text: "CC BY-SA 4.0",
+          href: "https://creativecommons.org/licenses/by-sa/4.0/",
+          italic: true,
+        },
+      }).map((part) =>
+        typeof part === "string" ? { text: part, italic: true } : part
+      )
+    )
 
   if (page) {
     return (
@@ -160,7 +158,7 @@ export function WikipediaAddin({ api }: { api: AddinApi }) {
           onClick={() => setPage(null)}
           className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
         >
-          <ArrowLeft className="size-3.5" /> Risultati
+          <ArrowLeft className="size-3.5" /> {t("Risultati")}
         </button>
         {page.thumbnail ? (
           // eslint-disable-next-line @next/next/no-img-element -- miniatura di Wikimedia
@@ -186,7 +184,7 @@ export function WikipediaAddin({ api }: { api: AddinApi }) {
               api.insertContent([paragraph([page.extract]), credit(page)])
             }
           >
-            Inserisci riassunto con la fonte
+            {t("Inserisci riassunto con la fonte")}
           </Button>
           <Button
             type="button"
@@ -197,7 +195,7 @@ export function WikipediaAddin({ api }: { api: AddinApi }) {
               )
             }
           >
-            Inserisci collegamento alla voce
+            {t("Inserisci collegamento alla voce")}
           </Button>
           <a
             href={page.url}
@@ -205,7 +203,7 @@ export function WikipediaAddin({ api }: { api: AddinApi }) {
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground"
           >
-            <ExternalLink className="size-3.5" /> Apri su Wikipedia
+            <ExternalLink className="size-3.5" /> {t("Apri su Wikipedia")}
           </a>
         </div>
       </div>
@@ -218,22 +216,22 @@ export function WikipediaAddin({ api }: { api: AddinApi }) {
         <div className="relative min-w-0 flex-1">
           <Search className="pointer-events-none absolute top-1/2 left-2 size-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input
-            aria-label="Cerca su Wikipedia"
+            aria-label={t("Cerca su Wikipedia")}
             className="h-8 pl-7"
             value={query}
-            placeholder="Cerca una voce"
+            placeholder={t("Cerca una voce")}
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
         <select
-          aria-label="Lingua di Wikipedia"
+          aria-label={t("Lingua di Wikipedia")}
           value={lang}
           onChange={(e) => setLang(e.target.value)}
           className="h-8 w-[84px] rounded-md border border-input bg-transparent px-1 text-xs"
         >
-          {LANGS.map(([code, label]) => (
+          {LANGS.map((code) => (
             <option key={code} value={code}>
-              {label}
+              {languageName(code, locale)}
             </option>
           ))}
         </select>
@@ -271,8 +269,9 @@ export function WikipediaAddin({ api }: { api: AddinApi }) {
         ))}
       </ul>
       <p className="text-[11px] leading-snug text-muted-foreground">
-        Le parole cercate vengono inviate a wikipedia.org. I testi di Wikipedia
-        sono disponibili con licenza CC BY-SA 4.0.
+        {t(
+          "Le parole cercate vengono inviate a wikipedia.org. I testi di Wikipedia sono disponibili con licenza CC BY-SA 4.0."
+        )}
       </p>
     </div>
   )

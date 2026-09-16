@@ -47,6 +47,7 @@ import { docAccent, getSwatch } from "@/lib/palette"
 import type { DocTheme } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
+import { useT, tr, currentLocale } from "@/lib/i18n/client"
 /** Finestra con intestazione, contenuto e pulsanti: lo schema di tutte */
 function Shell({
   open,
@@ -88,10 +89,11 @@ function Footer({
   onClose: () => void
   children: React.ReactNode
 }) {
+  const t = useT()
   return (
     <DialogFooter className="border-t border-border px-5 py-3">
       <Button type="button" variant="ghost" onClick={onClose}>
-        Annulla
+        {t("Annulla")}
       </Button>
       {children}
     </DialogFooter>
@@ -112,12 +114,15 @@ export function BookmarkDialog({
   onClose: () => void
   editor: Editor
 }) {
+  const t = useT()
   return (
     <Shell
       open={open}
       onClose={onClose}
-      title="Segnalibro"
-      description="Un nome per questo punto del documento: ci si torna da qui e lo si usa nei riferimenti incrociati."
+      title={t("Segnalibro")}
+      description={t(
+        "Un nome per questo punto del documento: ci si torna da qui e lo si usa nei riferimenti incrociati."
+      )}
     >
       <BookmarkForm editor={editor} onClose={onClose} />
     </Shell>
@@ -131,6 +136,7 @@ function BookmarkForm({
   editor: Editor
   onClose: () => void
 }) {
+  const t = useT()
   const [list, setList] = React.useState(() => listBookmarks(editor.state))
   const [name, setName] = React.useState(() => {
     const words = editor.state.doc
@@ -147,7 +153,7 @@ function BookmarkForm({
   const valid = BOOKMARK_NAME.test(name)
   const shown =
     sort === "name"
-      ? [...list].sort((a, b) => a.name.localeCompare(b.name, "it"))
+      ? [...list].sort((a, b) => a.name.localeCompare(b.name, currentLocale()))
       : list
 
   return (
@@ -156,32 +162,39 @@ function BookmarkForm({
         e.preventDefault()
         if (!valid) return
         if (!editor.chain().focus().setBookmark(name).run()) {
-          toast.info("Posiziona il cursore su una parola o seleziona del testo")
+          toast.info(
+            t("Posiziona il cursore su una parola o seleziona del testo")
+          )
           return
         }
-        toast.success(`Segnalibro «${name}» aggiunto`)
+        toast.success(t("Segnalibro «{name}» aggiunto", { name }))
         onClose()
       }}
     >
       <div className="space-y-3 px-5 py-4">
         <label className="block space-y-1">
-          <span className="text-xs text-muted-foreground">Nome segnalibro</span>
+          <span className="text-xs text-muted-foreground">
+            {t("Nome segnalibro")}
+          </span>
           <Input
             autoFocus
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Es. Conclusioni"
+            placeholder={t("Es. Conclusioni")}
             className="h-8 text-sm"
           />
           {name && !valid ? (
             <span className="block text-[11px] text-destructive">
-              Inizia con una lettera; solo lettere, numeri e trattino basso,
-              senza spazi.
+              {t(
+                "Inizia con una lettera; solo lettere, numeri e trattino basso, senza spazi."
+              )}
             </span>
           ) : null}
         </label>
         <div className="flex items-center justify-between text-xs text-muted-foreground">
-          <span>Segnalibri del documento ({list.length})</span>
+          <span>
+            {t("Segnalibri del documento ({count})", { count: list.length })}
+          </span>
           <span className="flex gap-3">
             {(["name", "position"] as const).map((value) => (
               <label key={value} className="flex items-center gap-1">
@@ -190,7 +203,7 @@ function BookmarkForm({
                   checked={sort === value}
                   onChange={() => setSort(value)}
                 />
-                {value === "name" ? "Nome" : "Posizione"}
+                {value === "name" ? t("Nome") : t("Posizione")}
               </label>
             ))}
           </span>
@@ -222,7 +235,7 @@ function BookmarkForm({
                     onClose()
                   }}
                 >
-                  Vai a
+                  {t("Vai a")}
                 </Button>
                 <Button
                   type="button"
@@ -234,20 +247,20 @@ function BookmarkForm({
                     setList(listBookmarks(editor.state))
                   }}
                 >
-                  Elimina
+                  {t("Elimina")}
                 </Button>
               </div>
             ))
           ) : (
             <p className="px-2.5 py-3 text-xs text-muted-foreground">
-              Ancora nessun segnalibro.
+              {t("Ancora nessun segnalibro.")}
             </p>
           )}
         </div>
       </div>
       <Footer onClose={onClose}>
         <Button type="submit" disabled={!valid}>
-          Aggiungi
+          {t("Aggiungi")}
         </Button>
       </Footer>
     </form>
@@ -323,12 +336,15 @@ export function CrossRefDialog({
   onClose: () => void
   editor: Editor
 }) {
+  const t = useT()
   return (
     <Shell
       open={open}
       onClose={onClose}
-      title="Riferimento incrociato"
-      description="Un rimando che si aggiorna da solo quando il testo o le pagine cambiano."
+      title={t("Riferimento incrociato")}
+      description={t(
+        "Un rimando che si aggiorna da solo quando il testo o le pagine cambiano."
+      )}
       width={520}
     >
       <CrossRefForm editor={editor} onClose={onClose} />
@@ -343,6 +359,7 @@ function CrossRefForm({
   editor: Editor
   onClose: () => void
 }) {
+  const t = useT()
   const [kind, setKind] = React.useState<RefKind>("heading")
   const [format, setFormat] = React.useState("text")
   const [picked, setPicked] = React.useState<string | null>(null)
@@ -378,7 +395,7 @@ function CrossRefForm({
       <div className="grid gap-3 px-5 py-4 sm:grid-cols-2">
         <label className="block space-y-1">
           <span className="text-xs text-muted-foreground">
-            Tipo di riferimento
+            {t("Tipo di riferimento")}
           </span>
           <select
             value={kind}
@@ -392,16 +409,16 @@ function CrossRefForm({
             }}
             className={cn(selectClass, "w-full")}
           >
-            <option value="heading">Titolo</option>
-            <option value="bookmark">Segnalibro</option>
-            <option value="Figura">Figura</option>
-            <option value="Tabella">Tabella</option>
-            <option value="Equazione">Equazione</option>
+            <option value="heading">{t("Titolo")}</option>
+            <option value="bookmark">{t("Segnalibro")}</option>
+            <option value="Figura">{t("Figura")}</option>
+            <option value="Tabella">{t("Tabella")}</option>
+            <option value="Equazione">{t("Equazione")}</option>
           </select>
         </label>
         <label className="block space-y-1">
           <span className="text-xs text-muted-foreground">
-            Inserisci riferimento a
+            {t("Inserisci riferimento a")}
           </span>
           <select
             value={format}
@@ -411,7 +428,7 @@ function CrossRefForm({
             {formats.map((f) => (
               <option key={f.id} value={f.id}>
                 {f.id === "text" && kind !== "heading" && kind !== "bookmark"
-                  ? "Didascalia intera"
+                  ? t("Didascalia intera")
                   : f.label}
               </option>
             ))}
@@ -419,12 +436,11 @@ function CrossRefForm({
         </label>
         <div className="sm:col-span-2">
           <span className="text-xs text-muted-foreground">
-            Per quale{" "}
             {kind === "heading"
-              ? "titolo"
+              ? t("Per quale titolo")
               : kind === "bookmark"
-                ? "segnalibro"
-                : "didascalia"}
+                ? t("Per quale segnalibro")
+                : t("Per quale didascalia")}
           </span>
           <div className="mt-1 max-h-56 overflow-y-auto rounded-md border border-border">
             {items.length ? (
@@ -445,10 +461,15 @@ function CrossRefForm({
             ) : (
               <p className="px-2.5 py-3 text-xs text-muted-foreground">
                 {kind === "heading"
-                  ? "Il documento non ha titoli (stili Titolo 1–3)."
+                  ? t("Il documento non ha titoli (stili Titolo 1–3).")
                   : kind === "bookmark"
-                    ? "Nessun segnalibro: aggiungine uno da Inserisci › Segnalibro."
-                    : `Nessuna didascalia «${kind}»: aggiungila da Riferimenti › Inserisci didascalia.`}
+                    ? t(
+                        "Nessun segnalibro: aggiungine uno da Inserisci › Segnalibro."
+                      )
+                    : t(
+                        "Nessuna didascalia «{kind}»: aggiungila da Riferimenti › Inserisci didascalia.",
+                        { kind }
+                      )}
               </p>
             )}
           </div>
@@ -460,7 +481,7 @@ function CrossRefForm({
           disabled={!current}
           onClick={() => insert(current)}
         >
-          Inserisci
+          {t("Inserisci")}
         </Button>
       </Footer>
     </div>
@@ -478,8 +499,9 @@ export function DateTimeDialog({
   onClose: () => void
   editor: Editor
 }) {
+  const t = useT()
   return (
-    <Shell open={open} onClose={onClose} title="Data e ora">
+    <Shell open={open} onClose={onClose} title={t("Data e ora")}>
       <DateTimeForm editor={editor} onClose={onClose} />
     </Shell>
   )
@@ -492,6 +514,7 @@ function DateTimeForm({
   editor: Editor
   onClose: () => void
 }) {
+  const t = useT()
   const [now] = React.useState(() => new Date())
   const [picked, setPicked] = React.useState(DATE_FORMATS[0].id)
   const [auto, setAuto] = React.useState(false)
@@ -528,12 +551,12 @@ function DateTimeForm({
             checked={auto}
             onChange={(e) => setAuto(e.target.checked)}
           />
-          Aggiorna automaticamente
+          {t("Aggiorna automaticamente")}
         </label>
       </div>
       <Footer onClose={onClose}>
         <Button type="button" onClick={insert}>
-          Inserisci
+          {t("Inserisci")}
         </Button>
       </Footer>
     </div>
@@ -561,12 +584,13 @@ export function FieldDialog({
   onClose: () => void
   editor: Editor
 }) {
+  const t = useT()
   return (
     <Shell
       open={open}
       onClose={onClose}
-      title="Campo"
-      description="Un valore che il documento calcola e tiene aggiornato."
+      title={t("Campo")}
+      description={t("Un valore che il documento calcola e tiene aggiornato.")}
     >
       <FieldForm editor={editor} onClose={onClose} />
     </Shell>
@@ -580,6 +604,7 @@ function FieldForm({
   editor: Editor
   onClose: () => void
 }) {
+  const t = useT()
   const [kind, setKind] = React.useState<FieldKind>("page")
   const [format, setFormat] = React.useState("")
   const dates = DATE_FORMATS.filter((f) => f.kind === kind)
@@ -607,7 +632,9 @@ function FieldForm({
         <div className="space-y-2 text-sm">
           {dates.length ? (
             <label className="block space-y-1">
-              <span className="text-xs text-muted-foreground">Formato</span>
+              <span className="text-xs text-muted-foreground">
+                {t("Formato")}
+              </span>
               <select
                 value={format || dates[0].id}
                 onChange={(e) => setFormat(e.target.value)}
@@ -623,16 +650,20 @@ function FieldForm({
           ) : null}
           <p className="text-xs leading-relaxed text-muted-foreground">
             {kind === "page"
-              ? "Il numero della pagina su cui si trova il campo, con il formato scelto in Inserisci › Numero di pagina."
+              ? t(
+                  "Il numero della pagina su cui si trova il campo, con il formato scelto in Inserisci › Numero di pagina."
+                )
               : kind === "pages"
-                ? "Il numero totale di pagine del documento."
+                ? t("Il numero totale di pagine del documento.")
                 : kind === "title"
-                  ? "Il titolo del documento: cambia quando cambi il titolo."
+                  ? t("Il titolo del documento: cambia quando cambi il titolo.")
                   : kind === "author"
-                    ? "Il nome dell'autore impostato nell'app."
+                    ? t("Il nome dell'autore impostato nell'app.")
                     : kind === "words"
-                      ? "Le parole del documento, aggiornate mentre scrivi."
-                      : "Si aggiorna ogni volta che il documento viene aperto o stampato."}
+                      ? t("Le parole del documento, aggiornate mentre scrivi.")
+                      : t(
+                          "Si aggiorna ogni volta che il documento viene aperto o stampato."
+                        )}
           </p>
         </div>
       </div>
@@ -648,7 +679,7 @@ function FieldForm({
             onClose()
           }}
         >
-          Inserisci
+          {t("Inserisci")}
         </Button>
       </Footer>
     </div>
@@ -666,8 +697,9 @@ export function SignatureDialog({
   onClose: () => void
   editor: Editor
 }) {
+  const t = useT()
   return (
-    <Shell open={open} onClose={onClose} title="Riga della firma">
+    <Shell open={open} onClose={onClose} title={t("Riga della firma")}>
       <SignatureForm editor={editor} onClose={onClose} />
     </Shell>
   )
@@ -680,6 +712,7 @@ function SignatureForm({
   editor: Editor
   onClose: () => void
 }) {
+  const t = useT()
   const author = useAuthor()
   const [info, setInfo] = React.useState({
     name: author,
@@ -698,9 +731,17 @@ function SignatureForm({
       <div className="space-y-2.5 px-5 py-4">
         {(
           [
-            ["name", "Firmatario suggerito", "Nome e cognome"],
-            ["role", "Titolo del firmatario", "Es. Amministratore delegato"],
-            ["email", "Indirizzo di posta elettronica", "nome@azienda.it"],
+            ["name", t("Firmatario suggerito"), t("Nome e cognome")],
+            [
+              "role",
+              t("Titolo del firmatario"),
+              t("Es. Amministratore delegato"),
+            ],
+            [
+              "email",
+              t("Indirizzo di posta elettronica"),
+              t("nome@azienda.it"),
+            ],
           ] as const
         ).map(([key, label, placeholder]) => (
           <label key={key} className="block space-y-1">
@@ -719,11 +760,11 @@ function SignatureForm({
             checked={info.date}
             onChange={(e) => setInfo({ ...info, date: e.target.checked })}
           />
-          Aggiungi la riga per luogo e data
+          {t("Aggiungi la riga per luogo e data")}
         </label>
       </div>
       <Footer onClose={onClose}>
-        <Button type="submit">Inserisci</Button>
+        <Button type="submit">{t("Inserisci")}</Button>
       </Footer>
     </form>
   )
@@ -733,39 +774,60 @@ function SignatureForm({
 
 const SYMBOL_GROUPS: { label: string; chars: string }[] = [
   {
-    label: "Punteggiatura",
+    get label() {
+      return tr("Punteggiatura")
+    },
     chars: "« » „ “ ” ‘ ’ ‚ … – — • · ¡ ¿ § ¶ † ‡ ※ ‖ © ® ™ ℗ № ℮ ° ′ ″",
   },
-  { label: "Valute", chars: "€ £ $ ¥ ₹ ₽ ₩ ₿ ¢ ₺ ₴ ₦ ฿ ₫ ₪ ₱ ₲ ₡ ₵" },
   {
-    label: "Matematica",
+    get label() {
+      return tr("Valute")
+    },
+    chars: "€ £ $ ¥ ₹ ₽ ₩ ₿ ¢ ₺ ₴ ₦ ฿ ₫ ₪ ₱ ₲ ₡ ₵",
+  },
+  {
+    get label() {
+      return tr("Matematica")
+    },
     chars:
       "± × ÷ = ≠ ≈ ≡ ≤ ≥ < > ∞ √ ∛ ∑ ∏ ∫ ∮ ∂ ∆ ∇ ∈ ∉ ⊂ ⊃ ⊆ ⊇ ∪ ∩ ∧ ∨ ¬ ∀ ∃ ∅ ‰ ∝ ∠ ⊥ ∥ ∴ ∵ ⌈ ⌉ ⌊ ⌋",
   },
   {
-    label: "Frazioni e apici",
+    get label() {
+      return tr("Frazioni e apici")
+    },
     chars:
       "½ ⅓ ⅔ ¼ ¾ ⅕ ⅖ ⅗ ⅘ ⅙ ⅚ ⅛ ⅜ ⅝ ⅞ ⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ ⁿ ₀ ₁ ₂ ₃ ₄ ₅ ₆ ₇ ₈ ₉",
   },
   {
-    label: "Greco",
+    get label() {
+      return tr("Greco")
+    },
     chars:
       "α β γ δ ε ζ η θ ι κ λ μ ν ξ ο π ρ σ τ υ φ χ ψ ω Γ Δ Θ Λ Ξ Π Σ Φ Ψ Ω",
   },
   {
-    label: "Frecce",
+    get label() {
+      return tr("Frecce")
+    },
     chars: "← → ↑ ↓ ↔ ↕ ⇐ ⇒ ⇑ ⇓ ⇔ ↖ ↗ ↘ ↙ ↩ ↪ ↺ ↻ ⟵ ⟶ ⟷ ➔ ➜ ➤ ➢",
   },
   {
-    label: "Forme",
+    get label() {
+      return tr("Forme")
+    },
     chars: "■ □ ▪ ▫ ▲ △ ▼ ▽ ◀ ▶ ◆ ◇ ● ○ ◉ ◎ ◐ ◑ ★ ☆ ♠ ♣ ♥ ♦ ✦ ✧ ❖",
   },
   {
-    label: "Spunte e segni",
+    get label() {
+      return tr("Spunte e segni")
+    },
     chars: "✓ ✔ ✗ ✘ ☐ ☑ ☒ ⊕ ⊗ ⚠ ⓘ ☎ ✉ ✂ ✎ ⌘ ⌥ ⇧ ⌫ ⏎ ♫ ☀ ☁ ☂ ☕ ⚑",
   },
   {
-    label: "Lettere",
+    get label() {
+      return tr("Lettere")
+    },
     chars:
       "À Á Â Ä Ã Å Æ Ç È É Ê Ë Ì Í Î Ï Ñ Ò Ó Ô Ö Õ Ø Œ Ù Ú Û Ü ß à á â ä ã å æ ç è é ê ë ì í î ï ñ ò ó ô ö õ ø œ ù ú û ü ÿ",
   },
@@ -801,8 +863,9 @@ export function SymbolDialog({
   onClose: () => void
   editor: Editor
 }) {
+  const t = useT()
   return (
-    <Shell open={open} onClose={onClose} title="Simboli" width={560}>
+    <Shell open={open} onClose={onClose} title={t("Simboli")} width={560}>
       <SymbolForm editor={editor} onClose={onClose} />
     </Shell>
   )
@@ -815,6 +878,7 @@ function SymbolForm({
   editor: Editor
   onClose: () => void
 }) {
+  const t = useT()
   const [group, setGroup] = React.useState(SYMBOL_GROUPS[0].label)
   const [picked, setPicked] = React.useState<string | null>(null)
   const [code, setCode] = React.useState("")
@@ -881,7 +945,7 @@ function SymbolForm({
         {recent.length ? (
           <div>
             <span className="text-xs text-muted-foreground">
-              Simboli usati di recente
+              {t("Simboli usati di recente")}
             </span>
             <div className="mt-1 grid grid-cols-8 gap-1 sm:grid-cols-16">
               {recent.map(cell)}
@@ -896,7 +960,7 @@ function SymbolForm({
             {current ?? ""}
           </span>
           <label className="flex flex-1 items-center gap-2 text-xs text-muted-foreground">
-            Codice carattere
+            {t("Codice carattere")}
             <Input
               value={
                 code ||
@@ -921,7 +985,7 @@ function SymbolForm({
           disabled={!current}
           onClick={() => insert(current)}
         >
-          Inserisci
+          {t("Inserisci")}
         </Button>
       </Footer>
     </div>
@@ -941,12 +1005,15 @@ export function IconsDialog({
   theme: DocTheme
   onInsert: (names: string[], color: string) => void
 }) {
+  const t = useT()
   return (
     <Shell
       open={open}
       onClose={onClose}
-      title="Inserisci icone"
-      description="Si inseriscono come immagini: si spostano, ruotano e ridimensionano come le foto."
+      title={t("Inserisci icone")}
+      description={t(
+        "Si inseriscono come immagini: si spostano, ruotano e ridimensionano come le foto."
+      )}
       width={620}
     >
       <IconsForm theme={theme} onClose={onClose} onInsert={onInsert} />
@@ -963,6 +1030,7 @@ function IconsForm({
   onClose: () => void
   onInsert: (names: string[], color: string) => void
 }) {
+  const t = useT()
   const [query, setQuery] = React.useState("")
   const [category, setCategory] = React.useState<string | null>(null)
   const [picked, setPicked] = React.useState<string[]>([])
@@ -992,7 +1060,10 @@ function IconsForm({
             autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder={`Cerca fra ${ICON_NAMES.length} icone (in inglese: arrow, user, chart…)`}
+            placeholder={t(
+              "Cerca fra {count} icone (in inglese: arrow, user, chart…)",
+              { count: ICON_NAMES.length }
+            )}
             className="h-8 flex-1 bg-transparent text-sm outline-none"
           />
         </div>
@@ -1010,7 +1081,7 @@ function IconsForm({
                     : "border-border text-muted-foreground hover:text-foreground"
                 )}
               >
-                {label ?? "Tutte"}
+                {label ? t(label) : t("Tutte")}
               </button>
             ))}
           </div>
@@ -1040,7 +1111,9 @@ function IconsForm({
           })}
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="mr-1 text-xs text-muted-foreground">Colore</span>
+          <span className="mr-1 text-xs text-muted-foreground">
+            {t("Colore")}
+          </span>
           {colors.map((c) => (
             <button
               key={c}
@@ -1069,7 +1142,8 @@ function IconsForm({
             onClose()
           }}
         >
-          Inserisci{picked.length ? ` (${picked.length})` : ""}
+          {t("Inserisci")}
+          {picked.length ? ` (${picked.length})` : ""}
         </Button>
       </Footer>
     </div>
@@ -1145,12 +1219,15 @@ export function SmartArtDialog({
   onClose: () => void
   onPick: (id: string) => void
 }) {
+  const t = useT()
   return (
     <Shell
       open={open}
       onClose={onClose}
-      title="Scegli elemento grafico SmartArt"
-      description="Diventa una board incorporata: si modifica con tutti gli strumenti delle board."
+      title={t("Scegli elemento grafico SmartArt")}
+      description={t(
+        "Diventa una board incorporata: si modifica con tutti gli strumenti delle board."
+      )}
       width={640}
     >
       <SmartArtForm onClose={onClose} onPick={onPick} />
@@ -1165,6 +1242,7 @@ function SmartArtForm({
   onClose: () => void
   onPick: (id: string) => void
 }) {
+  const t = useT()
   const groups = [...new Set(SMARTART_TEMPLATES.map((t) => t.group))]
   const [group, setGroup] = React.useState<string | null>(null)
   const [picked, setPicked] = React.useState(SMARTART_TEMPLATES[0].id)
@@ -1184,7 +1262,7 @@ function SmartArtForm({
                 group === g && "bg-accent text-accent-foreground"
               )}
             >
-              {g ?? "Tutti"}
+              {g ?? t("Tutti")}
             </button>
           ))}
         </div>
@@ -1249,8 +1327,9 @@ export function DropCapDialog({
   editor: Editor
   theme: DocTheme
 }) {
+  const t = useT()
   return (
-    <Shell open={open} onClose={onClose} title="Capolettera">
+    <Shell open={open} onClose={onClose} title={t("Capolettera")}>
       <DropCapForm editor={editor} theme={theme} onClose={onClose} />
     </Shell>
   )
@@ -1265,6 +1344,7 @@ function DropCapForm({
   theme: DocTheme
   onClose: () => void
 }) {
+  const t = useT()
   const attrs = editor.getAttributes("paragraph")
   const [mode, setMode] = React.useState<"drop" | "margin" | null>(
     (attrs.dropCap as "drop" | "margin" | null) ?? "drop"
@@ -1279,9 +1359,9 @@ function DropCapForm({
         <div className="grid grid-cols-3 gap-2">
           {(
             [
-              [null, "Nessuno"],
-              ["drop", "Interno"],
-              ["margin", "Nel margine"],
+              [null, t("Nessuno")],
+              ["drop", t("Interno")],
+              ["margin", t("Nel margine")],
             ] as const
           ).map(([value, label]) => (
             <button
@@ -1304,7 +1384,7 @@ function DropCapForm({
                     className="absolute top-0.5 text-2xl leading-none font-bold text-primary"
                     style={{ left: value === "margin" ? -8 : 0 }}
                   >
-                    A
+                    {t("A")}
                   </span>
                 ) : null}
                 {[0, 1, 2, 3].map((i) => (
@@ -1321,12 +1401,12 @@ function DropCapForm({
         </div>
         <label className="block space-y-1">
           <span className="text-xs text-muted-foreground">
-            Tipo di carattere
+            {t("Tipo di carattere")}
           </span>
           <FontPicker value={font} onChange={setFont} />
         </label>
         <label className="flex items-center justify-between gap-3 text-sm">
-          <span className="text-muted-foreground">Altezza in righe</span>
+          <span className="text-muted-foreground">{t("Altezza in righe")}</span>
           <input
             type="number"
             min={2}
@@ -1373,12 +1453,15 @@ export function HeaderFooterDialog({
   setTheme: (patch: Partial<DocTheme>) => void
   initial: "header" | "footer"
 }) {
+  const t = useT()
   return (
     <Shell
       open={open}
       onClose={onClose}
-      title="Intestazione e piè di pagina"
-      description="Tre parti per riga: a sinistra, al centro, a destra. I campi si riempiono pagina per pagina."
+      title={t("Intestazione e piè di pagina")}
+      description={t(
+        "Tre parti per riga: a sinistra, al centro, a destra. I campi si riempiono pagina per pagina."
+      )}
       width={600}
     >
       <HeaderFooterForm
@@ -1402,6 +1485,7 @@ function HeaderFooterForm({
   onClose: () => void
   initial: "header" | "footer"
 }) {
+  const t = useT()
   const [tab, setTab] = React.useState(initial)
   const [header, setHeader] = React.useState(bandParts(theme.header))
   const [footer, setFooter] = React.useState(bandParts(theme.footer))
@@ -1456,12 +1540,12 @@ function HeaderFooterForm({
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              {value === "header" ? "Intestazione" : "Piè di pagina"}
+              {value === "header" ? t("Intestazione") : t("Piè di pagina")}
             </button>
           ))}
         </div>
         <div className="grid gap-2 sm:grid-cols-3">
-          {(["A sinistra", "Al centro", "A destra"] as const).map(
+          {([t("A sinistra"), "Al centro", t("A destra")] as const).map(
             (label, i) => (
               <label key={label} className="block space-y-1">
                 <span className="text-xs text-muted-foreground">{label}</span>
@@ -1487,7 +1571,7 @@ function HeaderFooterForm({
         </div>
         <div className="flex flex-wrap items-center gap-1">
           <span className="mr-1 text-xs text-muted-foreground">
-            Inserisci campo
+            {t("Inserisci campo")}
           </span>
           {BAND_FIELDS.map((f) => (
             <Button
@@ -1504,7 +1588,7 @@ function HeaderFooterForm({
           ))}
         </div>
         <div>
-          <span className="text-xs text-muted-foreground">Modelli</span>
+          <span className="text-xs text-muted-foreground">{t("Modelli")}</span>
           <div className="mt-1 grid grid-cols-2 gap-1.5 sm:grid-cols-3">
             {presets.map((p) => (
               <button
@@ -1528,11 +1612,13 @@ function HeaderFooterForm({
               checked={first}
               onChange={(e) => setFirst(e.target.checked)}
             />
-            Diversa per la prima pagina (niente intestazione e piè di pagina)
+            {t(
+              "Diversa per la prima pagina (niente intestazione e piè di pagina)"
+            )}
           </label>
           <label className="block space-y-1 sm:col-span-2">
             <span className="text-xs text-muted-foreground">
-              Formato numeri di pagina
+              {t("Formato numeri di pagina")}
             </span>
             <select
               value={format}
@@ -1549,7 +1635,9 @@ function HeaderFooterForm({
             </select>
           </label>
           <label className="block space-y-1">
-            <span className="text-xs text-muted-foreground">Inizia da</span>
+            <span className="text-xs text-muted-foreground">
+              {t("Inizia da")}
+            </span>
             <input
               type="number"
               min={0}
@@ -1567,9 +1655,11 @@ function HeaderFooterForm({
           variant="outline"
           onClick={() => setParts(["", "", ""])}
         >
-          Rimuovi {tab === "header" ? "intestazione" : "piè di pagina"}
+          {tab === "header"
+            ? t("Rimuovi intestazione")
+            : t("Rimuovi piè di pagina")}
         </Button>
-        <Button type="submit">Salva</Button>
+        <Button type="submit">{t("Salva")}</Button>
       </Footer>
     </form>
   )

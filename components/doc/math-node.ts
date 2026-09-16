@@ -3,6 +3,7 @@
 import { InputRule, Node, mergeAttributes } from "@tiptap/core"
 import { NodeSelection } from "@tiptap/pm/state"
 import katex from "katex"
+import { tr } from "@/lib/i18n/client"
 import "katex/dist/katex.min.css"
 
 declare module "@tiptap/core" {
@@ -22,7 +23,7 @@ declare module "@tiptap/core" {
 function renderMath(el: HTMLElement, latex: string, display: boolean) {
   const source = latex.trim()
   if (!source) {
-    el.textContent = display ? "Equazione vuota" : "∅"
+    el.textContent = display ? tr("Equazione vuota") : "∅"
     el.classList.add("doc-math-empty")
     return
   }
@@ -45,7 +46,7 @@ export function mathError(latex: string): string | null {
   } catch (err) {
     return err instanceof Error
       ? err.message.replace(/^KaTeX parse error:\s*/, "")
-      : "Formula non valida"
+      : tr("Formula non valida")
   }
 }
 
@@ -79,7 +80,7 @@ function mathView(display: boolean) {
     dom.className = display ? "doc-math doc-math-block" : "doc-math"
     dom.contentEditable = "false"
     let current = String(node.attrs.latex ?? "")
-    dom.setAttribute("aria-label", current || "Equazione")
+    dom.setAttribute("aria-label", current || tr("Equazione"))
     dom.setAttribute("role", "math")
     renderMath(dom, current, display)
     return {
@@ -89,7 +90,7 @@ function mathView(display: boolean) {
         const latex = String(next.attrs.latex ?? "")
         if (latex !== current) {
           current = latex
-          dom.setAttribute("aria-label", latex || "Equazione")
+          dom.setAttribute("aria-label", latex || tr("Equazione"))
           renderMath(dom, latex, display)
         }
         return true
@@ -249,32 +250,54 @@ export const MathBlock = Node.create({
 
 /** Le equazioni pronte del menu, come in Word */
 export const BUILTIN_EQUATIONS: { label: string; latex: string }[] = [
-  { label: "Area del cerchio", latex: "A = \\pi r^2" },
   {
-    label: "Formula quadratica",
+    get label() {
+      return tr("Area del cerchio")
+    },
+    latex: "A = \\pi r^2",
+  },
+  {
+    get label() {
+      return tr("Formula quadratica")
+    },
     latex: "x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}",
   },
-  { label: "Teorema di Pitagora", latex: "a^2 + b^2 = c^2" },
   {
-    label: "Teorema binomiale",
+    get label() {
+      return tr("Teorema di Pitagora")
+    },
+    latex: "a^2 + b^2 = c^2",
+  },
+  {
+    get label() {
+      return tr("Teorema binomiale")
+    },
     latex: "(x + a)^n = \\sum_{k=0}^{n} \\binom{n}{k} x^k a^{n-k}",
   },
   {
-    label: "Espansione di Taylor",
+    get label() {
+      return tr("Espansione di Taylor")
+    },
     latex:
       "e^x = 1 + \\frac{x}{1!} + \\frac{x^2}{2!} + \\frac{x^3}{3!} + \\cdots",
   },
   {
-    label: "Serie di Fourier",
+    get label() {
+      return tr("Serie di Fourier")
+    },
     latex:
       "f(x) = a_0 + \\sum_{n=1}^{\\infty} \\left( a_n \\cos \\frac{n\\pi x}{L} + b_n \\sin \\frac{n\\pi x}{L} \\right)",
   },
   {
-    label: "Identità trigonometrica",
+    get label() {
+      return tr("Identità trigonometrica")
+    },
     latex: "\\sin^2 \\alpha + \\cos^2 \\alpha = 1",
   },
   {
-    label: "Integrale di Gauss",
+    get label() {
+      return tr("Integrale di Gauss")
+    },
     latex: "\\int_{-\\infty}^{\\infty} e^{-x^2} \\, dx = \\sqrt{\\pi}",
   },
 ]
@@ -285,35 +308,87 @@ export const MATH_STRUCTURES: {
   insert: string
   preview: string
 }[] = [
-  { label: "Frazione", insert: "\\frac{a}{b}", preview: "\\frac{a}{b}" },
-  { label: "Apice", insert: "x^{2}", preview: "x^{2}" },
-  { label: "Pedice", insert: "x_{i}", preview: "x_{i}" },
-  { label: "Radice", insert: "\\sqrt{x}", preview: "\\sqrt{x}" },
-  { label: "Radice n-esima", insert: "\\sqrt[n]{x}", preview: "\\sqrt[n]{x}" },
   {
-    label: "Sommatoria",
+    get label() {
+      return tr("Frazione")
+    },
+    insert: "\\frac{a}{b}",
+    preview: "\\frac{a}{b}",
+  },
+  {
+    get label() {
+      return tr("Apice")
+    },
+    insert: "x^{2}",
+    preview: "x^{2}",
+  },
+  {
+    get label() {
+      return tr("Pedice")
+    },
+    insert: "x_{i}",
+    preview: "x_{i}",
+  },
+  {
+    get label() {
+      return tr("Radice")
+    },
+    insert: "\\sqrt{x}",
+    preview: "\\sqrt{x}",
+  },
+  {
+    get label() {
+      return tr("Radice n-esima")
+    },
+    insert: "\\sqrt[n]{x}",
+    preview: "\\sqrt[n]{x}",
+  },
+  {
+    get label() {
+      return tr("Sommatoria")
+    },
     insert: "\\sum_{i=1}^{n}",
     preview: "\\sum_{i=1}^{n}",
   },
-  { label: "Integrale", insert: "\\int_{a}^{b}", preview: "\\int_{a}^{b}" },
   {
-    label: "Limite",
+    get label() {
+      return tr("Integrale")
+    },
+    insert: "\\int_{a}^{b}",
+    preview: "\\int_{a}^{b}",
+  },
+  {
+    get label() {
+      return tr("Limite")
+    },
     insert: "\\lim_{x \\to \\infty}",
     preview: "\\lim_{x \\to \\infty}",
   },
   {
-    label: "Parentesi",
+    get label() {
+      return tr("Parentesi")
+    },
     insert: "\\left( x \\right)",
     preview: "\\left( x \\right)",
   },
-  { label: "Vettore", insert: "\\vec{v}", preview: "\\vec{v}" },
   {
-    label: "Matrice",
+    get label() {
+      return tr("Vettore")
+    },
+    insert: "\\vec{v}",
+    preview: "\\vec{v}",
+  },
+  {
+    get label() {
+      return tr("Matrice")
+    },
     insert: "\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}",
     preview: "\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}",
   },
   {
-    label: "Sistema",
+    get label() {
+      return tr("Sistema")
+    },
     insert: "\\begin{cases} x & x > 0 \\\\ -x & x \\le 0 \\end{cases}",
     preview: "\\begin{cases} x \\\\ y \\end{cases}",
   },

@@ -3,10 +3,12 @@
 import type { Route } from "next"
 import { toast } from "sonner"
 import { importWorkspace, useStore } from "./store"
+import { hrefFor } from "./i18n/client"
 import type { WFile } from "./types"
 
+import { tr } from "@/lib/i18n/client"
 export const fileHref = (f: Pick<WFile, "kind" | "id">) =>
-  (f.kind === "board" ? `/board/${f.id}` : `/doc/${f.id}`) as Route
+  hrefFor(f.kind === "board" ? `/board/${f.id}` : `/doc/${f.id}`) as Route
 
 /** Tipi di file che si possono importare, per i selettori di file */
 export const IMPORTABLE = ".docx,.md,.markdown,.txt,.html,.htm,.json"
@@ -22,11 +24,14 @@ export async function importFiles(
   let opened: WFile | null = null
   let count = 0
   for (const file of list) {
-    const id = toast.loading(`Importo «${file.name}»…`)
+    const id = toast.loading(tr("Importo «{name}»…", { name: file.name }))
     try {
       if (file.name.toLowerCase().endsWith(".json")) {
         const added = importWorkspace(await file.text())
-        toast.success(`Aggiunti ${added} file dallo spazio di lavoro`, { id })
+        toast.success(
+          tr("Aggiunti {added} file dallo spazio di lavoro", { added }),
+          { id }
+        )
         continue
       }
       const { importDocumentFile } = await import("@/lib/import-doc")
@@ -34,14 +39,16 @@ export async function importFiles(
       useStore.getState().addFile(result.file)
       opened = result.file
       count++
-      toast.success(`«${result.file.title}» importato`, {
+      toast.success(tr("«{title}» importato", { title: result.file.title }), {
         id,
         description: result.warnings
-          ? "Qualche formattazione di Word non ha un equivalente ed è stata semplificata."
+          ? tr(
+              "Qualche formattazione di Word non ha un equivalente ed è stata semplificata."
+            )
           : undefined,
       })
     } catch (err) {
-      toast.error(`Non riesco a importare «${file.name}»`, {
+      toast.error(tr("Non riesco a importare «{name}»", { name: file.name }), {
         id,
         description: err instanceof Error ? err.message : undefined,
       })

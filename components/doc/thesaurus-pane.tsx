@@ -25,6 +25,7 @@ import {
 import { cn } from "@/lib/utils"
 import { wordAtSelection } from "@/lib/word-at"
 
+import { useT } from "@/lib/i18n/client"
 /**
  * Il riquadro Thesaurus di Word (Maiusc+F7): sinonimi raggruppati per
  * significato. Un clic su una parola la cerca, «Inserisci» la mette nel testo
@@ -48,6 +49,7 @@ export function ThesaurusPane({
   initialWord: string
   onClose: () => void
 }) {
+  const t = useT()
   const [lang, setLang] = React.useState(
     () => thesaurusFor(language)?.lang ?? "it"
   )
@@ -63,26 +65,31 @@ export function ThesaurusPane({
   const source = thesaurusFor(lang)
 
   /** Interroga il dizionario; lo stato cambia solo quando arriva la risposta */
-  const run = React.useCallback((word: string, target: string) => {
-    const id = ++request.current
-    lookupSynonyms(target, word, (fraction) => {
-      if (id === request.current)
-        setState({ status: "loading", download: fraction })
-    })
-      .then((result) => {
-        if (id !== request.current) return
-        setState({ status: "done", result })
-        setCached(true)
+  const run = React.useCallback(
+    (word: string, target: string) => {
+      const id = ++request.current
+      lookupSynonyms(target, word, (fraction) => {
+        if (id === request.current)
+          setState({ status: "loading", download: fraction })
       })
-      .catch((error: unknown) => {
-        if (id !== request.current) return
-        setState({
-          status: "error",
-          message:
-            error instanceof Error ? error.message : "Ricerca non riuscita",
+        .then((result) => {
+          if (id !== request.current) return
+          setState({ status: "done", result })
+          setCached(true)
         })
-      })
-  }, [])
+        .catch((error: unknown) => {
+          if (id !== request.current) return
+          setState({
+            status: "error",
+            message:
+              error instanceof Error
+                ? error.message
+                : t("Ricerca non riuscita"),
+          })
+        })
+    },
+    [t]
+  )
 
   const search = (word: string, target = lang) => {
     const clean = word.trim()
@@ -151,19 +158,19 @@ export function ThesaurusPane({
   const copy = (term: string) => {
     void navigator.clipboard
       ?.writeText(cleanTerm(term))
-      .then(() => toast.success("Copiato"))
+      .then(() => toast.success(t("Copiato")))
   }
 
   return (
-    <div className="flex h-full w-full flex-col" aria-label="Thesaurus">
+    <div className="flex h-full w-full flex-col" aria-label={t("Thesaurus")}>
       <div className="flex h-9 shrink-0 items-center justify-between border-b border-border pr-1 pl-4">
         <span className="flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground">
-          <BookA className="size-3.5" /> Thesaurus
+          <BookA className="size-3.5" /> {t("Thesaurus")}
         </span>
         <button
           type="button"
           onClick={onClose}
-          aria-label="Chiudi il thesaurus"
+          aria-label={t("Chiudi il thesaurus")}
           className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
         >
           <X className="size-4" />
@@ -181,8 +188,8 @@ export function ThesaurusPane({
           type="button"
           onClick={back}
           disabled={!history.length}
-          aria-label="Parola precedente"
-          title="Parola precedente"
+          aria-label={t("Parola precedente")}
+          title={t("Parola precedente")}
           className="flex size-8 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground disabled:opacity-30"
         >
           <ArrowLeft className="size-4" />
@@ -190,15 +197,15 @@ export function ThesaurusPane({
         <div className="relative min-w-0 flex-1">
           <Search className="pointer-events-none absolute top-1/2 left-2 size-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input
-            aria-label="Cerca sinonimi"
+            aria-label={t("Cerca sinonimi")}
             className="h-8 pl-7 text-sm"
             value={query}
-            placeholder="Cerca una parola"
+            placeholder={t("Cerca una parola")}
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
         <select
-          aria-label="Lingua del thesaurus"
+          aria-label={t("Lingua del thesaurus")}
           value={lang}
           onChange={(e) => {
             setLang(e.target.value)
@@ -217,13 +224,16 @@ export function ThesaurusPane({
       <div className="min-h-0 flex-1 overflow-y-auto px-2 py-2">
         {state.status === "idle" ? (
           <p className="px-2 py-6 text-center text-xs text-muted-foreground">
-            Seleziona una parola nel documento o scrivila qui sopra.
+            {t("Seleziona una parola nel documento o scrivila qui sopra.")}
             {source && cached === false ? (
               <span className="mt-2 block">
-                La prima ricerca scarica il dizionario{" "}
-                {source.label.toLowerCase()} (
-                {Math.max(1, Math.round(source.bytes / 1_000_000))} MB), poi
-                funziona offline.
+                {t(
+                  "La prima ricerca scarica il dizionario ({language}, {size} MB), poi funziona offline.",
+                  {
+                    language: source.label,
+                    size: Math.max(1, Math.round(source.bytes / 1_000_000)),
+                  }
+                )}
               </span>
             ) : null}
           </p>
@@ -235,10 +245,12 @@ export function ThesaurusPane({
             <LoaderCircle className="mx-auto mb-2 size-5 animate-spin" />
             {state.download !== null && state.download < 1 ? (
               <>
-                Scarico il dizionario… {Math.round(state.download * 100)}%
+                {t("Scarico il dizionario… {percent}%", {
+                  percent: Math.round(state.download * 100),
+                })}
                 <span
                   role="progressbar"
-                  aria-label="Download del dizionario"
+                  aria-label={t("Download del dizionario")}
                   aria-valuemin={0}
                   aria-valuemax={100}
                   aria-valuenow={Math.round(state.download * 100)}
@@ -251,12 +263,12 @@ export function ThesaurusPane({
                 </span>
               </>
             ) : (
-              "Cerco…"
+              t("Cerco…")
             )}
           </div>
         ) : state.status === "error" ? (
           <p className="px-2 py-6 text-center text-xs text-destructive">
-            {state.message}
+            {t(state.message)}
           </p>
         ) : state.result.meanings.length ? (
           <div className="space-y-3" data-testid="thesaurus-results">
@@ -265,7 +277,7 @@ export function ThesaurusPane({
                 e.toLocaleLowerCase() !== state.result.word.toLocaleLowerCase()
             ) ? (
               <p className="px-2 text-[11px] text-muted-foreground">
-                Risultati per{" "}
+                {t("Risultati per")}{" "}
                 {state.result.entries.map((e) => `«${e}»`).join(", ")}
               </p>
             ) : null}
@@ -295,7 +307,9 @@ export function ThesaurusPane({
                       <button
                         type="button"
                         className="min-w-0 flex-1 truncate px-2 py-1 text-left text-sm"
-                        title={`Cerca i sinonimi di «${cleanTerm(term)}»`}
+                        title={t("Cerca i sinonimi di «{term}»", {
+                          term: cleanTerm(term),
+                        })}
                         onClick={() => lookUp(cleanTerm(term))}
                         onDoubleClick={() => insert(term)}
                       >
@@ -308,8 +322,10 @@ export function ThesaurusPane({
                       </button>
                       <button
                         type="button"
-                        title="Copia"
-                        aria-label={`Copia «${cleanTerm(term)}»`}
+                        title={t("Copia")}
+                        aria-label={t("Copia «{term}»", {
+                          term: cleanTerm(term),
+                        })}
                         onClick={() => copy(term)}
                         className="flex size-7 shrink-0 items-center justify-center rounded text-muted-foreground opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 hover:text-foreground focus:opacity-100 pointer-coarse:opacity-100"
                       >
@@ -317,12 +333,14 @@ export function ThesaurusPane({
                       </button>
                       <button
                         type="button"
-                        title="Inserisci nel testo"
-                        aria-label={`Inserisci «${cleanTerm(term)}»`}
+                        title={t("Inserisci nel testo")}
+                        aria-label={t("Inserisci «{term}»", {
+                          term: cleanTerm(term),
+                        })}
                         onClick={() => insert(term)}
                         className="mr-0.5 flex h-7 shrink-0 items-center gap-1 rounded px-1.5 text-[11px] text-muted-foreground opacity-0 group-focus-within:opacity-100 group-hover:opacity-100 hover:bg-background hover:text-foreground focus:opacity-100 pointer-coarse:opacity-100"
                       >
-                        <CornerDownLeft className="size-3.5" /> Inserisci
+                        <CornerDownLeft className="size-3.5" /> {t("Inserisci")}
                       </button>
                     </li>
                   ))}
@@ -332,11 +350,13 @@ export function ThesaurusPane({
           </div>
         ) : (
           <div className="px-2 py-4 text-xs text-muted-foreground">
-            <p>Nessun sinonimo per «{state.result.word}».</p>
+            <p>
+              {t("Nessun sinonimo per «{word}».", { word: state.result.word })}
+            </p>
             {state.result.nearby.length ? (
               <>
                 <p className="mt-3 mb-1 font-medium text-foreground">
-                  Parole vicine
+                  {t("Parole vicine")}
                 </p>
                 <div className="flex flex-wrap gap-1">
                   {state.result.nearby.map((w) => (
@@ -362,8 +382,11 @@ export function ThesaurusPane({
             "shrink-0 border-t border-border px-3 py-2 text-[10px] leading-snug text-muted-foreground"
           )}
         >
-          Dizionario {source.label.toLowerCase()} di LibreOffice ·{" "}
-          {source.credit} ·{" "}
+          {t("Dizionario di LibreOffice ({language}) · {credit}", {
+            language: source.label,
+            credit: source.credit,
+          })}{" "}
+          ·{" "}
           <a
             href={source.home}
             target="_blank"

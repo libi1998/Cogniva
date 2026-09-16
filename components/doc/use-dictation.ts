@@ -3,6 +3,8 @@
 import * as React from "react"
 import type { Editor } from "@tiptap/react"
 
+import { useT } from "@/lib/i18n/client"
+import { N_ } from "@/lib/i18n/config"
 export type Dictation = {
   supported: boolean
   listening: boolean
@@ -56,47 +58,166 @@ function recognitionClass(): RecognitionCtor | null {
 
 const subscribeNever = () => () => {}
 
+type Vocabulary = {
+  /** «nuovo paragrafo» e «a capo», nelle parole di chi detta */
+  paragraph: string[]
+  line: string[]
+  /** l'ordine conta: «punto e virgola» prima di «punto» */
+  punctuation: [string, string][]
+}
+
 /**
- * Comandi a voce di Word in italiano: la punteggiatura si detta a parole.
- * L'ordine conta: «punto e virgola» prima di «punto».
+ * I comandi a voce di ogni lingua: la punteggiatura si detta a parole, come
+ * nei programmi di videoscrittura.
  */
-const PUNCTUATION: [RegExp, string][] = [
-  [/\bpunto e virgola\b/gi, ";"],
-  [/\bpunto interrogativo\b/gi, "?"],
-  [/\bpunto esclamativo\b/gi, "!"],
-  [/\bpuntini di sospensione\b/gi, "…"],
-  [/\bdue punti\b/gi, ":"],
-  [/\bvirgola\b/gi, ","],
-  [/\bpunto\b/gi, "."],
-  [/\bapri parentesi\b/gi, "("],
-  [/\bchiudi parentesi\b/gi, ")"],
-  [/\bapri virgolette\b/gi, "«"],
-  [/\bchiudi virgolette\b/gi, "»"],
-  [/\btrattino\b/gi, "-"],
-]
+const VOCABULARY: Record<string, Vocabulary> = {
+  it: {
+    paragraph: ["nuovo paragrafo"],
+    line: ["a capo", "nuova riga"],
+    punctuation: [
+      ["punto e virgola", ";"],
+      ["punto interrogativo", "?"],
+      ["punto esclamativo", "!"],
+      ["puntini di sospensione", "…"],
+      ["due punti", ":"],
+      ["virgola", ","],
+      ["punto", "."],
+      ["apri parentesi", "("],
+      ["chiudi parentesi", ")"],
+      ["apri virgolette", "«"],
+      ["chiudi virgolette", "»"],
+      ["trattino", "-"],
+    ],
+  },
+  en: {
+    paragraph: ["new paragraph"],
+    line: ["new line"],
+    punctuation: [
+      ["semicolon", ";"],
+      ["question mark", "?"],
+      ["exclamation mark", "!"],
+      ["exclamation point", "!"],
+      ["ellipsis", "…"],
+      ["colon", ":"],
+      ["comma", ","],
+      ["full stop", "."],
+      ["period", "."],
+      ["open parenthesis", "("],
+      ["close parenthesis", ")"],
+      ["open quote", "“"],
+      ["close quote", "”"],
+      ["hyphen", "-"],
+      ["dash", "-"],
+    ],
+  },
+  es: {
+    paragraph: ["nuevo párrafo", "punto y aparte"],
+    line: ["nueva línea"],
+    punctuation: [
+      ["punto y coma", ";"],
+      ["signo de interrogación", "?"],
+      ["signo de exclamación", "!"],
+      ["puntos suspensivos", "…"],
+      ["dos puntos", ":"],
+      ["coma", ","],
+      ["punto", "."],
+      ["abrir paréntesis", "("],
+      ["cerrar paréntesis", ")"],
+      ["abrir comillas", "«"],
+      ["cerrar comillas", "»"],
+      ["guion", "-"],
+    ],
+  },
+  fr: {
+    paragraph: ["nouveau paragraphe"],
+    line: ["à la ligne", "nouvelle ligne"],
+    punctuation: [
+      ["point-virgule", ";"],
+      ["point virgule", ";"],
+      ["point d'interrogation", "?"],
+      ["point d'exclamation", "!"],
+      ["points de suspension", "…"],
+      ["deux-points", ":"],
+      ["deux points", ":"],
+      ["virgule", ","],
+      ["point", "."],
+      ["ouvrir la parenthèse", "("],
+      ["fermer la parenthèse", ")"],
+      ["ouvrir les guillemets", "«"],
+      ["fermer les guillemets", "»"],
+      ["tiret", "-"],
+    ],
+  },
+  de: {
+    paragraph: ["neuer Absatz"],
+    line: ["neue Zeile"],
+    punctuation: [
+      ["Semikolon", ";"],
+      ["Fragezeichen", "?"],
+      ["Ausrufezeichen", "!"],
+      ["Auslassungspunkte", "…"],
+      ["Doppelpunkt", ":"],
+      ["Komma", ","],
+      ["Punkt", "."],
+      ["Klammer auf", "("],
+      ["Klammer zu", ")"],
+      ["Anführungszeichen unten", "„"],
+      ["Anführungszeichen oben", "“"],
+      ["Bindestrich", "-"],
+    ],
+  },
+  pt: {
+    paragraph: ["novo parágrafo"],
+    line: ["nova linha"],
+    punctuation: [
+      ["ponto e vírgula", ";"],
+      ["ponto de interrogação", "?"],
+      ["ponto de exclamação", "!"],
+      ["reticências", "…"],
+      ["dois pontos", ":"],
+      ["vírgula", ","],
+      ["ponto final", "."],
+      ["ponto", "."],
+      ["abre parênteses", "("],
+      ["fecha parênteses", ")"],
+      ["abre aspas", "“"],
+      ["fecha aspas", "”"],
+      ["hífen", "-"],
+    ],
+  },
+}
+
+const escape = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+/** una parola intera anche con le lettere accentate */
+const word = (phrase: string) =>
+  `(?<![\\p{L}])${escape(phrase).replace(/ /g, "\\s+")}(?![\\p{L}])`
 
 type Piece = { text: string } | { command: "paragraph" | "line" }
 
 /** Trasforma una frase dettata in testo e comandi */
-function parseDictation(raw: string): Piece[] {
+function parseDictation(raw: string, language: string): Piece[] {
+  const vocabulary = VOCABULARY[language.slice(0, 2)] ?? VOCABULARY.en!
   const out: Piece[] = []
-  const parts = raw.split(/\b(nuovo paragrafo|a capo|nuova riga)\b/i)
-  for (const part of parts) {
-    const lower = part.trim().toLowerCase()
-    if (lower === "nuovo paragrafo") {
+  const commands = [...vocabulary.paragraph, ...vocabulary.line]
+  const splitter = new RegExp(`(${commands.map(word).join("|")})`, "giu")
+  for (const part of raw.split(splitter)) {
+    const lower = part.trim().toLocaleLowerCase()
+    if (vocabulary.paragraph.some((c) => c.toLocaleLowerCase() === lower)) {
       out.push({ command: "paragraph" })
       continue
     }
-    if (lower === "a capo" || lower === "nuova riga") {
+    if (vocabulary.line.some((c) => c.toLocaleLowerCase() === lower)) {
       out.push({ command: "line" })
       continue
     }
     let text = part
-    for (const [re, symbol] of PUNCTUATION) text = text.replace(re, symbol)
+    for (const [phrase, symbol] of vocabulary.punctuation) {
+      text = text.replace(new RegExp(word(phrase), "giu"), symbol)
+    }
     text = text
       // niente spazio prima della punteggiatura e dopo le aperture
-      .replace(/\s+([,.;:!?…)»])/g, "$1")
-      .replace(/([(«])\s+/g, "$1")
+      .replace(/\s+([,.;:!?…)»”])/g, "$1")
+      .replace(/([(«“„])\s+/g, "$1")
       .replace(/\s{2,}/g, " ")
       .trim()
     if (text) out.push({ text })
@@ -105,14 +226,19 @@ function parseDictation(raw: string): Piece[] {
 }
 
 const MESSAGES: Record<string, string> = {
-  "not-allowed":
-    "Il browser non ha il permesso di usare il microfono: consentilo dall'icona accanto all'indirizzo della pagina.",
-  "service-not-allowed":
-    "Il browser non permette la dettatura su questa pagina.",
-  "audio-capture": "Nessun microfono trovato.",
-  network:
-    "La dettatura del browser ha bisogno di internet su questo dispositivo.",
-  "language-not-supported": "L'italiano non è disponibile per la dettatura.",
+  "not-allowed": N_(
+    "Il browser non ha il permesso di usare il microfono: consentilo dall'icona accanto all'indirizzo della pagina."
+  ),
+  "service-not-allowed": N_(
+    "Il browser non permette la dettatura su questa pagina."
+  ),
+  "audio-capture": N_("Nessun microfono trovato."),
+  network: N_(
+    "La dettatura del browser ha bisogno di internet su questo dispositivo."
+  ),
+  "language-not-supported": N_(
+    "La lingua del documento non è disponibile per la dettatura."
+  ),
 }
 
 /**
@@ -126,8 +252,11 @@ const MESSAGES: Record<string, string> = {
 export function useDictation(
   editor: Editor | null,
   onError?: (message: string) => void,
-  onInfo?: (message: string) => void
+  onInfo?: (message: string) => void,
+  /** la lingua del documento, «it-IT», «en-US»… */
+  language = "it-IT"
 ): Dictation {
+  const t = useT()
   const supported = React.useSyncExternalStore(
     subscribeNever,
     () => recognitionClass() !== null,
@@ -152,7 +281,7 @@ export function useDictation(
   const insert = React.useCallback(
     (transcript: string) => {
       if (!editor || editor.isDestroyed) return
-      for (const piece of parseDictation(transcript)) {
+      for (const piece of parseDictation(transcript, language)) {
         if ("command" in piece) {
           const chain = editor.chain().focus()
           if (piece.command === "paragraph") chain.splitBlock().run()
@@ -179,7 +308,7 @@ export function useDictation(
           .run()
       }
     },
-    [editor]
+    [editor, language]
   )
 
   const toggle = React.useCallback(() => {
@@ -195,7 +324,7 @@ export function useDictation(
 
     const begin = (processLocally: boolean) => {
       const r = new Ctor()
-      r.lang = "it-IT"
+      r.lang = language
       r.continuous = true
       r.interimResults = true
       if (processLocally && "processLocally" in r) r.processLocally = true
@@ -212,7 +341,9 @@ export function useDictation(
       r.onerror = (e) => {
         if (e.error === "aborted" || e.error === "no-speech") return
         wanted.current = false
-        onError?.(MESSAGES[e.error] ?? "Dettatura interrotta.")
+        onError?.(
+          MESSAGES[e.error] ? t(MESSAGES[e.error]!) : t("Dettatura interrotta.")
+        )
       }
       r.onend = () => {
         setInterim("")
@@ -235,21 +366,23 @@ export function useDictation(
         setListening(true)
       } catch {
         wanted.current = false
-        onError?.("La dettatura non è partita: riprova.")
+        onError?.(t("La dettatura non è partita: riprova."))
       }
     }
 
     // sul dispositivo quando c'è; se si può scaricare lo si fa per la
     // prossima volta e intanto si usa quello del browser
     if (typeof Ctor.available === "function") {
-      Ctor.available({ langs: ["it-IT"], processLocally: true })
+      Ctor.available({ langs: [language], processLocally: true })
         .then((status) => {
           if (status === "available") return begin(true)
           if (status === "downloadable" && typeof Ctor.install === "function") {
             onInfo?.(
-              "Scarico l'italiano per dettare anche senza internet: servirà dalla prossima volta."
+              t(
+                "Scarico la lingua del documento per dettare anche senza internet: servirà dalla prossima volta."
+              )
             )
-            Ctor.install({ langs: ["it-IT"], processLocally: true }).catch(
+            Ctor.install({ langs: [language], processLocally: true }).catch(
               () => {}
             )
           }
@@ -259,7 +392,7 @@ export function useDictation(
       return
     }
     begin(false)
-  }, [editor, listening, insert, onError, onInfo])
+  }, [editor, listening, insert, onError, onInfo, t, language])
 
   return { supported, listening, interim, local, toggle }
 }

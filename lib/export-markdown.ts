@@ -6,6 +6,7 @@ import {
   sortSources,
 } from "./citations"
 import { parseChartAttr } from "./chart"
+import { tr } from "@/lib/i18n/client"
 import type { CitationStyle, DocSource } from "./types"
 
 /**
@@ -254,13 +255,19 @@ function block(node: PMNode, ctx: Ctx, indent: string): string | null {
     }
     case "model3d": {
       const alt = String(
-        node.attrs.alt || node.attrs.name || "Modello 3D"
+        node.attrs.alt || node.attrs.name || tr("Modello 3D")
       ).replace(/[[\]]/g, "")
       const poster = String(node.attrs.poster ?? "")
-      return prefix(poster ? `![${alt}](${poster})` : `_Modello 3D: ${alt}_`)
+      return prefix(
+        poster
+          ? `![${alt}](${poster})`
+          : `_${tr("Modello 3D: {name}", { name: alt })}_`
+      )
     }
     case "boardEmbed":
-      return prefix(`_Board: ${String(node.attrs.caption || "incorporata")}_`)
+      return prefix(
+        `_${tr("Board: {caption}", { caption: String(node.attrs.caption || tr("incorporata||board nel documento")) })}_`
+      )
     case "chart": {
       const spec = parseChartAttr(node.attrs.spec)
       const head = `| ${["", ...spec.series.map((s) => escapeCell(s.name))].join(" | ")} |`
@@ -319,7 +326,7 @@ export function docToMarkdown(
   const parts: string[] = []
   doc.forEach((node) => {
     if (node.type.name === "toc") {
-      const lines: string[] = ["**Sommario**", ""]
+      const lines: string[] = [`**${tr("Sommario")}**`, ""]
       let top = 3
       doc.descendants((n) => {
         if (n.type.name === "heading")

@@ -20,6 +20,7 @@ import { getPagination, pageAt } from "@/lib/pagination"
 import { formatPageNumber } from "@/lib/header-footer"
 import { cn } from "@/lib/utils"
 
+import { useT } from "@/lib/i18n/client"
 /**
  * Sommario, indice delle figure, indice analitico e delle autorità: elenchi
  * calcolati dal documento a ogni modifica, con i numeri di pagina quando il
@@ -56,6 +57,7 @@ function RowButton({
   row: Row
   leaders: boolean
 }) {
+  const t = useT()
   return (
     <li data-level={row.level}>
       <button
@@ -63,7 +65,7 @@ function RowButton({
         onMouseDown={(e) => e.preventDefault()}
         onClick={() => go(editor, row.pos)}
       >
-        <span className="doc-toc-text">{row.text || "Senza titolo"}</span>
+        <span className="doc-toc-text">{row.text || t("Senza titolo")}</span>
         {leaders && row.page ? (
           <>
             <span aria-hidden className="doc-toc-leader" />
@@ -76,6 +78,7 @@ function RowButton({
 }
 
 function TocView({ editor, node, selected }: NodeViewProps) {
+  const t = useT()
   const variant = String(node.attrs.variant ?? "card")
   const levels = Number(node.attrs.levels ?? 3)
   const rows =
@@ -107,7 +110,7 @@ function TocView({ editor, node, selected }: NodeViewProps) {
       data-kind="toc"
       contentEditable={false}
     >
-      <p className="doc-toc-title">Sommario</p>
+      <p className="doc-toc-title">{t("Sommario")}</p>
       {rows.length ? (
         <ol>
           {rows.map((row, i) => (
@@ -121,7 +124,7 @@ function TocView({ editor, node, selected }: NodeViewProps) {
         </ol>
       ) : (
         <p className="doc-toc-empty">
-          Aggiungi dei titoli (Titolo 1, 2 o 3) e compariranno qui.
+          {t("Aggiungi dei titoli (Titolo 1, 2 o 3) e compariranno qui.")}
         </p>
       )}
     </NodeViewWrapper>
@@ -129,7 +132,8 @@ function TocView({ editor, node, selected }: NodeViewProps) {
 }
 
 function FigureIndexView({ editor, node, selected }: NodeViewProps) {
-  const label = String(node.attrs.label ?? "Figura")
+  const t = useT()
+  const label = String(node.attrs.label ?? t("Figura"))
   const rows =
     useEditorState({
       editor,
@@ -143,11 +147,13 @@ function FigureIndexView({ editor, node, selected }: NodeViewProps) {
       equalityFn: (a, b) => JSON.stringify(a) === JSON.stringify(b),
     }) ?? []
   const title =
-    label === "Tabella"
-      ? "Indice delle tabelle"
-      : label === "Equazione"
-        ? "Indice delle equazioni"
-        : `Indice delle ${label === "Figura" ? "figure" : label.toLowerCase()}`
+    label === t("Tabella")
+      ? t("Indice delle tabelle")
+      : label === t("Equazione")
+        ? t("Indice delle equazioni")
+        : t("Indice delle {items}", {
+            items: label === "Figura" ? "figure" : label.toLowerCase(),
+          })
 
   return (
     <NodeViewWrapper
@@ -170,7 +176,12 @@ function FigureIndexView({ editor, node, selected }: NodeViewProps) {
         </ol>
       ) : (
         <p className="doc-toc-empty">
-          Nessuna didascalia «{label}»: aggiungila con Inserisci didascalia.
+          {t(
+            "Nessuna didascalia «{label}»: aggiungila con Inserisci didascalia.",
+            {
+              label,
+            }
+          )}
         </p>
       )}
     </NodeViewWrapper>
@@ -178,6 +189,7 @@ function FigureIndexView({ editor, node, selected }: NodeViewProps) {
 }
 
 function DocIndexView({ editor, node, selected }: NodeViewProps) {
+  const t = useT()
   const kind = (node.attrs.kind ?? "index") as IndexKind
   const columns = Number(node.attrs.columns ?? 2)
   const items =
@@ -207,7 +219,7 @@ function DocIndexView({ editor, node, selected }: NodeViewProps) {
   for (const item of items) {
     const key =
       kind === "authority"
-        ? item.category || "Altre fonti"
+        ? item.category || t("Altre fonti")
         : item.entry.charAt(0).toLocaleUpperCase("it")
     groups.set(key, [...(groups.get(key) ?? []), item])
   }
@@ -221,7 +233,9 @@ function DocIndexView({ editor, node, selected }: NodeViewProps) {
       style={{ "--index-columns": columns } as React.CSSProperties}
     >
       <p className="doc-toc-title">
-        {kind === "authority" ? "Indice delle autorità" : "Indice analitico"}
+        {kind === "authority"
+          ? t("Indice delle autorità")
+          : t("Indice analitico")}
       </p>
       {items.length ? (
         <div className="doc-index-body">
@@ -263,8 +277,8 @@ function DocIndexView({ editor, node, selected }: NodeViewProps) {
       ) : (
         <p className="doc-toc-empty">
           {kind === "authority"
-            ? "Segna le citazioni con Riferimenti › Segna citazione."
-            : "Segna le voci con Riferimenti › Segna voce."}
+            ? t("Segna le citazioni con Riferimenti › Segna citazione.")
+            : t("Segna le voci con Riferimenti › Segna voce.")}
         </p>
       )}
     </NodeViewWrapper>

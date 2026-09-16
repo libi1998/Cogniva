@@ -11,7 +11,7 @@ import {
 } from "./citations"
 import { fontMap } from "./fonts"
 import { getAuthor } from "./author"
-import { bandParts } from "./header-footer"
+import { bandParts, normalizeBand } from "./header-footer"
 import { fieldText } from "./doc-fields"
 import { renderWatermark } from "./watermark-image"
 import { captionEntries, indexItems } from "./doc-references"
@@ -23,6 +23,7 @@ import {
   type StyleProps,
 } from "./doc-styles"
 import { docAccent } from "./palette"
+import { numberingWords } from "./doc-typography"
 import {
   PAGE_FORMATS,
   type DocComment,
@@ -30,6 +31,7 @@ import {
   type DocTheme,
 } from "./types"
 
+import { tr, currentRegion } from "@/lib/i18n/client"
 /**
  * Esportazione in Word (.docx), vera e modificabile: titoli come stili di
  * Word, elenchi numerati, tabelle con colori e bordi, note a piè di pagina e
@@ -101,7 +103,7 @@ function loadImage(src: string) {
     const img = new Image()
     img.crossOrigin = "anonymous"
     img.onload = () => resolve(img)
-    img.onerror = () => reject(new Error("Immagine non disponibile"))
+    img.onerror = () => reject(new Error(tr("Immagine non disponibile")))
     img.src = src
   })
 }
@@ -110,7 +112,7 @@ async function canvasToPng(canvas: HTMLCanvasElement): Promise<Uint8Array> {
   const blob = await new Promise<Blob | null>((r) =>
     canvas.toBlob(r, "image/png")
   )
-  if (!blob) throw new Error("Conversione non riuscita")
+  if (!blob) throw new Error(tr("Conversione non riuscita"))
   return new Uint8Array(await blob.arrayBuffer())
 }
 
@@ -160,7 +162,7 @@ async function pictureFromSvg(svg: SVGSVGElement): Promise<Picture> {
     canvas.width = Math.round(w * scale)
     canvas.height = Math.round(h * scale)
     const ctx = canvas.getContext("2d")
-    if (!ctx) throw new Error("Canvas non disponibile")
+    if (!ctx) throw new Error(tr("Canvas non disponibile"))
     ctx.fillStyle = "#ffffff"
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
@@ -403,7 +405,7 @@ export async function buildDocx({
               ...base,
               text: node.text ?? "",
               id: revisionId++,
-              author: String(tracked.attrs.author || "Autore"),
+              author: String(tracked.attrs.author || tr("Autore")),
               date: new Date(
                 Number(tracked.attrs.date) || Date.now()
               ).toISOString(),
@@ -474,7 +476,7 @@ export async function buildDocx({
                 source,
                 String(node.attrs.pages ?? "")
               )
-            : "(fonte mancante)"
+            : tr("(fonte mancante)")
           push(new d.TextRun({ ...base, text }))
           break
         }
@@ -592,7 +594,7 @@ export async function buildDocx({
       } else if (node.type.name === "model3d") {
         // del modello 3D va la vista salvata, come fa Word con la sua immagine
         const poster = String(a.poster ?? "")
-        if (!poster) throw new Error("modello senza anteprima")
+        if (!poster) throw new Error(tr("modello senza anteprima"))
         pic = await pictureFromSrc(poster)
       } else {
         const el = view.nodeDOM(pos)
@@ -612,7 +614,7 @@ export async function buildDocx({
         new d.Paragraph({
           children: [
             new d.TextRun({
-              text: "[immagine non disponibile]",
+              text: tr("[immagine non disponibile]"),
               italics: true,
             }),
           ],
@@ -1171,7 +1173,7 @@ export async function buildDocx({
         return [
           new d.Paragraph({
             children: [
-              new d.TextRun({ text: "▶ Video: " }),
+              new d.TextRun({ text: `${tr("▶ Video:")} ` }),
               new d.ExternalHyperlink({
                 link: src,
                 children: [new d.TextRun({ text: src, style: "Hyperlink" })],
@@ -1202,7 +1204,7 @@ export async function buildDocx({
         const out: Block[] = [
           new d.Paragraph({
             heading: d.HeadingLevel.HEADING_2,
-            text: "Sommario",
+            text: tr("Sommario"),
           }),
         ]
         doc.descendants((n) => {
@@ -1220,16 +1222,16 @@ export async function buildDocx({
         return out
       }
       case "figureIndex": {
-        const label = String(node.attrs.label ?? "Figura")
+        const label = String(node.attrs.label ?? tr("Figura"))
         return [
           new d.Paragraph({
             heading: d.HeadingLevel.HEADING_2,
             text:
-              label === "Tabella"
-                ? "Indice delle tabelle"
-                : label === "Equazione"
-                  ? "Indice delle equazioni"
-                  : "Indice delle figure",
+              label === tr("Tabella")
+                ? tr("Indice delle tabelle")
+                : label === tr("Equazione")
+                  ? tr("Indice delle equazioni")
+                  : tr("Indice delle figure"),
           }),
           ...captionEntries(editor.state, label).map(
             (entry) =>
@@ -1247,8 +1249,8 @@ export async function buildDocx({
             heading: d.HeadingLevel.HEADING_2,
             text:
               kind === "authority"
-                ? "Indice delle autorità"
-                : "Indice analitico",
+                ? tr("Indice delle autorità")
+                : tr("Indice analitico"),
           }),
           ...indexItems(doc, kind).flatMap((item) => [
             new d.Paragraph({
@@ -1291,7 +1293,7 @@ export async function buildDocx({
                 new d.Paragraph({
                   children: [
                     new d.TextRun({
-                      text: "Nessuna fonte citata.",
+                      text: tr("Nessuna fonte citata."),
                       italics: true,
                     }),
                   ],
@@ -1312,7 +1314,7 @@ export async function buildDocx({
 
   const small = { size: Math.max(16, baseSize - 6), color: "71717A" }
   const author = getAuthor()
-  const today = new Date().toLocaleDateString("it-IT", {
+  const today = new Date().toLocaleDateString(currentRegion(), {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -1338,7 +1340,9 @@ export async function buildDocx({
       )
   }
   const band = (where: "header" | "footer") => {
-    const parts = bandParts(where === "header" ? theme.header : theme.footer)
+    const parts = bandParts(
+      normalizeBand(where === "header" ? theme.header : theme.footer)
+    )
     const position = theme.pageNumbers ?? "none"
     const [row, col] = position.split("-")
     if (
@@ -1403,9 +1407,9 @@ export async function buildDocx({
                 wrap: { type: d.TextWrappingType.NONE },
               },
               altText: {
-                name: "Filigrana",
-                title: "Filigrana",
-                description: theme.watermark?.text || "Filigrana",
+                name: tr("Filigrana"),
+                title: tr("Filigrana"),
+                description: theme.watermark?.text || tr("Filigrana"),
               },
             }),
           ],
@@ -1468,6 +1472,7 @@ export async function buildDocx({
     checks: ["✓", "◆", "•"],
   }
   type LevelDef = [(typeof d.LevelFormat)[keyof typeof d.LevelFormat], string]
+  const words = numberingWords(theme.language || "it-IT")
   const ORDERED_LEVELS: Record<string, LevelDef[]> = {
     std: [
       [d.LevelFormat.DECIMAL, "%1."],
@@ -1485,12 +1490,12 @@ export async function buildDocx({
       [d.LevelFormat.DECIMAL, "%3."],
     ],
     article: [
-      [d.LevelFormat.DECIMAL, "Articolo %1"],
-      [d.LevelFormat.DECIMAL_ZERO, "Sezione %1.%2"],
+      [d.LevelFormat.DECIMAL, `${words.article} %1`],
+      [d.LevelFormat.DECIMAL_ZERO, `${words.section} %1.%2`],
       [d.LevelFormat.LOWER_LETTER, "(%3)"],
     ],
     chapter: [
-      [d.LevelFormat.DECIMAL, "Capitolo %1"],
+      [d.LevelFormat.DECIMAL, `${words.chapter} %1`],
       [d.LevelFormat.DECIMAL, "%1.%2"],
       [d.LevelFormat.LOWER_LETTER, "%3)"],
     ],
@@ -1551,7 +1556,7 @@ export async function buildDocx({
   const document = new d.Document({
     title,
     creator: "Cogniva",
-    description: "Esportato da Cogniva",
+    description: tr("Esportato da Cogniva"),
     styles: {
       default: {
         document: {

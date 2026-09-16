@@ -140,6 +140,7 @@ import {
 import { cn } from "@/lib/utils"
 import type { RibbonCtx } from "./ribbon/shared"
 
+import { useT, tr, useRegion } from "@/lib/i18n/client"
 /** Lo stacco fra un foglio e l'altro a schermo; in stampa vale zero */
 const PAGE_GAP = 28
 
@@ -154,6 +155,8 @@ const WIDTHS: Record<string, number> = {
 const COMPACT_MARGINS: DocMargins = { top: 28, right: 20, bottom: 48, left: 20 }
 
 export function DocEditor({ fileId }: { fileId: string }) {
+  const region = useRegion()
+  const t = useT()
   // selettori stretti: salvare il contenuto non deve ridisegnare barra e
   // pannello, che dipendono solo dal titolo e dal tema
   const title = useStore((s) => {
@@ -242,7 +245,9 @@ export function DocEditor({ fileId }: { fileId: string }) {
             attrs: {
               boardId: null,
               snapshot: JSON.stringify(clip),
-              caption: clip.source ? `Da “${clip.source}”` : "",
+              caption: clip.source
+                ? t("Da “{source}”", { source: clip.source })
+                : "",
               height: 320,
             },
           })
@@ -417,7 +422,8 @@ export function DocEditor({ fileId }: { fileId: string }) {
   const dictation = useDictation(
     editor,
     (message) => toast.error(message),
-    (message) => toast.info(message)
+    (message) => toast.info(message),
+    theme?.language || region
   )
 
   // rinominare dalla barra in alto riscrive il titolo dentro al documento
@@ -675,17 +681,17 @@ export function DocEditor({ fileId }: { fileId: string }) {
   useCommandSource("doc", () => {
     if (!editor) return []
     const current = getWorkspace().files.find((f) => f.id === fileId)
-    const t = current?.kind === "doc" ? current.data.theme : null
+    const docTheme = current?.kind === "doc" ? current.data.theme : null
     const body = () => atBody(editor, st)
-    const group = "Documento"
-    const insert = "Inserisci"
-    const view = "Visualizza"
-    const exportGroup = "Esporta"
+    const group = t("Documento")
+    const insert = t("Inserisci")
+    const view = t("Visualizza")
+    const exportGroup = t("Esporta")
     return [
       {
         id: "doc.find",
         group,
-        label: "Trova",
+        label: t("Trova"),
         shortcut: "⌘F",
         icon: <Search />,
         run: () => setFind("find"),
@@ -693,40 +699,40 @@ export function DocEditor({ fileId }: { fileId: string }) {
       {
         id: "doc.replace",
         group,
-        label: "Trova e sostituisci",
+        label: t("Trova e sostituisci"),
         icon: <Replace />,
-        keywords: ["cambia"],
+        keywords: [t("cambia")],
         run: () => setFind("replace"),
       },
       {
         id: "doc.panel",
         group,
         label: panel
-          ? "Nascondi il pannello Stile"
-          : "Mostra il pannello Stile",
+          ? t("Nascondi il pannello Stile")
+          : t("Mostra il pannello Stile"),
         icon: <PanelRight />,
         run: () => setPanel(!panel),
       },
       {
         id: "doc.comment",
         group,
-        label: "Nuovo commento",
+        label: t("Nuovo commento"),
         icon: <MessageSquarePlus />,
-        keywords: ["revisione", "nota"],
+        keywords: [t("revisione"), t("nota")],
         run: () => comments.add(),
       },
       {
         id: "doc.sources",
         group,
-        label: "Gestisci fonti",
+        label: t("Gestisci fonti"),
         icon: <BookMarked />,
-        keywords: ["bibliografia", "citazione"],
+        keywords: [t("bibliografia"), t("citazione")],
         run: () => setSourcesDialog({ id: null, cite: false }),
       },
       {
         id: "doc.undo",
         group,
-        label: "Annulla",
+        label: t("Annulla||annulla l'ultima modifica"),
         shortcut: "⌘Z",
         icon: <Undo2 />,
         run: () => editor.chain().focus().undo().run(),
@@ -734,7 +740,7 @@ export function DocEditor({ fileId }: { fileId: string }) {
       {
         id: "doc.redo",
         group,
-        label: "Ripristina",
+        label: t("Ripristina"),
         shortcut: "⇧⌘Z",
         icon: <Redo2 />,
         run: () => editor.chain().focus().redo().run(),
@@ -742,7 +748,7 @@ export function DocEditor({ fileId }: { fileId: string }) {
       {
         id: "doc.insert.table",
         group: insert,
-        label: "Tabella 3 × 3",
+        label: t("Tabella 3 × 3"),
         icon: <Table />,
         run: () =>
           body().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run(),
@@ -750,30 +756,30 @@ export function DocEditor({ fileId }: { fileId: string }) {
       {
         id: "doc.insert.image",
         group: insert,
-        label: "Immagine dal computer…",
+        label: t("Immagine dal computer…"),
         icon: <ImageIcon />,
         run: () => fileInput.current?.click(),
       },
       {
         id: "doc.insert.chart",
         group: insert,
-        label: "Grafico a colonne",
+        label: t("Grafico a colonne"),
         icon: <ChartColumn />,
-        keywords: ["istogramma", "dati"],
+        keywords: [t("istogramma"), t("dati")],
         run: () => body().insertChart("column").run(),
       },
       {
         id: "doc.insert.math",
         group: insert,
-        label: "Equazione",
+        label: t("Equazione"),
         icon: <Sigma />,
-        keywords: ["formula", "latex", "matematica"],
+        keywords: [t("formula"), t("latex"), t("matematica")],
         run: () => body().insertMath("", true).run(),
       },
       {
         id: "doc.insert.footnote",
         group: insert,
-        label: "Nota a piè di pagina",
+        label: t("Nota a piè di pagina"),
         shortcut: "⌥⌘F",
         icon: <Superscript />,
         run: () => editor.chain().focus().insertFootnote("", "footnote").run(),
@@ -781,62 +787,66 @@ export function DocEditor({ fileId }: { fileId: string }) {
       {
         id: "doc.insert.toc",
         group: insert,
-        label: "Sommario",
+        label: t("Sommario"),
         icon: <ListTree />,
-        keywords: ["indice"],
+        keywords: [t("indice")],
         run: () => body().insertContent({ type: "toc" }).run(),
       },
       {
         id: "doc.insert.pagebreak",
         group: insert,
-        label: "Interruzione di pagina",
+        label: t("Interruzione di pagina"),
         icon: <SeparatorHorizontal />,
         run: () => body().setPageBreak().run(),
       },
       {
         id: "doc.insert.rule",
         group: insert,
-        label: "Linea orizzontale",
+        label: t("Linea orizzontale"),
         icon: <Minus />,
         run: () => body().setHorizontalRule().run(),
       },
       {
         id: "doc.view.ruler",
         group: view,
-        label: t?.ruler ? "Nascondi il righello" : "Mostra il righello",
+        label: docTheme?.ruler
+          ? t("Nascondi il righello")
+          : t("Mostra il righello"),
         icon: <Ruler2 />,
-        run: () => setTheme({ ruler: !t?.ruler }),
+        run: () => setTheme({ ruler: !docTheme?.ruler }),
       },
       {
         id: "doc.view.grid",
         group: view,
-        label: t?.grid ? "Nascondi la griglia" : "Mostra la griglia",
+        label: docTheme?.grid
+          ? t("Nascondi la griglia")
+          : t("Mostra la griglia"),
         icon: <Grid3x3 />,
-        run: () => setTheme({ grid: !t?.grid }),
+        run: () => setTheme({ grid: !docTheme?.grid }),
       },
       {
         id: "doc.view.marks",
         group: view,
-        label: t?.marks
-          ? "Nascondi i segni di formattazione"
-          : "Mostra i segni di formattazione",
+        label: docTheme?.marks
+          ? t("Nascondi i segni di formattazione")
+          : t("Mostra i segni di formattazione"),
         icon: <Pilcrow />,
-        run: () => setTheme({ marks: !t?.marks }),
+        run: () => setTheme({ marks: !docTheme?.marks }),
       },
       {
         id: "doc.view.outline",
         group: view,
         label: outline
-          ? "Chiudi il riquadro di spostamento"
-          : "Riquadro di spostamento",
+          ? t("Chiudi il riquadro di spostamento")
+          : t("Riquadro di spostamento"),
         icon: <ListTree />,
-        keywords: ["struttura", "titoli"],
+        keywords: [t("struttura"), t("titoli")],
         run: () => setOutline(!outline),
       },
       {
         id: "doc.view.zoom100",
         group: view,
-        label: "Zoom al 100%",
+        label: t("Zoom al 100%"),
         shortcut: "⌘0",
         icon: <ZoomIn />,
         run: () => setZoom(1),
@@ -844,43 +854,43 @@ export function DocEditor({ fileId }: { fileId: string }) {
       {
         id: "doc.export.pdf",
         group: exportGroup,
-        label: "Esporta in PDF",
+        label: t("Esporta in PDF"),
         icon: <FileText />,
         run: () => void doExport("pdf"),
       },
       {
         id: "doc.export.docx",
         group: exportGroup,
-        label: "Esporta in Word (.docx)",
+        label: t("Esporta in Word (.docx)"),
         icon: <FileType2 />,
-        keywords: ["word", "office"],
+        keywords: [t("word"), t("office")],
         run: () => void exportFile("docx"),
       },
       {
         id: "doc.export.md",
         group: exportGroup,
-        label: "Esporta in Markdown (.md)",
+        label: t("Esporta in Markdown (.md)"),
         icon: <FileCode2 />,
         run: () => void exportFile("md"),
       },
       {
         id: "doc.export.png",
         group: exportGroup,
-        label: "Esporta in PNG",
+        label: t("Esporta in PNG"),
         icon: <FileImage />,
         run: () => void doExport("png"),
       },
       {
         id: "doc.export.svg",
         group: exportGroup,
-        label: "Esporta in SVG",
+        label: t("Esporta in SVG"),
         icon: <FileImage />,
         run: () => void doExport("svg"),
       },
       {
         id: "doc.print",
         group: exportGroup,
-        label: "Stampa…",
+        label: t("Stampa…"),
         shortcut: "⌘P",
         icon: <Printer />,
         run: () => void doExport("print"),
@@ -1085,7 +1095,7 @@ export function DocEditor({ fileId }: { fileId: string }) {
                         variant="ghost"
                         size="icon"
                         className="size-8"
-                        title="Esporta"
+                        title={t("Esporta")}
                         disabled={busy}
                       />
                     }
@@ -1094,7 +1104,9 @@ export function DocEditor({ fileId }: { fileId: string }) {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-52">
                     <DropdownMenuLabel>
-                      Esporta · {PAGE_FORMATS[theme.format].label}
+                      {t("Esporta · {format}", {
+                        format: PAGE_FORMATS[theme.format].label,
+                      })}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => doExport("pdf")}>
@@ -1102,7 +1114,7 @@ export function DocEditor({ fileId }: { fileId: string }) {
                       <div className="flex flex-col">
                         <span>PDF</span>
                         <span className="text-[11px] text-muted-foreground">
-                          vettoriale, dalla stampa
+                          {t("vettoriale, dalla stampa")}
                         </span>
                       </div>
                     </DropdownMenuItem>
@@ -1116,18 +1128,18 @@ export function DocEditor({ fileId }: { fileId: string }) {
                     <DropdownMenuItem onClick={() => exportFile("docx")}>
                       <FileType2 className="size-4" />
                       <div className="flex flex-col">
-                        <span>Word (.docx)</span>
+                        <span>{t("Word (.docx)")}</span>
                         <span className="text-[11px] text-muted-foreground">
-                          modificabile, con note e commenti
+                          {t("modificabile, con note e commenti")}
                         </span>
                       </div>
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => exportFile("md")}>
-                      <FileCode2 className="size-4" /> Markdown (.md)
+                      <FileCode2 className="size-4" /> {t("Markdown (.md)")}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={() => doExport("print")}>
-                      <Printer className="size-4" /> Stampa…
+                      <Printer className="size-4" /> {t("Stampa…")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -1138,12 +1150,12 @@ export function DocEditor({ fileId }: { fileId: string }) {
                   variant={panel ? "secondary" : "ghost"}
                   size="sm"
                   className="h-8 gap-1.5 px-2 text-xs sm:px-2.5"
-                  aria-label="Pannello Stile"
+                  aria-label={t("Pannello Stile")}
                   aria-pressed={panel}
                   onClick={() => setPanel(!panel)}
                 >
                   <PanelRight className="size-4" />
-                  <span className="hidden sm:inline">Stile</span>
+                  <span className="hidden sm:inline">{t("Stile")}</span>
                 </Button>
               </>
             }
@@ -1257,7 +1269,7 @@ export function DocEditor({ fileId }: { fileId: string }) {
                         <div
                           id="doc-sheet"
                           data-doc-styles={fileId}
-                          lang={theme.language || "it-IT"}
+                          lang={theme.language || region}
                           data-outline-level={
                             view === "outline" && outlineLevel
                               ? outlineLevel
@@ -1417,12 +1429,12 @@ export function DocEditor({ fileId }: { fileId: string }) {
                 className="flex min-w-0 items-center gap-1.5 text-rose-500"
                 title={
                   dictation.local
-                    ? "Riconoscimento sul dispositivo, senza internet"
-                    : "Riconoscimento vocale del browser"
+                    ? t("Riconoscimento sul dispositivo, senza internet")
+                    : t("Riconoscimento vocale del browser")
                 }
               >
                 <span className="size-1.5 shrink-0 animate-pulse rounded-full bg-rose-500" />
-                <span className="shrink-0">In ascolto</span>
+                <span className="shrink-0">{t("In ascolto")}</span>
                 {dictation.interim ? (
                   <span className="truncate text-muted-foreground italic">
                     «{dictation.interim}»
@@ -1438,10 +1450,10 @@ export function DocEditor({ fileId }: { fileId: string }) {
               {page
                 ? `${PAGE_FORMATS[theme.format].label} · ${
                     theme.orientation === "landscape"
-                      ? "orizzontale"
-                      : "verticale"
+                      ? t("orizzontale")
+                      : t("verticale")
                   }`
-                : "Formato libero"}
+                : t("Formato libero")}
             </span>
             <ZoomControl
               zoom={zoom}
@@ -1456,17 +1468,21 @@ export function DocEditor({ fileId }: { fileId: string }) {
           sidePanel ? (
             <aside
               aria-label={
-                stylesPane ? "Stili" : taskPane ? "Riquadro attività" : "Stile"
+                stylesPane
+                  ? t("Stili")
+                  : taskPane
+                    ? t("Riquadro attività")
+                    : t("Stile")
               }
               className="fixed inset-x-0 bottom-0 z-40 flex h-[min(70dvh,560px)] flex-col overflow-hidden rounded-t-2xl border-t border-border bg-card pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_40px_-12px_rgba(0,0,0,0.35)]"
             >
               {stylesPane || taskPane ? null : (
                 <div className="flex h-11 shrink-0 items-center justify-between border-b border-border px-3">
-                  <span className="text-sm font-semibold">Stile</span>
+                  <span className="text-sm font-semibold">{t("Stile")}</span>
                   <button
                     type="button"
                     onClick={() => setPanel(false)}
-                    aria-label="Chiudi il pannello"
+                    aria-label={t("Chiudi il pannello")}
                     className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
                   >
                     <X className="size-4" />
@@ -1528,7 +1544,7 @@ export function DocEditor({ fileId }: { fileId: string }) {
         onClose={() => setMenu(null)}
         onInsertBoard={insertBoard}
         onComment={() => newComment.current()}
-        language={theme?.language ?? "it-IT"}
+        language={theme?.language || region}
         onThesaurus={(word) =>
           openTaskPane({ kind: "thesaurus", word, nonce: Date.now() })
         }
@@ -1588,7 +1604,9 @@ async function runDocExport({
   const id =
     format === "print" || format === "pdf"
       ? undefined
-      : toast.loading(`Esporto in ${format.toUpperCase()}…`)
+      : toast.loading(
+          tr("Esporto in {format}…", { format: format.toUpperCase() })
+        )
   // come in stampa: il foglio automatico si esporta chiaro
   flushSync(() => setForceLight(true))
   try {
@@ -1601,15 +1619,18 @@ async function runDocExport({
       paper: resolveColor(theme.paper, false, AUTO_PAPER),
     })
     if (format === "pdf") {
-      toast.success("PDF pronto", {
-        description: "Nella finestra di stampa scegli «Salva come PDF».",
+      toast.success(tr("PDF pronto"), {
+        description: tr("Nella finestra di stampa scegli «Salva come PDF»."),
       })
     } else if (id) {
-      toast.success(`Esportato in ${format.toUpperCase()}`, { id })
+      toast.success(
+        tr("Esportato in {format}", { format: format.toUpperCase() }),
+        { id }
+      )
     }
   } catch (err) {
     console.error(err)
-    toast.error("Esportazione non riuscita", {
+    toast.error(tr("Esportazione non riuscita"), {
       id,
       description: err instanceof Error ? err.message : undefined,
     })
@@ -1638,7 +1659,7 @@ async function runFileExport({
   setForceLight: (light: boolean) => void
 }) {
   const label = format === "docx" ? "Word" : "Markdown"
-  const id = toast.loading(`Esporto in ${label}…`)
+  const id = toast.loading(tr("Esporto in {label}…", { label }))
   setBusy(true)
   // grafici e formule si fotografano chiari, come in stampa
   flushSync(() => setForceLight(true))
@@ -1670,10 +1691,10 @@ async function runFileExport({
         `${name}.md`
       )
     }
-    toast.success(`Esportato in ${label}`, { id })
+    toast.success(tr("Esportato in {label}", { label }), { id })
   } catch (err) {
     console.error(err)
-    toast.error("Esportazione non riuscita", {
+    toast.error(tr("Esportazione non riuscita"), {
       id,
       description: err instanceof Error ? err.message : undefined,
     })
@@ -1744,14 +1765,17 @@ function CommentHighlights({ ctl }: { ctl: CommentsController }) {
 
 /** Parole e caratteri: cambiano a ogni tasto, quindi vivono per conto loro */
 function DocCounts({ editor }: { editor: Editor | null }) {
+  const t = useT()
   const { words, characters } = useDocCounts(editor)
   return (
     <>
       <span className="whitespace-nowrap">
-        {words} {words === 1 ? "parola" : "parole"}
+        {words === 1 ? t("1 parola") : t("{count} parole", { count: words })}
       </span>
       <span className="hidden whitespace-nowrap sm:inline">
-        {characters} caratteri
+        {characters === 1
+          ? t("1 carattere")
+          : t("{count} caratteri", { count: characters })}
       </span>
     </>
   )
@@ -1773,6 +1797,7 @@ function PageIndicator({
   step: number
   total: number
 }) {
+  const t = useT()
   const [current, setCurrent] = React.useState(1)
 
   React.useEffect(() => {
@@ -1805,7 +1830,10 @@ function PageIndicator({
 
   return (
     <span className="whitespace-nowrap">
-      Pagina {step ? Math.min(current, total) : 1} di {total}
+      {t("Pagina {page} di {total}", {
+        page: step ? Math.min(current, total) : 1,
+        total,
+      })}
     </span>
   )
 }
@@ -1823,6 +1851,7 @@ function ZoomControl({
   onZoom: (value: number) => void
   onFit: () => void
 }) {
+  const t = useT()
   const step = compact
     ? "flex size-7 items-center justify-center rounded transition-colors hover:bg-muted hover:text-foreground"
     : "flex size-5 items-center justify-center rounded transition-colors hover:bg-muted hover:text-foreground"
@@ -1830,8 +1859,8 @@ function ZoomControl({
     <div className="ml-auto flex shrink-0 items-center gap-1 lg:ml-0">
       <button
         type="button"
-        title="Riduci ⌘−"
-        aria-label="Riduci"
+        title={t("Riduci ⌘−")}
+        aria-label={t("Riduci")}
         onClick={() => onZoom(zoom - 0.1)}
         className={step}
       >
@@ -1844,15 +1873,15 @@ function ZoomControl({
           max={200}
           step={5}
           value={Math.round(zoom * 100)}
-          aria-label="Ingrandimento"
+          aria-label={t("Ingrandimento")}
           onChange={(e) => onZoom(Number(e.target.value) / 100)}
           className="doc-zoom-range h-1 w-20 cursor-pointer appearance-none rounded-full bg-border"
         />
       )}
       <button
         type="button"
-        title="Ingrandisci ⌘+"
-        aria-label="Ingrandisci"
+        title={t("Ingrandisci ⌘+")}
+        aria-label={t("Ingrandisci")}
         onClick={() => onZoom(zoom + 0.1)}
         className={step}
       >
@@ -1860,7 +1889,7 @@ function ZoomControl({
       </button>
       <button
         type="button"
-        title="Torna al 100% ⌘0"
+        title={t("Torna al 100% ⌘0")}
         onClick={() => onZoom(1)}
         className="w-10 rounded px-1 text-right tabular-nums transition-colors hover:bg-muted hover:text-foreground"
       >
@@ -1868,11 +1897,11 @@ function ZoomControl({
       </button>
       <button
         type="button"
-        title="Adatta alla larghezza"
+        title={t("Adatta alla larghezza")}
         onClick={onFit}
         className="hidden rounded px-1.5 transition-colors hover:bg-muted hover:text-foreground sm:inline"
       >
-        Adatta
+        {t("Adatta")}
       </button>
     </div>
   )

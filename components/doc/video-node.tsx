@@ -11,6 +11,7 @@ import {
 import { Play } from "lucide-react"
 import { cn } from "@/lib/utils"
 
+import { useT } from "@/lib/i18n/client"
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     video: {
@@ -100,6 +101,7 @@ export function parseVideo(raw: string): VideoInfo | null {
 }
 
 function VideoView({ node, selected, editor, getPos }: NodeViewProps) {
+  const t = useT()
   const src = String(node.attrs.src ?? "")
   const info = parseVideo(src)
   // il collegamento sotto al video porta solo a indirizzi web
@@ -155,11 +157,13 @@ function VideoView({ node, selected, editor, getPos }: NodeViewProps) {
             // eslint-disable-next-line @next/next/no-img-element -- anteprima remota del servizio video
             <img src={poster} alt="" draggable={false} />
           ) : null}
-          <span className="doc-video-badge">{info?.provider ?? "Video"}</span>
+          <span className="doc-video-badge">
+            {info?.provider ?? t("Video")}
+          </span>
           <button
             type="button"
             className="doc-video-play"
-            aria-label="Riproduci il video"
+            aria-label={t("Riproduci il video")}
             disabled={!info}
             onMouseDown={(e) => e.stopPropagation()}
             onClick={(e) => {
@@ -181,7 +185,7 @@ function VideoView({ node, selected, editor, getPos }: NodeViewProps) {
           ) : (
             <iframe
               src={`${info.embed}${info.embed.includes("?") ? "&" : "?"}autoplay=1`}
-              title={`Video ${info.provider}`}
+              title={t("Video {provider}", { provider: info.provider })}
               className="doc-video-player"
               allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
               allowFullScreen

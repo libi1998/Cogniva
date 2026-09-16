@@ -29,6 +29,9 @@ import {
 import type { MergeData, MergeRule } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
+import { useT, useLocale, currentLocale } from "@/lib/i18n/client"
+import type { Locale } from "@/lib/i18n/config"
+import { fieldName, findField, type MergeFieldKey } from "@/lib/doc-merge"
 const selectClass =
   "h-8 w-full min-w-0 rounded-md border border-input bg-transparent px-2 text-sm text-foreground"
 
@@ -72,10 +75,11 @@ function Footer({
   onClose: () => void
   children: React.ReactNode
 }) {
+  const t = useT()
   return (
     <DialogFooter className="border-t border-border px-5 py-3">
       <Button type="button" variant="ghost" onClick={onClose}>
-        Annulla
+        {t("Annulla")}
       </Button>
       {children}
     </DialogFooter>
@@ -95,12 +99,15 @@ export function RecipientsDialog({
   merge: MergeData | undefined
   setMerge: (merge: MergeData) => void
 }) {
+  const t = useT()
   return (
     <Shell
       open={open}
       onClose={onClose}
-      title="Destinatari della stampa unione"
-      description="Scrivi l'elenco o importa un file CSV (anche esportato da Excel o da Google Fogli)."
+      title={t("Destinatari della stampa unione")}
+      description={t(
+        "Scrivi l'elenco o importa un file CSV (anche esportato da Excel o da Google Fogli)."
+      )}
       width={900}
     >
       <RecipientsForm merge={merge} setMerge={setMerge} onClose={onClose} />
@@ -117,6 +124,7 @@ function RecipientsForm({
   setMerge: (merge: MergeData) => void
   onClose: () => void
 }) {
+  const t = useT()
   const [draft, setDraft] = React.useState<MergeData>(() => {
     const base = merge ?? emptyMerge()
     return base.rows.length ? base : { ...base, rows: [{}, {}, {}] }
@@ -148,9 +156,13 @@ function RecipientsForm({
         out: d.excluded.includes(i),
       }))
       items.sort((a, b) =>
-        (a.row[field] ?? "").localeCompare(b.row[field] ?? "", "it", {
-          numeric: true,
-        })
+        (a.row[field] ?? "").localeCompare(
+          b.row[field] ?? "",
+          currentLocale(),
+          {
+            numeric: true,
+          }
+        )
       )
       return {
         ...d,
@@ -169,7 +181,7 @@ function RecipientsForm({
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Trova destinatario"
+              placeholder={t("Trova destinatario")}
               className="h-full flex-1 bg-transparent text-sm outline-none"
             />
           </div>
@@ -179,7 +191,7 @@ function RecipientsForm({
             size="sm"
             onClick={() => fileRef.current?.click()}
           >
-            <Upload /> Usa elenco esistente…
+            <Upload /> {t("Usa elenco esistente…")}
           </Button>
           <input
             ref={fileRef}
@@ -192,11 +204,15 @@ function RecipientsForm({
               if (!file) return
               const parsed = parseDelimited(await file.text())
               if (!parsed.fields.length) {
-                toast.error("Il file non ha intestazioni di colonna")
+                toast.error(t("Il file non ha intestazioni di colonna"))
                 return
               }
               setDraft((d) => ({ ...d, ...parsed, excluded: [], preview: -1 }))
-              toast.success(`${parsed.rows.length} destinatari importati`)
+              toast.success(
+                t("{count} destinatari importati", {
+                  count: parsed.rows.length,
+                })
+              )
             }}
           />
           <Button
@@ -205,7 +221,7 @@ function RecipientsForm({
             size="sm"
             onClick={() => setDraft((d) => ({ ...d, rows: [...d.rows, {}] }))}
           >
-            <Plus /> Nuova voce
+            <Plus /> {t("Nuova voce")}
           </Button>
         </div>
 
@@ -216,7 +232,7 @@ function RecipientsForm({
                 <th className="w-9 border-b border-border px-2 py-1.5 text-left">
                   <input
                     type="checkbox"
-                    aria-label="Includi tutti"
+                    aria-label={t("Includi tutti")}
                     checked={draft.excluded.length === 0}
                     onChange={(e) =>
                       setDraft((d) => ({
@@ -237,7 +253,7 @@ function RecipientsForm({
                       {field}
                       <button
                         type="button"
-                        title={`Ordina per ${field}`}
+                        title={t("Ordina per {field}", { field })}
                         onClick={() => sortBy(field)}
                         className="rounded p-0.5 text-muted-foreground hover:bg-background"
                       >
@@ -245,7 +261,7 @@ function RecipientsForm({
                       </button>
                       <button
                         type="button"
-                        title={`Elimina la colonna ${field}`}
+                        title={t("Elimina la colonna {field}", { field })}
                         onClick={() =>
                           setDraft((d) => ({
                             ...d,
@@ -271,7 +287,9 @@ function RecipientsForm({
                   <td className="border-b border-border px-2">
                     <input
                       type="checkbox"
-                      aria-label={`Includi il destinatario ${index + 1}`}
+                      aria-label={t("Includi il destinatario {number}", {
+                        number: index + 1,
+                      })}
                       checked={!excluded.has(index)}
                       onChange={(e) =>
                         setDraft((d) => ({
@@ -298,7 +316,7 @@ function RecipientsForm({
                   <td className="border-b border-l border-border px-1">
                     <button
                       type="button"
-                      title="Elimina la voce"
+                      title={t("Elimina la voce")}
                       onClick={() =>
                         setDraft((d) => ({
                           ...d,
@@ -333,7 +351,7 @@ function RecipientsForm({
           <Input
             value={newField}
             onChange={(e) => setNewField(e.target.value)}
-            placeholder="Nuova colonna (es. Importo)"
+            placeholder={t("Nuova colonna (es. Importo)")}
             className="h-8 max-w-56 text-sm"
           />
           <Button
@@ -342,11 +360,13 @@ function RecipientsForm({
             variant="outline"
             disabled={!newField.trim()}
           >
-            Aggiungi colonna
+            {t("Aggiungi colonna")}
           </Button>
           <span className="ml-auto text-xs text-muted-foreground">
-            {draft.rows.length - draft.excluded.length} di {draft.rows.length}{" "}
-            inclusi
+            {t("{included} di {total} inclusi", {
+              included: draft.rows.length - draft.excluded.length,
+              total: draft.rows.length,
+            })}
           </span>
         </form>
       </div>
@@ -390,8 +410,13 @@ export function AddressBlockDialog({
   editor: Editor
   merge: MergeData | undefined
 }) {
+  const t = useT()
   return (
-    <Shell open={open} onClose={onClose} title="Inserisci blocco indirizzo">
+    <Shell
+      open={open}
+      onClose={onClose}
+      title={t("Inserisci blocco indirizzo")}
+    >
       <AddressBlockForm editor={editor} merge={merge} onClose={onClose} />
     </Shell>
   )
@@ -406,16 +431,23 @@ function AddressBlockForm({
   merge: MergeData | undefined
   onClose: () => void
 }) {
+  const t = useT()
   const fields = merge?.fields ?? []
-  const [company, setCompany] = React.useState(fields.includes("Società"))
-  const [title, setTitle] = React.useState(fields.includes("Titolo"))
+  const field = (key: MergeFieldKey) => findField(fields, key)
+  const regionField = field("region")
+  const [company, setCompany] = React.useState(Boolean(field("company")))
+  const [title, setTitle] = React.useState(Boolean(field("title")))
   const sample = merge?.rows[0] ?? {}
-  const lines: string[][] = [
-    [...(title ? ["Titolo"] : []), "Nome", "Cognome"],
-    ...(company ? [["Società"]] : []),
-    ["Indirizzo"],
-    ["CAP", "Città", "Provincia"],
-  ].map((line) => line.filter((f) => fields.includes(f)))
+  const lines: string[][] = (
+    [
+      [...(title ? (["title"] as const) : []), "first", "last"],
+      ...(company ? [["company"] as const] : []),
+      ["address"],
+      ["zip", "city", "region"],
+    ] as MergeFieldKey[][]
+  ).map((line) =>
+    line.map((key) => field(key)).filter((f): f is string => Boolean(f))
+  )
 
   return (
     <div>
@@ -426,7 +458,7 @@ function AddressBlockForm({
             checked={title}
             onChange={(e) => setTitle(e.target.checked)}
           />
-          Includi il titolo (Sig., Dott.ssa…)
+          {t("Includi il titolo (Sig., Dott.ssa…)")}
         </label>
         <label className="flex items-center gap-2">
           <input
@@ -434,7 +466,7 @@ function AddressBlockForm({
             checked={company}
             onChange={(e) => setCompany(e.target.checked)}
           />
-          Inserisci il nome della società
+          {t("Inserisci il nome della società")}
         </label>
         <div className="rounded-md border border-border bg-muted/40 px-3 py-2 leading-relaxed">
           {lines
@@ -443,7 +475,7 @@ function AddressBlockForm({
               <p key={i}>
                 {line
                   .map((f) =>
-                    f === "Provincia"
+                    f === regionField
                       ? `(${sample[f] ?? f})`
                       : (sample[f] ?? `«${f}»`)
                   )
@@ -453,7 +485,7 @@ function AddressBlockForm({
         </div>
         {!fields.length ? (
           <p className="text-xs text-destructive">
-            Prima scegli i destinatari: i campi vengono dall&apos;elenco.
+            {t("Prima scegli i destinatari: i campi vengono dall'elenco.")}
           </p>
         ) : null}
       </div>
@@ -469,10 +501,10 @@ function AddressBlockForm({
                 attrs: { spaceAfter: "0px" },
                 content: line.flatMap((f, i) => [
                   ...(i
-                    ? [{ type: "text", text: f === "Provincia" ? " (" : " " }]
+                    ? [{ type: "text", text: f === regionField ? " (" : " " }]
                     : []),
                   { type: "mergeField", attrs: { name: f } },
-                  ...(f === "Provincia" ? [{ type: "text", text: ")" }] : []),
+                  ...(f === regionField ? [{ type: "text", text: ")" }] : []),
                 ]),
               }))
             editor
@@ -483,12 +515,38 @@ function AddressBlockForm({
             onClose()
           }}
         >
-          Inserisci
+          {t("Inserisci")}
         </Button>
       </Footer>
     </div>
   )
 }
+
+/** I saluti d'apertura di una lettera, lingua per lingua */
+const SALUTATIONS: Record<Locale, string[]> = {
+  it: [
+    "Gentile",
+    "Egregio",
+    "Gentilissima",
+    "Caro",
+    "Cara",
+    "Spettabile",
+    "Ciao",
+  ],
+  en: ["Dear", "Hello", "Hi", "To"],
+  es: ["Estimado", "Estimada", "Querido", "Querida", "Hola"],
+  fr: ["Madame, Monsieur", "Cher", "Chère", "Bonjour"],
+  de: ["Sehr geehrte", "Sehr geehrter", "Liebe", "Lieber", "Hallo"],
+  pt: ["Prezado", "Prezada", "Caro", "Cara", "Olá"],
+}
+
+const NAME_FORMATS: MergeFieldKey[][] = [
+  ["first", "last"],
+  ["title", "last"],
+  ["title", "first", "last"],
+  ["first"],
+  ["company"],
+]
 
 export function GreetingDialog({
   open,
@@ -501,8 +559,9 @@ export function GreetingDialog({
   editor: Editor
   merge: MergeData | undefined
 }) {
+  const t = useT()
   return (
-    <Shell open={open} onClose={onClose} title="Inserisci riga saluto">
+    <Shell open={open} onClose={onClose} title={t("Inserisci riga saluto")}>
       <GreetingForm editor={editor} merge={merge} onClose={onClose} />
     </Shell>
   )
@@ -517,56 +576,51 @@ function GreetingForm({
   merge: MergeData | undefined
   onClose: () => void
 }) {
+  const t = useT()
+  const locale = useLocale()
   const fields = merge?.fields ?? []
-  const [salutation, setSalutation] = React.useState("Gentile")
-  const [format, setFormat] = React.useState("Nome Cognome")
+  const salutations = SALUTATIONS[locale]
+  const [salutation, setSalutation] = React.useState(salutations[0]!)
+  const [format, setFormat] = React.useState(0)
   const [punctuation, setPunctuation] = React.useState(",")
-  const [fallback, setFallback] = React.useState("Gentile cliente,")
+  const [fallback, setFallback] = React.useState(() => t("Gentile cliente,"))
   const sample = merge?.rows[0] ?? {}
-  const parts = format.split(" ").filter((f) => fields.includes(f))
+  const parts = NAME_FORMATS[format]!.map((key) =>
+    findField(fields, key)
+  ).filter((f): f is string => Boolean(f))
   return (
     <div>
       <div className="grid gap-3 px-5 py-4 text-sm sm:grid-cols-3">
         <label className="block space-y-1">
-          <span className="text-xs text-muted-foreground">Saluto</span>
+          <span className="text-xs text-muted-foreground">{t("Saluto")}</span>
           <select
             value={salutation}
             onChange={(e) => setSalutation(e.target.value)}
             className={selectClass}
           >
-            {[
-              "Gentile",
-              "Egregio",
-              "Gentilissima",
-              "Caro",
-              "Cara",
-              "Spettabile",
-              "Ciao",
-            ].map((s) => (
+            {salutations.map((s) => (
               <option key={s}>{s}</option>
             ))}
           </select>
         </label>
         <label className="block space-y-1">
-          <span className="text-xs text-muted-foreground">Nome</span>
+          <span className="text-xs text-muted-foreground">{t("Nome")}</span>
           <select
             value={format}
-            onChange={(e) => setFormat(e.target.value)}
+            onChange={(e) => setFormat(Number(e.target.value))}
             className={selectClass}
           >
-            {[
-              "Nome Cognome",
-              "Titolo Cognome",
-              "Titolo Nome Cognome",
-              "Nome",
-              "Società",
-            ].map((f) => (
-              <option key={f}>{f}</option>
+            {NAME_FORMATS.map((keys, i) => (
+              <option key={keys.join("-")} value={i}>
+                {keys.map(fieldName).join(" ")}
+              </option>
             ))}
           </select>
         </label>
         <label className="block space-y-1">
-          <span className="text-xs text-muted-foreground">Punteggiatura</span>
+          <span className="text-xs text-muted-foreground">
+            {t("Punteggiatura")}
+          </span>
           <select
             value={punctuation}
             onChange={(e) => setPunctuation(e.target.value)}
@@ -574,14 +628,14 @@ function GreetingForm({
           >
             {[",", ":", "!", ""].map((p) => (
               <option key={p} value={p}>
-                {p || "(nessuna)"}
+                {p || t("(nessuna)")}
               </option>
             ))}
           </select>
         </label>
         <label className="block space-y-1 sm:col-span-3">
           <span className="text-xs text-muted-foreground">
-            Per i destinatari senza nome
+            {t("Per i destinatari senza nome")}
           </span>
           <Input
             value={fallback}
@@ -625,7 +679,7 @@ function GreetingForm({
             onClose()
           }}
         >
-          Inserisci
+          {t("Inserisci")}
         </Button>
       </Footer>
     </div>
@@ -651,15 +705,20 @@ export function RuleDialog({
   merge: MergeData | undefined
   setMerge: (merge: MergeData) => void
 }) {
+  const t = useT()
   return (
     <Shell
       open={open}
       onClose={onClose}
-      title={kind === "skip" ? "Salta record se…" : "Se… Allora… Altrimenti…"}
+      title={
+        kind === "skip" ? t("Salta record se…") : t("Se… Allora… Altrimenti…")
+      }
       description={
         kind === "skip"
-          ? "I destinatari che rispettano la condizione non vengono uniti."
-          : "Il testo cambia secondo il valore di un campo di ogni destinatario."
+          ? t("I destinatari che rispettano la condizione non vengono uniti.")
+          : t(
+              "Il testo cambia secondo il valore di un campo di ogni destinatario."
+            )
       }
     >
       <RuleForm
@@ -686,6 +745,7 @@ function RuleForm({
   setMerge: (merge: MergeData) => void
   onClose: () => void
 }) {
+  const t = useT()
   const fields = merge?.fields ?? []
   const [rule, setRule] = React.useState<MergeRule>({
     field: fields[0] ?? "",
@@ -699,7 +759,9 @@ function RuleForm({
     <div>
       <div className="grid gap-3 px-5 py-4 text-sm sm:grid-cols-3">
         <label className="block space-y-1">
-          <span className="text-xs text-muted-foreground">Nome campo</span>
+          <span className="text-xs text-muted-foreground">
+            {t("Nome campo")}
+          </span>
           <select
             value={rule.field}
             onChange={(e) => setRule({ ...rule, field: e.target.value })}
@@ -711,7 +773,9 @@ function RuleForm({
           </select>
         </label>
         <label className="block space-y-1">
-          <span className="text-xs text-muted-foreground">Confronto</span>
+          <span className="text-xs text-muted-foreground">
+            {t("Confronto")}
+          </span>
           <select
             value={rule.op}
             onChange={(e) =>
@@ -727,7 +791,9 @@ function RuleForm({
           </select>
         </label>
         <label className="block space-y-1">
-          <span className="text-xs text-muted-foreground">Confronta con</span>
+          <span className="text-xs text-muted-foreground">
+            {t("Confronta con")}
+          </span>
           <Input
             value={rule.value}
             disabled={!needsValue}
@@ -739,7 +805,7 @@ function RuleForm({
           <>
             <label className="block space-y-1 sm:col-span-3">
               <span className="text-xs text-muted-foreground">
-                Inserisci questo testo
+                {t("Inserisci questo testo")}
               </span>
               <Textarea
                 value={then}
@@ -749,7 +815,7 @@ function RuleForm({
             </label>
             <label className="block space-y-1 sm:col-span-3">
               <span className="text-xs text-muted-foreground">
-                Altrimenti questo testo
+                {t("Altrimenti questo testo")}
               </span>
               <Textarea
                 value={otherwise}
@@ -760,16 +826,23 @@ function RuleForm({
           </>
         ) : merge?.skip?.length ? (
           <div className="space-y-1 sm:col-span-3">
-            <span className="text-xs text-muted-foreground">Regole attive</span>
+            <span className="text-xs text-muted-foreground">
+              {t("Regole attive")}
+            </span>
             {merge.skip.map((r, i) => (
               <div
                 key={i}
                 className="flex items-center gap-2 rounded-md border border-border px-2 py-1"
               >
                 <span className="flex-1">
-                  Salta se «{r.field}»{" "}
-                  {RULE_OPS.find((o) => o.value === r.op)?.label.toLowerCase()}{" "}
-                  {r.value}
+                  {t("Salta se «{field}» {condition} {value}", {
+                    field: r.field,
+                    condition:
+                      RULE_OPS.find(
+                        (o) => o.value === r.op
+                      )?.label.toLocaleLowerCase() ?? "",
+                    value: r.value,
+                  })}
                 </span>
                 <Button
                   type="button"
@@ -783,7 +856,7 @@ function RuleForm({
                     })
                   }
                 >
-                  Togli
+                  {t("Togli")}
                 </Button>
               </div>
             ))}
@@ -791,7 +864,7 @@ function RuleForm({
         ) : null}
         {!fields.length ? (
           <p className="text-xs text-destructive sm:col-span-3">
-            Prima scegli i destinatari.
+            {t("Prima scegli i destinatari.")}
           </p>
         ) : null}
       </div>
@@ -807,7 +880,12 @@ function RuleForm({
                 preview: -1,
               })
               toast.success(
-                `${mergedRows({ ...merge, skip: [...(merge.skip ?? []), rule] }).length} destinatari dopo la regola`
+                t("{count} destinatari dopo la regola", {
+                  count: mergedRows({
+                    ...merge,
+                    skip: [...(merge.skip ?? []), rule],
+                  }).length,
+                })
               )
             } else {
               editor
@@ -845,12 +923,13 @@ export function EnvelopeDialog({
   initialRecipient: string
   onCreate: (request: EnvelopeRequest) => void
 }) {
+  const t = useT()
   return (
     <Shell
       open={open}
       onClose={onClose}
-      title="Buste"
-      description="Crea un documento con la busta pronta da stampare."
+      title={t("Buste")}
+      description={t("Crea un documento con la busta pronta da stampare.")}
     >
       <EnvelopeForm
         initialRecipient={initialRecipient}
@@ -870,6 +949,7 @@ function EnvelopeForm({
   onClose: () => void
   onCreate: (request: EnvelopeRequest) => void
 }) {
+  const t = useT()
   const author = useAuthor()
   const [request, setRequest] = React.useState<EnvelopeRequest>({
     format: "dl",
@@ -881,7 +961,7 @@ function EnvelopeForm({
       <div className="grid gap-3 px-5 py-4 text-sm sm:grid-cols-2">
         <label className="block space-y-1 sm:col-span-2">
           <span className="text-xs text-muted-foreground">
-            Indirizzo destinatario
+            {t("Indirizzo destinatario")}
           </span>
           <Textarea
             value={request.recipient}
@@ -889,12 +969,12 @@ function EnvelopeForm({
               setRequest({ ...request, recipient: e.target.value })
             }
             rows={4}
-            placeholder={"Mario Rossi\nVia Roma 1\n00100 Roma (RM)"}
+            placeholder={t("Mario Rossi\nVia Roma 1\n00100 Roma (RM)")}
           />
         </label>
         <label className="block space-y-1">
           <span className="text-xs text-muted-foreground">
-            Indirizzo mittente
+            {t("Indirizzo mittente")}
           </span>
           <Textarea
             value={request.sender}
@@ -903,7 +983,7 @@ function EnvelopeForm({
           />
         </label>
         <div className="space-y-1">
-          <span className="text-xs text-muted-foreground">Formato</span>
+          <span className="text-xs text-muted-foreground">{t("Formato")}</span>
           {ENVELOPES.map((env) => (
             <label key={env.format} className="flex items-start gap-2 py-0.5">
               <input
@@ -931,7 +1011,7 @@ function EnvelopeForm({
             onClose()
           }}
         >
-          Crea busta
+          {t("Crea busta")}
         </Button>
       </Footer>
     </div>
@@ -956,12 +1036,15 @@ export function LabelsDialog({
   merge: MergeData | undefined
   onCreate: (request: LabelsRequest) => void
 }) {
+  const t = useT()
   return (
     <Shell
       open={open}
       onClose={onClose}
-      title="Etichette"
-      description="Un foglio A4 di etichette, con la stessa etichetta o una per destinatario."
+      title={t("Etichette")}
+      description={t(
+        "Un foglio A4 di etichette, con la stessa etichetta o una per destinatario."
+      )}
     >
       <LabelsForm merge={merge} onClose={onClose} onCreate={onCreate} />
     </Shell>
@@ -977,6 +1060,7 @@ function LabelsForm({
   onClose: () => void
   onCreate: (request: LabelsRequest) => void
 }) {
+  const t = useT()
   const recipients = merge ? mergedRows(merge).length : 0
   const [request, setRequest] = React.useState<LabelsRequest>({
     product: LABEL_PRODUCTS[0],
@@ -995,7 +1079,9 @@ function LabelsForm({
               disabled={!recipients}
               onChange={() => setRequest({ ...request, fromRecipients: true })}
             />
-            Un&apos;etichetta per ogni destinatario ({recipients})
+            {t("Un'etichetta per ogni destinatario ({count})", {
+              count: recipients,
+            })}
           </label>
           <label className="flex items-center gap-2">
             <input
@@ -1003,13 +1089,13 @@ function LabelsForm({
               checked={!request.fromRecipients}
               onChange={() => setRequest({ ...request, fromRecipients: false })}
             />
-            Pagina intera della stessa etichetta
+            {t("Pagina intera della stessa etichetta")}
           </label>
         </div>
         {!request.fromRecipients ? (
           <label className="block space-y-1 sm:col-span-2">
             <span className="text-xs text-muted-foreground">
-              Testo dell&apos;etichetta
+              {t("Testo dell'etichetta")}
             </span>
             <Textarea
               value={request.text}
@@ -1019,7 +1105,7 @@ function LabelsForm({
           </label>
         ) : null}
         <label className="block space-y-1">
-          <span className="text-xs text-muted-foreground">Prodotto</span>
+          <span className="text-xs text-muted-foreground">{t("Prodotto")}</span>
           <select
             value={p.id}
             onChange={(e) =>
@@ -1064,7 +1150,7 @@ function LabelsForm({
             onClose()
           }}
         >
-          Nuovo documento
+          {t("Nuovo documento")}
         </Button>
       </Footer>
     </div>
@@ -1085,12 +1171,15 @@ export function EmailDialog({
   /** il testo del documento unito con i dati di un destinatario */
   messageFor: (row: Record<string, string>) => string
 }) {
+  const t = useT()
   return (
     <Shell
       open={open}
       onClose={onClose}
-      title="Invia messaggi email"
-      description="Ogni messaggio si apre nel tuo programma di posta, già compilato: controllalo e invialo da lì."
+      title={t("Invia messaggi email")}
+      description={t(
+        "Ogni messaggio si apre nel tuo programma di posta, già compilato: controllalo e invialo da lì."
+      )}
       width={560}
     >
       <EmailForm merge={merge} messageFor={messageFor} onClose={onClose} />
@@ -1107,6 +1196,7 @@ function EmailForm({
   messageFor: (row: Record<string, string>) => string
   onClose: () => void
 }) {
+  const t = useT()
   const fields = merge?.fields ?? []
   const [to, setTo] = React.useState(
     fields.find((f) => /mail/i.test(f)) ?? fields[0] ?? ""
@@ -1118,7 +1208,7 @@ function EmailForm({
       <div className="space-y-3 px-5 py-4 text-sm">
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block space-y-1">
-            <span className="text-xs text-muted-foreground">A</span>
+            <span className="text-xs text-muted-foreground">{t("A")}</span>
             <select
               value={to}
               onChange={(e) => setTo(e.target.value)}
@@ -1130,7 +1220,9 @@ function EmailForm({
             </select>
           </label>
           <label className="block space-y-1">
-            <span className="text-xs text-muted-foreground">Oggetto</span>
+            <span className="text-xs text-muted-foreground">
+              {t("Oggetto")}
+            </span>
             <Input
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
@@ -1150,9 +1242,9 @@ function EmailForm({
                 >
                   <span className="min-w-0 flex-1 truncate">
                     {[row.Nome, row.Cognome].filter(Boolean).join(" ") ||
-                      `Destinatario ${index + 1}`}
+                      t("Destinatario {number}", { number: index + 1 })}
                     <span className="ml-2 text-xs text-muted-foreground">
-                      {address || "senza indirizzo"}
+                      {address || t("senza indirizzo")}
                     </span>
                   </span>
                   <Button
@@ -1166,21 +1258,21 @@ function EmailForm({
                       window.location.href = `mailto:${encodeURIComponent(address)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
                     }}
                   >
-                    Apri messaggio
+                    {t("Apri messaggio")}
                   </Button>
                 </div>
               )
             })
           ) : (
             <p className="px-2.5 py-3 text-xs text-muted-foreground">
-              Nessun destinatario incluso.
+              {t("Nessun destinatario incluso.")}
             </p>
           )}
         </div>
       </div>
       <DialogFooter className="border-t border-border px-5 py-3">
         <Button type="button" onClick={onClose}>
-          Chiudi
+          {t("Chiudi")}
         </Button>
       </DialogFooter>
     </div>

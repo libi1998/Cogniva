@@ -1,3 +1,4 @@
+import { tr } from "@/lib/i18n/client"
 /**
  * Palette dei contenuti: colori di forme, note, evidenziatori e grafici.
  * I neutri sono gli zinco del tema, così canvas, foglio e interfaccia hanno
@@ -135,7 +136,9 @@ export type Swatch = {
 export const SWATCHES: Swatch[] = [
   {
     key: "white",
-    label: "Bianco",
+    get label() {
+      return tr("Bianco")
+    },
     fill: "#ffffff",
     border: whim.base[300],
     text: whim.base[800],
@@ -144,7 +147,9 @@ export const SWATCHES: Swatch[] = [
   },
   {
     key: "gray",
-    label: "Grigio",
+    get label() {
+      return tr("Grigio")
+    },
     fill: whim.base[100],
     border: whim.base[400],
     text: whim.base[800],
@@ -153,7 +158,9 @@ export const SWATCHES: Swatch[] = [
   },
   {
     key: "blue",
-    label: "Blu",
+    get label() {
+      return tr("Blu")
+    },
     fill: whim.blue[100],
     border: whim.blue[300],
     text: whim.blue[700],
@@ -162,7 +169,9 @@ export const SWATCHES: Swatch[] = [
   },
   {
     key: "purple",
-    label: "Viola",
+    get label() {
+      return tr("Viola")
+    },
     fill: whim.purple[100],
     border: whim.purple[300],
     text: whim.purple[700],
@@ -171,7 +180,9 @@ export const SWATCHES: Swatch[] = [
   },
   {
     key: "pink",
-    label: "Rosa",
+    get label() {
+      return tr("Rosa")
+    },
     fill: whim.pink[100],
     border: whim.pink[300],
     text: whim.pink[700],
@@ -180,7 +191,9 @@ export const SWATCHES: Swatch[] = [
   },
   {
     key: "hotPink",
-    label: "Magenta",
+    get label() {
+      return tr("Magenta")
+    },
     fill: whim.hotPink[100],
     border: whim.hotPink[300],
     text: whim.hotPink[700],
@@ -189,7 +202,9 @@ export const SWATCHES: Swatch[] = [
   },
   {
     key: "teal",
-    label: "Azzurro",
+    get label() {
+      return tr("Azzurro")
+    },
     fill: whim.teal[100],
     border: whim.teal[300],
     text: whim.teal[700],
@@ -198,7 +213,9 @@ export const SWATCHES: Swatch[] = [
   },
   {
     key: "green",
-    label: "Verde",
+    get label() {
+      return tr("Verde")
+    },
     fill: whim.green[100],
     border: whim.green[300],
     text: whim.green[700],
@@ -207,7 +224,9 @@ export const SWATCHES: Swatch[] = [
   },
   {
     key: "yellow",
-    label: "Giallo",
+    get label() {
+      return tr("Giallo")
+    },
     fill: whim.yellow[100],
     border: whim.yellow[300],
     text: whim.yellow[800],
@@ -216,7 +235,9 @@ export const SWATCHES: Swatch[] = [
   },
   {
     key: "orange",
-    label: "Arancio",
+    get label() {
+      return tr("Arancio")
+    },
     fill: whim.orange[100],
     border: whim.orange[300],
     text: whim.orange[700],
@@ -252,32 +273,144 @@ export function docAccent(accent: string): { solid: string; fill: string } {
 
 /** Colori linea/freccia disponibili */
 export const LINE_COLORS: { label: string; value: string }[] = [
-  { label: "Grafite", value: whim.base[700] },
-  { label: "Nero", value: whim.base[900] },
-  { label: "Grigio", value: whim.base[500] },
-  { label: "Blu", value: whim.blue[400] },
-  { label: "Viola", value: whim.purple[400] },
-  { label: "Magenta", value: whim.hotPink[400] },
-  { label: "Azzurro", value: whim.teal[400] },
-  { label: "Verde", value: whim.green[500] },
-  { label: "Giallo", value: whim.yellow[600] },
-  { label: "Arancio", value: whim.orange[400] },
+  {
+    get label() {
+      return tr("Grafite")
+    },
+    value: whim.base[700],
+  },
+  {
+    get label() {
+      return tr("Nero")
+    },
+    value: whim.base[900],
+  },
+  {
+    get label() {
+      return tr("Grigio")
+    },
+    value: whim.base[500],
+  },
+  {
+    get label() {
+      return tr("Blu")
+    },
+    value: whim.blue[400],
+  },
+  {
+    get label() {
+      return tr("Viola")
+    },
+    value: whim.purple[400],
+  },
+  {
+    get label() {
+      return tr("Magenta")
+    },
+    value: whim.hotPink[400],
+  },
+  {
+    get label() {
+      return tr("Azzurro")
+    },
+    value: whim.teal[400],
+  },
+  {
+    get label() {
+      return tr("Verde")
+    },
+    value: whim.green[500],
+  },
+  {
+    get label() {
+      return tr("Giallo")
+    },
+    value: whim.yellow[600],
+  },
+  {
+    get label() {
+      return tr("Arancio")
+    },
+    value: whim.orange[400],
+  },
 ]
 
 /** Sfondi predefiniti del canvas */
 export const BACKGROUNDS: { label: string; value: string; dark?: boolean }[] = [
-  { label: "Bianco", value: "#ffffff" },
-  { label: "Carta", value: whim.base[0] },
-  { label: "Nebbia", value: whim.base[100] },
-  { label: "Blu", value: whim.blue[50] },
-  { label: "Viola", value: whim.purple[50] },
-  { label: "Rosa", value: whim.pink[50] },
-  { label: "Azzurro", value: whim.teal[50] },
-  { label: "Verde", value: whim.green[50] },
-  { label: "Giallo", value: whim.yellow[50] },
-  { label: "Arancio", value: whim.orange[50] },
-  { label: "Notte", value: whim.base[800], dark: true },
-  { label: "Inchiostro", value: whim.base[900], dark: true },
+  {
+    get label() {
+      return tr("Bianco")
+    },
+    value: "#ffffff",
+  },
+  {
+    get label() {
+      return tr("Carta")
+    },
+    value: whim.base[0],
+  },
+  {
+    get label() {
+      return tr("Nebbia")
+    },
+    value: whim.base[100],
+  },
+  {
+    get label() {
+      return tr("Blu")
+    },
+    value: whim.blue[50],
+  },
+  {
+    get label() {
+      return tr("Viola")
+    },
+    value: whim.purple[50],
+  },
+  {
+    get label() {
+      return tr("Rosa")
+    },
+    value: whim.pink[50],
+  },
+  {
+    get label() {
+      return tr("Azzurro")
+    },
+    value: whim.teal[50],
+  },
+  {
+    get label() {
+      return tr("Verde")
+    },
+    value: whim.green[50],
+  },
+  {
+    get label() {
+      return tr("Giallo")
+    },
+    value: whim.yellow[50],
+  },
+  {
+    get label() {
+      return tr("Arancio")
+    },
+    value: whim.orange[50],
+  },
+  {
+    get label() {
+      return tr("Notte")
+    },
+    value: whim.base[800],
+    dark: true,
+  },
+  {
+    get label() {
+      return tr("Inchiostro")
+    },
+    value: whim.base[900],
+    dark: true,
+  },
 ]
 
 function hexToRgb(hex: string): [number, number, number] {

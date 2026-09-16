@@ -4,6 +4,7 @@ import { shapePath } from "./shapes"
 import type { SwatchKey } from "./palette"
 import type { BoardEdge, BoardNode, NodeShape } from "./types"
 
+import { tr } from "@/lib/i18n/client"
 /**
  * Contenuti pronti della scheda Inserisci: frontespizi, forme e icone (come
  * immagini SVG, così hanno già posizione, testo a capo e rotazione delle
@@ -19,20 +20,60 @@ export type CoverDesign = {
 }
 
 export const COVER_DESIGNS: CoverDesign[] = [
-  { id: "classic", label: "Classico", hint: "Titolo centrato, dati in fondo" },
+  {
+    id: "classic",
+    get label() {
+      return tr("Classico")
+    },
+    get hint() {
+      return tr("Titolo centrato, dati in fondo")
+    },
+  },
   {
     id: "sidebar",
-    label: "Barra laterale",
-    hint: "Barra dell'accento a sinistra",
+    get label() {
+      return tr("Barra laterale")
+    },
+    get hint() {
+      return tr("Barra dell'accento a sinistra")
+    },
   },
-  { id: "band", label: "Banda", hint: "Titolo su una fascia colorata" },
+  {
+    id: "band",
+    get label() {
+      return tr("Banda")
+    },
+    get hint() {
+      return tr("Titolo su una fascia colorata")
+    },
+  },
   {
     id: "minimal",
-    label: "Essenziale",
-    hint: "Linea sottile, tutto a sinistra",
+    get label() {
+      return tr("Essenziale")
+    },
+    get hint() {
+      return tr("Linea sottile, tutto a sinistra")
+    },
   },
-  { id: "report", label: "Rapporto", hint: "Etichetta, titolo e sommario" },
-  { id: "elegant", label: "Elegante", hint: "Filetti sopra e sotto" },
+  {
+    id: "report",
+    get label() {
+      return tr("Rapporto")
+    },
+    get hint() {
+      return tr("Etichetta, titolo e sommario")
+    },
+  },
+  {
+    id: "elegant",
+    get label() {
+      return tr("Elegante")
+    },
+    get hint() {
+      return tr("Filetti sopra e sotto")
+    },
+  },
 ]
 
 const PX = 96 / 72
@@ -65,7 +106,7 @@ export function coverContent(
       return {
         title: { spaceBefore: `${Math.round(160 * PX)}px`, border: "left" },
         after: [
-          para("[Sottotitolo del documento]", { styleId: "subtitle" }),
+          para(tr("[Sottotitolo del documento]"), { styleId: "subtitle" }),
           spacer(220),
           para(info.author, { border: "left" }),
           para(info.date, { border: "left" }),
@@ -80,7 +121,7 @@ export function coverContent(
           textAlign: "center",
         },
         after: [
-          para("[Sottotitolo del documento]", {
+          para(tr("[Sottotitolo del documento]"), {
             styleId: "subtitle",
             textAlign: "center",
           }),
@@ -93,7 +134,7 @@ export function coverContent(
       return {
         title: { spaceBefore: `${Math.round(60 * PX)}px`, border: "bottom" },
         after: [
-          para("[Sottotitolo del documento]", { styleId: "subtitle" }),
+          para(tr("[Sottotitolo del documento]"), { styleId: "subtitle" }),
           spacer(360),
           para(info.author, { textAlign: "right" }),
           para(info.date, { textAlign: "right" }),
@@ -104,16 +145,18 @@ export function coverContent(
       return {
         title: { spaceBefore: `${Math.round(24 * PX)}px` },
         after: [
-          para("RAPPORTO", { styleId: "caption" }),
-          para("[Sottotitolo del documento]", { styleId: "subtitle" }),
+          para(tr("RAPPORTO"), { styleId: "caption" }),
+          para(tr("[Sottotitolo del documento]"), { styleId: "subtitle" }),
           spacer(40),
           para(
-            "[Sommario: scrivi qui in due o tre righe di cosa parla il documento e a chi si rivolge.]",
+            tr(
+              "[Sommario: scrivi qui in due o tre righe di cosa parla il documento e a chi si rivolge.]"
+            ),
             { shading: "var(--doc-accent-soft)" }
           ),
           spacer(300),
-          para(`Autore: ${info.author}`),
-          para(`Data: ${info.date}`),
+          para(tr("Autore: {author}", { author: info.author })),
+          para(tr("Data: {date}", { date: info.date })),
           end,
         ],
       }
@@ -125,7 +168,7 @@ export function coverContent(
           border: "box",
         },
         after: [
-          para("[Sottotitolo del documento]", {
+          para(tr("[Sottotitolo del documento]"), {
             styleId: "subtitle",
             textAlign: "center",
           }),
@@ -142,7 +185,7 @@ export function coverContent(
           textAlign: "center",
         },
         after: [
-          para("[Sottotitolo del documento]", {
+          para(tr("[Sottotitolo del documento]"), {
             styleId: "subtitle",
             textAlign: "center",
           }),
@@ -176,58 +219,202 @@ export const SHAPE_GROUPS: {
   shapes: { kind: DocShapeKind; label: string }[]
 }[] = [
   {
-    label: "Linee",
+    get label() {
+      return tr("Linee")
+    },
     shapes: [
-      { kind: "line", label: "Linea" },
-      { kind: "arrow-line", label: "Freccia" },
-      { kind: "double-arrow", label: "Freccia doppia" },
+      {
+        kind: "line",
+        get label() {
+          return tr("Linea")
+        },
+      },
+      {
+        kind: "arrow-line",
+        get label() {
+          return tr("Freccia")
+        },
+      },
+      {
+        kind: "double-arrow",
+        get label() {
+          return tr("Freccia doppia")
+        },
+      },
     ],
   },
   {
-    label: "Rettangoli",
+    get label() {
+      return tr("Rettangoli")
+    },
     shapes: [
-      { kind: "rect", label: "Rettangolo" },
-      { kind: "rounded", label: "Rettangolo arrotondato" },
-      { kind: "pill", label: "Pillola" },
-      { kind: "note", label: "Nota" },
+      {
+        kind: "rect",
+        get label() {
+          return tr("Rettangolo")
+        },
+      },
+      {
+        kind: "rounded",
+        get label() {
+          return tr("Rettangolo arrotondato")
+        },
+      },
+      {
+        kind: "pill",
+        get label() {
+          return tr("Pillola")
+        },
+      },
+      {
+        kind: "note",
+        get label() {
+          return tr("Nota")
+        },
+      },
     ],
   },
   {
-    label: "Forme di base",
+    get label() {
+      return tr("Forme di base")
+    },
     shapes: [
-      { kind: "ellipse", label: "Ovale" },
-      { kind: "triangle", label: "Triangolo" },
-      { kind: "diamond", label: "Rombo" },
-      { kind: "parallelogram", label: "Parallelogramma" },
-      { kind: "pentagon", label: "Pentagono" },
-      { kind: "hexagon", label: "Esagono" },
-      { kind: "octagon", label: "Ottagono" },
-      { kind: "cylinder", label: "Cilindro" },
-      { kind: "cross", label: "Croce" },
-      { kind: "heart", label: "Cuore" },
-      { kind: "cloud", label: "Nuvola" },
+      {
+        kind: "ellipse",
+        get label() {
+          return tr("Ovale")
+        },
+      },
+      {
+        kind: "triangle",
+        get label() {
+          return tr("Triangolo")
+        },
+      },
+      {
+        kind: "diamond",
+        get label() {
+          return tr("Rombo")
+        },
+      },
+      {
+        kind: "parallelogram",
+        get label() {
+          return tr("Parallelogramma")
+        },
+      },
+      {
+        kind: "pentagon",
+        get label() {
+          return tr("Pentagono")
+        },
+      },
+      {
+        kind: "hexagon",
+        get label() {
+          return tr("Esagono")
+        },
+      },
+      {
+        kind: "octagon",
+        get label() {
+          return tr("Ottagono")
+        },
+      },
+      {
+        kind: "cylinder",
+        get label() {
+          return tr("Cilindro")
+        },
+      },
+      {
+        kind: "cross",
+        get label() {
+          return tr("Croce")
+        },
+      },
+      {
+        kind: "heart",
+        get label() {
+          return tr("Cuore")
+        },
+      },
+      {
+        kind: "cloud",
+        get label() {
+          return tr("Nuvola")
+        },
+      },
     ],
   },
   {
-    label: "Frecce a blocchi",
+    get label() {
+      return tr("Frecce a blocchi")
+    },
     shapes: [
-      { kind: "arrowBlock", label: "Freccia a destra" },
-      { kind: "arrow-left", label: "Freccia a sinistra" },
-      { kind: "arrow-up", label: "Freccia su" },
-      { kind: "arrow-down", label: "Freccia giù" },
-      { kind: "chevron", label: "Gallone" },
+      {
+        kind: "arrowBlock",
+        get label() {
+          return tr("Freccia a destra")
+        },
+      },
+      {
+        kind: "arrow-left",
+        get label() {
+          return tr("Freccia a sinistra")
+        },
+      },
+      {
+        kind: "arrow-up",
+        get label() {
+          return tr("Freccia su")
+        },
+      },
+      {
+        kind: "arrow-down",
+        get label() {
+          return tr("Freccia giù")
+        },
+      },
+      {
+        kind: "chevron",
+        get label() {
+          return tr("Gallone")
+        },
+      },
     ],
   },
   {
-    label: "Diagrammi di flusso",
+    get label() {
+      return tr("Diagrammi di flusso")
+    },
     shapes: [
-      { kind: "document", label: "Documento" },
-      { kind: "star", label: "Stella" },
+      {
+        kind: "document",
+        get label() {
+          return tr("Documento")
+        },
+      },
+      {
+        kind: "star",
+        get label() {
+          return tr("Stella")
+        },
+      },
     ],
   },
   {
-    label: "Callout",
-    shapes: [{ kind: "callout", label: "Fumetto" }],
+    get label() {
+      return tr("Callout")
+    },
+    shapes: [
+      {
+        kind: "callout",
+        get label() {
+          return tr("Fumetto")
+        },
+      },
+    ],
   },
 ]
 
@@ -359,25 +546,33 @@ export const WORDART_PRESETS: {
 }[] = [
   {
     id: "gradient",
-    label: "Sfumato tramonto",
+    get label() {
+      return tr("Sfumato tramonto")
+    },
     bold: true,
     style: { textFill: "linear-gradient(90deg, #f97316, #e11d48, #9333ea)" },
   },
   {
     id: "ocean",
-    label: "Sfumato oceano",
+    get label() {
+      return tr("Sfumato oceano")
+    },
     bold: true,
     style: { textFill: "linear-gradient(90deg, #0ea5e9, #6366f1)" },
   },
   {
     id: "outline",
-    label: "Contorno",
+    get label() {
+      return tr("Contorno")
+    },
     bold: true,
     style: { textFill: "hollow", textStroke: "1.5px currentColor" },
   },
   {
     id: "neon",
-    label: "Neon",
+    get label() {
+      return tr("Neon")
+    },
     bold: true,
     color: "#ffffff",
     style: {
@@ -387,13 +582,17 @@ export const WORDART_PRESETS: {
   },
   {
     id: "shadow",
-    label: "Ombra netta",
+    get label() {
+      return tr("Ombra netta")
+    },
     bold: true,
     style: { textShadow: "0.06em 0.06em 0 var(--doc-accent, #6366f1)" },
   },
   {
     id: "retro",
-    label: "Retrò",
+    get label() {
+      return tr("Retrò")
+    },
     bold: true,
     color: "#f59e0b",
     style: {
@@ -403,13 +602,17 @@ export const WORDART_PRESETS: {
   },
   {
     id: "elegant",
-    label: "Elegante",
+    get label() {
+      return tr("Elegante")
+    },
     italic: true,
     style: { textShadow: "0 1px 2px rgba(0,0,0,0.25)" },
   },
   {
     id: "accent",
-    label: "Accento pieno",
+    get label() {
+      return tr("Accento pieno")
+    },
     bold: true,
     style: { textStroke: "0.8px var(--doc-accent, #6366f1)" },
     color: "#ffffff",
@@ -429,7 +632,7 @@ export function wordArtContent(preset: string, value: string): JSONContent {
   return {
     type: "paragraph",
     attrs: { textAlign: "center" },
-    content: [{ type: "text", text: value || "Il tuo testo qui", marks }],
+    content: [{ type: "text", text: value || tr("Il tuo testo qui"), marks }],
   }
 }
 
@@ -446,7 +649,7 @@ export function signatureContent(info: {
     {
       type: "paragraph",
       attrs: { spaceBefore: `${Math.round(36 * PX)}px` },
-      content: text(info.date ? "Luogo e data ____________________" : ""),
+      content: text(info.date ? tr("Luogo e data ____________________") : ""),
     },
     {
       type: "paragraph",
@@ -456,7 +659,7 @@ export function signatureContent(info: {
         indentRight: 360,
         spaceAfter: "0px",
       },
-      content: text(lines[0] ?? "Firma"),
+      content: text(lines[0] ?? tr("Firma")),
     },
     ...lines.slice(1).map((line): JSONContent => ({
       type: "paragraph",
@@ -484,46 +687,99 @@ export type SmartArtTemplate = {
 export const SMARTART_TEMPLATES: SmartArtTemplate[] = [
   {
     id: "list",
-    group: "Elenco",
-    label: "Elenco a blocchi",
-    hint: "Idee affiancate",
+    get group() {
+      return tr("Elenco")
+    },
+    get label() {
+      return tr("Elenco a blocchi")
+    },
+    get hint() {
+      return tr("Idee affiancate")
+    },
   },
   {
     id: "process",
-    group: "Processo",
-    label: "Processo base",
-    hint: "Passaggi in sequenza",
+    get group() {
+      return tr("Processo")
+    },
+    get label() {
+      return tr("Processo base")
+    },
+    get hint() {
+      return tr("Passaggi in sequenza")
+    },
   },
   {
     id: "timeline",
-    group: "Processo",
-    label: "Cronologia",
-    hint: "Tappe su una linea",
+    get group() {
+      return tr("Processo")
+    },
+    get label() {
+      return tr("Cronologia")
+    },
+    get hint() {
+      return tr("Tappe su una linea")
+    },
   },
-  { id: "cycle", group: "Ciclo", label: "Ciclo", hint: "Fasi che si ripetono" },
+  {
+    id: "cycle",
+    get group() {
+      return tr("Ciclo")
+    },
+    get label() {
+      return tr("Ciclo")
+    },
+    get hint() {
+      return tr("Fasi che si ripetono")
+    },
+  },
   {
     id: "hierarchy",
-    group: "Gerarchia",
-    label: "Organigramma",
-    hint: "Un capo, più rami",
+    get group() {
+      return tr("Gerarchia")
+    },
+    get label() {
+      return tr("Organigramma")
+    },
+    get hint() {
+      return tr("Un capo, più rami")
+    },
   },
   {
     id: "matrix",
-    group: "Matrice",
-    label: "Matrice 2×2",
-    hint: "Quattro quadranti",
+    get group() {
+      return tr("Matrice")
+    },
+    get label() {
+      return tr("Matrice 2×2")
+    },
+    get hint() {
+      return tr("Quattro quadranti")
+    },
   },
   {
     id: "pyramid",
-    group: "Piramide",
-    label: "Piramide",
-    hint: "Livelli dal più ampio",
+    get group() {
+      return tr("Piramide")
+    },
+    get label() {
+      return tr("Piramide")
+    },
+    get hint() {
+      return tr("Livelli dal più ampio")
+    },
   },
   {
     id: "venn",
-    group: "Relazione",
-    label: "Relazione",
-    hint: "Centro e satelliti",
+    get group() {
+      return tr("Relazione")
+    },
+    get label() {
+      return tr("Relazione")
+    },
+    get hint() {
+      return tr("Centro e satelliti")
+    },
   },
 ]
 
@@ -640,12 +896,12 @@ function smartArtLayout(id: string): {
     case "hierarchy":
       return {
         nodes: [
-          box("root", 300, 0, "Direzione", 0),
-          box("a", 0, 160, "Area 1", 1),
-          box("b", 300, 160, "Area 2", 2),
-          box("c", 600, 160, "Area 3", 3),
-          box("a1", 0, 310, "Team", 1, { bold: false, h: 64 }),
-          box("c1", 600, 310, "Team", 3, { bold: false, h: 64 }),
+          box("root", 300, 0, tr("Direzione"), 0),
+          box("a", 0, 160, tr("Area {number}", { number: 1 }), 1),
+          box("b", 300, 160, tr("Area {number}", { number: 2 }), 2),
+          box("c", 600, 160, tr("Area {number}", { number: 3 }), 3),
+          box("a1", 0, 310, tr("Team"), 1, { bold: false, h: 64 }),
+          box("c1", 600, 310, tr("Team"), 3, { bold: false, h: 64 }),
         ],
         edges: [
           { from: "root", to: "a", routing: "elbow" },
@@ -663,10 +919,10 @@ function smartArtLayout(id: string): {
             (i % 2) * 280,
             Math.floor(i / 2) * 180,
             [
-              "Alto impatto\nbasso sforzo",
-              "Alto impatto\nalto sforzo",
-              "Basso impatto\nbasso sforzo",
-              "Basso impatto\nalto sforzo",
+              tr("Alto impatto\nbasso sforzo"),
+              tr("Alto impatto\nalto sforzo"),
+              tr("Basso impatto\nbasso sforzo"),
+              tr("Basso impatto\nalto sforzo"),
             ][i],
             i,
             { w: 260, h: 160, shape: "rect" }
@@ -678,18 +934,25 @@ function smartArtLayout(id: string): {
       return {
         nodes: [0, 1, 2, 3]
           .map((i) =>
-            box(`n${i}`, 90 * (3 - i) - 270, i * 90, `Livello ${4 - i}`, i, {
-              w: 180 * (i + 1),
-              h: 80,
-              shape: "rect",
-            })
+            box(
+              `n${i}`,
+              90 * (3 - i) - 270,
+              i * 90,
+              tr("Livello {level}", { level: 4 - i }),
+              i,
+              {
+                w: 180 * (i + 1),
+                h: 80,
+                shape: "rect",
+              }
+            )
           )
           .reverse(),
         edges: [],
       }
     case "venn": {
       const nodes = [
-        box("c", 0, 0, "Idea centrale", 0, {
+        box("c", 0, 0, tr("Idea centrale"), 0, {
           w: 200,
           h: 200,
           shape: "ellipse",
@@ -700,7 +963,7 @@ function smartArtLayout(id: string): {
             `s${i}`,
             250 * Math.cos(a) + 20,
             250 * Math.sin(a) + 40,
-            `Aspetto ${i + 1}`,
+            tr("Aspetto {number}", { number: i + 1 }),
             i + 1,
             {
               w: 160,
@@ -721,7 +984,7 @@ function smartArtLayout(id: string): {
     default:
       return {
         nodes: [0, 1, 2].map((i) =>
-          box(`n${i}`, i * 220, 0, `[Testo]\nUna breve descrizione`, i, {
+          box(`n${i}`, i * 220, 0, tr("[Testo]\nUna breve descrizione"), i, {
             w: 200,
             h: 140,
             bold: false,

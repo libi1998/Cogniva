@@ -8,6 +8,7 @@ import { rememberFont, useRecentFonts } from "@/lib/recent-fonts"
 import { fontRows } from "@/components/shared/font-picker"
 import { cn } from "@/lib/utils"
 
+import { useT } from "@/lib/i18n/client"
 /** Le dimensioni del menu «Dimensione carattere» di Word, in punti */
 const WORD_SIZES = [
   8, 9, 10, 10.5, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72,
@@ -58,6 +59,7 @@ function Combo<T>({
   headerOf?: (item: T) => string | null
   rowClassName?: string
 }) {
+  const t = useT()
   const [open, setOpen] = React.useState(false)
   const [query, setQuery] = React.useState<string | null>(null)
   const inputRef = React.useRef<HTMLInputElement>(null)
@@ -123,7 +125,9 @@ function Combo<T>({
         <button
           type="button"
           tabIndex={-1}
-          aria-label={`Apri ${label.toLowerCase()}`}
+          aria-label={t("Apri {list}", {
+            list: label.toLowerCase(),
+          })}
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => (open ? close() : setOpen(true))}
           className="flex h-full w-5 shrink-0 items-center justify-center border-l border-border text-muted-foreground hover:bg-muted"
@@ -180,7 +184,7 @@ function Combo<T>({
           })
         ) : (
           <p className="px-2 py-1.5 text-xs text-muted-foreground">
-            Nessun risultato
+            {t("Nessun risultato")}
           </p>
         )}
       </PopoverContent>
@@ -209,11 +213,12 @@ export function FontCombo({
   styleFont: { label: string; stack: string }
   onPick: (key: FontKey | null) => void
 }) {
+  const t = useT()
   const recent = useRecentFonts()
   const doc = styleFont
   const current = fontFromCss(value)
   const items: FontItem[] = [
-    { header: "Carattere dello stile" },
+    { header: t("Carattere dello stile") },
     {
       key: null,
       id: "doc",
@@ -233,7 +238,7 @@ export function FontCombo({
   ]
   return (
     <Combo<FontItem>
-      label="Carattere"
+      label={t("Carattere")}
       width={156}
       display={current ? current.label : doc.label}
       items={items}
@@ -276,9 +281,10 @@ export function SizeCombo({
   pt: number
   onPick: (pt: number) => void
 }) {
+  const t = useT()
   return (
     <Combo<number>
-      label="Dimensione carattere"
+      label={t("Dimensione carattere")}
       width={60}
       inputMode="decimal"
       display={fmt(pt)}

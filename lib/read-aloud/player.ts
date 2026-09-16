@@ -13,6 +13,7 @@ import {
 } from "./text"
 import type { NeuralVoice } from "./voices"
 
+import { tr } from "@/lib/i18n/client"
 /**
  * Il lettore ad alta voce: uno solo per pagina, fuori da React, così la
  * lettura continua anche cambiando scheda della barra multifunzione. Legge una
@@ -155,8 +156,10 @@ class SystemEngine implements Engine {
       window.clearInterval(this.timer)
       hooks.onError(
         e.error === "not-allowed"
-          ? "Il browser ha bloccato la voce: premi di nuovo «Leggi ad alta voce»."
-          : "La voce del sistema si è interrotta."
+          ? tr(
+              "Il browser ha bloccato la voce: premi di nuovo «Leggi ad alta voce»."
+            )
+          : tr("La voce del sistema si è interrotta.")
       )
     }
     // Safari perde la frase se parte nello stesso istante dell'annullamento
@@ -279,7 +282,9 @@ class NeuralEngine implements Engine {
       .catch((error: unknown) => {
         if (token !== this.token) return
         hooks.onError(
-          error instanceof Error ? error.message : "La voce non ha risposto."
+          error instanceof Error
+            ? error.message
+            : tr("La voce non ha risposto.")
         )
       })
   }
@@ -347,7 +352,11 @@ class Reader {
     const { from, to } = editor.state.selection
     const sentences = sentencesOf(editor.state.doc, from, to, lang)
     if (!sentences.length) {
-      update({ ...IDLE, rate, error: "Niente da leggere da qui in avanti." })
+      update({
+        ...IDLE,
+        rate,
+        error: tr("Niente da leggere da qui in avanti."),
+      })
       return false
     }
     this.editor = editor
@@ -361,7 +370,7 @@ class Reader {
       state: voice.kind === "neural" ? "loading" : "playing",
       total: sentences.length,
       rate,
-      voiceName: voice.voice?.name ?? "Voce predefinita",
+      voiceName: voice.voice?.name ?? tr("Voce predefinita"),
     })
     const ready = await this.prepare(voice, session)
     if (!ready || session !== this.session) return false
@@ -404,7 +413,7 @@ class Reader {
     } catch (error) {
       if (session !== this.session) return false
       this.fail(
-        error instanceof Error ? error.message : "Voce non disponibile."
+        error instanceof Error ? error.message : tr("Voce non disponibile.")
       )
       return false
     }
@@ -540,7 +549,7 @@ class Reader {
     const session = ++this.session
     const wasPaused = snapshot.state === "paused"
     const at = this.resumePoint()
-    update({ voiceName: voice.voice?.name ?? "Voce predefinita" })
+    update({ voiceName: voice.voice?.name ?? tr("Voce predefinita") })
     const ready = await this.prepare(voice, session)
     if (!ready || session !== this.session) return
     if (wasPaused) {

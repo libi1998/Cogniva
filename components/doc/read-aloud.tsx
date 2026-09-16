@@ -61,6 +61,7 @@ import {
   RibbonRows,
 } from "./ribbon/ribbon-ui"
 
+import { useT, useRegion } from "@/lib/i18n/client"
 /**
  * «Leggi ad alta voce» di Word: legge dal cursore (o la selezione) con una voce
  * del sistema o con una voce neurale che gira sul dispositivo, evidenziando la
@@ -155,7 +156,9 @@ export function ReadAloudGroup({
   editor: Editor
   language: string
 }) {
-  const lang = language || "it-IT"
+  const t = useT()
+  const region = useRegion()
+  const lang = language || region
   const snap = useReader()
   const system = systemVoicesFor(useSystemVoices(), lang)
   const neural = neuralVoicesFor(lang)
@@ -176,9 +179,10 @@ export function ReadAloudGroup({
 
   const lastError = React.useRef<string | null>(null)
   React.useEffect(() => {
-    if (snap.error && snap.error !== lastError.current) toast.error(snap.error)
+    if (snap.error && snap.error !== lastError.current)
+      toast.error(t(snap.error))
     lastError.current = snap.error
-  }, [snap.error])
+  }, [snap.error, t])
 
   const choose = (next: VoiceChoice) => {
     saveVoiceChoice(lang, next)
@@ -208,14 +212,14 @@ export function ReadAloudGroup({
   const reading = snap.state !== "idle"
 
   return (
-    <RibbonGroup label="Voce" safe>
+    <RibbonGroup label={t("Voce")} safe>
       <RibbonButton
         large
-        label={reading ? "Interrompi lettura" : "Leggi ad alta voce"}
+        label={reading ? t("Interrompi lettura") : t("Leggi ad alta voce")}
         title={
           supported
-            ? "Legge il documento dal cursore, o solo il testo selezionato"
-            : "Lettura ad alta voce non disponibile in questo browser"
+            ? t("Legge il documento dal cursore, o solo il testo selezionato")
+            : t("Lettura ad alta voce non disponibile in questo browser")
         }
         disabled={!supported || !voice}
         active={reading}
@@ -231,7 +235,7 @@ export function ReadAloudGroup({
       <RibbonRows>
         <RibbonButton
           compact
-          label={snap.state === "paused" ? "Riprendi" : "Pausa"}
+          label={snap.state === "paused" ? t("Riprendi") : t("Pausa")}
           disabled={snap.state !== "playing" && snap.state !== "paused"}
           icon={
             snap.state === "paused" ? (
@@ -251,13 +255,13 @@ export function ReadAloudGroup({
             <RibbonButton
               compact
               chevron
-              label={`Velocità ${formatRate(rate)}`}
+              label={t("Velocità {rate}", { rate: formatRate(rate) })}
               disabled={!supported}
               className="justify-start"
             />
           }
         >
-          <DropdownMenuLabel>Velocità di lettura</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("Velocità di lettura")}</DropdownMenuLabel>
           {RATES.map((r) => (
             <DropdownMenuItem
               key={r}
@@ -267,7 +271,7 @@ export function ReadAloudGroup({
               {formatRate(r)}
               {r === 1 ? (
                 <span className="ml-auto text-xs text-muted-foreground">
-                  normale
+                  {t("normale||velocità di lettura")}
                 </span>
               ) : null}
             </DropdownMenuItem>
@@ -310,6 +314,7 @@ function VoicePicker({
   onChoose: (choice: VoiceChoice) => void
   disabled: boolean
 }) {
+  const t = useT()
   const [progress, setProgress] = React.useState<Record<string, number>>({})
   const neuralAvailable = audioSupported()
 
@@ -327,7 +332,7 @@ function VoicePicker({
       })
       .catch((error: unknown) =>
         toast.error(
-          error instanceof Error ? error.message : "Download non riuscito"
+          error instanceof Error ? t(error.message) : t("Download non riuscito")
         )
       )
       .finally(() =>
@@ -344,7 +349,7 @@ function VoicePicker({
       ? current.voice.name
       : current?.voice
         ? current.voice.name.replace(/^(Microsoft|Google)\s+/, "")
-        : "Voce"
+        : t("Voce")
 
   return (
     <Popover onOpenChange={(open) => !open && stopPreview()}>
@@ -354,7 +359,7 @@ function VoicePicker({
           <RibbonButton
             compact
             label={label}
-            title="Scegli la voce di lettura"
+            title={t("Scegli la voce di lettura")}
             icon={<Headphones className="size-4" />}
             className="max-w-[150px] justify-start"
           />
@@ -365,23 +370,25 @@ function VoicePicker({
         className="max-h-[min(70vh,560px)] w-[min(92vw,380px)] gap-0 overflow-y-auto p-0"
       >
         <div className="border-b border-border px-3 py-2.5">
-          <div className="text-sm font-medium">Voce di lettura</div>
+          <div className="text-sm font-medium">{t("Voce di lettura")}</div>
           <p className="text-xs text-muted-foreground">
-            Si ricorda per ogni lingua. Lingua del documento: {lang}
+            {t("Si ricorda per ogni lingua. Lingua del documento: {language}", {
+              language: lang,
+            })}
           </p>
         </div>
 
         <section className="px-1.5 py-2">
           <h3 className="flex items-center gap-1.5 px-1.5 pb-1 text-xs font-medium text-muted-foreground">
-            <Sparkles className="size-3.5" /> Voci neurali Cogniva
+            <Sparkles className="size-3.5" /> {t("Voci neurali Cogniva")}
           </h3>
           {!neuralAvailable ? (
             <p className="px-1.5 text-xs text-muted-foreground">
-              Questo browser non supporta l&apos;audio necessario.
+              {t("Questo browser non supporta l'audio necessario.")}
             </p>
           ) : !neural.length ? (
             <p className="px-1.5 text-xs text-muted-foreground">
-              Ancora nessuna voce neurale per questa lingua.
+              {t("Ancora nessuna voce neurale per questa lingua.")}
             </p>
           ) : (
             neural.map((voice) => {
@@ -417,8 +424,10 @@ function VoicePicker({
                       <span className="block text-sm">
                         {voice.name}{" "}
                         <span className="text-xs text-muted-foreground">
-                          {voice.gender === "F" ? "femminile" : "maschile"} ·{" "}
-                          {voice.lang}
+                          {voice.gender === "F"
+                            ? t("femminile")
+                            : t("maschile")}{" "}
+                          · {voice.lang}
                         </span>
                       </span>
                       <span className="block truncate text-[11px] text-muted-foreground">
@@ -427,7 +436,9 @@ function VoicePicker({
                       {fraction !== undefined ? (
                         <span
                           role="progressbar"
-                          aria-label={`Download di ${voice.name}`}
+                          aria-label={t("Download di {name}", {
+                            name: voice.name,
+                          })}
                           aria-valuemin={0}
                           aria-valuemax={100}
                           aria-valuenow={Math.round(fraction * 100)}
@@ -448,14 +459,14 @@ function VoicePicker({
                   ) : ready ? (
                     <>
                       <IconButton
-                        title={`Ascolta ${voice.name}`}
+                        title={t("Ascolta {name}", { name: voice.name })}
                         onClick={() => {
                           void previewNeuralVoice(voice, rate).catch(
                             (error: unknown) =>
                               toast.error(
                                 error instanceof Error
-                                  ? error.message
-                                  : "Anteprima non riuscita"
+                                  ? t(error.message)
+                                  : t("Anteprima non riuscita")
                               )
                           )
                         }}
@@ -463,11 +474,15 @@ function VoicePicker({
                         <Play className="size-3.5" />
                       </IconButton>
                       <IconButton
-                        title={`Elimina ${voice.name} dal dispositivo`}
+                        title={t("Elimina {name} dal dispositivo", {
+                          name: voice.name,
+                        })}
                         onClick={() => {
                           void deleteVoice(voice).then(() => {
                             onDownloaded()
-                            toast.success(`${voice.name} eliminata`)
+                            toast.success(
+                              t("{name} eliminata", { name: voice.name })
+                            )
                           })
                         }}
                       >
@@ -476,7 +491,10 @@ function VoicePicker({
                     </>
                   ) : (
                     <IconButton
-                      title={`Scarica ${voice.name} (${megabytes(voice.bytes)} MB)`}
+                      title={t("Scarica {name} ({bytes} MB)", {
+                        name: voice.name,
+                        bytes: megabytes(voice.bytes),
+                      })}
                       onClick={() => download(voice)}
                     >
                       <Download className="size-3.5" />
@@ -490,21 +508,23 @@ function VoicePicker({
             })
           )}
           <p className="px-1.5 pt-1 text-[11px] leading-snug text-muted-foreground">
-            Si scaricano una volta e poi funzionano offline: il testo non esce
-            dal dispositivo. Motore Piper (MIT) con espeak-ng (GPL-3.0),
-            caricato dalla sua CDN.
+            {t(
+              "Si scaricano una volta e poi funzionano offline: il testo non esce dal dispositivo. Motore Piper (MIT) con espeak-ng (GPL-3.0), caricato dalla sua CDN."
+            )}
           </p>
         </section>
 
         <section className="border-t border-border px-1.5 py-2">
           <h3 className="px-1.5 pb-1 text-xs font-medium text-muted-foreground">
-            Voci del sistema
+            {t("Voci del sistema")}
           </h3>
           {!system.length ? (
             <p className="px-1.5 text-xs text-muted-foreground">
               {speechSupported()
-                ? "Il sistema non ha voci per questa lingua: puoi aggiungerle dalle impostazioni di accessibilità del computer."
-                : "Questo browser non ha voci di sistema."}
+                ? t(
+                    "Il sistema non ha voci per questa lingua: puoi aggiungerle dalle impostazioni di accessibilità del computer."
+                  )
+                : t("Questo browser non ha voci di sistema.")}
             </p>
           ) : (
             system.map((voice) => {
@@ -534,7 +554,7 @@ function VoicePicker({
                     <span className="truncate">{voice.name}</span>
                     {isNaturalVoice(voice) ? (
                       <span className="shrink-0 rounded bg-primary/10 px-1 text-[10px] font-medium text-primary">
-                        Naturale
+                        {t("Naturale")}
                       </span>
                     ) : null}
                     {!voice.localService ? (
@@ -544,7 +564,7 @@ function VoicePicker({
                     ) : null}
                   </button>
                   <IconButton
-                    title={`Ascolta ${voice.name}`}
+                    title={t("Ascolta {name}", { name: voice.name })}
                     onClick={() => previewSystemVoice(voice, lang, rate)}
                   >
                     <Play className="size-3.5" />
@@ -583,6 +603,7 @@ function IconButton({
 
 /** I comandi che restano a portata di mano mentre si ascolta */
 export function ReadAloudBar() {
+  const t = useT()
   const snap = useReader()
   if (snap.state === "idle") return null
   const loading = snap.state === "loading"
@@ -591,7 +612,7 @@ export function ReadAloudBar() {
   return (
     <div
       role="toolbar"
-      aria-label="Lettura ad alta voce"
+      aria-label={t("Lettura ad alta voce")}
       className="pointer-events-none fixed inset-x-0 bottom-12 z-40 flex justify-center px-4"
     >
       <div className="pointer-events-auto flex max-w-full items-center gap-1 rounded-full border border-border bg-card/95 py-1 pr-1 pl-3 shadow-lg backdrop-blur">
@@ -599,8 +620,10 @@ export function ReadAloudBar() {
           <span className="flex items-center gap-2 pr-2 text-xs text-muted-foreground">
             <LoaderCircle className="size-4 animate-spin" />
             {snap.download !== null && snap.download < 1
-              ? `Scarico la voce… ${Math.round(snap.download * 100)}%`
-              : "Preparo la voce…"}
+              ? t("Scarico la voce… {percent}%", {
+                  percent: Math.round(snap.download * 100),
+                })
+              : t("Preparo la voce…")}
           </span>
         ) : (
           <span className="hidden max-w-40 truncate pr-1 text-xs text-muted-foreground sm:inline">
@@ -611,8 +634,8 @@ export function ReadAloudBar() {
           type="button"
           className={control}
           disabled={loading}
-          title="Paragrafo precedente"
-          aria-label="Paragrafo precedente"
+          title={t("Paragrafo precedente")}
+          aria-label={t("Paragrafo precedente")}
           onClick={() => reader.previous()}
         >
           <SkipBack className="size-4" />
@@ -624,8 +647,8 @@ export function ReadAloudBar() {
             "bg-primary text-primary-foreground hover:bg-primary/90"
           )}
           disabled={loading}
-          title={snap.state === "paused" ? "Riprendi" : "Pausa"}
-          aria-label={snap.state === "paused" ? "Riprendi" : "Pausa"}
+          title={snap.state === "paused" ? t("Riprendi") : t("Pausa")}
+          aria-label={snap.state === "paused" ? t("Riprendi") : t("Pausa")}
           onClick={() =>
             snap.state === "paused" ? reader.resume() : reader.pause()
           }
@@ -640,8 +663,8 @@ export function ReadAloudBar() {
           type="button"
           className={control}
           disabled={loading}
-          title="Paragrafo successivo"
-          aria-label="Paragrafo successivo"
+          title={t("Paragrafo successivo")}
+          aria-label={t("Paragrafo successivo")}
           onClick={() => reader.next()}
         >
           <SkipForward className="size-4" />
@@ -650,8 +673,8 @@ export function ReadAloudBar() {
         <button
           type="button"
           className={control}
-          title="Interrompi lettura"
-          aria-label="Interrompi lettura"
+          title={t("Interrompi lettura")}
+          aria-label={t("Interrompi lettura")}
           onClick={() => reader.stop()}
         >
           <X className="size-4" />
@@ -662,11 +685,12 @@ export function ReadAloudBar() {
 }
 
 function RateCycle({ rate }: { rate: number }) {
+  const t = useT()
   return (
     <button
       type="button"
-      title="Velocità: clic per cambiarla"
-      aria-label={`Velocità ${formatRate(rate)}`}
+      title={t("Velocità: clic per cambiarla")}
+      aria-label={t("Velocità {rate}", { rate: formatRate(rate) })}
       className="flex h-8 min-w-12 items-center justify-center gap-0.5 rounded-full px-2 text-xs tabular-nums hover:bg-muted"
       onClick={() => {
         const next = RATES[(RATES.indexOf(rate) + 1) % RATES.length] ?? 1

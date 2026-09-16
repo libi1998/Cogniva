@@ -1,3 +1,4 @@
+import { tr } from "@/lib/i18n/client"
 /**
  * Le voci neurali che Cogniva fa parlare sul dispositivo (Piper, VITS).
  * Solo voci addestrate su dati liberi (CC0, pubblico dominio, CC-BY): i
@@ -45,7 +46,7 @@ export const NEURAL_VOICES: NeuralVoice[] = [
     sha256: "6fc918b5a0ea6137382833dddfa567bffbe6a5060c02043c87192ee59c04210c",
     bytes: 63511038,
     license: "CC0 1.0",
-    credit: "Dataset di Paola Persico",
+    credit: "Paola Persico (dataset)",
   }),
   voice("en/en_US/kristin/medium", "en_US-kristin-medium", {
     lang: "en-US",
@@ -53,7 +54,9 @@ export const NEURAL_VOICES: NeuralVoice[] = [
     gender: "F",
     sha256: "5849957f929cbf720c258f8458692d6103fff2f0e3d3b19c8259474bb06a18d4",
     bytes: 63531379,
-    license: "Pubblico dominio",
+    get license() {
+      return tr("Pubblico dominio")
+    },
     credit: "LibriVox",
   }),
   voice("en/en_US/john/medium", "en_US-john-medium", {
@@ -62,7 +65,9 @@ export const NEURAL_VOICES: NeuralVoice[] = [
     gender: "M",
     sha256: "789c6c875726e627ddee93d51d8727859abe9c091c3d141591f4b83c2072e988",
     bytes: 63531379,
-    license: "Pubblico dominio",
+    get license() {
+      return tr("Pubblico dominio")
+    },
     credit: "LibriVox",
   }),
   voice("en/en_GB/alba/medium", "en_GB-alba-medium", {
@@ -122,7 +127,9 @@ export const NEURAL_VOICES: NeuralVoice[] = [
   voice("es/es_ES/sharvard/medium", "es_ES-sharvard-medium", {
     id: "es_ES-sharvard-medium-F",
     lang: "es-ES",
-    name: "Sharvard (femminile)",
+    get name() {
+      return tr("Sharvard (femminile)")
+    },
     gender: "F",
     speaker: 1,
     sha256: "40febfb1679c69a4505ff311dc136e121e3419a13a290ef264fdf43ddedd0fb1",

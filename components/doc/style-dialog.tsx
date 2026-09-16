@@ -50,34 +50,115 @@ import {
   withStyle,
 } from "./style-actions"
 
+import { useT, tr } from "@/lib/i18n/client"
 export type StyleDialogRequest =
   { mode: "modify"; id: string } | { mode: "new"; baseId: string }
 
 const KIND_OPTIONS: { value: string; label: string }[] = [
-  { value: "paragraph", label: "Paragrafo" },
-  { value: "title", label: "Titolo del documento" },
-  { value: "heading-1", label: "Titolo, livello 1" },
-  { value: "heading-2", label: "Titolo, livello 2" },
-  { value: "heading-3", label: "Titolo, livello 3" },
-  { value: "quote", label: "Citazione" },
-  { value: "code", label: "Codice" },
+  {
+    value: "paragraph",
+    get label() {
+      return tr("Paragrafo")
+    },
+  },
+  {
+    value: "title",
+    get label() {
+      return tr("Titolo del documento")
+    },
+  },
+  {
+    value: "heading-1",
+    get label() {
+      return tr("Titolo, livello 1")
+    },
+  },
+  {
+    value: "heading-2",
+    get label() {
+      return tr("Titolo, livello 2")
+    },
+  },
+  {
+    value: "heading-3",
+    get label() {
+      return tr("Titolo, livello 3")
+    },
+  },
+  {
+    value: "quote",
+    get label() {
+      return tr("Citazione")
+    },
+  },
+  {
+    value: "code",
+    get label() {
+      return tr("Codice")
+    },
+  },
 ]
 
 const LINE_OPTIONS = [1, 1.15, 1.3, 1.5, 1.62, 2, 2.5, 3]
 
 const BORDER_OPTIONS: { value: StyleBorder; label: string }[] = [
-  { value: "none", label: "Nessuno" },
-  { value: "bottom", label: "Sotto" },
-  { value: "top", label: "Sopra" },
-  { value: "left", label: "Barra a sinistra" },
-  { value: "topBottom", label: "Sopra e sotto" },
-  { value: "box", label: "Riquadro" },
+  {
+    value: "none",
+    get label() {
+      return tr("Nessuno")
+    },
+  },
+  {
+    value: "bottom",
+    get label() {
+      return tr("Sotto")
+    },
+  },
+  {
+    value: "top",
+    get label() {
+      return tr("Sopra")
+    },
+  },
+  {
+    value: "left",
+    get label() {
+      return tr("Barra a sinistra")
+    },
+  },
+  {
+    value: "topBottom",
+    get label() {
+      return tr("Sopra e sotto")
+    },
+  },
+  {
+    value: "box",
+    get label() {
+      return tr("Riquadro")
+    },
+  },
 ]
 
 const CAPS_OPTIONS: { value: StyleCaps; label: string }[] = [
-  { value: "none", label: "Normali" },
-  { value: "small", label: "Maiuscoletto" },
-  { value: "all", label: "Tutte maiuscole" },
+  {
+    value: "none",
+    get label() {
+      return tr("Normali")
+    },
+  },
+  {
+    value: "small",
+    get label() {
+      return tr("Maiuscoletto")
+    },
+  },
+  {
+    value: "all",
+    get label() {
+      return tr("Tutte maiuscole")
+    },
+  },
 ]
 
 const CM_PER_PT = 2.54 / 72
@@ -99,19 +180,37 @@ function kindValue(kind: StyleKind, level?: number) {
 /** Descrizione a parole, come quella sotto l'anteprima di Word */
 function describe(theme: DocTheme, p: StyleProps, basedOn: string | null) {
   const parts = [
-    `Carattere: ${styleFontLabel(theme, p.font)}, ${fmt(p.size)} pt`,
-    p.bold ? "Grassetto" : null,
-    p.italic ? "Corsivo" : null,
-    p.underline ? "Sottolineato" : null,
-    p.caps === "small" ? "Maiuscoletto" : p.caps === "all" ? "Maiuscole" : null,
+    tr("Carattere: {theme}, {count} pt", {
+      theme: styleFontLabel(theme, p.font),
+      count: fmt(p.size),
+    }),
+    p.bold ? tr("Grassetto") : null,
+    p.italic ? tr("Corsivo") : null,
+    p.underline ? tr("Sottolineato") : null,
+    p.caps === "small"
+      ? tr("Maiuscoletto")
+      : p.caps === "all"
+        ? tr("Maiuscole")
+        : null,
     p.color
-      ? `Colore: ${p.color === "accent" ? "accento" : p.color === "muted" ? "attenuato" : p.color}`
+      ? tr("Colore: {color}", {
+          color:
+            p.color === "accent"
+              ? tr("accento")
+              : p.color === "muted"
+                ? tr("attenuato")
+                : p.color,
+        })
       : null,
-    `Interlinea: ${fmt(p.lineHeight, 2)}`,
-    `Spazio prima: ${fmt(p.spaceBefore)} pt`,
-    `Dopo: ${fmt(p.spaceAfter)} pt`,
-    p.indentLeft ? `Rientro: ${fmt(p.indentLeft * CM_PER_PT, 2)} cm` : null,
-    basedOn ? `Basato su: ${resolveStyle(theme, basedOn).name}` : null,
+    tr("Interlinea: {value}", { value: fmt(p.lineHeight, 2) }),
+    tr("Spazio prima: {value} pt", { value: fmt(p.spaceBefore) }),
+    tr("Dopo: {value} pt", { value: fmt(p.spaceAfter) }),
+    p.indentLeft
+      ? tr("Rientro: {value} cm", { value: fmt(p.indentLeft * CM_PER_PT, 2) })
+      : null,
+    basedOn
+      ? tr("Basato su: {name}", { name: resolveStyle(theme, basedOn).name })
+      : null,
   ]
   return parts.filter(Boolean).join(" · ")
 }
@@ -172,6 +271,7 @@ function StyleForm({
   onClose: () => void
   onCreated: (id: string, theme: DocTheme) => void
 }) {
+  const t = useT()
   // la bozza: id e definizione (solo i valori cambiati rispetto alla base)
   const [draft, setDraft] = React.useState<{ id: string; def: DocStyleDef }>(
     () => {
@@ -181,7 +281,11 @@ function StyleForm({
           def: { ...(theme.styles?.[request.id] ?? {}) },
         }
       }
-      const name = `Stile ${Object.keys(theme.styles ?? {}).filter((k) => k.startsWith("user-")).length + 1}`
+      const name = t("Stile {number}", {
+        number:
+          Object.keys(theme.styles ?? {}).filter((k) => k.startsWith("user-"))
+            .length + 1,
+      })
       if (editor)
         return createStyleFromSelection(editor, theme, name, request.baseId)
       return {
@@ -255,20 +359,20 @@ function StyleForm({
     >
       <DialogHeader className="border-b border-border px-5 py-4">
         <DialogTitle>
-          {request.mode === "new" ? "Crea stile" : "Modifica stile"}
+          {request.mode === "new" ? t("Crea stile") : t("Modifica stile")}
         </DialogTitle>
         <DialogDescription>
-          Le modifiche valgono per tutti i paragrafi con questo stile.
+          {t("Le modifiche valgono per tutti i paragrafi con questo stile.")}
         </DialogDescription>
       </DialogHeader>
 
       <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-4">
         <section className="space-y-2.5">
           <h4 className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-            Proprietà
+            {t("Proprietà")}
           </h4>
           <div className="grid gap-2.5 sm:grid-cols-2">
-            <Field label="Nome">
+            <Field label={t("Nome")}>
               <Input
                 value={draft.def.name ?? style.name}
                 onChange={(e) => set({ name: e.target.value })}
@@ -276,7 +380,7 @@ function StyleForm({
                 disabled={Boolean(builtin) && draft.id === "normal"}
               />
             </Field>
-            <Field label="Tipo di stile">
+            <Field label={t("Tipo di stile")}>
               <NativeSelect
                 value={kindValue(style.kind, style.level)}
                 disabled={Boolean(builtin)}
@@ -291,20 +395,20 @@ function StyleForm({
                 options={KIND_OPTIONS}
               />
             </Field>
-            <Field label="Basato su">
+            <Field label={t("Basato su")}>
               <NativeSelect
                 value={style.basedOn ?? ""}
                 disabled={draft.id === "normal"}
                 onChange={(v) => set({ basedOn: v || null })}
                 options={[
-                  { value: "", label: "(nessuno)" },
+                  { value: "", label: t("(nessuno)") },
                   ...all
                     .filter((s) => !descendants.has(s.id))
                     .map((s) => ({ value: s.id, label: s.name })),
                 ]}
               />
             </Field>
-            <Field label="Stile del paragrafo successivo">
+            <Field label={t("Stile del paragrafo successivo")}>
               <NativeSelect
                 value={style.next ?? draft.id}
                 onChange={(v) => set({ next: v })}
@@ -312,7 +416,10 @@ function StyleForm({
                   .filter((s) => s.kind !== "code" && s.kind !== "quote")
                   .map((s) => ({
                     value: s.id,
-                    label: s.id === draft.id ? `${s.name} (lo stesso)` : s.name,
+                    label:
+                      s.id === draft.id
+                        ? t("{name} (lo stesso)", { name: s.name })
+                        : s.name,
                   }))}
               />
             </Field>
@@ -321,7 +428,7 @@ function StyleForm({
 
         <section className="space-y-2.5">
           <h4 className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-            Carattere
+            {t("Carattere")}
           </h4>
           <div className="flex flex-wrap items-center gap-1.5">
             <div className="w-[210px]">
@@ -333,21 +440,21 @@ function StyleForm({
             </div>
             <SizeCombo pt={p.size} onPick={(size) => set({ size })} />
             <Toggle
-              label="Grassetto"
+              label={t("Grassetto")}
               active={p.bold}
               onClick={() => set({ bold: !p.bold })}
             >
               <Bold className="size-4" />
             </Toggle>
             <Toggle
-              label="Corsivo"
+              label={t("Corsivo")}
               active={p.italic}
               onClick={() => set({ italic: !p.italic })}
             >
               <Italic className="size-4" />
             </Toggle>
             <Toggle
-              label="Sottolineato"
+              label={t("Sottolineato")}
               active={p.underline}
               onClick={() => set({ underline: !p.underline })}
             >
@@ -361,12 +468,12 @@ function StyleForm({
             />
           </div>
           <div className="space-y-1.5">
-            <span className="text-xs text-muted-foreground">Colore</span>
+            <span className="text-xs text-muted-foreground">{t("Colore")}</span>
             <div className="flex flex-wrap items-center gap-1.5">
               {[
-                { label: "Automatico", value: "" },
-                { label: "Accento del tema", value: "accent" },
-                { label: "Attenuato", value: "muted" },
+                { label: t("Automatico"), value: "" },
+                { label: t("Accento del tema"), value: "accent" },
+                { label: t("Attenuato"), value: "muted" },
                 ...TEXT_COLORS.slice(1),
               ].map((c) => (
                 <button
@@ -400,15 +507,15 @@ function StyleForm({
 
         <section className="space-y-2.5">
           <h4 className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-            Paragrafo
+            {t("Paragrafo")}
           </h4>
           <div className="flex flex-wrap items-center gap-1.5">
             {(
               [
-                ["left", "A sinistra", AlignLeft],
+                ["left", t("A sinistra"), AlignLeft],
                 ["center", "Al centro", AlignCenter],
-                ["right", "A destra", AlignRight],
-                ["justify", "Giustificato", AlignJustify],
+                ["right", t("A destra"), AlignRight],
+                ["justify", t("Giustificato"), AlignJustify],
               ] as [StyleAlign, string, typeof AlignLeft][]
             ).map(([value, label, Icon]) => (
               <Toggle
@@ -421,7 +528,7 @@ function StyleForm({
               </Toggle>
             ))}
             <span className="ml-3 text-xs text-muted-foreground">
-              Interlinea
+              {t("Interlinea")}
             </span>
             <NativeSelect
               value={String(p.lineHeight)}
@@ -434,7 +541,7 @@ function StyleForm({
           </div>
           <div className="grid gap-x-6 gap-y-1 sm:grid-cols-2">
             <Stepper
-              label="Spazio prima"
+              label={t("Spazio prima")}
               value={p.spaceBefore}
               unit="pt"
               step={2}
@@ -446,7 +553,7 @@ function StyleForm({
               onChange={(spaceBefore) => set({ spaceBefore })}
             />
             <Stepper
-              label="Spazio dopo"
+              label={t("Spazio dopo")}
               value={p.spaceAfter}
               unit="pt"
               step={2}
@@ -458,7 +565,7 @@ function StyleForm({
               onChange={(spaceAfter) => set({ spaceAfter })}
             />
             <Stepper
-              label="Rientro"
+              label={t("Rientro")}
               value={p.indentLeft * CM_PER_PT}
               unit="cm"
               step={0.25}
@@ -470,7 +577,7 @@ function StyleForm({
               onChange={(cm) => set({ indentLeft: Math.round(cm / CM_PER_PT) })}
             />
             <Stepper
-              label="Prima riga"
+              label={t("Prima riga")}
               value={p.firstLine * CM_PER_PT}
               unit="cm"
               step={0.25}
@@ -482,7 +589,7 @@ function StyleForm({
               onChange={(cm) => set({ firstLine: Math.round(cm / CM_PER_PT) })}
             />
             <Stepper
-              label="Spaziatura"
+              label={t("Spaziatura")}
               value={p.letterSpacing}
               unit="pt"
               step={0.2}
@@ -494,7 +601,7 @@ function StyleForm({
               onChange={(letterSpacing) => set({ letterSpacing })}
             />
             <label className="flex h-7 items-center gap-1.5 text-xs text-muted-foreground">
-              <span className="w-[62px] shrink-0">Bordo</span>
+              <span className="w-[62px] shrink-0">{t("Bordo")}</span>
               <NativeSelect
                 value={p.border}
                 onChange={(v) => set({ border: v as StyleBorder })}
@@ -505,16 +612,16 @@ function StyleForm({
           </div>
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="w-[62px] shrink-0 text-xs text-muted-foreground">
-              Sfondo
+              {t("Sfondo")}
             </span>
             {[
-              { label: "Nessuno", value: "" },
-              { label: "Accento tenue", value: "accent-soft" },
-              { label: "Grigio", value: "#f4f4f5" },
-              { label: "Giallo", value: "#fef9c3" },
-              { label: "Verde", value: "#dcfce7" },
-              { label: "Azzurro", value: "#dbeafe" },
-              { label: "Rosa", value: "#fce7f3" },
+              { label: t("Nessuno"), value: "" },
+              { label: t("Accento tenue"), value: "accent-soft" },
+              { label: t("Grigio"), value: "#f4f4f5" },
+              { label: t("Giallo"), value: "#fef9c3" },
+              { label: t("Verde"), value: "#dcfce7" },
+              { label: t("Azzurro"), value: "#dbeafe" },
+              { label: t("Rosa"), value: "#fce7f3" },
             ].map((c) => (
               <button
                 key={c.label}
@@ -538,7 +645,7 @@ function StyleForm({
 
         <section className="space-y-2">
           <h4 className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-            Anteprima
+            {t("Anteprima")}
           </h4>
           <StylePreview theme={theme} props={p} />
           <p className="text-[11px] leading-relaxed text-muted-foreground">
@@ -556,7 +663,7 @@ function StyleForm({
               size="sm"
               onClick={() => setDraft((d) => ({ ...d, def: {} }))}
             >
-              <RotateCcw className="size-3.5" /> Valori predefiniti
+              <RotateCcw className="size-3.5" /> {t("Valori predefiniti")}
             </Button>
           ) : null}
           {editor && request.mode === "modify" ? (
@@ -564,20 +671,20 @@ function StyleForm({
               type="button"
               variant="ghost"
               size="sm"
-              title="Prende l'aspetto del testo dove si trova il cursore"
+              title={t("Prende l'aspetto del testo dove si trova il cursore")}
               onClick={() =>
                 set(
                   propsFromSelection(editor, preview, style.basedOn ?? "normal")
                 )
               }
             >
-              Come la selezione
+              {t("Come la selezione")}
             </Button>
           ) : null}
         </div>
         <div className="ml-auto flex gap-2">
           <Button type="button" variant="outline" onClick={onClose}>
-            Annulla
+            {t("Annulla")}
           </Button>
           <Button type="submit">OK</Button>
         </div>
@@ -594,6 +701,7 @@ export function StylePreview({
   theme: DocTheme
   props: StyleProps
 }) {
+  const t = useT()
   const line = "h-1.5 rounded-full bg-zinc-300/70 dark:bg-zinc-600/70"
   return (
     <div className="space-y-1.5 overflow-hidden rounded-lg border border-border bg-white p-4 text-zinc-800 dark:bg-zinc-900 dark:text-zinc-100">
@@ -636,7 +744,7 @@ export function StylePreview({
           padding: p.border !== "none" || p.background ? "4px 10px" : undefined,
         }}
       >
-        La volpe veloce salta sopra il cane pigro.
+        {t("La volpe veloce salta sopra il cane pigro.")}
       </div>
       <div className={cn(line, "w-[96%]")} />
       <div className={cn(line, "w-[84%]")} />

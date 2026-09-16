@@ -2,31 +2,39 @@
 
 import * as React from "react"
 import { STORAGE, readStorage } from "./storage"
+import { tr } from "@/lib/i18n/client"
 
 /**
  * Il nome con cui si firmano commenti e risposte. È una preferenza di chi usa
  * l'app, non del documento: vive nel browser.
  */
 const KEY = STORAGE.author
-const FALLBACK = "Io"
+/** chi non ha scritto un nome firma «Io», nella lingua dell'app */
+const fallback = () => tr("Io")
 
+/** il nome scritto da chi usa l'app, vuoto se non l'ha mai scelto */
 let cache: string | null = null
 const listeners = new Set<() => void>()
 
-function read() {
+function saved() {
   if (cache !== null) return cache
   try {
-    cache = readStorage(KEY)?.trim() || FALLBACK
+    const name = readStorage(KEY)?.trim() ?? ""
+    // le versioni precedenti salvavano «Io» al posto del nome vuoto
+    cache = name === "Io" ? "" : name
   } catch {
-    cache = FALLBACK
+    cache = ""
   }
   return cache
 }
 
+const read = () => saved() || fallback()
+
 export function setAuthor(name: string) {
-  cache = name.trim() || FALLBACK
+  cache = name.trim()
   try {
-    localStorage.setItem(KEY, cache)
+    if (cache) localStorage.setItem(KEY, cache)
+    else localStorage.removeItem(KEY)
   } catch {
     // senza localStorage il nome vale solo per questa sessione
   }
@@ -44,6 +52,6 @@ export function useAuthor() {
       return () => listeners.delete(l)
     },
     read,
-    () => FALLBACK
+    fallback
   )
 }

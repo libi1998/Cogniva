@@ -9,6 +9,7 @@ import {
 } from "@/lib/chart"
 import { rgba, whim } from "@/lib/palette"
 
+import { useT } from "@/lib/i18n/client"
 /**
  * Disegno di un grafico in SVG nativo: niente librerie, niente <foreignObject>.
  * È un <g> da mettere dentro a qualsiasi SVG, così lo usano il documento, la
@@ -108,6 +109,7 @@ export function ChartGraphic({
   dark?: boolean
   font?: string
 }) {
+  const t = useT()
   const c = chartColors(dark)
   const pad = 12
   const radial = spec.type === "pie" || spec.type === "doughnut"
@@ -147,7 +149,7 @@ export function ChartGraphic({
         fontSize={12}
         fill={c.muted}
       >
-        Nessun dato
+        {t("Nessun dato")}
       </text>
     )
   } else if (radial) {
@@ -845,6 +847,7 @@ export function ChartSvg({
   /** si allarga al contenitore mantenendo le proporzioni */
   fluid?: boolean
 }) {
+  const t = useT()
   return (
     <svg
       className={className}
@@ -852,7 +855,7 @@ export function ChartSvg({
       height={fluid ? "100%" : height}
       viewBox={`0 0 ${width} ${height}`}
       role="img"
-      aria-label={spec.title || "Grafico"}
+      aria-label={spec.title || t("Grafico")}
     >
       <ChartGraphic
         spec={spec}

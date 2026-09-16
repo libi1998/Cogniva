@@ -2,6 +2,7 @@ import type { JSONContent } from "@tiptap/core"
 import type { Node as PMNode } from "@tiptap/pm/model"
 import { isDark } from "./palette"
 
+import { tr } from "@/lib/i18n/client"
 /**
  * Strumenti della scheda Revisione che non toccano l'editor direttamente:
  * testo per la lettura ad alta voce, verifica accessibilità, confronto fra
@@ -102,9 +103,10 @@ export function checkAccessibility(doc: PMNode, paper: string): A11yIssue[] {
     issues.push({
       id: "title",
       level: "error",
-      title: "Titolo del documento mancante",
-      detail:
-        "Chi usa un lettore di schermo sente il titolo per primo: aggiungilo in cima.",
+      title: tr("Titolo del documento mancante"),
+      detail: tr(
+        "Chi usa un lettore di schermo sente il titolo per primo: aggiungilo in cima."
+      ),
       pos: first ? 0 : null,
     })
   }
@@ -127,9 +129,10 @@ export function checkAccessibility(doc: PMNode, paper: string): A11yIssue[] {
         issues.push({
           id: `empty-${pos}`,
           level: "tip",
-          title: "Paragrafi vuoti usati come spazio",
-          detail:
-            "Usa «Spazio prima» e «Spazio dopo» (scheda Layout): i lettori di schermo annunciano ogni riga vuota.",
+          title: tr("Paragrafi vuoti usati come spazio"),
+          detail: tr(
+            "Usa «Spazio prima» e «Spazio dopo» (scheda Layout): i lettori di schermo annunciano ogni riga vuota."
+          ),
           pos,
         })
       }
@@ -142,8 +145,8 @@ export function checkAccessibility(doc: PMNode, paper: string): A11yIssue[] {
         issues.push({
           id: `hempty-${pos}`,
           level: "error",
-          title: "Titolo vuoto",
-          detail: "Scrivi il titolo o riportalo a «Normale».",
+          title: tr("Titolo vuoto"),
+          detail: tr("Scrivi il titolo o riportalo a «Normale»."),
           pos,
         })
       }
@@ -151,9 +154,13 @@ export function checkAccessibility(doc: PMNode, paper: string): A11yIssue[] {
         issues.push({
           id: `hskip-${pos}`,
           level: "warning",
-          title: `Livello di titolo saltato (da ${lastLevel} a ${level})`,
-          detail:
-            "I titoli vanno in ordine: dopo un Titolo 1 viene un Titolo 2, non un Titolo 3.",
+          title: tr("Livello di titolo saltato (da {lastLevel} a {level})", {
+            lastLevel,
+            level,
+          }),
+          detail: tr(
+            "I titoli vanno in ordine: dopo un Titolo 1 viene un Titolo 2, non un Titolo 3."
+          ),
           pos,
         })
       }
@@ -163,8 +170,8 @@ export function checkAccessibility(doc: PMNode, paper: string): A11yIssue[] {
       issues.push({
         id: `alt-${pos}`,
         level: "error",
-        title: "Immagine senza testo alternativo",
-        detail: "Descrivi in una frase cosa mostra l'immagine.",
+        title: tr("Immagine senza testo alternativo"),
+        detail: tr("Descrivi in una frase cosa mostra l'immagine."),
         pos,
         fix: "alt",
       })
@@ -176,9 +183,10 @@ export function checkAccessibility(doc: PMNode, paper: string): A11yIssue[] {
       issues.push({
         id: `float-${pos}`,
         level: "tip",
-        title: "Oggetto non in linea",
-        detail:
-          "Un'immagine dietro o davanti al testo è difficile da raggiungere con la tastiera.",
+        title: tr("Oggetto non in linea"),
+        detail: tr(
+          "Un'immagine dietro o davanti al testo è difficile da raggiungere con la tastiera."
+        ),
         pos,
       })
     }
@@ -188,9 +196,10 @@ export function checkAccessibility(doc: PMNode, paper: string): A11yIssue[] {
         issues.push({
           id: `thead-${pos}`,
           level: "warning",
-          title: "Tabella senza riga di intestazione",
-          detail:
-            "Rendi la prima riga un'intestazione: i lettori di schermo la ripetono per ogni cella.",
+          title: tr("Tabella senza riga di intestazione"),
+          detail: tr(
+            "Rendi la prima riga un'intestazione: i lettori di schermo la ripetono per ogni cella."
+          ),
           pos,
         })
       }
@@ -207,9 +216,10 @@ export function checkAccessibility(doc: PMNode, paper: string): A11yIssue[] {
         issues.push({
           id: `merged-${pos}`,
           level: "tip",
-          title: "Tabella con celle unite",
-          detail:
-            "Le celle unite rendono la lettura della tabella difficile da seguire.",
+          title: tr("Tabella con celle unite"),
+          detail: tr(
+            "Le celle unite rendono la lettura della tabella difficile da seguire."
+          ),
           pos,
         })
       }
@@ -221,8 +231,11 @@ export function checkAccessibility(doc: PMNode, paper: string): A11yIssue[] {
         issues.push({
           id: `link-${pos}`,
           level: "warning",
-          title: "Testo del collegamento poco chiaro",
-          detail: `«${text.slice(0, 40)}» non dice dove porta: descrivi la destinazione.`,
+          title: tr("Testo del collegamento poco chiaro"),
+          detail: tr(
+            "«{text}» non dice dove porta: descrivi la destinazione.",
+            { text: text.slice(0, 40) }
+          ),
           pos,
         })
       }
@@ -235,8 +248,10 @@ export function checkAccessibility(doc: PMNode, paper: string): A11yIssue[] {
         issues.push({
           id: `contrast-${pos}`,
           level: "warning",
-          title: "Contrasto del testo insufficiente",
-          detail: `Rapporto ${contrastRatio(color, paperHex).toFixed(1)}:1, ne serve almeno 4,5:1.`,
+          title: tr("Contrasto del testo insufficiente"),
+          detail: tr("Rapporto {ratio}:1, ne serve almeno 4,5:1.", {
+            ratio: contrastRatio(color, paperHex).toFixed(1),
+          }),
           pos,
         })
       }
@@ -447,29 +462,129 @@ export function compareDocuments(
 /* --------------------------------- traduci ------------------------------- */
 
 export const TRANSLATE_LANGUAGES: { code: string; label: string }[] = [
-  { code: "it", label: "Italiano" },
-  { code: "en", label: "Inglese" },
-  { code: "fr", label: "Francese" },
-  { code: "de", label: "Tedesco" },
-  { code: "es", label: "Spagnolo" },
-  { code: "pt", label: "Portoghese" },
-  { code: "nl", label: "Olandese" },
-  { code: "pl", label: "Polacco" },
-  { code: "ro", label: "Rumeno" },
-  { code: "ja", label: "Giapponese" },
-  { code: "zh", label: "Cinese" },
+  {
+    code: "it",
+    get label() {
+      return tr("Italiano")
+    },
+  },
+  {
+    code: "en",
+    get label() {
+      return tr("Inglese")
+    },
+  },
+  {
+    code: "fr",
+    get label() {
+      return tr("Francese")
+    },
+  },
+  {
+    code: "de",
+    get label() {
+      return tr("Tedesco")
+    },
+  },
+  {
+    code: "es",
+    get label() {
+      return tr("Spagnolo")
+    },
+  },
+  {
+    code: "pt",
+    get label() {
+      return tr("Portoghese")
+    },
+  },
+  {
+    code: "nl",
+    get label() {
+      return tr("Olandese")
+    },
+  },
+  {
+    code: "pl",
+    get label() {
+      return tr("Polacco")
+    },
+  },
+  {
+    code: "ro",
+    get label() {
+      return tr("Rumeno")
+    },
+  },
+  {
+    code: "ja",
+    get label() {
+      return tr("Giapponese")
+    },
+  },
+  {
+    code: "zh",
+    get label() {
+      return tr("Cinese")
+    },
+  },
 ]
 
 export const PROOFING_LANGUAGES: { code: string; label: string }[] = [
-  { code: "it-IT", label: "Italiano (Italia)" },
-  { code: "it-CH", label: "Italiano (Svizzera)" },
-  { code: "en-US", label: "Inglese (Stati Uniti)" },
-  { code: "en-GB", label: "Inglese (Regno Unito)" },
-  { code: "fr-FR", label: "Francese (Francia)" },
-  { code: "de-DE", label: "Tedesco (Germania)" },
-  { code: "es-ES", label: "Spagnolo (Spagna)" },
-  { code: "pt-PT", label: "Portoghese (Portogallo)" },
-  { code: "pt-BR", label: "Portoghese (Brasile)" },
+  {
+    code: "it-IT",
+    get label() {
+      return tr("Italiano (Italia)")
+    },
+  },
+  {
+    code: "it-CH",
+    get label() {
+      return tr("Italiano (Svizzera)")
+    },
+  },
+  {
+    code: "en-US",
+    get label() {
+      return tr("Inglese (Stati Uniti)")
+    },
+  },
+  {
+    code: "en-GB",
+    get label() {
+      return tr("Inglese (Regno Unito)")
+    },
+  },
+  {
+    code: "fr-FR",
+    get label() {
+      return tr("Francese (Francia)")
+    },
+  },
+  {
+    code: "de-DE",
+    get label() {
+      return tr("Tedesco (Germania)")
+    },
+  },
+  {
+    code: "es-ES",
+    get label() {
+      return tr("Spagnolo (Spagna)")
+    },
+  },
+  {
+    code: "pt-PT",
+    get label() {
+      return tr("Portoghese (Portogallo)")
+    },
+  },
+  {
+    code: "pt-BR",
+    get label() {
+      return tr("Portoghese (Brasile)")
+    },
+  },
 ]
 
 type TranslatorApi = {
@@ -585,14 +700,18 @@ export async function createTranslator(
     if (engine === "browser") {
       throw new Error(
         state === "missing"
-          ? "Questo browser non ha un traduttore integrato: scegli il modello sul dispositivo."
-          : "Il traduttore del browser non conosce questa coppia di lingue: scegli il modello sul dispositivo."
+          ? tr(
+              "Questo browser non ha un traduttore integrato: scegli il modello sul dispositivo."
+            )
+          : tr(
+              "Il traduttore del browser non conosce questa coppia di lingue: scegli il modello sul dispositivo."
+            )
       )
     }
   }
   if (!local.canTranslateLocally(sourceLanguage, targetLanguage)) {
     throw new Error(
-      "Per questa coppia di lingue non c'è un modello sul dispositivo."
+      tr("Per questa coppia di lingue non c'è un modello sul dispositivo.")
     )
   }
   return {

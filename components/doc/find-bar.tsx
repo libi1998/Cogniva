@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { getFindState } from "@/lib/find-replace"
 
+import { useT } from "@/lib/i18n/client"
 function Toggle({
   on,
   onClick,
@@ -57,6 +58,7 @@ export function FindBar({
   /** «Sostituisci» apre il riquadro col cursore nel secondo campo */
   mode?: "find" | "replace"
 }) {
+  const t = useT()
   const [term, setTerm] = React.useState("")
   const [replacement, setReplacement] = React.useState("")
   const inputRef = React.useRef<HTMLInputElement>(null)
@@ -133,17 +135,22 @@ export function FindBar({
           ref={inputRef}
           value={term}
           onChange={(e) => setTerm(e.target.value)}
-          placeholder="Trova"
+          placeholder={t("Trova")}
           className="h-8 w-44 text-xs"
         />
         <span className="w-16 shrink-0 text-center text-[11px] text-muted-foreground tabular-nums">
-          {term ? `${find.active} di ${find.total}` : ""}
+          {term
+            ? t("{active} di {total}", {
+                active: find.active,
+                total: find.total,
+              })
+            : ""}
         </span>
         <Button
           variant="ghost"
           size="icon"
           className="size-7"
-          title="Precedente ⇧↵"
+          title={t("Precedente ⇧↵")}
           disabled={!find.total}
           onClick={() => editor.commands.findPrevious()}
         >
@@ -153,7 +160,7 @@ export function FindBar({
           variant="ghost"
           size="icon"
           className="size-7"
-          title="Successiva ↵"
+          title={t("Successiva ↵")}
           disabled={!find.total}
           onClick={() => editor.commands.findNext()}
         >
@@ -161,7 +168,7 @@ export function FindBar({
         </Button>
         <Toggle
           on={find.caseSensitive}
-          title="Maiuscole/minuscole"
+          title={t("Maiuscole/minuscole")}
           onClick={() =>
             editor.commands.setSearch({ caseSensitive: !find.caseSensitive })
           }
@@ -170,7 +177,7 @@ export function FindBar({
         </Toggle>
         <Toggle
           on={find.whole}
-          title="Solo parole intere"
+          title={t("Solo parole intere")}
           onClick={() => editor.commands.setSearch({ whole: !find.whole })}
         >
           <WholeWord className="size-4" />
@@ -182,7 +189,7 @@ export function FindBar({
           ref={replaceRef}
           value={replacement}
           onChange={(e) => setReplacement(e.target.value)}
-          placeholder="Sostituisci con"
+          placeholder={t("Sostituisci con")}
           className="h-8 w-44 text-xs"
         />
         <Button
@@ -195,7 +202,7 @@ export function FindBar({
             editor.commands.setSearch({})
           }}
         >
-          <Replace className="size-3.5" /> Sostituisci
+          <Replace className="size-3.5" /> {t("Sostituisci")}
         </Button>
         <Button
           variant="outline"
@@ -204,7 +211,7 @@ export function FindBar({
           disabled={!find.total}
           onClick={() => editor.commands.replaceAll(replacement)}
         >
-          <ReplaceAll className="size-3.5" /> Tutto
+          <ReplaceAll className="size-3.5" /> {t("Tutto")}
         </Button>
       </div>
 
@@ -212,7 +219,7 @@ export function FindBar({
         variant="ghost"
         size="icon"
         className="ml-auto size-7"
-        title="Chiudi ⎋"
+        title={t("Chiudi ⎋")}
         onClick={close}
       >
         <X className="size-4" />

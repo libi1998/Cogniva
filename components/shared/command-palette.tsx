@@ -13,6 +13,7 @@ import {
   Plus,
   Shapes,
   Sun,
+  Languages,
 } from "lucide-react"
 import {
   Command,
@@ -40,6 +41,8 @@ import { exportWorkspace, getWorkspace } from "@/lib/store"
 import { STORAGE, readStorage, writeStorage } from "@/lib/storage"
 import { setThemePreference } from "@/lib/use-theme"
 
+import { hrefFor, switchLocale, tr, useLocale, useT } from "@/lib/i18n/client"
+import { LOCALE_NAMES, LOCALES } from "@/lib/i18n/config"
 /**
  * Palette dei comandi (⌘K) e finestra delle scorciatoie (?).
  *
@@ -147,6 +150,7 @@ function readRecent(): string[] {
 }
 
 export function CommandLayer() {
+  const t = useT()
   const router = useRouter()
   const current = React.useSyncExternalStore(
     subscribe,
@@ -181,8 +185,8 @@ export function CommandLayer() {
       <CommandDialog
         open={current === "palette"}
         onOpenChange={(open) => setOverlay(open ? "palette" : null)}
-        title="Comandi"
-        description="Cerca un comando, un file o un'azione"
+        title={t("Comandi")}
+        description={t("Cerca un comando, un file o un'azione")}
         // sul telefono in alto: la tastiera virtuale occupa la metà di sotto
         className="top-[max(1rem,env(safe-area-inset-top))] sm:top-1/3 sm:max-w-xl"
       >
@@ -199,6 +203,8 @@ export function CommandLayer() {
 }
 
 function PaletteBody({ onNavigate }: { onNavigate: (href: Route) => void }) {
+  const t = useT()
+  const locale = useLocale()
   // la fotografia si prende all'apertura: i comandi non cambiano mentre si cerca
   const [snapshot] = React.useState(() => {
     const page = [...sources.values()].flatMap((s) => s.current())
@@ -212,10 +218,10 @@ function PaletteBody({ onNavigate }: { onNavigate: (href: Route) => void }) {
   const global: PaletteCommand[] = [
     {
       id: "app.new-board",
-      label: "Nuova board",
-      group: "Generale",
+      label: t("Nuova board"),
+      group: t("Generale"),
       icon: <Shapes />,
-      keywords: ["crea", "diagramma", "lavagna"],
+      keywords: [t("crea"), t("diagramma"), t("lavagna")],
       run: () =>
         onNavigate(
           fileHref({ kind: "board", id: getWorkspace().createFile("board") })
@@ -223,10 +229,10 @@ function PaletteBody({ onNavigate }: { onNavigate: (href: Route) => void }) {
     },
     {
       id: "app.new-doc",
-      label: "Nuovo documento",
-      group: "Generale",
+      label: t("Nuovo documento"),
+      group: t("Generale"),
       icon: <Plus />,
-      keywords: ["crea", "word", "testo"],
+      keywords: [t("crea"), t("word"), t("testo")],
       run: () =>
         onNavigate(
           fileHref({ kind: "doc", id: getWorkspace().createFile("doc") })
@@ -234,18 +240,18 @@ function PaletteBody({ onNavigate }: { onNavigate: (href: Route) => void }) {
     },
     {
       id: "app.import",
-      label: "Importa Word, Markdown o spazio di lavoro…",
-      group: "Generale",
+      label: t("Importa Word, Markdown o spazio di lavoro…"),
+      group: t("Generale"),
       icon: <FileUp />,
-      keywords: ["docx", "md", "apri", "carica"],
+      keywords: [t("docx"), t("md"), t("apri"), t("carica")],
       run: () => pickAndImport(onNavigate),
     },
     {
       id: "app.export-workspace",
-      label: "Esporta tutto lo spazio di lavoro (.json)",
-      group: "Generale",
+      label: t("Esporta tutto lo spazio di lavoro (.json)"),
+      group: t("Generale"),
       icon: <Download />,
-      keywords: ["backup", "copia", "salva", "esporta"],
+      keywords: [t("backup"), t("copia"), t("salva"), t("esporta")],
       run: () => {
         const blob = new Blob([exportWorkspace()], { type: "application/json" })
         download(blob, `cogniva-${new Date().toISOString().slice(0, 10)}.json`)
@@ -253,39 +259,47 @@ function PaletteBody({ onNavigate }: { onNavigate: (href: Route) => void }) {
     },
     {
       id: "app.home",
-      label: "Vai a tutti i file",
-      group: "Generale",
+      label: t("Vai a tutti i file"),
+      group: t("Generale"),
       icon: <House />,
-      keywords: ["home", "inizio", "cestino"],
-      run: () => onNavigate("/"),
+      keywords: [t("home"), t("inizio"), t("cestino")],
+      run: () => onNavigate(hrefFor("/") as Route),
     },
+    ...LOCALES.filter((code) => code !== locale).map((code) => ({
+      id: `app.locale.${code}`,
+      label: `${t("Lingua")}: ${LOCALE_NAMES[code]}`,
+      group: t("Generale"),
+      icon: <Languages />,
+      keywords: [t("lingua"), "language", "idioma", "langue", "Sprache", code],
+      run: () => window.location.assign(switchLocale(code)),
+    })),
     {
       id: "app.shortcuts",
-      label: "Scorciatoie da tastiera",
-      group: "Generale",
+      label: t("Scorciatoie da tastiera"),
+      group: t("Generale"),
       icon: <Keyboard />,
       shortcut: "?",
-      keywords: ["tasti", "aiuto"],
+      keywords: [t("tasti"), t("aiuto")],
       run: openShortcuts,
     },
     {
       id: "theme.light",
-      label: "Tema chiaro",
-      group: "Aspetto",
+      label: t("Tema chiaro"),
+      group: t("Aspetto"),
       icon: <Sun />,
       run: () => setThemePreference("light"),
     },
     {
       id: "theme.dark",
-      label: "Tema scuro",
-      group: "Aspetto",
+      label: t("Tema scuro"),
+      group: t("Aspetto"),
       icon: <Moon />,
       run: () => setThemePreference("dark"),
     },
     {
       id: "theme.system",
-      label: "Tema di sistema",
-      group: "Aspetto",
+      label: t("Tema di sistema"),
+      group: t("Aspetto"),
       icon: <Monitor />,
       run: () => setThemePreference("system"),
     },
@@ -333,11 +347,11 @@ function PaletteBody({ onNavigate }: { onNavigate: (href: Route) => void }) {
 
   return (
     <Command loop filter={score}>
-      <CommandInput autoFocus placeholder="Cerca comandi e file…" />
+      <CommandInput autoFocus placeholder={t("Cerca comandi e file…")} />
       <CommandList className="max-h-[min(60dvh,440px)]">
-        <CommandEmpty>Nessun risultato.</CommandEmpty>
+        <CommandEmpty>{t("Nessun risultato.")}</CommandEmpty>
         {recent.length ? (
-          <CommandGroup heading="Usati di recente">
+          <CommandGroup heading={t("Usati di recente")}>
             {recent.map((c) => item(c, "recent:"))}
           </CommandGroup>
         ) : null}
@@ -347,7 +361,7 @@ function PaletteBody({ onNavigate }: { onNavigate: (href: Route) => void }) {
           </CommandGroup>
         ))}
         {snapshot.files.length ? (
-          <CommandGroup heading="File">
+          <CommandGroup heading={t("File")}>
             {snapshot.files.map((f) => (
               <CommandItem
                 key={f.id}
@@ -361,7 +375,7 @@ function PaletteBody({ onNavigate }: { onNavigate: (href: Route) => void }) {
                 <Glyph name={f.icon} size={16} strokeWidth={1.9} />
                 <span className="truncate">{f.title}</span>
                 <CommandShortcut className="tracking-normal">
-                  {f.kind === "board" ? "Board" : "Documento"}
+                  {f.kind === "board" ? t("Board") : t("Documento")}
                 </CommandShortcut>
               </CommandItem>
             ))}
@@ -371,13 +385,13 @@ function PaletteBody({ onNavigate }: { onNavigate: (href: Route) => void }) {
       <div className="flex items-center gap-3 border-t border-border px-3 py-2 text-[11px] text-muted-foreground pointer-coarse:hidden">
         <span className="flex items-center gap-1">
           <Kbd>↑</Kbd>
-          <Kbd>↓</Kbd> per scegliere
+          <Kbd>↓</Kbd> {t("per scegliere")}
         </span>
         <span className="flex items-center gap-1">
-          <Kbd>↵</Kbd> per eseguire
+          <Kbd>↵</Kbd> {t("per eseguire")}
         </span>
         <span className="ml-auto flex items-center gap-1">
-          <Kbd>esc</Kbd> per chiudere
+          <Kbd>esc</Kbd> {t("per chiudere")}
         </span>
       </div>
     </Command>
@@ -386,56 +400,56 @@ function PaletteBody({ onNavigate }: { onNavigate: (href: Route) => void }) {
 
 /* ------------------------------ scorciatoie ------------------------------ */
 
-const SHORTCUTS: { title: string; items: [string, string][] }[] = [
+const shortcuts = (): { title: string; items: [string, string][] }[] => [
   {
-    title: "Ovunque",
+    title: tr("Ovunque"),
     items: [
-      ["⌘ K", "Palette dei comandi"],
-      ["?", "Questa finestra"],
-      ["⌘ /", "Scorciatoie da tastiera"],
+      ["⌘ K", tr("Palette dei comandi")],
+      ["?", tr("Questa finestra")],
+      ["⌘ /", tr("Scorciatoie da tastiera")],
     ],
   },
   {
-    title: "Board",
+    title: tr("Board"),
     items: [
-      ["V", "Seleziona"],
-      ["H  ·  Spazio", "Mano, sposta la vista"],
-      ["R  ·  O  ·  D", "Rettangolo, ellisse, rombo"],
-      ["S  ·  T", "Nota, testo"],
-      ["C", "Collega con una freccia"],
-      ["F  ·  G", "Frame, sezione"],
-      ["B  ·  K", "Tabella, grafico"],
-      ["P  ·  E", "Penna, gomma"],
-      ["Invio", "Scrivi nell'elemento selezionato"],
-      ["Frecce  ·  ⇧ Frecce", "Sposta di 1 o 10 px"],
-      ["⌘ D", "Duplica"],
-      ["⌘ C  ·  ⌘ X  ·  ⌘ V", "Copia, taglia, incolla"],
-      ["⌘ ]  ·  ⌘ [", "Porta avanti, manda indietro"],
-      ["⌘ A", "Seleziona tutto"],
-      ["⌘ Z  ·  ⇧ ⌘ Z", "Annulla, ripristina"],
-      ["⌫", "Elimina la selezione"],
+      ["V", tr("Seleziona")],
+      [`H  ·  ${tr("Spazio")}`, tr("Mano, sposta la vista")],
+      ["R  ·  O  ·  D", tr("Rettangolo, ellisse, rombo")],
+      ["S  ·  T", tr("Nota, testo")],
+      ["C", tr("Collega con una freccia")],
+      ["F  ·  G", tr("Frame, sezione")],
+      ["B  ·  K", tr("Tabella, grafico")],
+      ["P  ·  E", tr("Penna, gomma")],
+      [tr("Invio"), tr("Scrivi nell'elemento selezionato")],
+      [`${tr("Frecce")}  ·  ⇧ ${tr("Frecce")}`, tr("Sposta di 1 o 10 px")],
+      ["⌘ D", tr("Duplica")],
+      ["⌘ C  ·  ⌘ X  ·  ⌘ V", tr("Copia, taglia, incolla")],
+      ["⌘ ]  ·  ⌘ [", tr("Porta avanti, manda indietro")],
+      ["⌘ A", tr("Seleziona tutto")],
+      ["⌘ Z  ·  ⇧ ⌘ Z", tr("Annulla, ripristina")],
+      ["⌫", tr("Elimina la selezione")],
     ],
   },
   {
-    title: "Documento",
+    title: tr("Documento"),
     items: [
-      ["⌘ B  ·  ⌘ I  ·  ⌘ U", "Grassetto, corsivo, sottolineato"],
-      ["⌘ ⇧ S  ·  ⌘ ⇧ H", "Barrato, evidenziato"],
-      ["⌘ .  ·  ⌘ ,", "Apice, pedice"],
+      ["⌘ B  ·  ⌘ I  ·  ⌘ U", tr("Grassetto, corsivo, sottolineato")],
+      ["⌘ ⇧ S  ·  ⌘ ⇧ H", tr("Barrato, evidenziato")],
+      ["⌘ .  ·  ⌘ ,", tr("Apice, pedice")],
       [
         "⌘ ⇧ L  ·  E  ·  R  ·  J",
-        "Allinea a sinistra, al centro, a destra, giustifica",
+        tr("Allinea a sinistra, al centro, a destra, giustifica"),
       ],
-      ["⌘ ⌥ 1 … 3", "Titolo 1, 2, 3"],
-      ["⌘ ⇧ 7  ·  8  ·  9", "Elenco numerato, puntato, di controllo"],
-      ["⌘ ⇧ B", "Citazione"],
-      ["⌘ F", "Trova e sostituisci"],
-      ["⌘ ⇧ V", "Incolla solo il testo"],
-      ["⌘ ⌥ F  ·  ⌘ ⌥ D", "Nota a piè di pagina, nota di chiusura"],
-      ["⌥ ↑  ·  ⌥ ↓", "Sposta il paragrafo"],
-      ["⌘ Invio", "Dal titolo al corpo del testo"],
-      ["⌘ +  ·  ⌘ −  ·  ⌘ 0", "Zoom"],
-      ["⌥ clic", "Seleziona un'immagine dietro al testo"],
+      ["⌘ ⌥ 1 … 3", tr("Titolo 1, 2, 3")],
+      ["⌘ ⇧ 7  ·  8  ·  9", tr("Elenco numerato, puntato, di controllo")],
+      ["⌘ ⇧ B", tr("Citazione")],
+      ["⌘ F", tr("Trova e sostituisci")],
+      ["⌘ ⇧ V", tr("Incolla solo il testo")],
+      ["⌘ ⌥ F  ·  ⌘ ⌥ D", tr("Nota a piè di pagina, nota di chiusura")],
+      ["⌥ ↑  ·  ⌥ ↓", tr("Sposta il paragrafo")],
+      [`⌘ ${tr("Invio")}`, tr("Dal titolo al corpo del testo")],
+      ["⌘ +  ·  ⌘ −  ·  ⌘ 0", tr("Zoom")],
+      [`⌥ ${tr("clic")}`, tr("Seleziona un'immagine dietro al testo")],
     ],
   },
 ]
@@ -447,17 +461,20 @@ function ShortcutsDialog({
   open: boolean
   onOpenChange: (open: boolean) => void
 }) {
+  const t = useT()
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-h-[86dvh] overflow-y-auto sm:max-w-3xl">
         <DialogHeader>
-          <DialogTitle>Scorciatoie da tastiera</DialogTitle>
+          <DialogTitle>{t("Scorciatoie da tastiera")}</DialogTitle>
           <DialogDescription>
-            Su Windows e Linux usa Ctrl al posto di ⌘ e Alt al posto di ⌥.
+            {t(
+              "Su Windows e Linux usa Ctrl al posto di ⌘ e Alt al posto di ⌥."
+            )}
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-6 md:grid-cols-3">
-          {SHORTCUTS.map((section) => (
+          {shortcuts().map((section) => (
             <section key={section.title} className="space-y-2">
               <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                 {section.title}

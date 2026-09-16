@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { cn } from "@/lib/utils"
 
+import { useT } from "@/lib/i18n/client"
 /**
  * Pezzi della barra a schede. I pulsanti usano il `title` nativo invece dei
  * tooltip: con un centinaio di comandi, un tooltip ciascuno pesava su ogni
@@ -122,8 +123,14 @@ export const RibbonButton = React.forwardRef<
       {...rest}
     >
       {icon}
+      {/* le parole lunghe (tedesco, olandese) vanno a capo invece di uscire */}
       {label ? (
-        <span className={cn(large && "max-w-[76px] text-center")}>
+        <span
+          className={cn(
+            large &&
+              "max-w-[76px] text-center [overflow-wrap:anywhere] hyphens-auto"
+          )}
+        >
           {label}
           {chevron && large ? (
             <ChevronDown className="mx-auto mt-px size-3 opacity-60" />
@@ -266,6 +273,7 @@ export function Stepper({
   width?: number
   labelWidth?: number
 }) {
+  const t = useT()
   const [draft, setDraft] = React.useState<string | null>(null)
   const clamp = (v: number) =>
     Math.min(max, Math.max(min, Number(v.toFixed(decimals))))
@@ -317,7 +325,7 @@ export function Stepper({
               key={dir}
               type="button"
               tabIndex={-1}
-              aria-label={dir > 0 ? "Aumenta" : "Riduci"}
+              aria-label={dir > 0 ? t("Aumenta") : t("Riduci")}
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => onChange(clamp(value + dir * step))}
               className="flex h-1/2 w-4 items-center justify-center text-[8px] leading-none hover:bg-muted"

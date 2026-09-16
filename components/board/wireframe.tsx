@@ -6,6 +6,7 @@ import { getSwatch } from "@/lib/palette"
 import { fontStack } from "@/lib/fonts"
 import type { BoardNode, BoardTheme, WireKind } from "@/lib/types"
 
+import { useT } from "@/lib/i18n/client"
 /* Palette a bassa fedeltà, coerente con il tema chiaro/scuro */
 const C = {
   surface: "var(--card)",
@@ -64,6 +65,7 @@ export function WireBody({
   node: BoardNode
   theme: BoardTheme
 }) {
+  const t = useT()
   const kind = (node.wire ?? "button") as WireKind
   const sw = getSwatch(node.color)
   const accent = node.color === "white" ? "var(--w-base-700)" : sw.solid
@@ -284,7 +286,7 @@ export function WireBody({
                 whiteSpace: "nowrap",
               }}
             >
-              {String(prop(node, "placeholder", "Testo…"))}
+              {String(prop(node, "placeholder", t("Testo…")))}
             </span>
             {kind === "select" ? (
               <Glyph
@@ -323,7 +325,7 @@ export function WireBody({
               color: C.faint,
             }}
           >
-            {String(prop(node, "placeholder", "Scrivi…"))}
+            {String(prop(node, "placeholder", t("Scrivi…")))}
           </div>
         </div>
       )
@@ -721,7 +723,7 @@ export function WireBody({
                   fontWeight: 600,
                 }}
               >
-                Apri
+                {t("Apri")}
               </div>
             </div>
           </div>
@@ -809,7 +811,7 @@ export function WireBody({
               strokeWidth={2}
             />
             <span style={{ fontSize: Math.min(13, node.fontSize) }}>
-              {label || "Settembre"}
+              {label || t("Settembre")}
             </span>
             <Glyph
               name="chevron-right"
@@ -857,7 +859,7 @@ export function WireBody({
           }}
         >
           <span style={{ fontWeight: 700, color: C.strong }}>
-            {items[0] ?? "Logo"}
+            {items[0] ?? t("Logo")}
           </span>
           <div
             style={{
@@ -1058,7 +1060,7 @@ export function WireBody({
                 fontSize: 12,
               }}
             >
-              Annulla
+              {t("Annulla")}
             </div>
             <div
               style={{
@@ -1073,7 +1075,7 @@ export function WireBody({
                 fontWeight: 600,
               }}
             >
-              Conferma
+              {t("Conferma")}
             </div>
           </div>
         </div>,

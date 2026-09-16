@@ -57,16 +57,21 @@ import {
 } from "./ribbon-ui"
 import { CM, PT, type RibbonCtx } from "./shared"
 
+import { useT, tr } from "@/lib/i18n/client"
 const cm = (value: number) => Math.round(value * CM * 100) / 100
 
 /** I margini predefiniti di Word, in centimetri */
 const MARGIN_PRESETS: { label: string; margins: DocMargins }[] = [
   {
-    label: "Normale",
+    get label() {
+      return tr("Normale")
+    },
     margins: { top: cm(2.5), bottom: cm(2), left: cm(2), right: cm(2) },
   },
   {
-    label: "Stretto",
+    get label() {
+      return tr("Stretto")
+    },
     margins: {
       top: cm(1.27),
       bottom: cm(1.27),
@@ -75,7 +80,9 @@ const MARGIN_PRESETS: { label: string; margins: DocMargins }[] = [
     },
   },
   {
-    label: "Moderato",
+    get label() {
+      return tr("Moderato")
+    },
     margins: {
       top: cm(2.54),
       bottom: cm(2.54),
@@ -84,7 +91,9 @@ const MARGIN_PRESETS: { label: string; margins: DocMargins }[] = [
     },
   },
   {
-    label: "Largo",
+    get label() {
+      return tr("Largo")
+    },
     margins: {
       top: cm(2.54),
       bottom: cm(2.54),
@@ -93,7 +102,9 @@ const MARGIN_PRESETS: { label: string; margins: DocMargins }[] = [
     },
   },
   {
-    label: "Office 2003 predefinito",
+    get label() {
+      return tr("Office 2003 predefinito")
+    },
     margins: {
       top: cm(2.54),
       bottom: cm(2.54),
@@ -107,10 +118,30 @@ const fmtCm = (px: number) =>
   `${(Math.round((px / CM) * 100) / 100).toString().replace(".", ",")} cm`
 
 const WIDTHS: { value: DocTheme["width"]; label: string }[] = [
-  { value: "narrow", label: "Stretta" },
-  { value: "regular", label: "Media" },
-  { value: "wide", label: "Larga" },
-  { value: "full", label: "Tutta la finestra" },
+  {
+    value: "narrow",
+    get label() {
+      return tr("Stretta")
+    },
+  },
+  {
+    value: "regular",
+    get label() {
+      return tr("Media")
+    },
+  },
+  {
+    value: "wide",
+    get label() {
+      return tr("Larga")
+    },
+  },
+  {
+    value: "full",
+    get label() {
+      return tr("Tutta la finestra")
+    },
+  },
 ]
 
 const LINE_NUMBERS: {
@@ -118,22 +149,43 @@ const LINE_NUMBERS: {
   label: string
   hint: string
 }[] = [
-  { value: "none", label: "Nessuno", hint: "Senza numeri nel margine" },
-  { value: "continuous", label: "Continui", hint: "Da 1 fino alla fine" },
+  {
+    value: "none",
+    get label() {
+      return tr("Nessuno")
+    },
+    get hint() {
+      return tr("Senza numeri nel margine")
+    },
+  },
+  {
+    value: "continuous",
+    get label() {
+      return tr("Continui")
+    },
+    get hint() {
+      return tr("Da 1 fino alla fine")
+    },
+  },
   {
     value: "page",
-    label: "Ricomincia a ogni pagina",
-    hint: "Ogni foglio riparte da 1",
+    get label() {
+      return tr("Ricomincia a ogni pagina")
+    },
+    get hint() {
+      return tr("Ogni foglio riparte da 1")
+    },
   },
 ]
 
 export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
+  const t = useT()
   const { editor, st, theme, setTheme } = ctx
   const paged = Boolean(PAGE_FORMATS[theme.format].mm)
 
   return (
     <>
-      <RibbonGroup label="Imposta pagina" safe>
+      <RibbonGroup label={t("Imposta pagina")} safe>
         <MarginsMenu theme={theme} setTheme={setTheme} />
 
         <RibbonMenu
@@ -142,12 +194,12 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
             <RibbonButton
               large
               chevron
-              label="Orientamento"
+              label={t("Orientamento")}
               disabled={!paged}
               title={
                 paged
-                  ? "Orientamento"
-                  : "Scegli prima un formato di pagina in Dimensioni"
+                  ? t("Orientamento")
+                  : t("Scegli prima un formato di pagina in Dimensioni")
               }
               icon={
                 theme.orientation === "landscape" ? (
@@ -163,13 +215,13 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
             onClick={() => setTheme({ orientation: "portrait" })}
             className={cn(theme.orientation === "portrait" && "font-semibold")}
           >
-            <RectangleVertical className="size-4" /> Verticale
+            <RectangleVertical className="size-4" /> {t("Verticale")}
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => setTheme({ orientation: "landscape" })}
             className={cn(theme.orientation === "landscape" && "font-semibold")}
           >
-            <RectangleHorizontal className="size-4" /> Orizzontale
+            <RectangleHorizontal className="size-4" /> {t("Orizzontale")}
           </DropdownMenuItem>
         </RibbonMenu>
 
@@ -179,12 +231,12 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
             <RibbonButton
               large
               chevron
-              label="Dimensioni"
+              label={t("Dimensioni")}
               icon={<Frame className="size-5" />}
             />
           }
         >
-          <DropdownMenuLabel>Formato della pagina</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("Formato della pagina")}</DropdownMenuLabel>
           {(Object.keys(PAGE_FORMATS) as PageFormat[]).map((k) => (
             <DropdownMenuItem
               key={k}
@@ -194,15 +246,18 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
               <span className="flex-1">{PAGE_FORMATS[k].label}</span>
               <span className="text-[11px] text-muted-foreground">
                 {PAGE_FORMATS[k].mm
-                  ? `${PAGE_FORMATS[k].mm![0]}×${PAGE_FORMATS[k].mm![1]} mm`
-                  : "libero"}
+                  ? t("{width}×{height} mm", {
+                      width: PAGE_FORMATS[k].mm![0],
+                      height: PAGE_FORMATS[k].mm![1],
+                    })
+                  : t("libero||formato di pagina")}
               </span>
             </DropdownMenuItem>
           ))}
           {!paged ? (
             <>
               <DropdownMenuSeparator />
-              <DropdownMenuLabel>Larghezza del foglio</DropdownMenuLabel>
+              <DropdownMenuLabel>{t("Larghezza del foglio")}</DropdownMenuLabel>
               {WIDTHS.map((w) => (
                 <DropdownMenuItem
                   key={w.value}
@@ -222,7 +277,7 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
             <RibbonButton
               large
               chevron
-              label="Colonne"
+              label={t("Colonne")}
               icon={<Columns2 className="size-5" />}
             />
           }
@@ -233,20 +288,20 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
               onClick={() => setTheme({ columns: n })}
               className={cn(theme.columns === n && "font-semibold")}
             >
-              {n === 1 ? "Una" : n === 2 ? "Due" : "Tre"}
+              {n === 1 ? t("Una") : n === 2 ? t("Due") : t("Tre")}
             </DropdownMenuItem>
           ))}
         </RibbonMenu>
       </RibbonGroup>
 
-      <RibbonGroup label="Interruzioni" safe>
+      <RibbonGroup label={t("Interruzioni")} safe>
         <RibbonMenu
           className="w-60"
           trigger={
             <RibbonButton
               large
               chevron
-              label="Interruzioni"
+              label={t("Interruzioni")}
               icon={<SquareSplitVertical className="size-5" />}
             />
           }
@@ -255,9 +310,9 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
             onClick={() => editor.chain().focus().setPageBreak().run()}
           >
             <div className="flex flex-col">
-              <span>Pagina</span>
+              <span>{t("Pagina")}</span>
               <span className="text-[11px] text-muted-foreground">
-                Il testo riparte dalla pagina successiva
+                {t("Il testo riparte dalla pagina successiva")}
               </span>
             </div>
           </DropdownMenuItem>
@@ -265,9 +320,9 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
             onClick={() => editor.chain().focus().setHardBreak().run()}
           >
             <div className="flex flex-col">
-              <span>Disposizione testo</span>
+              <span>{t("Disposizione testo")}</span>
               <span className="text-[11px] text-muted-foreground">
-                A capo nella stessa riga di paragrafo ⇧↵
+                {t("A capo nella stessa riga di paragrafo ⇧↵")}
               </span>
             </div>
           </DropdownMenuItem>
@@ -276,11 +331,11 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
             onClick={() => editor.chain().focus().setColumnBreak().run()}
           >
             <div className="flex flex-col">
-              <span>Colonna</span>
+              <span>{t("Colonna")}</span>
               <span className="text-[11px] text-muted-foreground">
                 {theme.columns < 2
-                  ? "Serve un layout a più colonne"
-                  : "Il testo riparte dalla colonna successiva"}
+                  ? t("Serve un layout a più colonne")
+                  : t("Il testo riparte dalla colonna successiva")}
               </span>
             </div>
           </DropdownMenuItem>
@@ -291,7 +346,7 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
             <RibbonButton
               large
               chevron
-              label="Numeri di riga"
+              label={t("Numeri di riga")}
               icon={<ListOrdered className="size-5" />}
             />
           }
@@ -319,7 +374,7 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
             <RibbonButton
               large
               chevron
-              label="Sillabazione"
+              label={t("Sillabazione")}
               active={theme.hyphenation}
               icon={<Hyphen className="size-5" />}
             />
@@ -329,33 +384,34 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
             onClick={() => setTheme({ hyphenation: false })}
             className={cn(!theme.hyphenation && "bg-accent")}
           >
-            Nessuna
+            {t("Nessuna")}
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => setTheme({ hyphenation: true })}
             className={cn(theme.hyphenation && "bg-accent")}
           >
             <div className="flex flex-col">
-              <span>Automatica</span>
+              <span>{t("Automatica")}</span>
               <span className="text-[11px] text-muted-foreground">
-                Spezza le parole lunghe a fine riga, secondo la lingua del
-                documento
+                {t(
+                  "Spezza le parole lunghe a fine riga, secondo la lingua del documento"
+                )}
               </span>
             </div>
           </DropdownMenuItem>
         </RibbonMenu>
       </RibbonGroup>
 
-      <RibbonGroup label="Paragrafo">
+      <RibbonGroup label={t("Paragrafo")}>
         <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
           <span className="text-[11px] font-medium text-muted-foreground">
-            Rientro
+            {t("Rientro")}
           </span>
           <span className="text-[11px] font-medium text-muted-foreground">
-            Spaziatura
+            {t("Spaziatura")}
           </span>
           <Stepper
-            label="A sinistra"
+            label={t("A sinistra")}
             value={st.indentLeft / CM}
             unit="cm"
             step={0.5}
@@ -370,7 +426,7 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
             }
           />
           <Stepper
-            label="Prima"
+            label={t("Prima")}
             value={st.spaceBefore / PT}
             unit="pt"
             step={6}
@@ -386,7 +442,7 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
             }
           />
           <Stepper
-            label="A destra"
+            label={t("A destra")}
             value={st.indentRight / CM}
             unit="cm"
             step={0.5}
@@ -401,7 +457,7 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
             }
           />
           <Stepper
-            label="Dopo"
+            label={t("Dopo")}
             value={st.spaceAfter / PT}
             unit="pt"
             step={6}
@@ -431,6 +487,7 @@ function MarginsMenu({
   theme: DocTheme
   setTheme: (patch: Partial<DocTheme>) => void
 }) {
+  const t = useT()
   const [custom, setCustom] = React.useState(false)
   const same = (m: DocMargins) =>
     (["top", "bottom", "left", "right"] as const).every(
@@ -444,12 +501,12 @@ function MarginsMenu({
           <RibbonButton
             large
             chevron
-            label="Margini"
+            label={t("Margini")}
             icon={<Scaling className="size-5" />}
           />
         }
       >
-        <DropdownMenuLabel>Margini</DropdownMenuLabel>
+        <DropdownMenuLabel>{t("Margini")}</DropdownMenuLabel>
         {MARGIN_PRESETS.map((preset) => (
           <DropdownMenuItem
             key={preset.label}
@@ -473,16 +530,19 @@ function MarginsMenu({
             <span className="flex min-w-0 flex-col">
               <span>{preset.label}</span>
               <span className="text-[11px] text-muted-foreground">
-                Sup. {fmtCm(preset.margins.top)} · Inf.{" "}
-                {fmtCm(preset.margins.bottom)} · Sx {fmtCm(preset.margins.left)}{" "}
-                · Dx {fmtCm(preset.margins.right)}
+                {t("Sup. {top} · Inf. {bottom} · Sx {left} · Dx {right}", {
+                  top: fmtCm(preset.margins.top),
+                  bottom: fmtCm(preset.margins.bottom),
+                  left: fmtCm(preset.margins.left),
+                  right: fmtCm(preset.margins.right),
+                })}
               </span>
             </span>
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => setCustom(true)}>
-          Margini personalizzati…
+          {t("Margini personalizzati…")}
         </DropdownMenuItem>
       </RibbonMenu>
       <Popover open={custom} onOpenChange={setCustom}>
@@ -495,7 +555,9 @@ function MarginsMenu({
           className="w-[280px] p-3"
           finalFocus={false}
         >
-          <p className="mb-2 text-xs font-medium">Margini personalizzati</p>
+          <p className="mb-2 text-xs font-medium">
+            {t("Margini personalizzati")}
+          </p>
           <MarginsControl
             margins={theme.margins}
             onChange={(margins) => setTheme({ margins })}
@@ -513,13 +575,13 @@ function documentObjects(ctx: RibbonCtx): DocObject[] {
   const out: DocObject[] = []
   const counters = new Map<string, number>()
   const names: Record<string, string> = {
-    image: "Immagine",
-    chart: "Grafico",
-    boardEmbed: "Board",
-    video: "Video",
-    table: "Tabella",
-    mathBlock: "Equazione",
-    textBox: "Casella di testo",
+    image: tr("Immagine"),
+    chart: tr("Grafico"),
+    boardEmbed: tr("Board"),
+    video: tr("Video"),
+    table: tr("Tabella"),
+    mathBlock: tr("Equazione"),
+    textBox: tr("Casella di testo"),
   }
   ctx.editor.state.doc.descendants((node, pos) => {
     const kind = node.type.name
@@ -539,25 +601,26 @@ function documentObjects(ctx: RibbonCtx): DocObject[] {
 
 /** «Disponi»: posizione, testo a capo, livelli, allineamento e rotazione */
 function ArrangeGroup({ ctx }: { ctx: RibbonCtx }) {
+  const t = useT()
   const { editor, st, theme } = ctx
   const [objects, setObjects] = React.useState<DocObject[]>([])
   const onImage = st.onImage
   const set = (attrs: Record<string, unknown>) =>
     editor.chain().focus().updateAttributes("image", attrs).run()
   const wrap = st.imageWrap as ImageWrap
-  const disabledTitle = "Seleziona un'immagine o una forma"
+  const disabledTitle = t("Seleziona un'immagine o una forma")
 
   return (
-    <RibbonGroup label="Disponi">
+    <RibbonGroup label={t("Disponi")}>
       <RibbonMenu
         className="w-auto"
         trigger={
           <RibbonButton
             large
             chevron
-            label="Posizione"
+            label={t("Posizione")}
             disabled={!onImage}
-            title={onImage ? "Posizione sulla pagina" : disabledTitle}
+            title={onImage ? t("Posizione sulla pagina") : disabledTitle}
             icon={<Grid3x3 className="size-5" />}
           />
         }
@@ -567,16 +630,16 @@ function ArrangeGroup({ ctx }: { ctx: RibbonCtx }) {
             set({ wrap: "inline", x: null, y: null, dx: 0, dy: 0 })
           }
         >
-          In linea con il testo
+          {t("In linea con il testo")}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuLabel>Con testo a capo</DropdownMenuLabel>
+        <DropdownMenuLabel>{t("Con testo a capo")}</DropdownMenuLabel>
         <div className="grid grid-cols-3 gap-1 p-1.5">
           {(["top", "middle", "bottom"] as VAlign[]).flatMap((v) =>
             (["left", "center", "right"] as HAlign[]).map((h) => (
               <DropdownMenuItem
                 key={`${v}-${h}`}
-                title={`${v === "top" ? "In alto" : v === "middle" ? "Al centro" : "In basso"} ${h === "left" ? "a sinistra" : h === "center" ? "al centro" : "a destra"}`}
+                title={`${v === "top" ? t("In alto") : v === "middle" ? t("Al centro") : t("In basso")} ${h === "left" ? t("a sinistra") : h === "center" ? t("al centro") : t("a destra")}`}
                 onClick={() => positionImage(editor, theme, "margin", h, v)}
                 className="flex size-10 items-center justify-center p-0"
               >
@@ -600,9 +663,9 @@ function ArrangeGroup({ ctx }: { ctx: RibbonCtx }) {
           <RibbonButton
             large
             chevron
-            label="Testo a capo"
+            label={t("Testo a capo")}
             disabled={!onImage}
-            title={onImage ? "Come scorre il testo intorno" : disabledTitle}
+            title={onImage ? t("Come scorre il testo intorno") : disabledTitle}
             icon={<WrapText className="size-5" />}
           />
         }
@@ -633,18 +696,18 @@ function ArrangeGroup({ ctx }: { ctx: RibbonCtx }) {
       <RibbonRows>
         <RibbonButton
           compact
-          label="Porta avanti"
+          label={t("Porta avanti")}
           disabled={!onImage}
-          title={onImage ? "Davanti al testo" : disabledTitle}
+          title={onImage ? t("Davanti al testo") : disabledTitle}
           icon={<BringToFront className="size-4" />}
           className="justify-start"
           onClick={() => set({ wrap: "front" })}
         />
         <RibbonButton
           compact
-          label="Porta indietro"
+          label={t("Porta indietro")}
           disabled={!onImage}
-          title={onImage ? "Dietro al testo" : disabledTitle}
+          title={onImage ? t("Dietro al testo") : disabledTitle}
           icon={<SendToBack className="size-4" />}
           className="justify-start"
           onClick={() => set({ wrap: "behind" })}
@@ -658,7 +721,7 @@ function ArrangeGroup({ ctx }: { ctx: RibbonCtx }) {
             render={
               <RibbonButton
                 compact
-                label="Riquadro di selezione"
+                label={t("Riquadro di selezione")}
                 icon={<LayoutList className="size-4" />}
                 className="justify-start"
               />
@@ -666,7 +729,7 @@ function ArrangeGroup({ ctx }: { ctx: RibbonCtx }) {
           />
           <PopoverContent align="start" className="w-72 p-0" finalFocus={false}>
             <p className="border-b border-border px-3 py-2 text-xs font-medium">
-              Oggetti nel documento ({objects.length})
+              {t("Oggetti nel documento ({count})", { count: objects.length })}
             </p>
             <div className="max-h-72 overflow-y-auto p-1">
               {objects.length ? (
@@ -689,7 +752,7 @@ function ArrangeGroup({ ctx }: { ctx: RibbonCtx }) {
                 ))
               ) : (
                 <p className="px-2 py-3 text-xs text-muted-foreground">
-                  Nessuna immagine, tabella o grafico.
+                  {t("Nessuna immagine, tabella o grafico.")}
                 </p>
               )}
             </div>
@@ -702,18 +765,22 @@ function ArrangeGroup({ ctx }: { ctx: RibbonCtx }) {
           <RibbonButton
             large
             chevron
-            label="Allinea"
+            label={t("Allinea")}
             disabled={!onImage}
-            title={onImage ? "Allinea l'immagine ai margini" : disabledTitle}
+            title={onImage ? t("Allinea l'immagine ai margini") : disabledTitle}
             icon={<AlignCenterHorizontal className="size-5" />}
           />
         }
       >
         {(
           [
-            ["left", "Allinea a sinistra", <AlignStartHorizontal key="l" />],
-            ["center", "Allinea al centro", <AlignCenterHorizontal key="c" />],
-            ["right", "Allinea a destra", <AlignEndHorizontal key="r" />],
+            ["left", t("Allinea a sinistra"), <AlignStartHorizontal key="l" />],
+            [
+              "center",
+              t("Allinea al centro"),
+              <AlignCenterHorizontal key="c" />,
+            ],
+            ["right", t("Allinea a destra"), <AlignEndHorizontal key="r" />],
           ] as const
         ).map(([h, label, icon]) => (
           <DropdownMenuItem
@@ -732,13 +799,13 @@ function ArrangeGroup({ ctx }: { ctx: RibbonCtx }) {
           disabled={isFreeWrap(wrap) === false && wrap === "inline"}
           onClick={() => positionImage(editor, theme, "margin", null, "top")}
         >
-          <ArrowUpToLine /> Allinea in alto
+          <ArrowUpToLine /> {t("Allinea in alto")}
         </DropdownMenuItem>
         <DropdownMenuItem
           disabled={isFreeWrap(wrap) === false && wrap === "inline"}
           onClick={() => positionImage(editor, theme, "margin", null, "bottom")}
         >
-          <ArrowDownToLine /> Allinea in basso
+          <ArrowDownToLine /> {t("Allinea in basso")}
         </DropdownMenuItem>
       </RibbonMenu>
       <RibbonMenu
@@ -747,9 +814,9 @@ function ArrangeGroup({ ctx }: { ctx: RibbonCtx }) {
           <RibbonButton
             large
             chevron
-            label="Ruota"
+            label={t("Ruota")}
             disabled={!onImage}
-            title={onImage ? "Ruota l'immagine" : disabledTitle}
+            title={onImage ? t("Ruota l'immagine") : disabledTitle}
             icon={<RotateCw className="size-5" />}
           />
         }
@@ -757,15 +824,15 @@ function ArrangeGroup({ ctx }: { ctx: RibbonCtx }) {
         <DropdownMenuItem
           onClick={() => set({ rotate: (st.imageRotate + 90) % 360 })}
         >
-          <RotateCw /> Ruota a destra di 90°
+          <RotateCw /> {t("Ruota a destra di 90°")}
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={() => set({ rotate: (st.imageRotate + 270) % 360 })}
         >
-          <RotateCcw /> Ruota a sinistra di 90°
+          <RotateCcw /> {t("Ruota a sinistra di 90°")}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => set({ rotate: 0 })}>
-          Nessuna rotazione
+          {t("Nessuna rotazione")}
         </DropdownMenuItem>
       </RibbonMenu>
     </RibbonGroup>

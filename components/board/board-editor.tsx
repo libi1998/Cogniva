@@ -60,6 +60,7 @@ import type { SwatchKey } from "@/lib/palette"
 import type { BoardData, BoardMode } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
+import { useT, tr } from "@/lib/i18n/client"
 const MODES: {
   value: BoardMode
   label: string
@@ -68,21 +69,33 @@ const MODES: {
 }[] = [
   {
     value: "diagram",
-    label: "Diagramma",
+    get label() {
+      return tr("Diagramma")
+    },
     icon: <Shapes className="size-4" />,
-    hint: "Forme e connettori",
+    get hint() {
+      return tr("Forme e connettori")
+    },
   },
   {
     value: "wireframe",
-    label: "Wireframe",
+    get label() {
+      return tr("Wireframe")
+    },
     icon: <LayoutTemplate className="size-4" />,
-    hint: "Componenti e frame",
+    get hint() {
+      return tr("Componenti e frame")
+    },
   },
   {
     value: "card",
-    label: "Card",
+    get label() {
+      return tr("Card")
+    },
     icon: <StickyNote className="size-4" />,
-    hint: "Post-it e card",
+    get hint() {
+      return tr("Post-it e card")
+    },
   },
 ]
 
@@ -98,23 +111,28 @@ async function runExport(
   background: string
 ) {
   const id = toast.loading(
-    format === "pdf" ? "Preparo il PDF…" : `Esporto in ${format.toUpperCase()}…`
+    format === "pdf"
+      ? tr("Preparo il PDF…")
+      : tr("Esporto in {format}…", { format: format.toUpperCase() })
   )
   try {
     // lascia respirare l'interfaccia (via timeout: rAF non scatta a scheda nascosta)
     await new Promise((r) => setTimeout(r, 60))
     await exportBoard({ data, title, format, background })
     if (format === "pdf") {
-      toast.success("PDF pronto", {
+      toast.success(tr("PDF pronto"), {
         id,
-        description: "Nella finestra di stampa scegli «Salva come PDF».",
+        description: tr("Nella finestra di stampa scegli «Salva come PDF»."),
       })
     } else {
-      toast.success(`Esportato in ${format.toUpperCase()}`, { id })
+      toast.success(
+        tr("Esportato in {format}", { format: format.toUpperCase() }),
+        { id }
+      )
     }
   } catch (err) {
     console.error(err)
-    toast.error("Esportazione non riuscita", {
+    toast.error(tr("Esportazione non riuscita"), {
       id,
       description: err instanceof Error ? err.message : undefined,
     })
@@ -122,6 +140,7 @@ async function runExport(
 }
 
 export function BoardEditor({ fileId }: { fileId: string }) {
+  const t = useT()
   const file = useStore((s) => s.files.find((f) => f.id === fileId))
   const historyTick = useStore((s) => s.historyTick)
   const dark = useIsDark()
@@ -235,9 +254,9 @@ export function BoardEditor({ fileId }: { fileId: string }) {
   useCommandSource("board", () => {
     const current = getWorkspace().files.find((f) => f.id === fileId)
     if (!current || current.kind !== "board") return []
-    const group = "Board"
-    const tools = "Strumenti"
-    const exportGroup = "Esporta"
+    const group = t("Board")
+    const tools = t("Strumenti")
+    const exportGroup = t("Esporta")
     const pick = (
       label: string,
       next: Tool,
@@ -255,7 +274,7 @@ export function BoardEditor({ fileId }: { fileId: string }) {
       {
         id: "board.undo",
         group,
-        label: "Annulla",
+        label: t("Annulla||annulla l'ultima modifica"),
         shortcut: "⌘Z",
         icon: <Undo2 />,
         run: () => getWorkspace().undo(fileId),
@@ -263,7 +282,7 @@ export function BoardEditor({ fileId }: { fileId: string }) {
       {
         id: "board.redo",
         group,
-        label: "Ripristina",
+        label: t("Ripristina"),
         shortcut: "⇧⌘Z",
         icon: <Redo2 />,
         run: () => getWorkspace().redo(fileId),
@@ -271,15 +290,15 @@ export function BoardEditor({ fileId }: { fileId: string }) {
       {
         id: "board.fit",
         group,
-        label: "Adatta alla finestra",
+        label: t("Adatta alla finestra"),
         icon: <Maximize2 />,
-        keywords: ["zoom", "inquadra"],
+        keywords: [t("zoom"), t("inquadra")],
         run: fit,
       },
       {
         id: "board.zoom100",
         group,
-        label: "Zoom al 100%",
+        label: t("Zoom al 100%"),
         icon: <Plus />,
         run: () => setVp((v) => ({ ...v, zoom: 1 })),
       },
@@ -287,15 +306,15 @@ export function BoardEditor({ fileId }: { fileId: string }) {
         id: "board.panel",
         group,
         label: panel
-          ? "Nascondi il pannello Stile"
-          : "Mostra il pannello Stile",
+          ? t("Nascondi il pannello Stile")
+          : t("Mostra il pannello Stile"),
         icon: <PanelRight />,
         run: () => setPanel(!panel),
       },
       {
         id: "board.select-all",
         group,
-        label: "Seleziona tutto",
+        label: t("Seleziona tutto"),
         shortcut: "⌘A",
         icon: <Shapes />,
         run: () =>
@@ -307,37 +326,39 @@ export function BoardEditor({ fileId }: { fileId: string }) {
       ...MODES.map((m) => ({
         id: `board.mode.${m.value}`,
         group,
-        label: `Modalità ${m.label.toLowerCase()}`,
+        label: t("Modalità {mode}", {
+          mode: m.label.toLowerCase(),
+        }),
         icon: m.icon,
         keywords: [m.hint],
         run: () => getWorkspace().setBoardTheme(fileId, { mode: m.value }),
       })),
-      pick("Seleziona", { t: "select" }, "v", <MousePointer2 />),
-      pick("Rettangolo", { t: "shape", shape: "rounded" }, "r", <Square />),
-      pick("Nota", { t: "shape", shape: "note" }, "s", <StickyNote />),
-      pick("Testo", { t: "shape", shape: "text" }, "t", <Type />),
-      pick("Connettore", { t: "connect" }, "c", <Spline />),
-      pick("Tabella", { t: "table" }, "b", <Table />),
-      pick("Grafico", { t: "chart" }, "k", <ChartColumn />),
-      pick("Penna", { t: "draw", mode: "pen" }, "p", <PenLine />),
+      pick(t("Seleziona"), { t: "select" }, "v", <MousePointer2 />),
+      pick(t("Rettangolo"), { t: "shape", shape: "rounded" }, "r", <Square />),
+      pick(t("Nota"), { t: "shape", shape: "note" }, "s", <StickyNote />),
+      pick(t("Testo"), { t: "shape", shape: "text" }, "t", <Type />),
+      pick(t("Connettore"), { t: "connect" }, "c", <Spline />),
+      pick(t("Tabella"), { t: "table" }, "b", <Table />),
+      pick(t("Grafico"), { t: "chart" }, "k", <ChartColumn />),
+      pick(t("Penna"), { t: "draw", mode: "pen" }, "p", <PenLine />),
       {
         id: "board.export.png",
         group: exportGroup,
-        label: "Esporta in PNG",
+        label: t("Esporta in PNG"),
         icon: <FileImage />,
         run: () => void doExport("png"),
       },
       {
         id: "board.export.svg",
         group: exportGroup,
-        label: "Esporta in SVG",
+        label: t("Esporta in SVG"),
         icon: <FileImage />,
         run: () => void doExport("svg"),
       },
       {
         id: "board.export.pdf",
         group: exportGroup,
-        label: "Esporta in PDF",
+        label: t("Esporta in PDF"),
         icon: <FileText />,
         run: () => void doExport("pdf"),
       },
@@ -374,7 +395,9 @@ export function BoardEditor({ fileId }: { fileId: string }) {
                     variant="ghost"
                     size="sm"
                     className="h-8 gap-1.5 px-2 text-xs sm:px-2.5"
-                    aria-label={`Modalità: ${currentMode?.label}`}
+                    aria-label={t("Modalità: {label}", {
+                      label: currentMode?.label ?? "",
+                    })}
                   />
                 }
               >
@@ -382,7 +405,9 @@ export function BoardEditor({ fileId }: { fileId: string }) {
                 <span className="hidden md:inline">{currentMode?.label}</span>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
-                <DropdownMenuLabel>Modalità della board</DropdownMenuLabel>
+                <DropdownMenuLabel>
+                  {t("Modalità della board")}
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {MODES.map((m) => (
                   <DropdownMenuItem
@@ -415,7 +440,7 @@ export function BoardEditor({ fileId }: { fileId: string }) {
                     variant="ghost"
                     size="icon"
                     className="size-8"
-                    aria-label="Annulla"
+                    aria-label={t("Annulla||annulla l'ultima modifica")}
                     disabled={!canUndo}
                     onClick={() => getWorkspace().undo(fileId)}
                   />
@@ -423,7 +448,7 @@ export function BoardEditor({ fileId }: { fileId: string }) {
               >
                 <Undo2 className="size-4" />
               </TooltipTrigger>
-              <TooltipContent>Annulla ⌘Z</TooltipContent>
+              <TooltipContent>{t("Annulla ⌘Z")}</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger
@@ -432,7 +457,7 @@ export function BoardEditor({ fileId }: { fileId: string }) {
                     variant="ghost"
                     size="icon"
                     className="size-8"
-                    aria-label="Ripristina"
+                    aria-label={t("Ripristina")}
                     disabled={!canRedo}
                     onClick={() => getWorkspace().redo(fileId)}
                   />
@@ -440,7 +465,7 @@ export function BoardEditor({ fileId }: { fileId: string }) {
               >
                 <Redo2 className="size-4" />
               </TooltipTrigger>
-              <TooltipContent>Ripristina ⇧⌘Z</TooltipContent>
+              <TooltipContent>{t("Ripristina ⇧⌘Z")}</TooltipContent>
             </Tooltip>
 
             <DropdownMenu>
@@ -450,7 +475,7 @@ export function BoardEditor({ fileId }: { fileId: string }) {
                     variant="ghost"
                     size="icon"
                     className="size-8"
-                    aria-label="Esporta"
+                    aria-label={t("Esporta")}
                     disabled={busy}
                   />
                 }
@@ -458,7 +483,7 @@ export function BoardEditor({ fileId }: { fileId: string }) {
                 <Download className="size-4" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-44">
-                <DropdownMenuLabel>Esporta board</DropdownMenuLabel>
+                <DropdownMenuLabel>{t("Esporta board")}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => doExport("png")}>
                   <FileImage className="size-4" /> PNG
@@ -471,7 +496,7 @@ export function BoardEditor({ fileId }: { fileId: string }) {
                   <div className="flex flex-col">
                     <span>PDF</span>
                     <span className="text-[11px] text-muted-foreground">
-                      vettoriale, dalla stampa
+                      {t("vettoriale, dalla stampa")}
                     </span>
                   </div>
                 </DropdownMenuItem>
@@ -484,12 +509,12 @@ export function BoardEditor({ fileId }: { fileId: string }) {
               variant={panel ? "secondary" : "ghost"}
               size="sm"
               className="h-8 gap-1.5 px-2 text-xs sm:px-2.5"
-              aria-label="Pannello Stile"
+              aria-label={t("Pannello Stile")}
               aria-pressed={panel}
               onClick={() => setPanel(!panel)}
             >
               <PanelRight className="size-4" />
-              <span className="hidden sm:inline">Stile</span>
+              <span className="hidden sm:inline">{t("Stile")}</span>
             </Button>
           </>
         }
@@ -528,7 +553,7 @@ export function BoardEditor({ fileId }: { fileId: string }) {
             <button
               type="button"
               onClick={() => zoomBy(1 / 1.2)}
-              aria-label="Riduci"
+              aria-label={t("Riduci")}
               className="flex size-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted pointer-coarse:size-9"
             >
               <Minus className="size-4" />
@@ -536,7 +561,7 @@ export function BoardEditor({ fileId }: { fileId: string }) {
             <button
               type="button"
               onClick={() => setVp((v) => ({ ...v, zoom: 1 }))}
-              title="Zoom al 100%"
+              title={t("Zoom al 100%")}
               className="min-w-[52px] rounded-lg px-1 py-1 text-xs font-medium text-foreground tabular-nums hover:bg-muted"
             >
               {Math.round(vp.zoom * 100)}%
@@ -544,7 +569,7 @@ export function BoardEditor({ fileId }: { fileId: string }) {
             <button
               type="button"
               onClick={() => zoomBy(1.2)}
-              aria-label="Ingrandisci"
+              aria-label={t("Ingrandisci")}
               className="flex size-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted pointer-coarse:size-9"
             >
               <Plus className="size-4" />
@@ -553,8 +578,8 @@ export function BoardEditor({ fileId }: { fileId: string }) {
             <button
               type="button"
               onClick={fit}
-              title="Adatta alla vista"
-              aria-label="Adatta alla vista"
+              title={t("Adatta alla vista")}
+              aria-label={t("Adatta alla vista")}
               className="flex size-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted pointer-coarse:size-9"
             >
               <Maximize2 className="size-4" />
@@ -562,23 +587,24 @@ export function BoardEditor({ fileId }: { fileId: string }) {
           </div>
 
           <div className="pointer-events-none absolute bottom-4 left-1/2 z-10 hidden max-w-[calc(100%-26rem)] -translate-x-1/2 truncate rounded-full bg-card/80 px-3 py-1 text-[11px] text-muted-foreground shadow-sm backdrop-blur pointer-fine:xl:block">
-            doppio clic per creare · trascina i pallini per collegare · tasto
-            destro per il menu · spazio + trascina per spostarti
+            {t(
+              "doppio clic per creare · trascina i pallini per collegare · tasto destro per il menu · spazio + trascina per spostarti"
+            )}
           </div>
         </div>
 
         {compact ? (
           panel ? (
             <aside
-              aria-label="Stile"
+              aria-label={t("Stile")}
               className="fixed inset-x-0 bottom-0 z-40 flex max-h-[min(70dvh,560px)] flex-col overflow-hidden rounded-t-2xl border-t border-border bg-card pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_40px_-12px_rgba(0,0,0,0.35)]"
             >
               <div className="flex h-11 shrink-0 items-center justify-between border-b border-border px-3">
-                <span className="text-sm font-semibold">Stile</span>
+                <span className="text-sm font-semibold">{t("Stile")}</span>
                 <button
                   type="button"
                   onClick={() => setPanel(false)}
-                  aria-label="Chiudi il pannello"
+                  aria-label={t("Chiudi il pannello")}
                   className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
                 >
                   <X className="size-4" />

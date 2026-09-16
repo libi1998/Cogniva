@@ -63,35 +63,142 @@ import {
 } from "./ribbon-ui"
 import type { RibbonCtx } from "./shared"
 
+import { useT, tr } from "@/lib/i18n/client"
 const PT = 96 / 72
 
 const PAPERS = [
-  { label: "Automatico (segue il tema)", value: "" },
-  { label: "Bianco", value: "#ffffff" },
-  { label: "Carta", value: whim.base[0] },
-  { label: "Avorio", value: "#fffdf5" },
-  { label: "Nebbia", value: whim.base[50] },
-  { label: "Blu", value: whim.blue[50] },
-  { label: "Viola", value: whim.purple[50] },
-  { label: "Giallo", value: whim.yellow[50] },
-  { label: "Verde", value: whim.green[50] },
-  { label: "Rosa", value: whim.pink[50] },
-  { label: "Notte", value: whim.base[900] },
+  {
+    get label() {
+      return tr("Automatico (segue il tema)")
+    },
+    value: "",
+  },
+  {
+    get label() {
+      return tr("Bianco")
+    },
+    value: "#ffffff",
+  },
+  {
+    get label() {
+      return tr("Carta")
+    },
+    value: whim.base[0],
+  },
+  {
+    get label() {
+      return tr("Avorio")
+    },
+    value: "#fffdf5",
+  },
+  {
+    get label() {
+      return tr("Nebbia")
+    },
+    value: whim.base[50],
+  },
+  {
+    get label() {
+      return tr("Blu")
+    },
+    value: whim.blue[50],
+  },
+  {
+    get label() {
+      return tr("Viola")
+    },
+    value: whim.purple[50],
+  },
+  {
+    get label() {
+      return tr("Giallo")
+    },
+    value: whim.yellow[50],
+  },
+  {
+    get label() {
+      return tr("Verde")
+    },
+    value: whim.green[50],
+  },
+  {
+    get label() {
+      return tr("Rosa")
+    },
+    value: whim.pink[50],
+  },
+  {
+    get label() {
+      return tr("Notte")
+    },
+    value: whim.base[900],
+  },
 ]
 
 const BORDERS: { value: PageBorder; label: string; css: string }[] = [
-  { value: "none", label: "Nessuno", css: "1px dashed currentColor" },
-  { value: "thin", label: "Linea sottile", css: "1px solid currentColor" },
-  { value: "thick", label: "Linea spessa", css: "3px solid currentColor" },
-  { value: "double", label: "Doppia linea", css: "3px double currentColor" },
-  { value: "dashed", label: "Tratteggiata", css: "1.5px dashed currentColor" },
-  { value: "dotted", label: "Punteggiata", css: "2px dotted currentColor" },
+  {
+    value: "none",
+    get label() {
+      return tr("Nessuno")
+    },
+    css: "1px dashed currentColor",
+  },
+  {
+    value: "thin",
+    get label() {
+      return tr("Linea sottile")
+    },
+    css: "1px solid currentColor",
+  },
+  {
+    value: "thick",
+    get label() {
+      return tr("Linea spessa")
+    },
+    css: "3px solid currentColor",
+  },
+  {
+    value: "double",
+    get label() {
+      return tr("Doppia linea")
+    },
+    css: "3px double currentColor",
+  },
+  {
+    value: "dashed",
+    get label() {
+      return tr("Tratteggiata")
+    },
+    css: "1.5px dashed currentColor",
+  },
+  {
+    value: "dotted",
+    get label() {
+      return tr("Punteggiata")
+    },
+    css: "2px dotted currentColor",
+  },
 ]
 
 const BORDER_COLORS = [
-  { label: "Automatico", value: "" },
-  { label: "Nero", value: whim.base[900] },
-  { label: "Grigio", value: whim.base[500] },
+  {
+    get label() {
+      return tr("Automatico")
+    },
+    value: "",
+  },
+  {
+    get label() {
+      return tr("Nero")
+    },
+    value: whim.base[900],
+  },
+  {
+    get label() {
+      return tr("Grigio")
+    },
+    value: whim.base[500],
+  },
   ...SWATCHES.filter((s) => s.key !== "white" && s.key !== "gray").map((s) => ({
     label: s.label,
     value: s.solid,
@@ -104,6 +211,7 @@ const BORDER_COLORS = [
  * quindi ogni paragrafo che li usa); filigrana, colore e bordi la pagina.
  */
 export function DesignTab({ ctx }: { ctx: RibbonCtx }) {
+  const t = useT()
   const { theme, setTheme } = ctx
   const [fontsDialog, setFontsDialog] = React.useState(false)
   const [watermarkDialog, setWatermarkDialog] = React.useState(false)
@@ -111,7 +219,7 @@ export function DesignTab({ ctx }: { ctx: RibbonCtx }) {
 
   return (
     <>
-      <RibbonGroup label="Formattazione documento" safe>
+      <RibbonGroup label={t("Formattazione documento")} safe>
         <ThemesMenu theme={theme} setTheme={setTheme} />
         <StyleSetGallery theme={theme} setTheme={setTheme} />
 
@@ -122,8 +230,10 @@ export function DesignTab({ ctx }: { ctx: RibbonCtx }) {
               <RibbonButton
                 compact
                 chevron
-                label="Colori"
-                title="Colori del tema: accento di titoli, link e citazioni"
+                label={t("Colori")}
+                title={t(
+                  "Colori del tema: accento di titoli, link e citazioni"
+                )}
                 icon={
                   <span className="relative">
                     <Palette className="size-3.5" />
@@ -145,13 +255,13 @@ export function DesignTab({ ctx }: { ctx: RibbonCtx }) {
               <RibbonButton
                 compact
                 chevron
-                label="Tipi di carattere"
-                title="Carattere dei titoli e del corpo del testo"
+                label={t("Tipi di carattere")}
+                title={t("Carattere dei titoli e del corpo del testo")}
                 icon={<Type className="size-3.5" />}
               />
             }
           >
-            <DropdownMenuLabel>Tipi di carattere</DropdownMenuLabel>
+            <DropdownMenuLabel>{t("Tipi di carattere")}</DropdownMenuLabel>
             {FONT_PAIRS.map((pair) => {
               const active =
                 theme.font === pair.body &&
@@ -191,7 +301,7 @@ export function DesignTab({ ctx }: { ctx: RibbonCtx }) {
             })}
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => setFontsDialog(true)}>
-              <Type /> Personalizza tipi di carattere…
+              <Type /> {t("Personalizza tipi di carattere…")}
             </DropdownMenuItem>
           </RibbonMenu>
 
@@ -201,8 +311,8 @@ export function DesignTab({ ctx }: { ctx: RibbonCtx }) {
               <RibbonButton
                 compact
                 chevron
-                label="Spaziatura paragrafo"
-                title="Spazio fra i paragrafi e interlinea di «Normale»"
+                label={t("Spaziatura paragrafo")}
+                title={t("Spazio fra i paragrafi e interlinea di «Normale»")}
                 icon={<Pilcrow className="size-3.5" />}
               />
             }
@@ -213,32 +323,37 @@ export function DesignTab({ ctx }: { ctx: RibbonCtx }) {
 
         <RibbonButton
           large
-          label="Imposta come predefinito"
-          title="I documenti nuovi useranno questi stili, colori e caratteri"
+          label={t("Imposta come predefinito")}
+          title={t(
+            "I documenti nuovi useranno questi stili, colori e caratteri"
+          )}
           icon={<Pin className="size-5" />}
           onClick={() => {
             if (!saveDesignDefaults(theme)) {
-              toast.error("Non riesco a salvare le impostazioni predefinite")
+              toast.error(t("Non riesco a salvare le impostazioni predefinite"))
               return
             }
-            toast.success("I nuovi documenti useranno questa progettazione", {
-              action: {
-                label: "Annulla",
-                onClick: () => clearDesignDefaults(),
-              },
-            })
+            toast.success(
+              t("I nuovi documenti useranno questa progettazione"),
+              {
+                action: {
+                  label: t("Annulla||annulla l'ultima modifica"),
+                  onClick: () => clearDesignDefaults(),
+                },
+              }
+            )
           }}
         />
       </RibbonGroup>
 
-      <RibbonGroup label="Sfondo pagina" safe>
+      <RibbonGroup label={t("Sfondo pagina")} safe>
         <RibbonMenu
           className="w-[300px]"
           trigger={
             <RibbonButton
               large
               chevron
-              label="Filigrana"
+              label={t("Filigrana")}
               active={Boolean(theme.watermark)}
               icon={<Stamp className="size-5" />}
             />
@@ -257,7 +372,7 @@ export function DesignTab({ ctx }: { ctx: RibbonCtx }) {
             <RibbonButton
               large
               chevron
-              label="Colore pagina"
+              label={t("Colore pagina")}
               icon={
                 <span className="relative">
                   <PaintBucket className="size-5" />
@@ -282,13 +397,13 @@ export function DesignTab({ ctx }: { ctx: RibbonCtx }) {
             <RibbonButton
               large
               chevron
-              label="Bordi pagina"
+              label={t("Bordi pagina")}
               active={theme.pageBorder !== "none"}
               icon={<Frame className="size-5" />}
             />
           }
         >
-          <DropdownMenuLabel>Stile del bordo</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("Stile del bordo")}</DropdownMenuLabel>
           {BORDERS.map((b) => (
             <DropdownMenuItem
               key={b.value}
@@ -307,7 +422,7 @@ export function DesignTab({ ctx }: { ctx: RibbonCtx }) {
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />
-          <DropdownMenuLabel>Colore del bordo</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("Colore del bordo")}</DropdownMenuLabel>
           <SwatchGrid
             columns={6}
             colors={BORDER_COLORS}
@@ -360,6 +475,7 @@ function ThemesMenu({
   theme: DocTheme
   setTheme: (patch: Partial<DocTheme>) => void
 }) {
+  const t = useT()
   const current = activeDesignTheme(theme)
   return (
     <RibbonMenu
@@ -368,8 +484,12 @@ function ThemesMenu({
         <RibbonButton
           large
           chevron
-          label="Temi"
-          title={current ? `Tema: ${current.name}` : "Temi del documento"}
+          label={t("Temi")}
+          title={
+            current
+              ? t("Tema: {name}", { name: current.name })
+              : t("Temi del documento")
+          }
           icon={
             <span
               className="flex size-5 items-center justify-center rounded-[5px] text-[13px] leading-none font-bold text-white"
@@ -396,11 +516,12 @@ function ThemesGrid({
   theme: DocTheme
   setTheme: (patch: Partial<DocTheme>) => void
 }) {
+  const t = useT()
   const close = useCloseRibbonMenu()
   const current = activeDesignTheme(theme)
   return (
     <>
-      <DropdownMenuLabel>Temi</DropdownMenuLabel>
+      <DropdownMenuLabel>{t("Temi")}</DropdownMenuLabel>
       <div className="grid grid-cols-3 gap-1.5 p-1.5">
         {DESIGN_THEMES.map((t) => {
           const a = docAccent(t.accent)
@@ -467,7 +588,7 @@ function ThemesGrid({
           })
         }
       >
-        <RotateCcw /> Ripristina il tema predefinito
+        <RotateCcw /> {t("Ripristina il tema predefinito")}
       </DropdownMenuItem>
     </>
   )
@@ -489,6 +610,7 @@ function StyleSetCard({
   onPick: () => void
   name: string
 }) {
+  const t = useT()
   const preview: DocTheme = { ...theme, ...withStyleSet(theme, setId) }
   const scale = 0.34
   const look = (id: string) => {
@@ -525,7 +647,7 @@ function StyleSetCard({
   return (
     <button
       type="button"
-      title={`Set di stili: ${name}`}
+      title={t("Set di stili: {name}", { name })}
       aria-pressed={active}
       onMouseDown={(e) => e.preventDefault()}
       onClick={onPick}
@@ -537,10 +659,10 @@ function StyleSetCard({
       )}
     >
       <span className="block truncate" style={look("title")}>
-        Titolo
+        {t("Titolo")}
       </span>
       <span className="block truncate" style={look("heading1")}>
-        Titolo 1
+        {t("Titolo 1")}
       </span>
       <span aria-hidden className="block space-y-[2px]">
         {[100, 92, 70].map((w) => (
@@ -562,6 +684,7 @@ function StyleSetGallery({
   theme: DocTheme
   setTheme: (patch: Partial<DocTheme>) => void
 }) {
+  const t = useT()
   const pick = (id: string) => setTheme(withStyleSet(theme, id))
   // a vista i primi quattro e quello in uso
   const first = STYLE_SETS.slice(0, 4)
@@ -589,8 +712,8 @@ function StyleSetGallery({
         trigger={
           <button
             type="button"
-            aria-label="Tutti i set di stili"
-            title="Set di stili"
+            aria-label={t("Tutti i set di stili")}
+            title={t("Set di stili")}
             onMouseDown={(e) => e.preventDefault()}
             className="flex h-[58px] w-5 shrink-0 items-center justify-center rounded-md border border-border text-muted-foreground hover:bg-muted sm:w-4"
           >
@@ -611,10 +734,11 @@ function StyleSetGrid({
   theme: DocTheme
   onPick: (id: string) => void
 }) {
+  const t = useT()
   const close = useCloseRibbonMenu()
   return (
     <>
-      <DropdownMenuLabel>Set di stili</DropdownMenuLabel>
+      <DropdownMenuLabel>{t("Set di stili")}</DropdownMenuLabel>
       <div className="grid grid-cols-4 gap-1.5 p-1.5">
         {STYLE_SETS.map((set) => (
           <div key={set.id} className="flex flex-col items-center gap-0.5">
@@ -636,7 +760,7 @@ function StyleSetGrid({
       </div>
       <DropdownMenuSeparator />
       <DropdownMenuItem onClick={() => onPick("default")}>
-        <RotateCcw /> Ripristina il set di stili predefinito
+        <RotateCcw /> {t("Ripristina il set di stili predefinito")}
       </DropdownMenuItem>
     </>
   )
@@ -651,10 +775,11 @@ function ColorsMenu({
   theme: DocTheme
   setTheme: (patch: Partial<DocTheme>) => void
 }) {
+  const t = useT()
   const custom = /^#/.test(theme.accent)
   return (
     <>
-      <DropdownMenuLabel>Colori del tema</DropdownMenuLabel>
+      <DropdownMenuLabel>{t("Colori del tema")}</DropdownMenuLabel>
       {SWATCHES.filter((s) => s.key !== "white").map((s) => (
         <DropdownMenuItem
           key={s.key}
@@ -671,7 +796,7 @@ function ColorsMenu({
       ))}
       <DropdownMenuSeparator />
       <DropdownMenuLabel className="flex items-center gap-1.5">
-        <Droplet className="size-3" /> Colore personalizzato
+        <Droplet className="size-3" /> {t("Colore personalizzato")}
       </DropdownMenuLabel>
       <div className="px-2 pb-2">
         <CustomColor
@@ -697,12 +822,13 @@ function ColorsMenu({
 /* ------------------------------ spaziatura ------------------------------ */
 
 function SpacingMenu({ ctx }: { ctx: RibbonCtx }) {
+  const t = useT()
   const { theme, setTheme } = ctx
   const active = activeSpacing(theme)
   const normal = resolveStyle(theme, "normal").props
   return (
     <>
-      <DropdownMenuLabel>Spaziatura paragrafo</DropdownMenuLabel>
+      <DropdownMenuLabel>{t("Spaziatura paragrafo")}</DropdownMenuLabel>
       {SPACING_PRESETS.map((preset) => {
         const line = preset.props.lineHeight ?? normal.lineHeight
         const gap = preset.props.spaceAfter ?? normal.spaceAfter
@@ -732,7 +858,13 @@ function SpacingMenu({ ctx }: { ctx: RibbonCtx }) {
               <span>{preset.name}</span>
               <span className="text-[11px] text-muted-foreground">
                 {preset.id === "default"
-                  ? `Dopo ${String(Math.round(normal.spaceAfter)).replace(".", ",")} pt · Interlinea ${String(normal.lineHeight).replace(".", ",")}`
+                  ? t("Dopo {after} pt · Interlinea {lineHeight}", {
+                      after: String(Math.round(normal.spaceAfter)).replace(
+                        ".",
+                        ","
+                      ),
+                      lineHeight: String(normal.lineHeight).replace(".", ","),
+                    })
                   : preset.hint}
               </span>
             </span>
@@ -743,7 +875,7 @@ function SpacingMenu({ ctx }: { ctx: RibbonCtx }) {
       <DropdownMenuItem
         onClick={() => ctx.openStyleDialog({ mode: "modify", id: "normal" })}
       >
-        <Pilcrow /> Spaziatura paragrafo personalizzata…
+        <Pilcrow /> {t("Spaziatura paragrafo personalizzata…")}
       </DropdownMenuItem>
     </>
   )
@@ -760,6 +892,7 @@ function WatermarkMenu({
   setTheme: (patch: Partial<DocTheme>) => void
   onCustom: () => void
 }) {
+  const t = useT()
   const close = useCloseRibbonMenu()
   const groups = [...new Set(WATERMARK_PRESETS.map((p) => p.group))]
   return (
@@ -770,7 +903,7 @@ function WatermarkMenu({
           <div className="grid grid-cols-3 gap-1.5 px-1.5 pb-1.5">
             {WATERMARK_PRESETS.filter((p) => p.group === group).flatMap((p) =>
               (["diagonal", "horizontal"] as const)
-                .slice(0, group === "Stato" ? 1 : 2)
+                .slice(0, group === t("Stato") ? 1 : 2)
                 .map((layout) => {
                   const mark = newWatermark({
                     ...(theme.watermark && !theme.watermark.image
@@ -790,7 +923,7 @@ function WatermarkMenu({
                     <button
                       key={`${p.text}-${layout}`}
                       type="button"
-                      title={`${p.text} ${layout === "diagonal" ? "(diagonale)" : "(orizzontale)"}`}
+                      title={`${p.text} ${layout === "diagonal" ? t("(diagonale)") : t("(orizzontale)")}`}
                       onMouseDown={(e) => e.preventDefault()}
                       onClick={() => {
                         setTheme({ watermark: mark })
@@ -815,13 +948,13 @@ function WatermarkMenu({
       ))}
       <DropdownMenuSeparator />
       <DropdownMenuItem onClick={onCustom}>
-        <Stamp /> Filigrana personalizzata…
+        <Stamp /> {t("Filigrana personalizzata…")}
       </DropdownMenuItem>
       <DropdownMenuItem
         disabled={!theme.watermark}
         onClick={() => setTheme({ watermark: null })}
       >
-        <RotateCcw /> Rimuovi filigrana
+        <RotateCcw /> {t("Rimuovi filigrana")}
       </DropdownMenuItem>
     </div>
   )
@@ -836,10 +969,11 @@ function PageColorMenu({
   theme: DocTheme
   setTheme: (patch: Partial<DocTheme>) => void
 }) {
+  const t = useT()
   const paper = theme.paper === AUTO_BG ? "" : theme.paper
   return (
     <>
-      <DropdownMenuLabel>Colore pagina</DropdownMenuLabel>
+      <DropdownMenuLabel>{t("Colore pagina")}</DropdownMenuLabel>
       <SwatchGrid
         columns={6}
         colors={PAPERS}
@@ -853,11 +987,11 @@ function PageColorMenu({
         />
       </div>
       <DropdownMenuSeparator />
-      <DropdownMenuLabel>Sfondo intorno al foglio</DropdownMenuLabel>
+      <DropdownMenuLabel>{t("Sfondo intorno al foglio")}</DropdownMenuLabel>
       <SwatchGrid
         columns={6}
         colors={[
-          { label: "Automatico (segue il tema)", value: "" },
+          { label: t("Automatico (segue il tema)"), value: "" },
           ...BACKGROUNDS.map((b) => ({ label: b.label, value: b.value })),
         ]}
         value={theme.background === AUTO_BG ? "" : theme.background}
@@ -900,6 +1034,7 @@ function FontsForm({
   setTheme: (patch: Partial<DocTheme>) => void
   onClose: () => void
 }) {
+  const t = useT()
   const [heading, setHeading] = React.useState(theme.headingFont ?? theme.font)
   const [body, setBody] = React.useState(theme.font)
   return (
@@ -911,21 +1046,21 @@ function FontsForm({
       }}
     >
       <DialogHeader className="border-b border-border px-5 py-4">
-        <DialogTitle>Personalizza tipi di carattere</DialogTitle>
+        <DialogTitle>{t("Personalizza tipi di carattere")}</DialogTitle>
         <DialogDescription>
-          Gli stili che usano «Titoli» e «Corpo» cambiano insieme.
+          {t("Gli stili che usano «Titoli» e «Corpo» cambiano insieme.")}
         </DialogDescription>
       </DialogHeader>
       <div className="grid gap-4 px-5 py-4 sm:grid-cols-2">
         <label className="block space-y-1">
           <span className="text-xs text-muted-foreground">
-            Carattere titoli
+            {t("Carattere titoli")}
           </span>
           <FontPicker value={heading} onChange={setHeading} />
         </label>
         <label className="block space-y-1">
           <span className="text-xs text-muted-foreground">
-            Carattere corpo del testo
+            {t("Carattere corpo del testo")}
           </span>
           <FontPicker value={body} onChange={setBody} />
         </label>
@@ -934,22 +1069,23 @@ function FontsForm({
             className="text-xl leading-tight font-bold"
             style={{ fontFamily: fontStack(heading) }}
           >
-            Titolo
+            {t("Titolo")}
           </p>
           <p
             className="mt-1 text-sm text-muted-foreground"
             style={{ fontFamily: fontStack(body) }}
           >
-            Il corpo del testo usa questo carattere: paragrafi, elenchi e
-            tabelle.
+            {t(
+              "Il corpo del testo usa questo carattere: paragrafi, elenchi e tabelle."
+            )}
           </p>
         </div>
       </div>
       <DialogFooter className="border-t border-border px-5 py-3">
         <Button type="button" variant="ghost" onClick={onClose}>
-          Annulla
+          {t("Annulla")}
         </Button>
-        <Button type="submit">Salva</Button>
+        <Button type="submit">{t("Salva")}</Button>
       </DialogFooter>
     </form>
   )

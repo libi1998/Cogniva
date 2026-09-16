@@ -1,0 +1,5896 @@
+{
+  ".docx · .md · .html · .txt": {
+    "en": ".docx · .md · .html · .txt",
+    "es": ".docx · .md · .html · .txt",
+    "fr": ".docx · .md · .html · .txt",
+    "de": ".docx · .md · .html · .txt",
+    "pt": ".docx · .md · .html · .txt"
+  },
+  ".json esportato da Cogniva": {
+    "en": ".json exported from Cogniva",
+    "es": ".json exportado desde Cogniva",
+    "fr": ".json exporté depuis Cogniva",
+    "de": ".json aus Cogniva exportiert",
+    "pt": ".json exportado do Cogniva"
+  },
+  "«{title}» importato": {
+    "en": "“{title}” imported",
+    "es": "«{title}» importado",
+    "fr": "« {title} » importé",
+    "de": "„{title}“ importiert",
+    "pt": "“{title}” importado"
+  },
+  "«{title}» ripristinato": {
+    "en": "“{title}” restored",
+    "es": "«{title}» restaurado",
+    "fr": "« {title} » restauré",
+    "de": "„{title}“ wiederhergestellt",
+    "pt": "“{title}” restaurado"
+  },
+  "«{title}» spostato nel cestino": {
+    "en": "“{title}” moved to the trash",
+    "es": "«{title}» movido a la papelera",
+    "fr": "« {title} » mis à la corbeille",
+    "de": "„{title}“ in den Papierkorb gelegt",
+    "pt": "“{title}” movido para a lixeira"
+  },
+  "«Se {field}…»": {
+    "en": "“If {field}…”",
+    "es": "«Si {field}…»",
+    "fr": "« Si {field}… »",
+    "de": "„Wenn {field} …“",
+    "pt": "“Se {field}…”"
+  },
+  "«Una frase da mettere in risalto.»": {
+    "en": "“A sentence to bring out.”",
+    "es": "«Una frase para destacar.»",
+    "fr": "« Une phrase à mettre en valeur. »",
+    "de": "„Ein Satz, den man hervorheben will.“",
+    "pt": "“Uma frase para destacar.”"
+  },
+  "(Fonte mancante)": {
+    "en": "(Missing source)",
+    "es": "(Falta la fuente)",
+    "fr": "(Source manquante)",
+    "de": "(Quelle fehlt)",
+    "pt": "(Fonte ausente)"
+  },
+  "{count} connettori": {
+    "en": "{count} connectors",
+    "es": "{count} conectores",
+    "fr": "{count} connecteurs",
+    "de": "{count} Verbinder",
+    "pt": "{count} conectores"
+  },
+  "{count} elementi": {
+    "en": "{count} items",
+    "es": "{count} elementos",
+    "fr": "{count} éléments",
+    "de": "{count} Elemente",
+    "pt": "{count} elementos"
+  },
+  "{font} (Corpo)": {
+    "en": "{font} (Body)",
+    "es": "{font} (Cuerpo)",
+    "fr": "{font} (Corps)",
+    "de": "{font} (Fließtext)",
+    "pt": "{font} (Corpo)"
+  },
+  "{font} (Titoli)": {
+    "en": "{font} (Headings)",
+    "es": "{font} (Títulos)",
+    "fr": "{font} (Titres)",
+    "de": "{font} (Überschriften)",
+    "pt": "{font} (Títulos)"
+  },
+  "{name} · {width}×{height} mm": {
+    "en": "{name} · {width}×{height} mm",
+    "es": "{name} · {width}×{height} mm",
+    "fr": "{name} · {width}×{height} mm",
+    "de": "{name} · {width}×{height} mm",
+    "pt": "{name} · {width}×{height} mm"
+  },
+  "{title} (copia)": {
+    "en": "{title} (copy)",
+    "es": "{title} (copia)",
+    "fr": "{title} (copie)",
+    "de": "{title} (Kopie)",
+    "pt": "{title} (cópia)"
+  },
+  "110 × 220 mm · lettera A4 piegata in tre": {
+    "en": "110 × 220 mm · A4 letter folded in three",
+    "es": "110 × 220 mm · carta A4 doblada en tres",
+    "fr": "110 × 220 mm · lettre A4 pliée en trois",
+    "de": "110 × 220 mm · A4-Brief dreifach gefaltet",
+    "pt": "110 × 220 mm · carta A4 dobrada em três"
+  },
+  "114 × 162 mm · A5 piegato a metà": {
+    "en": "114 × 162 mm · A5 folded in half",
+    "es": "114 × 162 mm · A5 doblado por la mitad",
+    "fr": "114 × 162 mm · A5 plié en deux",
+    "de": "114 × 162 mm · A5 halbiert gefaltet",
+    "pt": "114 × 162 mm · A5 dobrado ao meio"
+  },
+  "162 × 229 mm · A4 piegato a metà": {
+    "en": "162 × 229 mm · A4 folded in half",
+    "es": "162 × 229 mm · A4 doblado por la mitad",
+    "fr": "162 × 229 mm · A4 plié en deux",
+    "de": "162 × 229 mm · A4 halbiert gefaltet",
+    "pt": "162 × 229 mm · A4 dobrado ao meio"
+  },
+  "A": {
+    "en": "To",
+    "es": "A",
+    "fr": "Vers",
+    "de": "Nach",
+    "pt": "Para"
+  },
+  "A destra, il testo le scorre accanto": {
+    "en": "On the right, the text flows beside it",
+    "es": "A la derecha, el texto fluye a su lado",
+    "fr": "À droite, le texte s'écoule à côté",
+    "de": "Rechts, der Text fließt daneben",
+    "pt": "À direita, o texto flui ao lado"
+  },
+  "A gomito": {
+    "en": "Elbow",
+    "es": "En codo",
+    "fr": "En coude",
+    "de": "Gewinkelt",
+    "pt": "Em cotovelo"
+  },
+  "A mano": {
+    "en": "Handwritten",
+    "es": "Manuscrita",
+    "fr": "Manuscrite",
+    "de": "Handschrift",
+    "pt": "Manuscrita"
+  },
+  "A sinistra, con la barra dell'accento": {
+    "en": "On the left, with the accent bar",
+    "es": "A la izquierda, con la barra del acento",
+    "fr": "À gauche, avec la barre d'accent",
+    "de": "Links, mit dem Akzentbalken",
+    "pt": "À esquerda, com a barra de destaque"
+  },
+  "a, b, c…": {
+    "en": "a, b, c…",
+    "es": "a, b, c…",
+    "fr": "a, b, c…",
+    "de": "a, b, c…",
+    "pt": "a, b, c…"
+  },
+  "A, B, C…": {
+    "en": "A, B, C…",
+    "es": "A, B, C…",
+    "fr": "A, B, C…",
+    "de": "A, B, C…",
+    "pt": "A, B, C…"
+  },
+  "a. b. c.": {
+    "en": "a. b. c.",
+    "es": "a. b. c.",
+    "fr": "a. b. c.",
+    "de": "a. b. c.",
+    "pt": "a. b. c."
+  },
+  "a) b) c)": {
+    "en": "a) b) c)",
+    "es": "a) b) c)",
+    "fr": "a) b) c)",
+    "de": "a) b) c)",
+    "pt": "a) b) c)"
+  },
+  "Accademico": {
+    "en": "Academic",
+    "es": "Académico",
+    "fr": "Académique",
+    "de": "Akademisch",
+    "pt": "Acadêmico"
+  },
+  "Accento": {
+    "en": "Accent",
+    "es": "Acento",
+    "fr": "Accent",
+    "de": "Akzent",
+    "pt": "Destaque"
+  },
+  "Accessibile": {
+    "en": "Accessible",
+    "es": "Accesible",
+    "fr": "Accessible",
+    "de": "Barrierefrei",
+    "pt": "Acessível"
+  },
+  "Adatta alla finestra": {
+    "en": "Fit to window",
+    "es": "Ajustar a la ventana",
+    "fr": "Ajuster à la fenêtre",
+    "de": "An Fenster anpassen",
+    "pt": "Ajustar à janela"
+  },
+  "Adatta alla vista": {
+    "en": "Fit to view",
+    "es": "Ajustar a la vista",
+    "fr": "Ajuster à la vue",
+    "de": "An Ansicht anpassen",
+    "pt": "Ajustar à visualização"
+  },
+  "Aggiungi ai preferiti": {
+    "en": "Add to favorites",
+    "es": "Añadir a favoritos",
+    "fr": "Ajouter aux favoris",
+    "de": "Zu Favoriten hinzufügen",
+    "pt": "Adicionar aos favoritos"
+  },
+  "Aggiungi colonna": {
+    "en": "Add column",
+    "es": "Añadir columna",
+    "fr": "Ajouter une colonne",
+    "de": "Spalte hinzufügen",
+    "pt": "Adicionar coluna"
+  },
+  "Aggiungi dei titoli (Titolo 1, 2 o 3) e compariranno qui.": {
+    "en": "Add some headings (Heading 1, 2 or 3) and they will appear here.",
+    "es": "Añade títulos (Título 1, 2 o 3) y aparecerán aquí.",
+    "fr": "Ajoutez des titres (Titre 1, 2 ou 3) et ils apparaîtront ici.",
+    "de": "Füge Überschriften hinzu (Überschrift 1, 2 oder 3) – sie erscheinen dann hier.",
+    "pt": "Adicione títulos (Título 1, 2 ou 3) e eles aparecerão aqui."
+  },
+  "Aggiungi intestazione": {
+    "en": "Add header row",
+    "es": "Añadir encabezado",
+    "fr": "Ajouter un en-tête",
+    "de": "Kopfzeile hinzufügen",
+    "pt": "Adicionar cabeçalho"
+  },
+  "Aggiungi qui": {
+    "en": "Add here",
+    "es": "Añadir aquí",
+    "fr": "Ajouter ici",
+    "de": "Hier hinzufügen",
+    "pt": "Adicionar aqui"
+  },
+  "Aggiungi riga": {
+    "en": "Add row",
+    "es": "Añadir fila",
+    "fr": "Ajouter une ligne",
+    "de": "Zeile hinzufügen",
+    "pt": "Adicionar linha"
+  },
+  "Aggiungi una serie": {
+    "en": "Add a series",
+    "es": "Añadir una serie",
+    "fr": "Ajouter une série",
+    "de": "Eine Reihe hinzufügen",
+    "pt": "Adicionar uma série"
+  },
+  "Aggiunti {added} file dallo spazio di lavoro": {
+    "en": "{added} files added from the workspace",
+    "es": "Añadidos {added} archivos del área de trabajo",
+    "fr": "{added} fichiers ajoutés depuis l'espace de travail",
+    "de": "{added} Dateien aus dem Arbeitsbereich hinzugefügt",
+    "pt": "Adicionados {added} arquivos da área de trabalho"
+  },
+  "aiuto": {
+    "en": "help",
+    "es": "ayuda",
+    "fr": "aide",
+    "de": "Hilfe",
+    "pt": "ajuda"
+  },
+  "Al centro": {
+    "en": "Center",
+    "es": "Al centro",
+    "fr": "Au centre",
+    "de": "Zentriert",
+    "pt": "Ao centro"
+  },
+  "All'interno": {
+    "en": "Inside",
+    "es": "Dentro",
+    "fr": "À l'intérieur",
+    "de": "Innerhalb",
+    "pt": "Dentro"
+  },
+  "Allinea a sinistra, al centro, a destra, giustifica": {
+    "en": "Align left, center, right, justify",
+    "es": "Alinear a la izquierda, al centro, a la derecha, justificar",
+    "fr": "Aligner à gauche, au centre, à droite, justifier",
+    "de": "Links, mittig, rechts ausrichten, Blocksatz",
+    "pt": "Alinhar à esquerda, ao centro, à direita, justificar"
+  },
+  "Allineati proporzionali": {
+    "en": "Lining proportional",
+    "es": "Alineados proporcionales",
+    "fr": "Alignés proportionnels",
+    "de": "Versalziffern proportional",
+    "pt": "Alinhados proporcionais"
+  },
+  "Allineati tabulari": {
+    "en": "Lining tabular",
+    "es": "Alineados tabulares",
+    "fr": "Alignés tabulaires",
+    "de": "Versalziffern tabellarisch",
+    "pt": "Alinhados tabulares"
+  },
+  "Alternative contestuali": {
+    "en": "Contextual alternates",
+    "es": "Alternativas contextuales",
+    "fr": "Variantes contextuelles",
+    "de": "Kontextbezogene Alternativen",
+    "pt": "Alternativas contextuais"
+  },
+  "Alto": {
+    "en": "Top",
+    "es": "Arriba",
+    "fr": "Haut",
+    "de": "Oben",
+    "pt": "Em cima"
+  },
+  "Alto a destra": {
+    "en": "Top right",
+    "es": "Arriba a la derecha",
+    "fr": "En haut à droite",
+    "de": "Oben rechts",
+    "pt": "Em cima à direita"
+  },
+  "Alto a sinistra": {
+    "en": "Top left",
+    "es": "Arriba a la izquierda",
+    "fr": "En haut à gauche",
+    "de": "Oben links",
+    "pt": "Em cima à esquerda"
+  },
+  "Altre azioni": {
+    "en": "More actions",
+    "es": "Más acciones",
+    "fr": "Plus d'actions",
+    "de": "Weitere Aktionen",
+    "pt": "Mais ações"
+  },
+  "Altre fonti": {
+    "en": "Other sources",
+    "es": "Otras fuentes",
+    "fr": "Autres sources",
+    "de": "Weitere Quellen",
+    "pt": "Outras fontes"
+  },
+  "Anello": {
+    "en": "Doughnut",
+    "es": "Anillo",
+    "fr": "Anneau",
+    "de": "Ring",
+    "pt": "Rosca"
+  },
+  "Annulla": {
+    "en": "Cancel",
+    "es": "Cancelar",
+    "fr": "Annuler",
+    "de": "Abbrechen",
+    "pt": "Cancelar"
+  },
+  "Annulla ⌘Z": {
+    "en": "Undo ⌘Z",
+    "es": "Deshacer ⌘Z",
+    "fr": "Annuler ⌘Z",
+    "de": "Rückgängig ⌘Z",
+    "pt": "Desfazer ⌘Z"
+  },
+  "Annulla, ripristina": {
+    "en": "Undo, redo",
+    "es": "Deshacer, rehacer",
+    "fr": "Annuler, rétablir",
+    "de": "Rückgängig, wiederholen",
+    "pt": "Desfazer, refazer"
+  },
+  "Annulla||annulla l'ultima modifica": {
+    "en": "Undo",
+    "es": "Deshacer",
+    "fr": "Annuler",
+    "de": "Rückgängig",
+    "pt": "Desfazer"
+  },
+  "Anteprima": {
+    "en": "Preview",
+    "es": "Vista previa",
+    "fr": "Aperçu",
+    "de": "Vorschau",
+    "pt": "Prévia"
+  },
+  "Anteprima non disponibile": {
+    "en": "Preview not available",
+    "es": "Vista previa no disponible",
+    "fr": "Aperçu non disponible",
+    "de": "Vorschau nicht verfügbar",
+    "pt": "Prévia não disponível"
+  },
+  "APA (7ª ed.)": {
+    "en": "APA (7th ed.)",
+    "es": "APA (7.ª ed.)",
+    "fr": "APA (7e éd.)",
+    "de": "APA (7. Aufl.)",
+    "pt": "APA (7.ª ed.)"
+  },
+  "Aperta": {
+    "en": "Open",
+    "es": "Abierta",
+    "fr": "Ouverte",
+    "de": "Offen",
+    "pt": "Aberta"
+  },
+  "Apice": {
+    "en": "Superscript",
+    "es": "Superíndice",
+    "fr": "Exposant",
+    "de": "Hochgestellt",
+    "pt": "Sobrescrito"
+  },
+  "Apice, pedice": {
+    "en": "Superscript, subscript",
+    "es": "Superíndice, subíndice",
+    "fr": "Exposant, indice",
+    "de": "Hochgestellt, tiefgestellt",
+    "pt": "Sobrescrito, subscrito"
+  },
+  "App — wireframe": {
+    "en": "App — wireframe",
+    "es": "App — wireframe",
+    "fr": "App — wireframe",
+    "de": "App — Wireframe",
+    "pt": "App — wireframe"
+  },
+  "APPROVATO": {
+    "en": "APPROVED",
+    "es": "APROBADO",
+    "fr": "APPROUVÉ",
+    "de": "GENEHMIGT",
+    "pt": "APROVADO"
+  },
+  "apri": {
+    "en": "open",
+    "es": "abrir",
+    "fr": "ouvrir",
+    "de": "öffnen",
+    "pt": "abrir"
+  },
+  "Apri": {
+    "en": "Open",
+    "es": "Abrir",
+    "fr": "Ouvrir",
+    "de": "Öffnen",
+    "pt": "Abrir"
+  },
+  "Apri come documento": {
+    "en": "Open as a document",
+    "es": "Abrir como documento",
+    "fr": "Ouvrir comme document",
+    "de": "Als Dokument öffnen",
+    "pt": "Abrir como documento"
+  },
+  "Apri la board": {
+    "en": "Open the board",
+    "es": "Abrir el tablero",
+    "fr": "Ouvrir le tableau",
+    "de": "Board öffnen",
+    "pt": "Abrir o quadro"
+  },
+  "Arancio": {
+    "en": "Orange",
+    "es": "Naranja",
+    "fr": "Orange",
+    "de": "Orange",
+    "pt": "Laranja"
+  },
+  "Area": {
+    "en": "Area",
+    "es": "Área",
+    "fr": "Aires",
+    "de": "Fläche",
+    "pt": "Área"
+  },
+  "Area del cerchio": {
+    "en": "Area of a circle",
+    "es": "Área del círculo",
+    "fr": "Aire du cercle",
+    "de": "Kreisfläche",
+    "pt": "Área do círculo"
+  },
+  "Area di testo": {
+    "en": "Text area",
+    "es": "Área de texto",
+    "fr": "Zone de texte",
+    "de": "Textbereich",
+    "pt": "Área de texto"
+  },
+  "Articolo 1": {
+    "en": "Article 1",
+    "es": "Artículo 1",
+    "fr": "Article 1",
+    "de": "Artikel 1",
+    "pt": "Artigo 1"
+  },
+  "Articolo 1 · Sezione 1.01": {
+    "en": "Article 1 · Section 1.01",
+    "es": "Artículo 1 · Sección 1.01",
+    "fr": "Article 1 · Section 1.01",
+    "de": "Artikel 1 · Abschnitt 1.01",
+    "pt": "Artigo 1 · Seção 1.01"
+  },
+  "Articolo di rivista": {
+    "en": "Journal article",
+    "es": "Artículo de revista",
+    "fr": "Article de revue",
+    "de": "Zeitschriftenartikel",
+    "pt": "Artigo de revista"
+  },
+  "Aspetto": {
+    "en": "Appearance",
+    "es": "Aspecto",
+    "fr": "Apparence",
+    "de": "Aussehen",
+    "pt": "Aparência"
+  },
+  "Aspetto e lingua": {
+    "en": "Appearance and language",
+    "es": "Aspecto e idioma",
+    "fr": "Apparence et langue",
+    "de": "Aussehen und Sprache",
+    "pt": "Aparência e idioma"
+  },
+  "Asse X": {
+    "en": "X axis",
+    "es": "Eje X",
+    "fr": "Axe X",
+    "de": "X-Achse",
+    "pt": "Eixo X"
+  },
+  "Asse Y": {
+    "en": "Y axis",
+    "es": "Eje Y",
+    "fr": "Axe Y",
+    "de": "Y-Achse",
+    "pt": "Eixo Y"
+  },
+  "Attivo": {
+    "en": "Active",
+    "es": "Activo",
+    "fr": "Actif",
+    "de": "Aktiv",
+    "pt": "Ativo"
+  },
+  "Auto": {
+    "en": "Auto",
+    "es": "Auto",
+    "fr": "Auto",
+    "de": "Auto",
+    "pt": "Auto"
+  },
+  "Auto (segue il tema)": {
+    "en": "Auto (follows the theme)",
+    "es": "Auto (sigue el tema)",
+    "fr": "Auto (suit le thème)",
+    "de": "Auto (folgt dem Thema)",
+    "pt": "Auto (segue o tema)"
+  },
+  "Autore": {
+    "en": "Author",
+    "es": "Autor",
+    "fr": "Auteur",
+    "de": "Autor",
+    "pt": "Autor"
+  },
+  "Autore a sinistra, data a destra": {
+    "en": "Author on the left, date on the right",
+    "es": "Autor a la izquierda, fecha a la derecha",
+    "fr": "Auteur à gauche, date à droite",
+    "de": "Autor links, Datum rechts",
+    "pt": "Autor à esquerda, data à direita"
+  },
+  "Autore e data": {
+    "en": "Author and date",
+    "es": "Autor y fecha",
+    "fr": "Auteur et date",
+    "de": "Autor und Datum",
+    "pt": "Autor e data"
+  },
+  "Autore, data e pagina": {
+    "en": "Author, date and page",
+    "es": "Autor, fecha y página",
+    "fr": "Auteur, date et page",
+    "de": "Autor, Datum und Seite",
+    "pt": "Autor, data e página"
+  },
+  "Avanzamento": {
+    "en": "Progress",
+    "es": "Progreso",
+    "fr": "Progression",
+    "de": "Fortschritt",
+    "pt": "Progresso"
+  },
+  "Avatar": {
+    "en": "Avatar",
+    "es": "Avatar",
+    "fr": "Avatar",
+    "de": "Avatar",
+    "pt": "Avatar"
+  },
+  "Avery 3474 · 24 per foglio": {
+    "en": "Avery 3474 · 24 per sheet",
+    "es": "Avery 3474 · 24 por hoja",
+    "fr": "Avery 3474 · 24 par feuille",
+    "de": "Avery 3474 · 24 pro Bogen",
+    "pt": "Avery 3474 · 24 por folha"
+  },
+  "Avery L7159 · 24 per foglio": {
+    "en": "Avery L7159 · 24 per sheet",
+    "es": "Avery L7159 · 24 por hoja",
+    "fr": "Avery L7159 · 24 par feuille",
+    "de": "Avery L7159 · 24 pro Bogen",
+    "pt": "Avery L7159 · 24 por folha"
+  },
+  "Avery L7160 · 21 per foglio": {
+    "en": "Avery L7160 · 21 per sheet",
+    "es": "Avery L7160 · 21 por hoja",
+    "fr": "Avery L7160 · 21 par feuille",
+    "de": "Avery L7160 · 21 pro Bogen",
+    "pt": "Avery L7160 · 21 por folha"
+  },
+  "Avery L7163 · 14 per foglio": {
+    "en": "Avery L7163 · 14 per sheet",
+    "es": "Avery L7163 · 14 por hoja",
+    "fr": "Avery L7163 · 14 par feuille",
+    "de": "Avery L7163 · 14 pro Bogen",
+    "pt": "Avery L7163 · 14 por folha"
+  },
+  "Avery L7165 · 8 per foglio": {
+    "en": "Avery L7165 · 8 per sheet",
+    "es": "Avery L7165 · 8 por hoja",
+    "fr": "Avery L7165 · 8 par feuille",
+    "de": "Avery L7165 · 8 pro Bogen",
+    "pt": "Avery L7165 · 8 por folha"
+  },
+  "Avviso": {
+    "en": "Warning",
+    "es": "Aviso",
+    "fr": "Avertissement",
+    "de": "Warnung",
+    "pt": "Aviso"
+  },
+  "Azioni": {
+    "en": "Actions",
+    "es": "Acciones",
+    "fr": "Actions",
+    "de": "Aktionen",
+    "pt": "Ações"
+  },
+  "Azioni per {title}": {
+    "en": "Actions for {title}",
+    "es": "Acciones de {title}",
+    "fr": "Actions pour {title}",
+    "de": "Aktionen für {title}",
+    "pt": "Ações para {title}"
+  },
+  "Azzurro": {
+    "en": "Light blue",
+    "es": "Azul claro",
+    "fr": "Bleu clair",
+    "de": "Hellblau",
+    "pt": "Azul-claro"
+  },
+  "backup": {
+    "en": "backup",
+    "es": "copia de seguridad",
+    "fr": "sauvegarde",
+    "de": "Sicherung",
+    "pt": "backup"
+  },
+  "Badge": {
+    "en": "Badge",
+    "es": "Insignia",
+    "fr": "Badge",
+    "de": "Badge",
+    "pt": "Selo"
+  },
+  "Bagliore accento": {
+    "en": "Accent glow",
+    "es": "Resplandor de acento",
+    "fr": "Lueur d'accent",
+    "de": "Akzentleuchten",
+    "pt": "Brilho de destaque"
+  },
+  "Barra": {
+    "en": "Bar",
+    "es": "Barra",
+    "fr": "Barre",
+    "de": "Balken",
+    "pt": "Barra"
+  },
+  "Barra di navigazione": {
+    "en": "Navigation bar",
+    "es": "Barra de navegación",
+    "fr": "Barre de navigation",
+    "de": "Navigationsleiste",
+    "pt": "Barra de navegação"
+  },
+  "Barra laterale": {
+    "en": "Sidebar",
+    "es": "Barra lateral",
+    "fr": "Barre latérale",
+    "de": "Seitenleiste",
+    "pt": "Barra lateral"
+  },
+  "Barrato doppio": {
+    "en": "Double strikethrough",
+    "es": "Tachado doble",
+    "fr": "Barré double",
+    "de": "Doppelt durchgestrichen",
+    "pt": "Tachado duplo"
+  },
+  "Barrato, evidenziato": {
+    "en": "Strikethrough, highlighted",
+    "es": "Tachado, resaltado",
+    "fr": "Barré, surligné",
+    "de": "Durchgestrichen, hervorgehoben",
+    "pt": "Tachado, realçado"
+  },
+  "Barre": {
+    "en": "Bar",
+    "es": "Barras",
+    "fr": "Barres",
+    "de": "Balken",
+    "pt": "Barras"
+  },
+  "Base": {
+    "en": "Base",
+    "es": "Base",
+    "fr": "Base",
+    "de": "Basis",
+    "pt": "Base"
+  },
+  "Basso": {
+    "en": "Bottom",
+    "es": "Abajo",
+    "fr": "Bas",
+    "de": "Unten",
+    "pt": "Embaixo"
+  },
+  "Basso a destra": {
+    "en": "Bottom right",
+    "es": "Abajo a la derecha",
+    "fr": "En bas à droite",
+    "de": "Unten rechts",
+    "pt": "Embaixo à direita"
+  },
+  "Basso a sinistra": {
+    "en": "Bottom left",
+    "es": "Abajo a la izquierda",
+    "fr": "En bas à gauche",
+    "de": "Unten links",
+    "pt": "Embaixo à esquerda"
+  },
+  "Bianco": {
+    "en": "White",
+    "es": "Blanco",
+    "fr": "Blanc",
+    "de": "Weiß",
+    "pt": "Branco"
+  },
+  "Bibliografia": {
+    "en": "Bibliography",
+    "es": "Bibliografía",
+    "fr": "Bibliographie",
+    "de": "Bibliografie",
+    "pt": "Bibliografia"
+  },
+  "Blocca": {
+    "en": "Lock",
+    "es": "Bloquear",
+    "fr": "Verrouiller",
+    "de": "Sperren",
+    "pt": "Bloquear"
+  },
+  "Blu": {
+    "en": "Blue",
+    "es": "Azul",
+    "fr": "Bleu",
+    "de": "Blau",
+    "pt": "Azul"
+  },
+  "Board": {
+    "en": "Board",
+    "es": "Tablero",
+    "fr": "Tableau",
+    "de": "Board",
+    "pt": "Quadro"
+  },
+  "Board non disponibile": {
+    "en": "Board not available",
+    "es": "Tablero no disponible",
+    "fr": "Tableau non disponible",
+    "de": "Board nicht verfügbar",
+    "pt": "Quadro não disponível"
+  },
+  "Board senza titolo": {
+    "en": "Untitled board",
+    "es": "Tablero sin título",
+    "fr": "Tableau sans titre",
+    "de": "Board ohne Titel",
+    "pt": "Quadro sem título"
+  },
+  "Board vuota": {
+    "en": "Empty board",
+    "es": "Tablero vacío",
+    "fr": "Tableau vide",
+    "de": "Leeres Board",
+    "pt": "Quadro vazio"
+  },
+  "Bordo": {
+    "en": "Border",
+    "es": "Borde",
+    "fr": "Bordure",
+    "de": "Rahmen",
+    "pt": "Borda"
+  },
+  "Bordo sottile, nel testo": {
+    "en": "Thin border, in the text",
+    "es": "Borde fino, en el texto",
+    "fr": "Bordure fine, dans le texte",
+    "de": "Dünner Rahmen, im Text",
+    "pt": "Borda fina, no texto"
+  },
+  "Bordo tratteggiato": {
+    "en": "Dashed border",
+    "es": "Borde discontinuo",
+    "fr": "Bordure en pointillés",
+    "de": "Gestrichelter Rahmen",
+    "pt": "Borda tracejada"
+  },
+  "Bottone": {
+    "en": "Button",
+    "es": "Botón",
+    "fr": "Bouton",
+    "de": "Schaltfläche",
+    "pt": "Botão"
+  },
+  "Bottone icona": {
+    "en": "Icon button",
+    "es": "Botón de icono",
+    "fr": "Bouton icône",
+    "de": "Symbolschaltfläche",
+    "pt": "Botão de ícone"
+  },
+  "BOZZA": {
+    "en": "DRAFT",
+    "es": "BORRADOR",
+    "fr": "BROUILLON",
+    "de": "ENTWURF",
+    "pt": "RASCUNHO"
+  },
+  "Breadcrumb": {
+    "en": "Breadcrumb",
+    "es": "Ruta de navegación",
+    "fr": "Fil d'Ariane",
+    "de": "Brotkrümelnavigation",
+    "pt": "Trilha de navegação"
+  },
+  "Browser": {
+    "en": "Browser",
+    "es": "Navegador",
+    "fr": "Navigateur",
+    "de": "Browser",
+    "pt": "Navegador"
+  },
+  "Buongiorno, Libo": {
+    "en": "Good morning, Libo",
+    "es": "Buenos días, Libo",
+    "fr": "Bonjour, Libo",
+    "de": "Guten Morgen, Libo",
+    "pt": "Bom dia, Libo"
+  },
+  "Busta C5": {
+    "en": "C5 envelope",
+    "es": "Sobre C5",
+    "fr": "Enveloppe C5",
+    "de": "Umschlag C5",
+    "pt": "Envelope C5"
+  },
+  "Busta C6": {
+    "en": "C6 envelope",
+    "es": "Sobre C6",
+    "fr": "Enveloppe C6",
+    "de": "Umschlag C6",
+    "pt": "Envelope C6"
+  },
+  "Busta DL": {
+    "en": "DL envelope",
+    "es": "Sobre DL",
+    "fr": "Enveloppe DL",
+    "de": "Umschlag DL",
+    "pt": "Envelope DL"
+  },
+  "Caldi": {
+    "en": "Warm",
+    "es": "Cálidos",
+    "fr": "Chauds",
+    "de": "Warm",
+    "pt": "Quentes"
+  },
+  "Calendario": {
+    "en": "Calendar",
+    "es": "Calendario",
+    "fr": "Calendrier",
+    "de": "Kalender",
+    "pt": "Calendário"
+  },
+  "Cambia": {
+    "en": "Change",
+    "es": "Cambiar",
+    "fr": "Changer",
+    "de": "Ändern",
+    "pt": "Alterar"
+  },
+  "Cambia icona": {
+    "en": "Change icon",
+    "es": "Cambiar el icono",
+    "fr": "Changer d'icône",
+    "de": "Symbol ändern",
+    "pt": "Trocar o ícone"
+  },
+  "Campo": {
+    "en": "Field",
+    "es": "Campo",
+    "fr": "Champ",
+    "de": "Feld",
+    "pt": "Campo"
+  },
+  "Campo «{name}»": {
+    "en": "Field “{name}”",
+    "es": "Campo «{name}»",
+    "fr": "Champ « {name} »",
+    "de": "Feld „{name}“",
+    "pt": "Campo “{name}”"
+  },
+  "Campo unione": {
+    "en": "Merge field",
+    "es": "Campo de combinación",
+    "fr": "Champ de fusion",
+    "de": "Seriendruckfeld",
+    "pt": "Campo de mesclagem"
+  },
+  "Canvas non disponibile": {
+    "en": "Canvas not available",
+    "es": "Lienzo no disponible",
+    "fr": "Zone de dessin non disponible",
+    "de": "Zeichenfläche nicht verfügbar",
+    "pt": "Tela não disponível"
+  },
+  "CAP": {
+    "en": "ZIP code",
+    "es": "C. P.",
+    "fr": "Code postal",
+    "de": "PLZ",
+    "pt": "CEP"
+  },
+  "Capitolo 1": {
+    "en": "Chapter 1",
+    "es": "Capítulo 1",
+    "fr": "Chapitre 1",
+    "de": "Kapitel 1",
+    "pt": "Capítulo 1"
+  },
+  "Capitolo 1 · 1.1": {
+    "en": "Chapter 1 · 1.1",
+    "es": "Capítulo 1 · 1.1",
+    "fr": "Chapitre 1 · 1.1",
+    "de": "Kapitel 1 · 1.1",
+    "pt": "Capítulo 1 · 1.1"
+  },
+  "Capsula": {
+    "en": "Capsule",
+    "es": "Cápsula",
+    "fr": "Capsule",
+    "de": "Kapsel",
+    "pt": "Cápsula"
+  },
+  "Caratteri del tema": {
+    "en": "Theme fonts",
+    "es": "Fuentes del tema",
+    "fr": "Polices du thème",
+    "de": "Schriften des Themas",
+    "pt": "Fontes do tema"
+  },
+  "Card": {
+    "en": "Card",
+    "es": "Tarjeta",
+    "fr": "Carte",
+    "de": "Karte",
+    "pt": "Cartão"
+  },
+  "carica": {
+    "en": "load",
+    "es": "cargar",
+    "fr": "charger",
+    "de": "laden",
+    "pt": "carregar"
+  },
+  "Carico la board": {
+    "en": "Loading the board",
+    "es": "Cargando el tablero",
+    "fr": "Chargement du tableau",
+    "de": "Board wird geladen",
+    "pt": "Carregando o quadro"
+  },
+  "Carta": {
+    "en": "Paper",
+    "es": "Papel",
+    "fr": "Papier",
+    "de": "Papier",
+    "pt": "Papel"
+  },
+  "Casella da spuntare, vuota": {
+    "en": "Checkbox, empty task",
+    "es": "Casilla de verificación, tarea vacía",
+    "fr": "Case à cocher, tâche vide",
+    "de": "Kontrollkästchen, leere Aufgabe",
+    "pt": "Caixa de seleção, tarefa vazia"
+  },
+  "Casella di {task}": {
+    "en": "Checkbox for {task}",
+    "es": "Casilla de {task}",
+    "fr": "Case à cocher de {task}",
+    "de": "Kontrollkästchen für {task}",
+    "pt": "Caixa de seleção de {task}"
+  },
+  "Casella semplice": {
+    "en": "Simple box",
+    "es": "Cuadro sencillo",
+    "fr": "Zone simple",
+    "de": "Einfaches Feld",
+    "pt": "Caixa simples"
+  },
+  "Casi": {
+    "en": "Cases",
+    "es": "Casos",
+    "fr": "Affaires",
+    "de": "Fälle",
+    "pt": "Casos"
+  },
+  "Categoria": {
+    "en": "Category",
+    "es": "Categoría",
+    "fr": "Catégorie",
+    "de": "Kategorie",
+    "pt": "Categoria"
+  },
+  "Categoria {number}": {
+    "en": "Category {number}",
+    "es": "Categoría {number}",
+    "fr": "Catégorie {number}",
+    "de": "Kategorie {number}",
+    "pt": "Categoria {number}"
+  },
+  "Centrato, con ombra": {
+    "en": "Centered, with shadow",
+    "es": "Centrado, con sombra",
+    "fr": "Centré, avec ombre",
+    "de": "Zentriert, mit Schatten",
+    "pt": "Centralizado, com sombra"
+  },
+  "Cerca": {
+    "en": "Search",
+    "es": "Buscar",
+    "fr": "Rechercher",
+    "de": "Suchen",
+    "pt": "Buscar"
+  },
+  "Cerca comandi e file": {
+    "en": "Search commands and files",
+    "es": "Buscar comandos y archivos",
+    "fr": "Rechercher commandes et fichiers",
+    "de": "Befehle und Dateien suchen",
+    "pt": "Buscar comandos e arquivos"
+  },
+  "Cerca comandi e file…": {
+    "en": "Search commands and files…",
+    "es": "Buscar comandos y archivos…",
+    "fr": "Rechercher commandes et fichiers…",
+    "de": "Befehle und Dateien suchen…",
+    "pt": "Buscar comandos e arquivos…"
+  },
+  "Cerca componente…": {
+    "en": "Search components…",
+    "es": "Buscar componente…",
+    "fr": "Rechercher un composant…",
+    "de": "Komponente suchen…",
+    "pt": "Buscar componente…"
+  },
+  "Cerca fra {count} caratteri": {
+    "en": "Search among {count} fonts",
+    "es": "Buscar entre {count} fuentes",
+    "fr": "Rechercher parmi {count} polices",
+    "de": "Unter {count} Schriften suchen",
+    "pt": "Buscar entre {count} fontes"
+  },
+  "Cerca fra 250+ icone…": {
+    "en": "Search 250+ icons…",
+    "es": "Buscar entre más de 250 iconos…",
+    "fr": "Rechercher parmi plus de 250 icônes…",
+    "de": "Unter 250+ Symbolen suchen…",
+    "pt": "Buscar entre mais de 250 ícones…"
+  },
+  "Cerca nei titoli e nel testo…": {
+    "en": "Search in the titles and in the text…",
+    "es": "Buscar en los títulos y en el texto…",
+    "fr": "Rechercher dans les titres et dans le texte…",
+    "de": "In Titeln und im Text suchen…",
+    "pt": "Buscar nos títulos e no texto…"
+  },
+  "Cerca un comando da eseguire…": {
+    "en": "Search a command to run…",
+    "es": "Buscar un comando para ejecutar…",
+    "fr": "Rechercher une commande à exécuter…",
+    "de": "Einen Befehl zum Ausführen suchen…",
+    "pt": "Buscar um comando para executar…"
+  },
+  "Cerca un comando, un file o un'azione": {
+    "en": "Search a command, a file or an action",
+    "es": "Buscar un comando, un archivo o una acción",
+    "fr": "Rechercher une commande, un fichier ou une action",
+    "de": "Einen Befehl, eine Datei oder eine Aktion suchen",
+    "pt": "Buscar um comando, um arquivo ou uma ação"
+  },
+  "Cerca…": {
+    "en": "Search…",
+    "es": "Buscar…",
+    "fr": "Rechercher…",
+    "de": "Suchen…",
+    "pt": "Buscar…"
+  },
+  "Cerchio": {
+    "en": "Circle",
+    "es": "Círculo",
+    "fr": "Cercle",
+    "de": "Kreis",
+    "pt": "Círculo"
+  },
+  "Cerchio vuoto": {
+    "en": "Hollow circle",
+    "es": "Círculo vacío",
+    "fr": "Cercle vide",
+    "de": "Leerer Kreis",
+    "pt": "Círculo vazio"
+  },
+  "cestino": {
+    "en": "trash",
+    "es": "papelera",
+    "fr": "corbeille",
+    "de": "Papierkorb",
+    "pt": "lixeira"
+  },
+  "Cestino": {
+    "en": "Trash",
+    "es": "Papelera",
+    "fr": "Corbeille",
+    "de": "Papierkorb",
+    "pt": "Lixeira"
+  },
+  "Cestino svuotato": {
+    "en": "Trash emptied",
+    "es": "Papelera vaciada",
+    "fr": "Corbeille vidée",
+    "de": "Papierkorb geleert",
+    "pt": "Lixeira esvaziada"
+  },
+  "Checkbox": {
+    "en": "Checkbox",
+    "es": "Casilla",
+    "fr": "Case à cocher",
+    "de": "Kontrollkästchen",
+    "pt": "Caixa de seleção"
+  },
+  "Chiaro": {
+    "en": "Light",
+    "es": "Claro",
+    "fr": "Clair",
+    "de": "Hell",
+    "pt": "Claro"
+  },
+  "Chicago (autore-data)": {
+    "en": "Chicago (author-date)",
+    "es": "Chicago (autor-fecha)",
+    "fr": "Chicago (auteur-date)",
+    "de": "Chicago (Autor-Jahr)",
+    "pt": "Chicago (autor-data)"
+  },
+  "Chiudi": {
+    "en": "Close",
+    "es": "Cerrar",
+    "fr": "Fermer",
+    "de": "Schließen",
+    "pt": "Fechar"
+  },
+  "Chiudi il pannello": {
+    "en": "Close the panel",
+    "es": "Cerrar el panel",
+    "fr": "Fermer le panneau",
+    "de": "Bereich schließen",
+    "pt": "Fechar o painel"
+  },
+  "Ciambella": {
+    "en": "Torus",
+    "es": "Rosquilla",
+    "fr": "Tore",
+    "de": "Torus",
+    "pt": "Rosca"
+  },
+  "Cilindro": {
+    "en": "Cylinder",
+    "es": "Cilindro",
+    "fr": "Cylindre",
+    "de": "Zylinder",
+    "pt": "Cilindro"
+  },
+  "Citazione": {
+    "en": "Quote",
+    "es": "Cita",
+    "fr": "Citation",
+    "de": "Zitat",
+    "pt": "Citação"
+  },
+  "Citazione in evidenza": {
+    "en": "Pull quote",
+    "es": "Cita destacada",
+    "fr": "Citation en exergue",
+    "de": "Hervorgehobenes Zitat",
+    "pt": "Citação em destaque"
+  },
+  "Citazione intensa": {
+    "en": "Intense quote",
+    "es": "Cita destacada",
+    "fr": "Citation intense",
+    "de": "Intensives Zitat",
+    "pt": "Citação intensa"
+  },
+  "Città": {
+    "en": "City",
+    "es": "Ciudad",
+    "fr": "Ville",
+    "de": "Stadt",
+    "pt": "Cidade"
+  },
+  "Classico": {
+    "en": "Classic",
+    "es": "Clásica",
+    "fr": "Classique",
+    "de": "Klassisch",
+    "pt": "Clássica"
+  },
+  "clic": {
+    "en": "click",
+    "es": "clic",
+    "fr": "clic",
+    "de": "Klick",
+    "pt": "clique"
+  },
+  "Clicca in una cella e premi ⌘V.": {
+    "en": "Click in a cell and press ⌘V.",
+    "es": "Haz clic en una celda y pulsa ⌘V.",
+    "fr": "Cliquez dans une cellule et appuyez sur ⌘V.",
+    "de": "Klick in eine Zelle und drück ⌘V.",
+    "pt": "Clique em uma célula e aperte ⌘V."
+  },
+  "Coda": {
+    "en": "Tail",
+    "es": "Cola",
+    "fr": "Queue",
+    "de": "Ende",
+    "pt": "Cauda"
+  },
+  "Codice": {
+    "en": "Code",
+    "es": "Código",
+    "fr": "Code",
+    "de": "Code",
+    "pt": "Código"
+  },
+  "Cogniva|Cerca|Profilo": {
+    "en": "Cogniva|Search|Profile",
+    "es": "Cogniva|Buscar|Perfil",
+    "fr": "Cogniva|Rechercher|Profil",
+    "de": "Cogniva|Suchen|Profil",
+    "pt": "Cogniva|Buscar|Perfil"
+  },
+  "Cognome": {
+    "en": "Last name",
+    "es": "Apellido",
+    "fr": "Nom",
+    "de": "Nachname",
+    "pt": "Sobrenome"
+  },
+  "Collega con una freccia": {
+    "en": "Connect with an arrow",
+    "es": "Conectar con una flecha",
+    "fr": "Relier avec une flèche",
+    "de": "Mit einem Pfeil verbinden",
+    "pt": "Conectar com uma seta"
+  },
+  "Colonna {number}": {
+    "en": "Column {number}",
+    "es": "Columna {number}",
+    "fr": "Colonne {number}",
+    "de": "Spalte {number}",
+    "pt": "Coluna {number}"
+  },
+  "Colonne": {
+    "en": "Columns",
+    "es": "Columnas",
+    "fr": "Colonnes",
+    "de": "Spalten",
+    "pt": "Colunas"
+  },
+  "Colore": {
+    "en": "Color",
+    "es": "Color",
+    "fr": "Couleur",
+    "de": "Farbe",
+    "pt": "Cor"
+  },
+  "Colori": {
+    "en": "Colors",
+    "es": "Colores",
+    "fr": "Couleurs",
+    "de": "Farben",
+    "pt": "Cores"
+  },
+  "Comandi": {
+    "en": "Commands",
+    "es": "Comandos",
+    "fr": "Commandes",
+    "de": "Befehle",
+    "pt": "Comandos"
+  },
+  "come {name}": {
+    "en": "like {name}",
+    "es": "como {name}",
+    "fr": "comme {name}",
+    "de": "wie {name}",
+    "pt": "como {name}"
+  },
+  "Commercio": {
+    "en": "Commerce",
+    "es": "Comercio",
+    "fr": "Commerce",
+    "de": "Handel",
+    "pt": "Comércio"
+  },
+  "Compatibili con i .docx": {
+    "en": "Compatible with .docx",
+    "es": "Compatibles con .docx",
+    "fr": "Compatibles avec .docx",
+    "de": "Mit .docx kompatibel",
+    "pt": "Compatíveis com .docx"
+  },
+  "Compatta": {
+    "en": "Compact",
+    "es": "Compacta",
+    "fr": "Compacte",
+    "de": "Kompakt",
+    "pt": "Compacta"
+  },
+  "Compatto": {
+    "en": "Compact",
+    "es": "Compacto",
+    "fr": "Compact",
+    "de": "Kompakt",
+    "pt": "Compacto"
+  },
+  "Componente": {
+    "en": "Component",
+    "es": "Componente",
+    "fr": "Composant",
+    "de": "Komponente",
+    "pt": "Componente"
+  },
+  "Componenti": {
+    "en": "Components",
+    "es": "Componentes",
+    "fr": "Composants",
+    "de": "Komponenten",
+    "pt": "Componentes"
+  },
+  "Componenti e frame": {
+    "en": "Components and frames",
+    "es": "Componentes y marcos",
+    "fr": "Composants et cadres",
+    "de": "Komponenten und Rahmen",
+    "pt": "Componentes e frames"
+  },
+  "Comunicazione": {
+    "en": "Communication",
+    "es": "Comunicación",
+    "fr": "Communication",
+    "de": "Kommunikation",
+    "pt": "Comunicação"
+  },
+  "Conferma": {
+    "en": "Confirm",
+    "es": "Confirmar",
+    "fr": "Confirmer",
+    "de": "Bestätigen",
+    "pt": "Confirmar"
+  },
+  "Conferma l'azione": {
+    "en": "Confirm the action",
+    "es": "Confirma la acción",
+    "fr": "Confirmez l'action",
+    "de": "Bestätige die Aktion",
+    "pt": "Confirme a ação"
+  },
+  "CONFIDENZIALE": {
+    "en": "CONFIDENTIAL",
+    "es": "CONFIDENCIAL",
+    "fr": "CONFIDENTIEL",
+    "de": "VERTRAULICH",
+    "pt": "CONFIDENCIAL"
+  },
+  "Connettore": {
+    "en": "Connector",
+    "es": "Conector",
+    "fr": "Connecteur",
+    "de": "Verbinder",
+    "pt": "Conector"
+  },
+  "Cono": {
+    "en": "Cone",
+    "es": "Cono",
+    "fr": "Cône",
+    "de": "Kegel",
+    "pt": "Cone"
+  },
+  "consultato il {date}": {
+    "en": "accessed on {date}",
+    "es": "consultado el {date}",
+    "fr": "consulté le {date}",
+    "de": "abgerufen am {date}",
+    "pt": "consultado em {date}"
+  },
+  "Contatore": {
+    "en": "Counter",
+    "es": "Contador",
+    "fr": "Compteur",
+    "de": "Zähler",
+    "pt": "Contador"
+  },
+  "Contenuto": {
+    "en": "Content",
+    "es": "Contenido",
+    "fr": "Contenu",
+    "de": "Inhalt",
+    "pt": "Conteúdo"
+  },
+  "Contiene": {
+    "en": "Contains",
+    "es": "Contiene",
+    "fr": "Contient",
+    "de": "Enthält",
+    "pt": "Contém"
+  },
+  "Continua": {
+    "en": "Solid",
+    "es": "Continua",
+    "fr": "Continue",
+    "de": "Durchgezogen",
+    "pt": "Contínua"
+  },
+  "Contorno": {
+    "en": "Outline",
+    "es": "Contorno",
+    "fr": "Contour",
+    "de": "Kontur",
+    "pt": "Contorno"
+  },
+  "Contorno accento": {
+    "en": "Accent outline",
+    "es": "Contorno de acento",
+    "fr": "Contour d'accent",
+    "de": "Akzentkontur",
+    "pt": "Contorno de destaque"
+  },
+  "Conversione PNG fallita": {
+    "en": "PNG conversion failed",
+    "es": "Ha fallado la conversión a PNG",
+    "fr": "Échec de la conversion en PNG",
+    "de": "PNG-Umwandlung fehlgeschlagen",
+    "pt": "Falha na conversão para PNG"
+  },
+  "copia": {
+    "en": "copy",
+    "es": "copiar",
+    "fr": "copier",
+    "de": "kopieren",
+    "pt": "copiar"
+  },
+  "Copia": {
+    "en": "Copy",
+    "es": "Copiar",
+    "fr": "Copier",
+    "de": "Kopieren",
+    "pt": "Copiar"
+  },
+  "Copia almeno due righe e due colonne da Excel o Fogli.": {
+    "en": "Copy at least two rows and two columns from any spreadsheet.",
+    "es": "Copia al menos dos filas y dos columnas desde cualquier hoja de cálculo.",
+    "fr": "Copiez au moins deux lignes et deux colonnes depuis n'importe quel tableur.",
+    "de": "Kopiere mindestens zwei Zeilen und zwei Spalten aus einer Tabellenkalkulation.",
+    "pt": "Copie pelo menos duas linhas e duas colunas de qualquer planilha."
+  },
+  "Copia i dati": {
+    "en": "Copy the data",
+    "es": "Copiar los datos",
+    "fr": "Copier les données",
+    "de": "Daten kopieren",
+    "pt": "Copiar os dados"
+  },
+  "Copia non riuscita": {
+    "en": "Copy failed",
+    "es": "No se pudo copiar",
+    "fr": "Échec de la copie",
+    "de": "Kopieren fehlgeschlagen",
+    "pt": "Não foi possível copiar"
+  },
+  "Copia, taglia, incolla": {
+    "en": "Copy, cut, paste",
+    "es": "Copiar, cortar, pegar",
+    "fr": "Copier, couper, coller",
+    "de": "Kopieren, ausschneiden, einfügen",
+    "pt": "Copiar, recortar, colar"
+  },
+  "crea": {
+    "en": "create",
+    "es": "crear",
+    "fr": "créer",
+    "de": "erstellen",
+    "pt": "criar"
+  },
+  "Crea nuovo": {
+    "en": "Create new",
+    "es": "Crear nuevo",
+    "fr": "Créer",
+    "de": "Neu erstellen",
+    "pt": "Criar novo"
+  },
+  "Crea un documento": {
+    "en": "Create a document",
+    "es": "Crear un documento",
+    "fr": "Créer un document",
+    "de": "Ein Dokument erstellen",
+    "pt": "Criar um documento"
+  },
+  "Crea una board": {
+    "en": "Create a board",
+    "es": "Crear un tablero",
+    "fr": "Créer un tableau",
+    "de": "Ein Board erstellen",
+    "pt": "Criar um quadro"
+  },
+  "Creati di recente": {
+    "en": "Recently created",
+    "es": "Creados recientemente",
+    "fr": "Créés récemment",
+    "de": "Zuletzt erstellt",
+    "pt": "Criados recentemente"
+  },
+  "Croce": {
+    "en": "Cross",
+    "es": "Cruz",
+    "fr": "Croix",
+    "de": "Kreuz",
+    "pt": "Cruz"
+  },
+  "Croci": {
+    "en": "Crosses",
+    "es": "Cruces",
+    "fr": "Croix",
+    "de": "Kreuze",
+    "pt": "Cruzes"
+  },
+  "Cubo": {
+    "en": "Cube",
+    "es": "Cubo",
+    "fr": "Cube",
+    "de": "Würfel",
+    "pt": "Cubo"
+  },
+  "Cursore": {
+    "en": "Slider",
+    "es": "Control deslizante",
+    "fr": "Curseur",
+    "de": "Schieberegler",
+    "pt": "Controle deslizante"
+  },
+  "Curvo": {
+    "en": "Curved",
+    "es": "Curvo",
+    "fr": "Courbe",
+    "de": "Gebogen",
+    "pt": "Curvo"
+  },
+  "Da": {
+    "en": "From",
+    "es": "De",
+    "fr": "De",
+    "de": "Von",
+    "pt": "De"
+  },
+  "Da completare…": {
+    "en": "To complete…",
+    "es": "Por completar…",
+    "fr": "À compléter…",
+    "de": "Noch auszufüllen…",
+    "pt": "A completar…"
+  },
+  "Da fare": {
+    "en": "To do",
+    "es": "Por hacer",
+    "fr": "À faire",
+    "de": "Zu erledigen",
+    "pt": "A fazer"
+  },
+  "Dal basso": {
+    "en": "From below",
+    "es": "Desde abajo",
+    "fr": "Depuis le bas",
+    "de": "Von unten",
+    "pt": "De baixo"
+  },
+  "Dal titolo al corpo del testo": {
+    "en": "From the heading to the body text",
+    "es": "Del título al cuerpo del texto",
+    "fr": "Du titre au corps de texte",
+    "de": "Von der Überschrift zum Fließtext",
+    "pt": "Do título ao corpo do texto"
+  },
+  "Dall'alto": {
+    "en": "From the top",
+    "es": "Desde arriba",
+    "fr": "Depuis le haut",
+    "de": "Von oben",
+    "pt": "De cima"
+  },
+  "Dashboard": {
+    "en": "Dashboard",
+    "es": "Panel",
+    "fr": "Tableau de bord",
+    "de": "Dashboard",
+    "pt": "Painel"
+  },
+  "Dashboard|Progetti|Team|Impostazioni": {
+    "en": "Dashboard|Projects|Team|Settings",
+    "es": "Panel|Proyectos|Equipo|Ajustes",
+    "fr": "Tableau de bord|Projets|Équipe|Réglages",
+    "de": "Dashboard|Projekte|Team|Einstellungen",
+    "pt": "Painel|Projetos|Equipe|Configurações"
+  },
+  "Data": {
+    "en": "Date",
+    "es": "Fecha",
+    "fr": "Date",
+    "de": "Datum",
+    "pt": "Data"
+  },
+  "Database bloccato": {
+    "en": "Database locked",
+    "es": "Base de datos bloqueada",
+    "fr": "Base de données verrouillée",
+    "de": "Datenbank gesperrt",
+    "pt": "Banco de dados bloqueado"
+  },
+  "Dati": {
+    "en": "Data",
+    "es": "Datos",
+    "fr": "Données",
+    "de": "Daten",
+    "pt": "Dados"
+  },
+  "Dati copiati: incollali in Excel": {
+    "en": "Data copied: paste it into a spreadsheet",
+    "es": "Datos copiados: pégalos en una hoja de cálculo",
+    "fr": "Données copiées : collez-les dans un tableur",
+    "de": "Daten kopiert: Füge sie in eine Tabellenkalkulation ein",
+    "pt": "Dados copiados: cole-os em uma planilha"
+  },
+  "Dati del grafico": {
+    "en": "Chart data",
+    "es": "Datos del gráfico",
+    "fr": "Données du graphique",
+    "de": "Diagrammdaten",
+    "pt": "Dados do gráfico"
+  },
+  "Davanti": {
+    "en": "Front",
+    "es": "Delante",
+    "fr": "Devant",
+    "de": "Vorne",
+    "pt": "Frente"
+  },
+  "Davanti al testo": {
+    "en": "In front of the text",
+    "es": "Delante del texto",
+    "fr": "Devant le texte",
+    "de": "Vor dem Text",
+    "pt": "Na frente do texto"
+  },
+  "Decisione": {
+    "en": "Decision",
+    "es": "Decisión",
+    "fr": "Décision",
+    "de": "Entscheidung",
+    "pt": "Decisão"
+  },
+  "Decorativi": {
+    "en": "Display",
+    "es": "Decorativas",
+    "fr": "Décoratives",
+    "de": "Dekorativ",
+    "pt": "Decorativas"
+  },
+  "Decorativo": {
+    "en": "Display",
+    "es": "Decorativa",
+    "fr": "Décorative",
+    "de": "Dekorativ",
+    "pt": "Decorativa"
+  },
+  "Definire il flusso di onboarding": {
+    "en": "Define the onboarding flow",
+    "es": "Definir el flujo de incorporación",
+    "fr": "Définir le parcours d'accueil",
+    "de": "Den Onboarding-Ablauf festlegen",
+    "pt": "Definir o fluxo de integração"
+  },
+  "Dello stile": {
+    "en": "From the style",
+    "es": "Del estilo",
+    "fr": "Du style",
+    "de": "Aus der Formatvorlage",
+    "pt": "Do estilo"
+  },
+  "Desktop": {
+    "en": "Desktop",
+    "es": "Escritorio",
+    "fr": "Bureau",
+    "de": "Desktop",
+    "pt": "Desktop"
+  },
+  "Destra": {
+    "en": "Right",
+    "es": "Derecha",
+    "fr": "Droite",
+    "de": "Rechts",
+    "pt": "Direita"
+  },
+  "diagramma": {
+    "en": "diagram",
+    "es": "diagrama",
+    "fr": "diagramme",
+    "de": "Diagramm",
+    "pt": "diagrama"
+  },
+  "Diagramma": {
+    "en": "Diagram",
+    "es": "Diagrama",
+    "fr": "Diagramme",
+    "de": "Flussdiagramm",
+    "pt": "Diagrama"
+  },
+  "Didascalia": {
+    "en": "Caption",
+    "es": "Título",
+    "fr": "Légende",
+    "de": "Beschriftung",
+    "pt": "Legenda"
+  },
+  "Didascalia…": {
+    "en": "Caption…",
+    "es": "Título…",
+    "fr": "Légende…",
+    "de": "Beschriftung…",
+    "pt": "Legenda…"
+  },
+  "Dietro": {
+    "en": "Back",
+    "es": "Detrás",
+    "fr": "Derrière",
+    "de": "Hinten",
+    "pt": "Atrás"
+  },
+  "Dietro al testo": {
+    "en": "Behind the text",
+    "es": "Detrás del texto",
+    "fr": "Derrière le texte",
+    "de": "Hinter dem Text",
+    "pt": "Atrás do texto"
+  },
+  "Diffusa": {
+    "en": "Diffuse",
+    "es": "Difusa",
+    "fr": "Diffuse",
+    "de": "Diffus",
+    "pt": "Difusa"
+  },
+  "Dimensione": {
+    "en": "Size",
+    "es": "Tamaño",
+    "fr": "Taille",
+    "de": "Größe",
+    "pt": "Tamanho"
+  },
+  "Disegno": {
+    "en": "Draw",
+    "es": "Dibujo",
+    "fr": "Dessin",
+    "de": "Zeichnen",
+    "pt": "Desenho"
+  },
+  "Dispersione": {
+    "en": "Scatter",
+    "es": "Dispersión",
+    "fr": "Nuage de points",
+    "de": "Punkte",
+    "pt": "Dispersão"
+  },
+  "Disponibile da: {url}": {
+    "en": "Available from: {url}",
+    "es": "Disponible en: {url}",
+    "fr": "Disponible à : {url}",
+    "de": "Verfügbar unter: {url}",
+    "pt": "Disponível em: {url}"
+  },
+  "Dispositivo": {
+    "en": "Device",
+    "es": "Dispositivo",
+    "fr": "Appareil",
+    "de": "Gerät",
+    "pt": "Dispositivo"
+  },
+  "Diverso da": {
+    "en": "Different from",
+    "es": "Distinto de",
+    "fr": "Différent de",
+    "de": "Ungleich",
+    "pt": "Diferente de"
+  },
+  "Divisore": {
+    "en": "Divider",
+    "es": "Separador",
+    "fr": "Séparateur",
+    "de": "Trennlinie",
+    "pt": "Divisor"
+  },
+  "Doc senza titolo": {
+    "en": "Untitled doc",
+    "es": "Doc sin título",
+    "fr": "Doc sans titre",
+    "de": "Doc ohne Titel",
+    "pt": "Doc sem título"
+  },
+  "Documenti": {
+    "en": "Documents",
+    "es": "Documentos",
+    "fr": "Documents",
+    "de": "Dokumente",
+    "pt": "Documentos"
+  },
+  "Documento": {
+    "en": "Document",
+    "es": "Documento",
+    "fr": "Document",
+    "de": "Dokument",
+    "pt": "Documento"
+  },
+  "Documento importato": {
+    "en": "Document imported",
+    "es": "Documento importado",
+    "fr": "Document importé",
+    "de": "Dokument importiert",
+    "pt": "Documento importado"
+  },
+  "Documento vuoto": {
+    "en": "Empty document",
+    "es": "Documento vacío",
+    "fr": "Document vide",
+    "de": "Leeres Dokument",
+    "pt": "Documento vazio"
+  },
+  "docx": {
+    "en": "docx",
+    "es": "docx",
+    "fr": "docx",
+    "de": "docx",
+    "pt": "docx"
+  },
+  "Dodecaedro": {
+    "en": "Dodecahedron",
+    "es": "Dodecaedro",
+    "fr": "Dodécaèdre",
+    "de": "Dodekaeder",
+    "pt": "Dodecaedro"
+  },
+  "Doppia": {
+    "en": "Double",
+    "es": "Doble",
+    "fr": "Double",
+    "de": "Doppelt",
+    "pt": "Dupla"
+  },
+  "doppio clic per creare · trascina i pallini per collegare · tasto destro per il menu · spazio + trascina per spostarti": {
+    "en": "double-click to create · drag the dots to connect · right-click for the menu · space + drag to move around",
+    "es": "doble clic para crear · arrastra los puntos para conectar · clic derecho para el menú · espacio + arrastrar para moverte",
+    "fr": "double-clic pour créer · faites glisser les points pour relier · clic droit pour le menu · espace + glisser pour vous déplacer",
+    "de": "Doppelklick zum Erstellen · Punkte ziehen zum Verbinden · Rechtsklick für das Menü · Leertaste + ziehen zum Bewegen",
+    "pt": "clique duplo para criar · arraste os pontos para conectar · clique direito para o menu · espaço + arrastar para se mover"
+  },
+  "Dritto": {
+    "en": "Straight",
+    "es": "Recto",
+    "fr": "Droit",
+    "de": "Gerade",
+    "pt": "Reto"
+  },
+  "Duplica": {
+    "en": "Duplicate",
+    "es": "Duplicar",
+    "fr": "Dupliquer",
+    "de": "Duplizieren",
+    "pt": "Duplicar"
+  },
+  "e": {
+    "en": "and",
+    "es": "y",
+    "fr": "et",
+    "de": "und",
+    "pt": "e"
+  },
+  "È vuoto": {
+    "en": "Is empty",
+    "es": "Está vacío",
+    "fr": "Est vide",
+    "de": "Ist leer",
+    "pt": "Está vazio"
+  },
+  "Editoriale": {
+    "en": "Editorial",
+    "es": "Editorial",
+    "fr": "Éditorial",
+    "de": "Redaktionell",
+    "pt": "Editorial"
+  },
+  "Elegante": {
+    "en": "Elegant",
+    "es": "Elegante",
+    "fr": "Élégant",
+    "de": "Elegant",
+    "pt": "Elegante"
+  },
+  "Elementi": {
+    "en": "Items",
+    "es": "Elementos",
+    "fr": "Éléments",
+    "de": "Elemente",
+    "pt": "Elementos"
+  },
+  "Elemento": {
+    "en": "Item",
+    "es": "Elemento",
+    "fr": "Élément",
+    "de": "Element",
+    "pt": "Elemento"
+  },
+  "Elenco": {
+    "en": "List",
+    "es": "Lista",
+    "fr": "Liste",
+    "de": "Liste",
+    "pt": "Lista"
+  },
+  "Elenco numerato, puntato, di controllo": {
+    "en": "Numbered, bulleted, checklist",
+    "es": "Lista numerada, con viñetas, de control",
+    "fr": "Liste numérotée, à puces, de contrôle",
+    "de": "Nummerierte Liste, Aufzählung, Checkliste",
+    "pt": "Lista numerada, com marcadores, de verificação"
+  },
+  "Elimina": {
+    "en": "Delete",
+    "es": "Eliminar",
+    "fr": "Supprimer",
+    "de": "Löschen",
+    "pt": "Excluir"
+  },
+  "Elimina la riga": {
+    "en": "Delete the row",
+    "es": "Eliminar la fila",
+    "fr": "Supprimer la ligne",
+    "de": "Zeile löschen",
+    "pt": "Excluir a linha"
+  },
+  "Elimina la selezione": {
+    "en": "Delete the selection",
+    "es": "Eliminar la selección",
+    "fr": "Supprimer la sélection",
+    "de": "Die Auswahl löschen",
+    "pt": "Excluir a seleção"
+  },
+  "Elimina la serie": {
+    "en": "Delete the series",
+    "es": "Eliminar la serie",
+    "fr": "Supprimer la série",
+    "de": "Reihe löschen",
+    "pt": "Excluir a série"
+  },
+  "Elimina per sempre": {
+    "en": "Delete forever",
+    "es": "Eliminar para siempre",
+    "fr": "Supprimer définitivement",
+    "de": "Endgültig löschen",
+    "pt": "Excluir para sempre"
+  },
+  "eliminato {timeAgo}": {
+    "en": "deleted {timeAgo}",
+    "es": "eliminado {timeAgo}",
+    "fr": "supprimé {timeAgo}",
+    "de": "gelöscht {timeAgo}",
+    "pt": "excluído {timeAgo}"
+  },
+  "Eliminato per sempre": {
+    "en": "Deleted forever",
+    "es": "Eliminado para siempre",
+    "fr": "Supprimé définitivement",
+    "de": "Endgültig gelöscht",
+    "pt": "Excluído para sempre"
+  },
+  "Ellisse": {
+    "en": "Ellipse",
+    "es": "Elipse",
+    "fr": "Ellipse",
+    "de": "Ellipse",
+    "pt": "Elipse"
+  },
+  "Email": {
+    "en": "E-mail",
+    "es": "Correo",
+    "fr": "E-mail",
+    "de": "E-Mail",
+    "pt": "E-mail"
+  },
+  "Equazione": {
+    "en": "Equation",
+    "es": "Ecuación",
+    "fr": "Équation",
+    "de": "Formel",
+    "pt": "Equação"
+  },
+  "Equazione vuota": {
+    "en": "Empty equation",
+    "es": "Ecuación vacía",
+    "fr": "Équation vide",
+    "de": "Leere Formel",
+    "pt": "Equação vazia"
+  },
+  "Errore! Riferimento non trovato.": {
+    "en": "Error! Reference not found.",
+    "es": "¡Error! Referencia no encontrada.",
+    "fr": "Erreur ! Référence introuvable.",
+    "de": "Fehler! Verweis nicht gefunden.",
+    "pt": "Erro! Referência não encontrada."
+  },
+  "Errore! Segnalibro non definito.": {
+    "en": "Error! Bookmark not defined.",
+    "es": "¡Error! Marcador no definido.",
+    "fr": "Erreur ! Signet non défini.",
+    "de": "Fehler! Lesezeichen nicht definiert.",
+    "pt": "Erro! Marcador não definido."
+  },
+  "ESEMPIO": {
+    "en": "SAMPLE",
+    "es": "EJEMPLO",
+    "fr": "EXEMPLE",
+    "de": "BEISPIEL",
+    "pt": "EXEMPLO"
+  },
+  "Espansione di Taylor": {
+    "en": "Taylor expansion",
+    "es": "Desarrollo de Taylor",
+    "fr": "Développement de Taylor",
+    "de": "Taylorentwicklung",
+    "pt": "Expansão de Taylor"
+  },
+  "esporta": {
+    "en": "export",
+    "es": "exportar",
+    "fr": "exporter",
+    "de": "exportieren",
+    "pt": "exportar"
+  },
+  "Esporta": {
+    "en": "Export",
+    "es": "Exportar",
+    "fr": "Exporter",
+    "de": "Exportieren",
+    "pt": "Exportar"
+  },
+  "Esporta board": {
+    "en": "Export board",
+    "es": "Exportar tablero",
+    "fr": "Exporter le tableau",
+    "de": "Board exportieren",
+    "pt": "Exportar quadro"
+  },
+  "Esporta in PDF": {
+    "en": "Export to PDF",
+    "es": "Exportar a PDF",
+    "fr": "Exporter en PDF",
+    "de": "Als PDF exportieren",
+    "pt": "Exportar para PDF"
+  },
+  "Esporta in PNG": {
+    "en": "Export to PNG",
+    "es": "Exportar a PNG",
+    "fr": "Exporter en PNG",
+    "de": "Als PNG exportieren",
+    "pt": "Exportar para PNG"
+  },
+  "Esporta in SVG": {
+    "en": "Export to SVG",
+    "es": "Exportar a SVG",
+    "fr": "Exporter en SVG",
+    "de": "Als SVG exportieren",
+    "pt": "Exportar para SVG"
+  },
+  "Esporta tutto": {
+    "en": "Export everything",
+    "es": "Exportar todo",
+    "fr": "Tout exporter",
+    "de": "Alles exportieren",
+    "pt": "Exportar tudo"
+  },
+  "Esporta tutto lo spazio di lavoro (.json)": {
+    "en": "Export the whole workspace (.json)",
+    "es": "Exportar todo el área de trabajo (.json)",
+    "fr": "Exporter tout l'espace de travail (.json)",
+    "de": "Den ganzen Arbeitsbereich exportieren (.json)",
+    "pt": "Exportar toda a área de trabalho (.json)"
+  },
+  "Esportato in {format}": {
+    "en": "Exported to {format}",
+    "es": "Exportado a {format}",
+    "fr": "Exporté en {format}",
+    "de": "Als {format} exportiert",
+    "pt": "Exportado para {format}"
+  },
+  "Esportazione non riuscita": {
+    "en": "Export failed",
+    "es": "No se pudo exportar",
+    "fr": "L'exportation a échoué",
+    "de": "Export fehlgeschlagen",
+    "pt": "Não foi possível exportar"
+  },
+  "Esporto in {format}…": {
+    "en": "Exporting to {format}…",
+    "es": "Exportando a {format}…",
+    "fr": "Exportation en {format}…",
+    "de": "Wird als {format} exportiert…",
+    "pt": "Exportando para {format}…"
+  },
+  "Essenziale": {
+    "en": "Essential",
+    "es": "Esencial",
+    "fr": "Essentiel",
+    "de": "Schlicht",
+    "pt": "Essencial"
+  },
+  "Esterna a destra": {
+    "en": "Outer right",
+    "es": "Exterior a la derecha",
+    "fr": "Externe à droite",
+    "de": "Außen rechts",
+    "pt": "Externa à direita"
+  },
+  "Esterna in basso": {
+    "en": "Outer bottom",
+    "es": "Exterior abajo",
+    "fr": "Externe en bas",
+    "de": "Außen unten",
+    "pt": "Externa embaixo"
+  },
+  "Etichetta": {
+    "en": "Label",
+    "es": "Etiqueta",
+    "fr": "Étiquette",
+    "de": "Beschriftung",
+    "pt": "Rótulo"
+  },
+  "Etichetta e numero": {
+    "en": "Label and number",
+    "es": "Etiqueta y número",
+    "fr": "Étiquette et numéro",
+    "de": "Bezeichnung und Nummer",
+    "pt": "Rótulo e número"
+  },
+  "Etichetta e titolo": {
+    "en": "Label and title",
+    "es": "Etiqueta y título",
+    "fr": "Étiquette et titre",
+    "de": "Bezeichnung und Titel",
+    "pt": "Rótulo e título"
+  },
+  "Etichette dati": {
+    "en": "Data labels",
+    "es": "Etiquetas de datos",
+    "fr": "Étiquettes de données",
+    "de": "Datenbeschriftungen",
+    "pt": "Rótulos de dados"
+  },
+  "Evidenziatore": {
+    "en": "Highlighter",
+    "es": "Resaltador",
+    "fr": "Surligneur",
+    "de": "Textmarker",
+    "pt": "Marca-texto"
+  },
+  "Fase": {
+    "en": "Phase",
+    "es": "Fase",
+    "fr": "Phase",
+    "de": "Phase",
+    "pt": "Fase"
+  },
+  "Fatto": {
+    "en": "Done",
+    "es": "Hecho",
+    "fr": "Fait",
+    "de": "Fertig",
+    "pt": "Feito"
+  },
+  "Figura": {
+    "en": "Figure",
+    "es": "Figura",
+    "fr": "Figure",
+    "de": "Abbildung",
+    "pt": "Figura"
+  },
+  "File": {
+    "en": "File",
+    "es": "Archivo",
+    "fr": "Fichier",
+    "de": "Datei",
+    "pt": "Arquivo"
+  },
+  "File non trovato · Cogniva": {
+    "en": "File not found · Cogniva",
+    "es": "Archivo no encontrado · Cogniva",
+    "fr": "Fichier introuvable · Cogniva",
+    "de": "Datei nicht gefunden · Cogniva",
+    "pt": "Arquivo não encontrado · Cogniva"
+  },
+  "Filtri": {
+    "en": "Filters",
+    "es": "Filtros",
+    "fr": "Filtres",
+    "de": "Filter",
+    "pt": "Filtros"
+  },
+  "Finestra": {
+    "en": "Window",
+    "es": "Ventana",
+    "fr": "Fenêtre",
+    "de": "Fenster",
+    "pt": "Janela"
+  },
+  "Flusso": {
+    "en": "Flow",
+    "es": "Flujo",
+    "fr": "Flux",
+    "de": "Ablauf",
+    "pt": "Fluxo"
+  },
+  "Footer": {
+    "en": "Footer",
+    "es": "Pie",
+    "fr": "Pied de page",
+    "de": "Fußzeile",
+    "pt": "Rodapé"
+  },
+  "Form": {
+    "en": "Form",
+    "es": "Formulario",
+    "fr": "Formulaire",
+    "de": "Formular",
+    "pt": "Formulário"
+  },
+  "Forma": {
+    "en": "Shape",
+    "es": "Forma",
+    "fr": "Forme",
+    "de": "Form",
+    "pt": "Forma"
+  },
+  "Forma predefinita": {
+    "en": "Default shape",
+    "es": "Forma predeterminada",
+    "fr": "Forme par défaut",
+    "de": "Standardform",
+    "pt": "Forma padrão"
+  },
+  "Formato": {
+    "en": "Format",
+    "es": "Formato",
+    "fr": "Format",
+    "de": "Format",
+    "pt": "Formato"
+  },
+  "Formato non supportato": {
+    "en": "Format not supported",
+    "es": "Formato no compatible",
+    "fr": "Format non pris en charge",
+    "de": "Format nicht unterstützt",
+    "pt": "Formato não suportado"
+  },
+  "Formato non valido": {
+    "en": "Invalid format",
+    "es": "Formato no válido",
+    "fr": "Format non valide",
+    "de": "Ungültiges Format",
+    "pt": "Formato inválido"
+  },
+  "Forme": {
+    "en": "Shapes",
+    "es": "Formas",
+    "fr": "Formes",
+    "de": "Formen",
+    "pt": "Formas"
+  },
+  "Forme e connettori": {
+    "en": "Shapes and connectors",
+    "es": "Formas y conectores",
+    "fr": "Formes et connecteurs",
+    "de": "Formen und Verbinder",
+    "pt": "Formas e conectores"
+  },
+  "Formula non valida": {
+    "en": "Invalid formula",
+    "es": "Fórmula no válida",
+    "fr": "Formule non valide",
+    "de": "Ungültige Formel",
+    "pt": "Fórmula inválida"
+  },
+  "Formula quadratica": {
+    "en": "Quadratic formula",
+    "es": "Fórmula cuadrática",
+    "fr": "Formule quadratique",
+    "de": "Quadratische Lösungsformel",
+    "pt": "Fórmula quadrática"
+  },
+  "Frame": {
+    "en": "Frame",
+    "es": "Marco",
+    "fr": "Cadre",
+    "de": "Rahmen",
+    "pt": "Frame"
+  },
+  "Frame, sezione": {
+    "en": "Frame, section",
+    "es": "Marco, sección",
+    "fr": "Cadre, section",
+    "de": "Rahmen, Abschnitt",
+    "pt": "Frame, seção"
+  },
+  "Frazione": {
+    "en": "Fraction",
+    "es": "Fracción",
+    "fr": "Fraction",
+    "de": "Bruch",
+    "pt": "Fração"
+  },
+  "Frazioni": {
+    "en": "Fractions",
+    "es": "Fracciones",
+    "fr": "Fractions",
+    "de": "Brüche",
+    "pt": "Frações"
+  },
+  "Frecce": {
+    "en": "Arrows",
+    "es": "Flechas",
+    "fr": "Flèches",
+    "de": "Pfeile",
+    "pt": "Setas"
+  },
+  "Freccia": {
+    "en": "Arrow",
+    "es": "Flecha",
+    "fr": "Flèche",
+    "de": "Pfeil",
+    "pt": "Seta"
+  },
+  "Freddi": {
+    "en": "Cool",
+    "es": "Fríos",
+    "fr": "Froids",
+    "de": "Kühl",
+    "pt": "Frios"
+  },
+  "Fresco": {
+    "en": "Fresh",
+    "es": "Fresco",
+    "fr": "Frais",
+    "de": "Frisch",
+    "pt": "Fresco"
+  },
+  "Frontale": {
+    "en": "Front",
+    "es": "Frontal",
+    "fr": "De face",
+    "de": "Vorderansicht",
+    "pt": "Frontal"
+  },
+  "Gemma": {
+    "en": "Gem",
+    "es": "Gema",
+    "fr": "Gemme",
+    "de": "Edelstein",
+    "pt": "Gema"
+  },
+  "Generale": {
+    "en": "General",
+    "es": "General",
+    "fr": "Général",
+    "de": "Allgemein",
+    "pt": "Geral"
+  },
+  "Geometrico": {
+    "en": "Geometric",
+    "es": "Geométrica",
+    "fr": "Géométrique",
+    "de": "Geometrisch",
+    "pt": "Geométrica"
+  },
+  "Giallo": {
+    "en": "Yellow",
+    "es": "Amarillo",
+    "fr": "Jaune",
+    "de": "Gelb",
+    "pt": "Amarelo"
+  },
+  "Giornale": {
+    "en": "Newspaper",
+    "es": "Periódico",
+    "fr": "Journal",
+    "de": "Zeitung",
+    "pt": "Jornal"
+  },
+  "Gomma": {
+    "en": "Eraser",
+    "es": "Borrador",
+    "fr": "Gomme",
+    "de": "Radierer",
+    "pt": "Borracha"
+  },
+  "Grafico": {
+    "en": "Chart",
+    "es": "Gráfico",
+    "fr": "Graphique",
+    "de": "Diagramm",
+    "pt": "Gráfico"
+  },
+  "Grafite": {
+    "en": "Graphite",
+    "es": "Grafito",
+    "fr": "Graphite",
+    "de": "Graphit",
+    "pt": "Grafite"
+  },
+  "Grassetto, corsivo, sottolineato": {
+    "en": "Bold, italic, underline",
+    "es": "Negrita, cursiva, subrayado",
+    "fr": "Gras, italique, souligné",
+    "de": "Fett, kursiv, unterstrichen",
+    "pt": "Negrito, itálico, sublinhado"
+  },
+  "Grigio": {
+    "en": "Gray",
+    "es": "Gris",
+    "fr": "Gris",
+    "de": "Grau",
+    "pt": "Cinza"
+  },
+  "Griglia": {
+    "en": "Grid",
+    "es": "Cuadrícula",
+    "fr": "Grille",
+    "de": "Raster",
+    "pt": "Grade"
+  },
+  "Ha un account?": {
+    "en": "Have an account?",
+    "es": "¿Tienes cuenta?",
+    "fr": "Vous avez un compte ?",
+    "de": "Schon ein Konto?",
+    "pt": "Já tem conta?"
+  },
+  "home": {
+    "en": "home",
+    "es": "inicio",
+    "fr": "accueil",
+    "de": "Start",
+    "pt": "início"
+  },
+  "Home": {
+    "en": "Home",
+    "es": "Inicio",
+    "fr": "Accueil",
+    "de": "Start",
+    "pt": "Início"
+  },
+  "Home|Progetti|Dettaglio": {
+    "en": "Home|Projects|Detail",
+    "es": "Inicio|Proyectos|Detalle",
+    "fr": "Accueil|Projets|Détail",
+    "de": "Start|Projekte|Detail",
+    "pt": "Início|Projetos|Detalhe"
+  },
+  "I {count} file verranno eliminati per sempre.": {
+    "en": "The {count} files will be deleted forever.",
+    "es": "Los {count} archivos se eliminarán para siempre.",
+    "fr": "Les {count} fichiers seront supprimés définitivement.",
+    "de": "Die {count} Dateien werden endgültig gelöscht.",
+    "pt": "Os {count} arquivos serão excluídos para sempre."
+  },
+  "I file nel cestino si eliminano da soli dopo 30 giorni.": {
+    "en": "The files in the trash delete themselves after 30 days.",
+    "es": "Los archivos de la papelera se eliminan solos después de 30 días.",
+    "fr": "Les fichiers de la corbeille se suppriment tout seuls après 30 jours.",
+    "de": "Dateien im Papierkorb löschen sich nach 30 Tagen von selbst.",
+    "pt": "Os arquivos da lixeira se excluem sozinhos depois de 30 dias."
+  },
+  "i, ii, iii…": {
+    "en": "i, ii, iii…",
+    "es": "i, ii, iii…",
+    "fr": "i, ii, iii…",
+    "de": "i, ii, iii…",
+    "pt": "i, ii, iii…"
+  },
+  "I, II, III…": {
+    "en": "I, II, III…",
+    "es": "I, II, III…",
+    "fr": "I, II, III…",
+    "de": "I, II, III…",
+    "pt": "I, II, III…"
+  },
+  "I. · A. · 1.": {
+    "en": "I. · A. · 1.",
+    "es": "I. · A. · 1.",
+    "fr": "I. · A. · 1.",
+    "de": "I. · A. · 1.",
+    "pt": "I. · A. · 1."
+  },
+  "i. ii. iii.": {
+    "en": "i. ii. iii.",
+    "es": "i. ii. iii.",
+    "fr": "i. ii. iii.",
+    "de": "i. ii. iii.",
+    "pt": "i. ii. iii."
+  },
+  "Icona": {
+    "en": "Icon",
+    "es": "Icono",
+    "fr": "Icône",
+    "de": "Symbol",
+    "pt": "Ícone"
+  },
+  "Icone": {
+    "en": "Icons",
+    "es": "Iconos",
+    "fr": "Icônes",
+    "de": "Symbole",
+    "pt": "Ícones"
+  },
+  "Identità trigonometrica": {
+    "en": "Trigonometric identity",
+    "es": "Identidad trigonométrica",
+    "fr": "Identité trigonométrique",
+    "de": "Trigonometrische Identität",
+    "pt": "Identidade trigonométrica"
+  },
+  "Il browser non permette di leggere gli appunti": {
+    "en": "The browser does not allow reading the clipboard",
+    "es": "El navegador no permite leer el portapapeles",
+    "fr": "Le navigateur ne permet pas de lire le presse-papiers",
+    "de": "Der Browser erlaubt das Lesen der Zwischenablage nicht",
+    "pt": "O navegador não permite ler a área de transferência"
+  },
+  "Il cestino è vuoto.": {
+    "en": "The trash is empty.",
+    "es": "La papelera está vacía.",
+    "fr": "La corbeille est vide.",
+    "de": "Der Papierkorb ist leer.",
+    "pt": "A lixeira está vazia."
+  },
+  "Il file .json si reimporta da «Importa» anche su un altro computer.": {
+    "en": "The .json file can be imported again from “Import”, on another computer too.",
+    "es": "El archivo .json se vuelve a importar desde «Importar», incluso en otro ordenador.",
+    "fr": "Le fichier .json se réimporte depuis « Importer », même sur un autre ordinateur.",
+    "de": "Die .json-Datei importierst du über „Importieren“ wieder, auch auf einem anderen Computer.",
+    "pt": "O arquivo .json é reimportado em “Importar”, inclusive em outro computador."
+  },
+  "Il file verrà eliminato per sempre.": {
+    "en": "The file will be deleted forever.",
+    "es": "El archivo se eliminará para siempre.",
+    "fr": "Le fichier sera supprimé définitivement.",
+    "de": "Die Datei wird endgültig gelöscht.",
+    "pt": "O arquivo será excluído para sempre."
+  },
+  "Il foglio è l'area su cui lavori: definisce anche il riquadro dell'esportazione e la misura del PDF ({width}×{height} mm).": {
+    "en": "The sheet is the area you work on: it also sets the export frame and the PDF size ({width}×{height} mm).",
+    "es": "La hoja es el área en la que trabajas: también define el marco de la exportación y el tamaño del PDF ({width}×{height} mm).",
+    "fr": "La feuille est la zone de travail : elle définit aussi le cadre de l'exportation et la taille du PDF ({width}×{height} mm).",
+    "de": "Das Blatt ist deine Arbeitsfläche: Es legt auch den Exportbereich und die PDF-Größe fest ({width}×{height} mm).",
+    "pt": "A folha é a área em que você trabalha: ela também define o quadro da exportação e o tamanho do PDF ({width}×{height} mm)."
+  },
+  "Il foglio è l'area su cui lavori: definisce anche il riquadro dell'esportazione e la misura del PDF.": {
+    "en": "The sheet is the area you work on: it also sets the export frame and the PDF size.",
+    "es": "La hoja es el área en la que trabajas: también define el marco de la exportación y el tamaño del PDF.",
+    "fr": "La feuille est la zone de travail : elle définit aussi le cadre de l'exportation et la taille du PDF.",
+    "de": "Das Blatt ist deine Arbeitsfläche: Es legt auch den Exportbereich und die PDF-Größe fest.",
+    "pt": "A folha é a área em que você trabalha: ela também define o quadro da exportação e o tamanho do PDF."
+  },
+  "Il modello supera i 40 MB: riducilo prima di inserirlo.": {
+    "en": "The model is over 40 MB: make it smaller before inserting it.",
+    "es": "El modelo supera los 40 MB: redúcelo antes de insertarlo.",
+    "fr": "Le modèle dépasse 40 Mo : réduisez-le avant de l'insérer.",
+    "de": "Das Modell ist größer als 40 MB: Verkleinere es vor dem Einfügen.",
+    "pt": "O modelo passa de 40 MB: reduza-o antes de inserir."
+  },
+  "Il testo le gira intorno": {
+    "en": "The text goes around it",
+    "es": "El texto gira a su alrededor",
+    "fr": "Le texte l'entoure",
+    "de": "Der Text läuft darum herum",
+    "pt": "O texto circula ao redor"
+  },
+  "Il titolo al centro": {
+    "en": "The title in the center",
+    "es": "El título en el centro",
+    "fr": "Le titre au centre",
+    "de": "Der Titel in der Mitte",
+    "pt": "O título ao centro"
+  },
+  "Il vecchio formato .doc non è supportato: salvalo come .docx da Word e riprova.": {
+    "en": "The old .doc format is not supported: save it as .docx and try again.",
+    "es": "El formato antiguo .doc no es compatible: guárdalo como .docx y vuelve a intentarlo.",
+    "fr": "L'ancien format .doc n'est pas pris en charge : enregistrez-le en .docx et réessayez.",
+    "de": "Das alte .doc-Format wird nicht unterstützt: Speichere es als .docx und versuch es erneut.",
+    "pt": "O formato antigo .doc não é suportado: salve como .docx e tente de novo."
+  },
+  "Immagine": {
+    "en": "Picture",
+    "es": "Imagen",
+    "fr": "Image",
+    "de": "Bild",
+    "pt": "Imagem"
+  },
+  "Importa": {
+    "en": "Import",
+    "es": "Importar",
+    "fr": "Importer",
+    "de": "Importieren",
+    "pt": "Importar"
+  },
+  "Importa da Word": {
+    "en": "Import from .docx",
+    "es": "Importar desde .docx",
+    "fr": "Importer depuis .docx",
+    "de": "Aus .docx importieren",
+    "pt": "Importar de .docx"
+  },
+  "Importa Word, Markdown o spazio di lavoro…": {
+    "en": "Import .docx, Markdown or a workspace…",
+    "es": "Importar .docx, Markdown o un área de trabajo…",
+    "fr": "Importer .docx, Markdown ou un espace de travail…",
+    "de": ".docx, Markdown oder Arbeitsbereich importieren…",
+    "pt": "Importar .docx, Markdown ou área de trabalho…"
+  },
+  "IMPORTANTE": {
+    "en": "IMPORTANT",
+    "es": "IMPORTANTE",
+    "fr": "IMPORTANT",
+    "de": "WICHTIG",
+    "pt": "IMPORTANTE"
+  },
+  "Importante: un'informazione da non perdere.": {
+    "en": "Important: something not to miss.",
+    "es": "Importante: una información que no hay que perderse.",
+    "fr": "Important : une information à ne pas manquer.",
+    "de": "Wichtig: eine Information, die du nicht übersehen solltest.",
+    "pt": "Importante: uma informação que não dá para perder."
+  },
+  "Importo «{name}»…": {
+    "en": "Importing “{name}”…",
+    "es": "Importando «{name}»…",
+    "fr": "Importation de « {name} »…",
+    "de": "„{name}“ wird importiert…",
+    "pt": "Importando “{name}”…"
+  },
+  "Impossibile preparare la stampa": {
+    "en": "The print cannot be prepared",
+    "es": "No se puede preparar la impresión",
+    "fr": "Impossible de préparer l'impression",
+    "de": "Der Druck lässt sich nicht vorbereiten",
+    "pt": "Não é possível preparar a impressão"
+  },
+  "Impossibile rasterizzare la board": {
+    "en": "The board cannot be rasterized",
+    "es": "No se puede rasterizar el tablero",
+    "fr": "Impossible de rastériser le tableau",
+    "de": "Das Board lässt sich nicht rastern",
+    "pt": "Não é possível rasterizar o quadro"
+  },
+  "In corso": {
+    "en": "In progress",
+    "es": "En curso",
+    "fr": "En cours",
+    "de": "Läuft",
+    "pt": "Em andamento"
+  },
+  "In linea con il testo": {
+    "en": "In line with the text",
+    "es": "En línea con el texto",
+    "fr": "Aligné sur le texte",
+    "de": "Mit Text in Zeile",
+    "pt": "Alinhado com o texto"
+  },
+  "In pila": {
+    "en": "Stacked",
+    "es": "Apilado",
+    "fr": "Empilé",
+    "de": "Gestapelt",
+    "pt": "Empilhado"
+  },
+  "Inchiostro": {
+    "en": "Ink",
+    "es": "Tinta",
+    "fr": "Encre",
+    "de": "Tinte",
+    "pt": "Tinta"
+  },
+  "Incisione": {
+    "en": "Engraved",
+    "es": "Grabado",
+    "fr": "Gravure",
+    "de": "Graviert",
+    "pt": "Gravado"
+  },
+  "Incolla": {
+    "en": "Paste",
+    "es": "Pegar",
+    "fr": "Coller",
+    "de": "Einfügen",
+    "pt": "Colar"
+  },
+  "Incolla da Excel": {
+    "en": "Paste from a spreadsheet",
+    "es": "Pegar desde una hoja de cálculo",
+    "fr": "Coller depuis un tableur",
+    "de": "Aus einer Tabellenkalkulation einfügen",
+    "pt": "Colar de uma planilha"
+  },
+  "Incolla solo il testo": {
+    "en": "Paste the text only",
+    "es": "Pegar solo el texto",
+    "fr": "Coller le texte seulement",
+    "de": "Nur den Text einfügen",
+    "pt": "Colar somente o texto"
+  },
+  "Incollate {rows} righe e {series} serie": {
+    "en": "{rows} rows and {series} series pasted",
+    "es": "Pegadas {rows} filas y {series} series",
+    "fr": "{rows} lignes et {series} séries collées",
+    "de": "{rows} Zeilen und {series} Reihen eingefügt",
+    "pt": "Coladas {rows} linhas e {series} séries"
+  },
+  "Indice analitico": {
+    "en": "Index",
+    "es": "Índice analítico",
+    "fr": "Index",
+    "de": "Stichwortverzeichnis",
+    "pt": "Índice remissivo"
+  },
+  "Indice delle {items}": {
+    "en": "Table of {items}",
+    "es": "Índice de {items}",
+    "fr": "Table des {items}",
+    "de": "Verzeichnis der {items}",
+    "pt": "Índice de {items}"
+  },
+  "Indice delle autorità": {
+    "en": "Table of authorities",
+    "es": "Índice de autoridades",
+    "fr": "Table des autorités",
+    "de": "Rechtsquellenverzeichnis",
+    "pt": "Índice de autoridades"
+  },
+  "Indice delle equazioni": {
+    "en": "Table of equations",
+    "es": "Índice de ecuaciones",
+    "fr": "Table des équations",
+    "de": "Formelverzeichnis",
+    "pt": "Índice de equações"
+  },
+  "Indice delle tabelle": {
+    "en": "Table of tables",
+    "es": "Índice de tablas",
+    "fr": "Table des tableaux",
+    "de": "Tabellenverzeichnis",
+    "pt": "Índice de tabelas"
+  },
+  "Indirizzo": {
+    "en": "Address",
+    "es": "Dirección",
+    "fr": "Adresse",
+    "de": "Adresse",
+    "pt": "Endereço"
+  },
+  "Infinita": {
+    "en": "Infinite",
+    "es": "Infinita",
+    "fr": "Infinie",
+    "de": "Unendlich",
+    "pt": "Infinita"
+  },
+  "Ingrandisci": {
+    "en": "Zoom in",
+    "es": "Acercar",
+    "fr": "Zoom avant",
+    "de": "Vergrößern",
+    "pt": "Aumentar zoom"
+  },
+  "inizio": {
+    "en": "start",
+    "es": "empezar",
+    "fr": "début",
+    "de": "Anfang",
+    "pt": "começo"
+  },
+  "inquadra": {
+    "en": "fit",
+    "es": "encuadrar",
+    "fr": "cadrer",
+    "de": "einpassen",
+    "pt": "enquadrar"
+  },
+  "Integrale": {
+    "en": "Integral",
+    "es": "Integral",
+    "fr": "Intégrale",
+    "de": "Integral",
+    "pt": "Integral"
+  },
+  "Integrale di Gauss": {
+    "en": "Gaussian integral",
+    "es": "Integral de Gauss",
+    "fr": "Intégrale de Gauss",
+    "de": "Gauß-Integral",
+    "pt": "Integral de Gauss"
+  },
+  "Intensità trama": {
+    "en": "Pattern intensity",
+    "es": "Intensidad de la trama",
+    "fr": "Intensité du motif",
+    "de": "Musterintensität",
+    "pt": "Intensidade do padrão"
+  },
+  "Interfaccia": {
+    "en": "Interface",
+    "es": "Interfaz",
+    "fr": "Interface",
+    "de": "Oberfläche",
+    "pt": "Interface"
+  },
+  "Interna": {
+    "en": "Inner",
+    "es": "Interior",
+    "fr": "Interne",
+    "de": "Innen",
+    "pt": "Interna"
+  },
+  "Interruttore": {
+    "en": "Switch",
+    "es": "Interruptor",
+    "fr": "Interrupteur",
+    "de": "Schalter",
+    "pt": "Interruptor"
+  },
+  "Intestazione": {
+    "en": "Header",
+    "es": "Encabezado",
+    "fr": "En-tête",
+    "de": "Kopfzeile",
+    "pt": "Cabeçalho"
+  },
+  "Inverti direzione": {
+    "en": "Reverse direction",
+    "es": "Invertir la dirección",
+    "fr": "Inverser le sens",
+    "de": "Richtung umkehren",
+    "pt": "Inverter a direção"
+  },
+  "Inverti le punte": {
+    "en": "Swap the arrowheads",
+    "es": "Invertir las puntas",
+    "fr": "Inverser les pointes",
+    "de": "Spitzen tauschen",
+    "pt": "Inverter as pontas"
+  },
+  "Invio": {
+    "en": "Enter",
+    "es": "Intro",
+    "fr": "Entrée",
+    "de": "Enter",
+    "pt": "Enter"
+  },
+  "Io": {
+    "en": "Me",
+    "es": "Yo",
+    "fr": "Moi",
+    "de": "Ich",
+    "pt": "Eu"
+  },
+  "Isometrica in alto a destra": {
+    "en": "Isometric top right",
+    "es": "Isométrica arriba a la derecha",
+    "fr": "Isométrique en haut à droite",
+    "de": "Isometrisch oben rechts",
+    "pt": "Isométrica em cima à direita"
+  },
+  "Isometrica in alto a sinistra": {
+    "en": "Isometric top left",
+    "es": "Isométrica arriba a la izquierda",
+    "fr": "Isométrique en haut à gauche",
+    "de": "Isometrisch oben links",
+    "pt": "Isométrica em cima à esquerda"
+  },
+  "Isometrica in basso a destra": {
+    "en": "Isometric bottom right",
+    "es": "Isométrica abajo a la derecha",
+    "fr": "Isométrique en bas à droite",
+    "de": "Isometrisch unten rechts",
+    "pt": "Isométrica embaixo à direita"
+  },
+  "Isometrica in basso a sinistra": {
+    "en": "Isometric bottom left",
+    "es": "Isométrica abajo a la izquierda",
+    "fr": "Isométrique en bas à gauche",
+    "de": "Isometrisch unten links",
+    "pt": "Isométrica embaixo à esquerda"
+  },
+  "Istogramma": {
+    "en": "Columns",
+    "es": "Columnas",
+    "fr": "Colonnes",
+    "de": "Säulen",
+    "pt": "Colunas"
+  },
+  "L'indirizzo potrebbe essere sbagliato. I tuoi file sono tutti nell'elenco.": {
+    "en": "The address may be wrong. All your files are still in the list.",
+    "es": "Puede que la dirección sea incorrecta. Todos tus archivos siguen en la lista.",
+    "fr": "L'adresse est peut-être erronée. Tous vos fichiers sont dans la liste.",
+    "de": "Vielleicht stimmt die Adresse nicht. Alle deine Dateien sind weiterhin in der Liste.",
+    "pt": "Pode ser que o endereço esteja errado. Todos os seus arquivos continuam na lista."
+  },
+  "Landing page": {
+    "en": "Landing page",
+    "es": "Página de destino",
+    "fr": "Page d'accueil",
+    "de": "Landingpage",
+    "pt": "Página de destino"
+  },
+  "lavagna": {
+    "en": "whiteboard",
+    "es": "pizarra",
+    "fr": "tableau blanc",
+    "de": "Whiteboard",
+    "pt": "lousa"
+  },
+  "Le modifiche fatte fin qui sono salvate in questo browser. Riprova, o torna all'elenco dei file.": {
+    "en": "The changes you made so far are saved in this browser. Try again, or go back to your files.",
+    "es": "Los cambios que has hecho están guardados en este navegador. Reinténtalo o vuelve a la lista de archivos.",
+    "fr": "Les modifications déjà faites sont enregistrées dans ce navigateur. Réessayez ou revenez à la liste des fichiers.",
+    "de": "Deine bisherigen Änderungen sind in diesem Browser gespeichert. Versuche es erneut oder geh zurück zur Dateiliste.",
+    "pt": "As alterações feitas até agora estão salvas neste navegador. Tente de novo ou volte para a lista de arquivos."
+  },
+  "Legenda": {
+    "en": "Legend",
+    "es": "Leyenda",
+    "fr": "Légende",
+    "de": "Legende",
+    "pt": "Legenda"
+  },
+  "Leggi": {
+    "en": "Statutes",
+    "es": "Leyes",
+    "fr": "Lois",
+    "de": "Gesetze",
+    "pt": "Leis"
+  },
+  "Leggibile": {
+    "en": "Readable",
+    "es": "Legible",
+    "fr": "Lisible",
+    "de": "Gut lesbar",
+    "pt": "Legível"
+  },
+  "Libro": {
+    "en": "Book",
+    "es": "Libro",
+    "fr": "Livre",
+    "de": "Buch",
+    "pt": "Livro"
+  },
+  "Limite": {
+    "en": "Limit",
+    "es": "Límite",
+    "fr": "Limite",
+    "de": "Grenzwert",
+    "pt": "Limite"
+  },
+  "Linea": {
+    "en": "Line",
+    "es": "Línea",
+    "fr": "Ligne",
+    "de": "Linie",
+    "pt": "Linha"
+  },
+  "Linee": {
+    "en": "Lines",
+    "es": "Líneas",
+    "fr": "Courbes",
+    "de": "Linien",
+    "pt": "Linhas"
+  },
+  "Linee morbide": {
+    "en": "Smooth lines",
+    "es": "Líneas suaves",
+    "fr": "Courbes lissées",
+    "de": "Weiche Linien",
+    "pt": "Linhas suaves"
+  },
+  "lingua": {
+    "en": "language",
+    "es": "idioma",
+    "fr": "langue",
+    "de": "Sprache",
+    "pt": "idioma"
+  },
+  "Lingua": {
+    "en": "Language",
+    "es": "Idioma",
+    "fr": "Langue",
+    "de": "Sprache",
+    "pt": "Idioma"
+  },
+  "Link": {
+    "en": "Link",
+    "es": "Enlace",
+    "fr": "Lien",
+    "de": "Link",
+    "pt": "Link"
+  },
+  "Lo spazio del browser potrebbe essere pieno: esporta lo spazio di lavoro dalla home per non perdere il lavoro.": {
+    "en": "The space of the browser may be full: export the workspace from the home screen so you do not lose your work.",
+    "es": "Puede que el espacio del navegador esté lleno: exporta el área de trabajo desde el inicio para no perder tu trabajo.",
+    "fr": "L'espace du navigateur est peut-être plein : exportez l'espace de travail depuis l'accueil pour ne pas perdre votre travail.",
+    "de": "Der Speicher des Browsers ist vielleicht voll: Exportiere den Arbeitsbereich von der Startseite, damit deine Arbeit nicht verloren geht.",
+    "pt": "O espaço do navegador pode estar cheio: exporte a área de trabalho pela tela inicial para não perder o trabalho."
+  },
+  "Login": {
+    "en": "Log in",
+    "es": "Iniciar sesión",
+    "fr": "Connexion",
+    "de": "Anmelden",
+    "pt": "Entrar"
+  },
+  "Logo": {
+    "en": "Logo",
+    "es": "Logo",
+    "fr": "Logo",
+    "de": "Logo",
+    "pt": "Logo"
+  },
+  "Logo|Prodotto|Prezzi|Blog": {
+    "en": "Logo|Product|Pricing|Blog",
+    "es": "Logo|Producto|Precios|Blog",
+    "fr": "Logo|Produit|Tarifs|Blog",
+    "de": "Logo|Produkt|Preise|Blog",
+    "pt": "Logo|Produto|Preços|Blog"
+  },
+  "Luoghi": {
+    "en": "Places",
+    "es": "Lugares",
+    "fr": "Lieux",
+    "de": "Orte",
+    "pt": "Lugares"
+  },
+  "Magenta": {
+    "en": "Magenta",
+    "es": "Magenta",
+    "fr": "Magenta",
+    "de": "Magenta",
+    "pt": "Magenta"
+  },
+  "Maggiore di": {
+    "en": "Greater than",
+    "es": "Mayor que",
+    "fr": "Supérieur à",
+    "de": "Größer als",
+    "pt": "Maior que"
+  },
+  "Mano": {
+    "en": "Hand",
+    "es": "Mano",
+    "fr": "Main",
+    "de": "Hand",
+    "pt": "Mão"
+  },
+  "Mano, sposta la vista": {
+    "en": "Hand, move the view",
+    "es": "Mano, mover la vista",
+    "fr": "Main, déplacer la vue",
+    "de": "Hand, Ansicht verschieben",
+    "pt": "Mão, mover a vista"
+  },
+  "Manoscritto": {
+    "en": "Handwritten",
+    "es": "Manuscrita",
+    "fr": "Manuscrite",
+    "de": "Handschrift",
+    "pt": "Manuscrita"
+  },
+  "Mappa": {
+    "en": "Map",
+    "es": "Mapa",
+    "fr": "Carte",
+    "de": "Karte",
+    "pt": "Mapa"
+  },
+  "Matrice": {
+    "en": "Matrix",
+    "es": "Matriz",
+    "fr": "Matrice",
+    "de": "Matrix",
+    "pt": "Matriz"
+  },
+  "md": {
+    "en": "md",
+    "es": "md",
+    "fr": "md",
+    "de": "md",
+    "pt": "md"
+  },
+  "Menu a tendina": {
+    "en": "Dropdown menu",
+    "es": "Menú desplegable",
+    "fr": "Menu déroulant",
+    "de": "Aufklappmenü",
+    "pt": "Menu suspenso"
+  },
+  "Minimale": {
+    "en": "Minimal",
+    "es": "Minimalista",
+    "fr": "Minimal",
+    "de": "Minimal",
+    "pt": "Minimalista"
+  },
+  "Minore di": {
+    "en": "Less than",
+    "es": "Menor que",
+    "fr": "Inférieur à",
+    "de": "Kleiner als",
+    "pt": "Menor que"
+  },
+  "Misurare il tasso di attivazione": {
+    "en": "Measure the activation rate",
+    "es": "Medir la tasa de activación",
+    "fr": "Mesurer le taux d'activation",
+    "de": "Die Aktivierungsrate messen",
+    "pt": "Medir a taxa de ativação"
+  },
+  "MLA (9ª ed.)": {
+    "en": "MLA (9th ed.)",
+    "es": "MLA (9.ª ed.)",
+    "fr": "MLA (9e éd.)",
+    "de": "MLA (9. Aufl.)",
+    "pt": "MLA (9.ª ed.)"
+  },
+  "Modalità {mode}": {
+    "en": "{mode} mode",
+    "es": "Modo {mode}",
+    "fr": "Mode {mode}",
+    "de": "Modus {mode}",
+    "pt": "Modo {mode}"
+  },
+  "Modalità della board": {
+    "en": "Board mode",
+    "es": "Modo del tablero",
+    "fr": "Mode du tableau",
+    "de": "Board-Modus",
+    "pt": "Modo do quadro"
+  },
+  "Modalità: {label}": {
+    "en": "Mode: {label}",
+    "es": "Modo: {label}",
+    "fr": "Mode : {label}",
+    "de": "Modus: {label}",
+    "pt": "Modo: {label}"
+  },
+  "Modello 3D": {
+    "en": "3D model",
+    "es": "Modelo 3D",
+    "fr": "Modèle 3D",
+    "de": "3D-Modell",
+    "pt": "Modelo 3D"
+  },
+  "Modello non leggibile: serve un glTF autonomo (.glb).": {
+    "en": "Model not readable: a self-contained glTF (.glb) is needed.",
+    "es": "Modelo ilegible: hace falta un glTF autónomo (.glb).",
+    "fr": "Modèle illisible : il faut un glTF autonome (.glb).",
+    "de": "Modell nicht lesbar: nötig ist ein eigenständiges glTF (.glb).",
+    "pt": "Modelo ilegível: é preciso um glTF autônomo (.glb)."
+  },
+  "Modello non valido": {
+    "en": "Invalid model",
+    "es": "Modelo no válido",
+    "fr": "Modèle non valide",
+    "de": "Ungültiges Modell",
+    "pt": "Modelo inválido"
+  },
+  "Moderno": {
+    "en": "Modern",
+    "es": "Moderno",
+    "fr": "Moderne",
+    "de": "Modern",
+    "pt": "Moderno"
+  },
+  "Modifica dati…": {
+    "en": "Edit data…",
+    "es": "Modificar los datos…",
+    "fr": "Modifier les données…",
+    "de": "Daten bearbeiten…",
+    "pt": "Editar dados…"
+  },
+  "Modifica testo": {
+    "en": "Edit text",
+    "es": "Editar el texto",
+    "fr": "Modifier le texte",
+    "de": "Text bearbeiten",
+    "pt": "Editar o texto"
+  },
+  "Modificati di recente": {
+    "en": "Recently edited",
+    "es": "Modificados recientemente",
+    "fr": "Modifiés récemment",
+    "de": "Zuletzt bearbeitet",
+    "pt": "Editados recentemente"
+  },
+  "Monocromatico": {
+    "en": "Monochrome",
+    "es": "Monocromático",
+    "fr": "Monochrome",
+    "de": "Einfarbig",
+    "pt": "Monocromático"
+  },
+  "Monospazio": {
+    "en": "Monospace",
+    "es": "Monoespaciada",
+    "fr": "Chasse fixe",
+    "de": "Dicktengleich",
+    "pt": "Monoespaçada"
+  },
+  "Morbido": {
+    "en": "Soft",
+    "es": "Suave",
+    "fr": "Doux",
+    "de": "Weich",
+    "pt": "Suave"
+  },
+  "Mostra il pannello Stile": {
+    "en": "Show the Style panel",
+    "es": "Mostrar el panel Estilo",
+    "fr": "Afficher le panneau Style",
+    "de": "Bereich „Stil“ anzeigen",
+    "pt": "Mostrar o painel Estilo"
+  },
+  "Nascondi il pannello Stile": {
+    "en": "Hide the Style panel",
+    "es": "Ocultar el panel Estilo",
+    "fr": "Masquer le panneau Style",
+    "de": "Bereich „Stil“ ausblenden",
+    "pt": "Ocultar o painel Estilo"
+  },
+  "Nebbia": {
+    "en": "Mist",
+    "es": "Niebla",
+    "fr": "Brume",
+    "de": "Nebel",
+    "pt": "Névoa"
+  },
+  "Negli appunti non c'è una tabella": {
+    "en": "There is no table in the clipboard",
+    "es": "En el portapapeles no hay ninguna tabla",
+    "fr": "Il n'y a pas de tableau dans le presse-papiers",
+    "de": "In der Zwischenablage ist keine Tabelle",
+    "pt": "Não há uma tabela na área de transferência"
+  },
+  "Nella finestra di stampa scegli «Salva come PDF».": {
+    "en": "In the print dialog choose “Save as PDF”.",
+    "es": "En la ventana de impresión elige «Guardar como PDF».",
+    "fr": "Dans la fenêtre d'impression, choisissez « Enregistrer au format PDF ».",
+    "de": "Wähle im Druckfenster „Als PDF sichern“.",
+    "pt": "Na janela de impressão escolha “Salvar como PDF”."
+  },
+  "Neon": {
+    "en": "Neon",
+    "es": "Neón",
+    "fr": "Néon",
+    "de": "Neon",
+    "pt": "Neon"
+  },
+  "Nero": {
+    "en": "Black",
+    "es": "Negro",
+    "fr": "Noir",
+    "de": "Schwarz",
+    "pt": "Preto"
+  },
+  "Nessun carattere trovato": {
+    "en": "No font found",
+    "es": "No se ha encontrado ninguna fuente",
+    "fr": "Aucune police trouvée",
+    "de": "Keine Schrift gefunden",
+    "pt": "Nenhuma fonte encontrada"
+  },
+  "Nessun componente": {
+    "en": "No components",
+    "es": "Ningún componente",
+    "fr": "Aucun composant",
+    "de": "Keine Komponenten",
+    "pt": "Nenhum componente"
+  },
+  "Nessun dato": {
+    "en": "No data",
+    "es": "Sin datos",
+    "fr": "Aucune donnée",
+    "de": "Keine Daten",
+    "pt": "Sem dados"
+  },
+  "Nessun file contiene quello che cerchi.": {
+    "en": "No file contains what you are looking for.",
+    "es": "Ningún archivo contiene lo que buscas.",
+    "fr": "Aucun fichier ne contient ce que vous cherchez.",
+    "de": "Keine Datei enthält, wonach du suchst.",
+    "pt": "Nenhum arquivo contém o que você procura."
+  },
+  "nessun limite": {
+    "en": "no limit",
+    "es": "sin límite",
+    "fr": "sans limite",
+    "de": "ohne Grenze",
+    "pt": "sem limite"
+  },
+  "Nessun preferito: aggiungili dal menu di un file.": {
+    "en": "No favorite: add them from the menu of a file.",
+    "es": "Ningún favorito: añádelos desde el menú de un archivo.",
+    "fr": "Aucun favori : ajoutez-en depuis le menu d'un fichier.",
+    "de": "Keine Favoriten: Füge sie über das Menü einer Datei hinzu.",
+    "pt": "Nenhum favorito: adicione pelo menu de um arquivo."
+  },
+  "Nessun risultato.": {
+    "en": "No results.",
+    "es": "Sin resultados.",
+    "fr": "Aucun résultat.",
+    "de": "Keine Ergebnisse.",
+    "pt": "Nenhum resultado."
+  },
+  "Nessuna": {
+    "en": "None",
+    "es": "Ninguna",
+    "fr": "Aucune",
+    "de": "Keine",
+    "pt": "Nenhuma"
+  },
+  "Nessuna didascalia «{label}»: aggiungila con Inserisci didascalia.": {
+    "en": "No “{label}” caption: add one with Insert caption.",
+    "es": "No hay ningún título «{label}»: añádelo con Insertar título.",
+    "fr": "Aucune légende « {label} » : ajoutez-en une avec Insérer une légende.",
+    "de": "Keine Beschriftung „{label}“: Füge eine mit Beschriftung einfügen hinzu.",
+    "pt": "Nenhuma legenda “{label}”: adicione uma com Inserir legenda."
+  },
+  "Nessuna fonte: aggiungile da Riferimenti › Gestisci fonti.": {
+    "en": "No sources: add them from References › Manage sources.",
+    "es": "No hay fuentes: añádelas desde Referencias › Administrar fuentes.",
+    "fr": "Aucune source : ajoutez-les depuis Références › Gérer les sources.",
+    "de": "Keine Quellen: Füge sie unter Referenzen › Quellen verwalten hinzu.",
+    "pt": "Nenhuma fonte: adicione em Referências › Gerenciar fontes."
+  },
+  "Nessuna spaziatura": {
+    "en": "No spacing",
+    "es": "Sin espaciado",
+    "fr": "Aucun espacement",
+    "de": "Kein Abstand",
+    "pt": "Sem espaçamento"
+  },
+  "Nessuna spaziatura paragrafo": {
+    "en": "No paragraph spacing",
+    "es": "Sin espaciado entre párrafos",
+    "fr": "Aucun espacement de paragraphe",
+    "de": "Kein Absatzabstand",
+    "pt": "Sem espaçamento entre parágrafos"
+  },
+  "Nessuno": {
+    "en": "None",
+    "es": "Ninguno",
+    "fr": "Aucun",
+    "de": "Keine",
+    "pt": "Nenhum"
+  },
+  "Netta": {
+    "en": "Sharp",
+    "es": "Nítida",
+    "fr": "Nette",
+    "de": "Scharf",
+    "pt": "Nítida"
+  },
+  "Neutro": {
+    "en": "Neutral",
+    "es": "Neutra",
+    "fr": "Neutre",
+    "de": "Neutral",
+    "pt": "Neutra"
+  },
+  "Niente testo ai lati": {
+    "en": "No text at the sides",
+    "es": "Nada de texto a los lados",
+    "fr": "Pas de texte sur les côtés",
+    "de": "Kein Text an den Seiten",
+    "pt": "Nada de texto nas laterais"
+  },
+  "no": {
+    "en": "no",
+    "es": "no",
+    "fr": "non",
+    "de": "nein",
+    "pt": "não"
+  },
+  "No": {
+    "en": "No",
+    "es": "No",
+    "fr": "Non",
+    "de": "Nein",
+    "pt": "Não"
+  },
+  "Nodo": {
+    "en": "Knot",
+    "es": "Nudo",
+    "fr": "Nœud",
+    "de": "Knoten",
+    "pt": "Nó"
+  },
+  "Nome": {
+    "en": "First name",
+    "es": "Nombre",
+    "fr": "Prénom",
+    "de": "Vorname",
+    "pt": "Nome"
+  },
+  "Nome del file": {
+    "en": "File name",
+    "es": "Nombre del archivo",
+    "fr": "Nom du fichier",
+    "de": "Name der Datei",
+    "pt": "Nome do arquivo"
+  },
+  "Nome della serie {number}": {
+    "en": "Name of series {number}",
+    "es": "Nombre de la serie {number}",
+    "fr": "Nom de la série {number}",
+    "de": "Name der Reihe {number}",
+    "pt": "Nome da série {number}"
+  },
+  "Nome||nome di battesimo": {
+    "en": "First name",
+    "es": "Nombre",
+    "fr": "Prénom",
+    "de": "Vorname",
+    "pt": "Nome"
+  },
+  "Non allineati (old style)": {
+    "en": "Old style figures",
+    "es": "No alineados (old style)",
+    "fr": "Non alignés (old style)",
+    "de": "Mediävalziffern (old style)",
+    "pt": "Não alinhados (old style)"
+  },
+  "Non c'è ancora niente qui.": {
+    "en": "There is nothing here yet.",
+    "es": "Todavía no hay nada aquí.",
+    "fr": "Il n'y a encore rien ici.",
+    "de": "Hier ist noch nichts.",
+    "pt": "Ainda não há nada aqui."
+  },
+  "NON COPIARE": {
+    "en": "DO NOT COPY",
+    "es": "NO COPIAR",
+    "fr": "NE PAS COPIER",
+    "de": "NICHT KOPIEREN",
+    "pt": "NÃO COPIAR"
+  },
+  "Non è vuoto": {
+    "en": "Is not empty",
+    "es": "No está vacío",
+    "fr": "N'est pas vide",
+    "de": "Ist nicht leer",
+    "pt": "Não está vazio"
+  },
+  "Non riesco a importare «{name}»": {
+    "en": "“{name}” cannot be imported",
+    "es": "No se puede importar «{name}»",
+    "fr": "Impossible d'importer « {name} »",
+    "de": "„{name}“ lässt sich nicht importieren",
+    "pt": "Não é possível importar “{name}”"
+  },
+  "Non riesco a leggere il file.": {
+    "en": "The file cannot be read.",
+    "es": "No se puede leer el archivo.",
+    "fr": "Impossible de lire le fichier.",
+    "de": "Die Datei lässt sich nicht lesen.",
+    "pt": "Não é possível ler o arquivo."
+  },
+  "Non riesco a salvare le modifiche": {
+    "en": "The changes cannot be saved",
+    "es": "No se pueden guardar los cambios",
+    "fr": "Impossible d'enregistrer les modifications",
+    "de": "Die Änderungen lassen sich nicht speichern",
+    "pt": "Não é possível salvar as alterações"
+  },
+  "Non si può annullare.": {
+    "en": "It cannot be undone.",
+    "es": "No se puede deshacer.",
+    "fr": "C'est irréversible.",
+    "de": "Das lässt sich nicht rückgängig machen.",
+    "pt": "Não dá para desfazer."
+  },
+  "Normale": {
+    "en": "Normal",
+    "es": "Normal",
+    "fr": "Normal",
+    "de": "Standard",
+    "pt": "Normal"
+  },
+  "Nota": {
+    "en": "Note",
+    "es": "Nota",
+    "fr": "Note",
+    "de": "Notiz",
+    "pt": "Nota"
+  },
+  "Nota a piè di pagina, nota di chiusura": {
+    "en": "Footnote, endnote",
+    "es": "Nota al pie, nota al final",
+    "fr": "Note de bas de page, note de fin",
+    "de": "Fußnote, Endnote",
+    "pt": "Nota de rodapé, nota de fim"
+  },
+  "Nota vuota": {
+    "en": "Empty note",
+    "es": "Nota vacía",
+    "fr": "Note vide",
+    "de": "Leere Notiz",
+    "pt": "Nota vazia"
+  },
+  "Nota vuota: scrivila nel pannello": {
+    "en": "Empty note: write it in the pane",
+    "es": "Nota vacía: escríbela en el panel",
+    "fr": "Note vide : écrivez-la dans le volet",
+    "de": "Leere Notiz: Schreib sie im Bereich",
+    "pt": "Nota vazia: escreva-a no painel"
+  },
+  "Nota, testo": {
+    "en": "Note, text",
+    "es": "Nota, texto",
+    "fr": "Note, texte",
+    "de": "Notiz, Text",
+    "pt": "Nota, texto"
+  },
+  "Note": {
+    "en": "Notes",
+    "es": "Notas",
+    "fr": "Notes",
+    "de": "Notizen",
+    "pt": "Notas"
+  },
+  "Notte": {
+    "en": "Night",
+    "es": "Noche",
+    "fr": "Nuit",
+    "de": "Nacht",
+    "pt": "Noite"
+  },
+  "Numero di pagina": {
+    "en": "Page number",
+    "es": "Número de página",
+    "fr": "Numéro de page",
+    "de": "Seitenzahl",
+    "pt": "Número de página"
+  },
+  "Numero di pagine": {
+    "en": "Number of pages",
+    "es": "Número de páginas",
+    "fr": "Nombre de pages",
+    "de": "Anzahl der Seiten",
+    "pt": "Número de páginas"
+  },
+  "Numero di parole": {
+    "en": "Word count",
+    "es": "Número de palabras",
+    "fr": "Nombre de mots",
+    "de": "Anzahl der Wörter",
+    "pt": "Número de palavras"
+  },
+  "Numero didascalia": {
+    "en": "Caption number",
+    "es": "Número del título",
+    "fr": "Numéro de la légende",
+    "de": "Nummer der Beschriftung",
+    "pt": "Número da legenda"
+  },
+  "Nuova board": {
+    "en": "New board",
+    "es": "Tablero nuevo",
+    "fr": "Nouveau tableau",
+    "de": "Neues Board",
+    "pt": "Novo quadro"
+  },
+  "Nuovo": {
+    "en": "New",
+    "es": "Nuevo",
+    "fr": "Nouveau",
+    "de": "Neu",
+    "pt": "Novo"
+  },
+  "Nuovo documento": {
+    "en": "New document",
+    "es": "Nuevo documento",
+    "fr": "Nouveau document",
+    "de": "Neues Dokument",
+    "pt": "Novo documento"
+  },
+  "Nuovo nome": {
+    "en": "New name",
+    "es": "Nombre nuevo",
+    "fr": "Nouveau nom",
+    "de": "Neuer Name",
+    "pt": "Novo nome"
+  },
+  "Obiettivi": {
+    "en": "Goals",
+    "es": "Objetivos",
+    "fr": "Objectifs",
+    "de": "Ziele",
+    "pt": "Objetivos"
+  },
+  "Oceano": {
+    "en": "Ocean",
+    "es": "Océano",
+    "fr": "Océan",
+    "de": "Ozean",
+    "pt": "Oceano"
+  },
+  "Office classico": {
+    "en": "Classic",
+    "es": "Clásico",
+    "fr": "Classique",
+    "de": "Klassisch",
+    "pt": "Clássico"
+  },
+  "Ogni riga è una categoria, ogni colonna una serie. Puoi incollare una tabella copiata da Excel, Numbers o Google Fogli.": {
+    "en": "Each row is a category, each column a series. You can paste a table copied from any spreadsheet.",
+    "es": "Cada fila es una categoría, cada columna una serie. Puedes pegar una tabla copiada de cualquier hoja de cálculo.",
+    "fr": "Chaque ligne est une catégorie, chaque colonne une série. Vous pouvez coller un tableau copié depuis n'importe quel tableur.",
+    "de": "Jede Zeile ist eine Kategorie, jede Spalte eine Reihe. Du kannst eine aus jeder Tabellenkalkulation kopierte Tabelle einfügen.",
+    "pt": "Cada linha é uma categoria, cada coluna uma série. Você pode colar uma tabela copiada de qualquer planilha."
+  },
+  "Ombra": {
+    "en": "Shadow",
+    "es": "Sombra",
+    "fr": "Ombre",
+    "de": "Schatten",
+    "pt": "Sombra"
+  },
+  "Ombra lunga": {
+    "en": "Long shadow",
+    "es": "Sombra larga",
+    "fr": "Ombre longue",
+    "de": "Langer Schatten",
+    "pt": "Sombra longa"
+  },
+  "Ombra morbida": {
+    "en": "Soft shadow",
+    "es": "Sombra suave",
+    "fr": "Ombre douce",
+    "de": "Weicher Schatten",
+    "pt": "Sombra suave"
+  },
+  "Ombra spostata": {
+    "en": "Offset shadow",
+    "es": "Sombra desplazada",
+    "fr": "Ombre décalée",
+    "de": "Versetzter Schatten",
+    "pt": "Sombra deslocada"
+  },
+  "Onboarding — flusso": {
+    "en": "Onboarding — flow",
+    "es": "Incorporación — flujo",
+    "fr": "Accueil — parcours",
+    "de": "Onboarding — Ablauf",
+    "pt": "Integração — fluxo"
+  },
+  "Ondulata": {
+    "en": "Wavy",
+    "es": "Ondulada",
+    "fr": "Ondulée",
+    "de": "Wellenförmig",
+    "pt": "Ondulada"
+  },
+  "Opacità": {
+    "en": "Opacity",
+    "es": "Opacidad",
+    "fr": "Opacité",
+    "de": "Deckkraft",
+    "pt": "Opacidade"
+  },
+  "Operazione completata": {
+    "en": "Operation completed",
+    "es": "Operación completada",
+    "fr": "Opération terminée",
+    "de": "Vorgang abgeschlossen",
+    "pt": "Operação concluída"
+  },
+  "Opere citate": {
+    "en": "Works cited",
+    "es": "Obras citadas",
+    "fr": "Œuvres citées",
+    "de": "Zitierte Werke",
+    "pt": "Obras citadas"
+  },
+  "Opzione": {
+    "en": "Option",
+    "es": "Opción",
+    "fr": "Option",
+    "de": "Option",
+    "pt": "Opção"
+  },
+  "Ora": {
+    "en": "Time",
+    "es": "Hora",
+    "fr": "Heure",
+    "de": "Uhrzeit",
+    "pt": "Hora"
+  },
+  "Ordina per": {
+    "en": "Sort by",
+    "es": "Ordenar por",
+    "fr": "Trier par",
+    "de": "Sortieren nach",
+    "pt": "Ordenar por"
+  },
+  "Ordina||ordina l'elenco dei file": {
+    "en": "Sort",
+    "es": "Ordenar",
+    "fr": "Trier",
+    "de": "Sortieren",
+    "pt": "Ordenar"
+  },
+  "Ordina||ordine di sovrapposizione": {
+    "en": "Arrange",
+    "es": "Orden",
+    "fr": "Disposition",
+    "de": "Anordnen",
+    "pt": "Organizar"
+  },
+  "Orientamento": {
+    "en": "Orientation",
+    "es": "Orientación",
+    "fr": "Orientation",
+    "de": "Ausrichtung",
+    "pt": "Orientação"
+  },
+  "Orizzontale": {
+    "en": "Landscape",
+    "es": "Horizontal",
+    "fr": "Paysage",
+    "de": "Querformat",
+    "pt": "Paisagem"
+  },
+  "Orologio": {
+    "en": "Clock",
+    "es": "Reloj",
+    "fr": "Horloge",
+    "de": "Uhr",
+    "pt": "Relógio"
+  },
+  "Ottaedro": {
+    "en": "Octahedron",
+    "es": "Octaedro",
+    "fr": "Octaèdre",
+    "de": "Oktaeder",
+    "pt": "Octaedro"
+  },
+  "Ovunque": {
+    "en": "Everywhere",
+    "es": "En todas partes",
+    "fr": "Partout",
+    "de": "Überall",
+    "pt": "Em todo lugar"
+  },
+  "Pagina": {
+    "en": "Page",
+    "es": "Página",
+    "fr": "Page",
+    "de": "Seite",
+    "pt": "Página"
+  },
+  "Pagina {page} di {total}": {
+    "en": "Page {page} of {total}",
+    "es": "Página {page} de {total}",
+    "fr": "Page {page} sur {total}",
+    "de": "Seite {page} von {total}",
+    "pt": "Página {page} de {total}"
+  },
+  "Pagina non trovata · Cogniva": {
+    "en": "Page not found · Cogniva",
+    "es": "Página no encontrada · Cogniva",
+    "fr": "Page introuvable · Cogniva",
+    "de": "Seite nicht gefunden · Cogniva",
+    "pt": "Página não encontrada · Cogniva"
+  },
+  "Pagina X di Y": {
+    "en": "Page X of Y",
+    "es": "Página X de Y",
+    "fr": "Page X sur Y",
+    "de": "Seite X von Y",
+    "pt": "Página X de Y"
+  },
+  "Paginazione": {
+    "en": "Pagination",
+    "es": "Paginación",
+    "fr": "Pagination",
+    "de": "Seitennummerierung",
+    "pt": "Paginação"
+  },
+  "Palette dei comandi": {
+    "en": "Command palette",
+    "es": "Paleta de comandos",
+    "fr": "Palette de commandes",
+    "de": "Befehlspalette",
+    "pt": "Paleta de comandos"
+  },
+  "Pannello Stile": {
+    "en": "Style panel",
+    "es": "Panel Estilo",
+    "fr": "Panneau Style",
+    "de": "Bereich „Stil“",
+    "pt": "Painel Estilo"
+  },
+  "Panoramica|Attività|Impostazioni": {
+    "en": "Overview|Activity|Settings",
+    "es": "Resumen|Actividad|Ajustes",
+    "fr": "Vue d'ensemble|Activité|Réglages",
+    "de": "Übersicht|Aktivität|Einstellungen",
+    "pt": "Visão geral|Atividade|Configurações"
+  },
+  "Paragrafo": {
+    "en": "Paragraph",
+    "es": "Párrafo",
+    "fr": "Paragraphe",
+    "de": "Absatz",
+    "pt": "Parágrafo"
+  },
+  "Parentesi": {
+    "en": "Brackets",
+    "es": "Paréntesis",
+    "fr": "Parenthèses",
+    "de": "Klammern",
+    "pt": "Parênteses"
+  },
+  "PDF pronto": {
+    "en": "PDF ready",
+    "es": "PDF listo",
+    "fr": "PDF prêt",
+    "de": "PDF fertig",
+    "pt": "PDF pronto"
+  },
+  "Pedice": {
+    "en": "Subscript",
+    "es": "Subíndice",
+    "fr": "Indice",
+    "de": "Tiefgestellt",
+    "pt": "Subscrito"
+  },
+  "Penna": {
+    "en": "Pen",
+    "es": "Lápiz",
+    "fr": "Stylo",
+    "de": "Stift",
+    "pt": "Caneta"
+  },
+  "Penna, gomma": {
+    "en": "Pen, eraser",
+    "es": "Pluma, goma",
+    "fr": "Stylo, gomme",
+    "de": "Stift, Radierer",
+    "pt": "Caneta, borracha"
+  },
+  "per chiudere": {
+    "en": "to close",
+    "es": "para cerrar",
+    "fr": "pour fermer",
+    "de": "zum Schließen",
+    "pt": "para fechar"
+  },
+  "per eseguire": {
+    "en": "to run",
+    "es": "para ejecutar",
+    "fr": "pour exécuter",
+    "de": "zum Ausführen",
+    "pt": "para executar"
+  },
+  "per scegliere": {
+    "en": "to choose",
+    "es": "para elegir",
+    "fr": "pour choisir",
+    "de": "zum Auswählen",
+    "pt": "para escolher"
+  },
+  "Percorso": {
+    "en": "Routing",
+    "es": "Trazado",
+    "fr": "Tracé",
+    "de": "Verlauf",
+    "pt": "Traçado"
+  },
+  "Percorso di attivazione": {
+    "en": "Activation path",
+    "es": "Ruta de activación",
+    "fr": "Parcours d'activation",
+    "de": "Aktivierungspfad",
+    "pt": "Caminho de ativação"
+  },
+  "Persone": {
+    "en": "People",
+    "es": "Personas",
+    "fr": "Personnes",
+    "de": "Personen",
+    "pt": "Pessoas"
+  },
+  "Piatto": {
+    "en": "Flat",
+    "es": "Plano",
+    "fr": "Plat",
+    "de": "Flach",
+    "pt": "Plano"
+  },
+  "Piè di pagina": {
+    "en": "Footer",
+    "es": "Pie de página",
+    "fr": "Pied de page",
+    "de": "Fußzeile",
+    "pt": "Rodapé"
+  },
+  "Pieno": {
+    "en": "Filled",
+    "es": "Relleno",
+    "fr": "Plein",
+    "de": "Gefüllt",
+    "pt": "Preenchido"
+  },
+  "Pillola": {
+    "en": "Pill",
+    "es": "Píldora",
+    "fr": "Pilule",
+    "de": "Pille",
+    "pt": "Pílula"
+  },
+  "Piramide": {
+    "en": "Pyramid",
+    "es": "Pirámide",
+    "fr": "Pyramide",
+    "de": "Pyramide",
+    "pt": "Pirâmide"
+  },
+  "Porta avanti": {
+    "en": "Bring forward",
+    "es": "Traer adelante",
+    "fr": "Avancer",
+    "de": "Eine Ebene nach vorn",
+    "pt": "Avançar"
+  },
+  "Porta avanti, manda indietro": {
+    "en": "Bring forward, send backward",
+    "es": "Traer adelante, enviar atrás",
+    "fr": "Avancer, reculer",
+    "de": "Nach vorn, nach hinten",
+    "pt": "Trazer para frente, enviar para trás"
+  },
+  "Porta davanti": {
+    "en": "Bring to front",
+    "es": "Traer al frente",
+    "fr": "Mettre au premier plan",
+    "de": "In den Vordergrund",
+    "pt": "Trazer para a frente"
+  },
+  "Porta in fondo": {
+    "en": "Send to back",
+    "es": "Enviar al fondo",
+    "fr": "Mettre à l'arrière-plan",
+    "de": "In den Hintergrund",
+    "pt": "Enviar para trás"
+  },
+  "Porta indietro": {
+    "en": "Send backward",
+    "es": "Enviar atrás",
+    "fr": "Reculer",
+    "de": "Eine Ebene nach hinten",
+    "pt": "Recuar"
+  },
+  "Posizione libera": {
+    "en": "Free position",
+    "es": "Posición libre",
+    "fr": "Position libre",
+    "de": "Freie Position",
+    "pt": "Posição livre"
+  },
+  "Post-it": {
+    "en": "Sticky note",
+    "es": "Nota adhesiva",
+    "fr": "Pense-bête",
+    "de": "Haftnotiz",
+    "pt": "Nota adesiva"
+  },
+  "Post-it e card": {
+    "en": "Sticky notes and cards",
+    "es": "Notas adhesivas y tarjetas",
+    "fr": "Pense-bêtes et cartes",
+    "de": "Haftnotizen und Karten",
+    "pt": "Notas adesivas e cartões"
+  },
+  "Posteriore": {
+    "en": "Back",
+    "es": "Posterior",
+    "fr": "De dos",
+    "de": "Rückansicht",
+    "pt": "Posterior"
+  },
+  "Potrebbe essere stato eliminato per sempre, oppure è salvato in un altro browser: lo spazio di lavoro vive solo su questo dispositivo.": {
+    "en": "It may have been deleted forever, or it is saved in another browser: the workspace lives only on this device.",
+    "es": "Puede que se haya eliminado para siempre, o que esté guardado en otro navegador: el área de trabajo vive solo en este dispositivo.",
+    "fr": "Il a peut-être été supprimé définitivement, ou il est enregistré dans un autre navigateur : l'espace de travail vit uniquement sur cet appareil.",
+    "de": "Vielleicht wurde sie endgültig gelöscht oder sie liegt in einem anderen Browser: Der Arbeitsbereich lebt nur auf diesem Gerät.",
+    "pt": "Pode ter sido excluído para sempre, ou está salvo em outro navegador: a área de trabalho vive só neste dispositivo."
+  },
+  "Predefinita": {
+    "en": "Default",
+    "es": "Predeterminada",
+    "fr": "Par défaut",
+    "de": "Standard",
+    "pt": "Padrão"
+  },
+  "Predefiniti": {
+    "en": "Built-in",
+    "es": "Predefinidos",
+    "fr": "Prédéfinis",
+    "de": "Vordefiniert",
+    "pt": "Predefinidos"
+  },
+  "Predefinito": {
+    "en": "Default",
+    "es": "Predeterminado",
+    "fr": "Par défaut",
+    "de": "Standard",
+    "pt": "Padrão"
+  },
+  "Preferiti": {
+    "en": "Favorites",
+    "es": "Favoritos",
+    "fr": "Favoris",
+    "de": "Favoriten",
+    "pt": "Favoritos"
+  },
+  "Preferito": {
+    "en": "Favorite",
+    "es": "Favorito",
+    "fr": "Favori",
+    "de": "Favorit",
+    "pt": "Favorito"
+  },
+  "Preparazione": {
+    "en": "Preparation",
+    "es": "Preparación",
+    "fr": "Préparation",
+    "de": "Vorbereitung",
+    "pt": "Preparação"
+  },
+  "Preparo il PDF…": {
+    "en": "Preparing the PDF…",
+    "es": "Preparando el PDF…",
+    "fr": "Préparation du PDF…",
+    "de": "PDF wird vorbereitet…",
+    "pt": "Preparando o PDF…"
+  },
+  "Prima 0 · Dopo 0 · Interlinea 1": {
+    "en": "Before 0 · After 0 · Line spacing 1",
+    "es": "Antes 0 · Después 0 · Interlineado 1",
+    "fr": "Avant 0 · Après 0 · Interligne 1",
+    "de": "Vor 0 · Nach 0 · Zeilenabstand 1",
+    "pt": "Antes 0 · Depois 0 · Entrelinha 1"
+  },
+  "Prima 0 · Dopo 10 pt · Interlinea 1,15": {
+    "en": "Before 0 · After 10 pt · Line spacing 1.15",
+    "es": "Antes 0 · Después 10 pt · Interlineado 1,15",
+    "fr": "Avant 0 · Après 10 pt · Interligne 1,15",
+    "de": "Vor 0 · Nach 10 pt · Zeilenabstand 1,15",
+    "pt": "Antes 0 · Depois 10 pt · Entrelinha 1,15"
+  },
+  "Prima 0 · Dopo 4 pt · Interlinea 1": {
+    "en": "Before 0 · After 4 pt · Line spacing 1",
+    "es": "Antes 0 · Después 4 pt · Interlineado 1",
+    "fr": "Avant 0 · Après 4 pt · Interligne 1",
+    "de": "Vor 0 · Nach 4 pt · Zeilenabstand 1",
+    "pt": "Antes 0 · Depois 4 pt · Entrelinha 1"
+  },
+  "Prima 0 · Dopo 6 pt · Interlinea 1,15": {
+    "en": "Before 0 · After 6 pt · Line spacing 1.15",
+    "es": "Antes 0 · Después 6 pt · Interlineado 1,15",
+    "fr": "Avant 0 · Après 6 pt · Interligne 1,15",
+    "de": "Vor 0 · Nach 6 pt · Zeilenabstand 1,15",
+    "pt": "Antes 0 · Depois 6 pt · Entrelinha 1,15"
+  },
+  "Prima 0 · Dopo 6 pt · Interlinea 1,5": {
+    "en": "Before 0 · After 6 pt · Line spacing 1.5",
+    "es": "Antes 0 · Después 6 pt · Interlineado 1,5",
+    "fr": "Avant 0 · Après 6 pt · Interligne 1,5",
+    "de": "Vor 0 · Nach 6 pt · Zeilenabstand 1,5",
+    "pt": "Antes 0 · Depois 6 pt · Entrelinha 1,5"
+  },
+  "Prima 0 · Dopo 8 pt · Interlinea 2": {
+    "en": "Before 0 · After 8 pt · Line spacing 2",
+    "es": "Antes 0 · Después 8 pt · Interlineado 2",
+    "fr": "Avant 0 · Après 8 pt · Interligne 2",
+    "de": "Vor 0 · Nach 8 pt · Zeilenabstand 2",
+    "pt": "Antes 0 · Depois 8 pt · Entrelinha 2"
+  },
+  "Prodotto|Azienda|Risorse|Legale": {
+    "en": "Product|Company|Resources|Legal",
+    "es": "Producto|Empresa|Recursos|Legal",
+    "fr": "Produit|Entreprise|Ressources|Mentions légales",
+    "de": "Produkt|Unternehmen|Ressourcen|Rechtliches",
+    "pt": "Produto|Empresa|Recursos|Jurídico"
+  },
+  "Product brief": {
+    "en": "Product brief",
+    "es": "Product brief",
+    "fr": "Brief produit",
+    "de": "Produkt-Brief",
+    "pt": "Product brief"
+  },
+  "Promemoria": {
+    "en": "Reminder",
+    "es": "Recordatorio",
+    "fr": "Pense-bête",
+    "de": "Erinnerung",
+    "pt": "Lembrete"
+  },
+  "Provincia": {
+    "en": "State or region",
+    "es": "Provincia",
+    "fr": "Département",
+    "de": "Bundesland",
+    "pt": "Estado"
+  },
+  "Punta": {
+    "en": "Head",
+    "es": "Punta",
+    "fr": "Pointe",
+    "de": "Spitze",
+    "pt": "Ponta"
+  },
+  "Punteggiata": {
+    "en": "Dotted",
+    "es": "Punteada",
+    "fr": "Pointillée",
+    "de": "Gepunktet",
+    "pt": "Pontilhada"
+  },
+  "Punti": {
+    "en": "Dots",
+    "es": "Puntos",
+    "fr": "Points",
+    "de": "Punkte",
+    "pt": "Pontos"
+  },
+  "Punto": {
+    "en": "Dotted",
+    "es": "Punto",
+    "fr": "Pointillé",
+    "de": "Punkt",
+    "pt": "Ponto"
+  },
+  "Quadrato": {
+    "en": "Square",
+    "es": "Cuadrado",
+    "fr": "Carré",
+    "de": "Quadrat",
+    "pt": "Quadrado"
+  },
+  "Qualche formattazione di Word non ha un equivalente ed è stata semplificata.": {
+    "en": "Some .docx formatting has no equivalent and has been simplified.",
+    "es": "Parte del formato .docx no tiene equivalente y se ha simplificado.",
+    "fr": "Certaines mises en forme .docx n'ont pas d'équivalent et ont été simplifiées.",
+    "de": "Manche .docx-Formatierungen haben keine Entsprechung und wurden vereinfacht.",
+    "pt": "Parte da formatação .docx não tem equivalente e foi simplificada."
+  },
+  "Qualcosa è andato storto": {
+    "en": "Something went wrong",
+    "es": "Algo salió mal",
+    "fr": "Un problème est survenu",
+    "de": "Etwas ist schiefgelaufen",
+    "pt": "Algo deu errado"
+  },
+  "Qualcosa è andato storto · Cogniva": {
+    "en": "Something went wrong · Cogniva",
+    "es": "Algo salió mal · Cogniva",
+    "fr": "Un problème est survenu · Cogniva",
+    "de": "Etwas ist schiefgelaufen · Cogniva",
+    "pt": "Algo deu errado · Cogniva"
+  },
+  "Questa board non c'è": {
+    "en": "This board is not here",
+    "es": "Este tablero no está",
+    "fr": "Ce tableau n'existe pas",
+    "de": "Dieses Board gibt es nicht",
+    "pt": "Este quadro não existe"
+  },
+  "Questa finestra": {
+    "en": "This window",
+    "es": "Esta ventana",
+    "fr": "Cette fenêtre",
+    "de": "Dieses Fenster",
+    "pt": "Esta janela"
+  },
+  "Questa pagina non esiste": {
+    "en": "This page doesn't exist",
+    "es": "Esta página no existe",
+    "fr": "Cette page n'existe pas",
+    "de": "Diese Seite gibt es nicht",
+    "pt": "Esta página não existe"
+  },
+  "Questo dispositivo non supporta WebGL.": {
+    "en": "This device does not support WebGL.",
+    "es": "Este dispositivo no admite WebGL.",
+    "fr": "Cet appareil ne prend pas en charge WebGL.",
+    "de": "Dieses Gerät unterstützt kein WebGL.",
+    "pt": "Este dispositivo não suporta WebGL."
+  },
+  "Questo documento non c'è": {
+    "en": "This document is not here",
+    "es": "Este documento no está",
+    "fr": "Ce document n'existe pas",
+    "de": "Dieses Dokument gibt es nicht",
+    "pt": "Este documento não existe"
+  },
+  "Radar": {
+    "en": "Radar",
+    "es": "Radar",
+    "fr": "Radar",
+    "de": "Netz",
+    "pt": "Radar"
+  },
+  "Radice": {
+    "en": "Root",
+    "es": "Raíz",
+    "fr": "Racine",
+    "de": "Wurzel",
+    "pt": "Raiz"
+  },
+  "Radice n-esima": {
+    "en": "nth root",
+    "es": "Raíz n-ésima",
+    "fr": "Racine n-ième",
+    "de": "n-te Wurzel",
+    "pt": "Raiz n-ésima"
+  },
+  "Radio": {
+    "en": "Radio",
+    "es": "Radio",
+    "fr": "Radio",
+    "de": "Optionsfeld",
+    "pt": "Rádio"
+  },
+  "Raggio spigoli": {
+    "en": "Corner radius",
+    "es": "Radio de las esquinas",
+    "fr": "Rayon des angles",
+    "de": "Eckenradius",
+    "pt": "Raio dos cantos"
+  },
+  "Rapporto": {
+    "en": "Report",
+    "es": "Informe",
+    "fr": "Rapport",
+    "de": "Bericht",
+    "pt": "Relatório"
+  },
+  "Ravvicinato": {
+    "en": "Tight",
+    "es": "Ajustado",
+    "fr": "Rapproché",
+    "de": "Eng",
+    "pt": "Justo"
+  },
+  "Regolamenti": {
+    "en": "Regulations",
+    "es": "Reglamentos",
+    "fr": "Règlements",
+    "de": "Verordnungen",
+    "pt": "Regulamentos"
+  },
+  "Rettangolo": {
+    "en": "Rectangle",
+    "es": "Rectángulo",
+    "fr": "Rectangle",
+    "de": "Rechteck",
+    "pt": "Retângulo"
+  },
+  "Rettangolo, ellisse, rombo": {
+    "en": "Rectangle, ellipse, diamond",
+    "es": "Rectángulo, elipse, rombo",
+    "fr": "Rectangle, ellipse, losange",
+    "de": "Rechteck, Ellipse, Raute",
+    "pt": "Retângulo, elipse, losango"
+  },
+  "Ricerca": {
+    "en": "Research",
+    "es": "Investigación",
+    "fr": "Recherche",
+    "de": "Recherche",
+    "pt": "Pesquisa"
+  },
+  "Ricerca||fase di un progetto": {
+    "en": "Research",
+    "es": "Investigación",
+    "fr": "Recherche",
+    "de": "Recherche",
+    "pt": "Pesquisa"
+  },
+  "Ricorda: testare il\ncopy della CTA": {
+    "en": "Remember: test the\nCTA copy",
+    "es": "Recuerda: probar el\ntexto de la CTA",
+    "fr": "Penser à tester le\ntexte du CTA",
+    "de": "Nicht vergessen: den\nCTA-Text testen",
+    "pt": "Lembrar: testar o\ntexto da CTA"
+  },
+  "Riduci": {
+    "en": "Zoom out",
+    "es": "Alejar",
+    "fr": "Zoom arrière",
+    "de": "Verkleinern",
+    "pt": "Diminuir zoom"
+  },
+  "Riferimenti bibliografici": {
+    "en": "References",
+    "es": "Referencias bibliográficas",
+    "fr": "Références bibliographiques",
+    "de": "Literaturverzeichnis",
+    "pt": "Referências bibliográficas"
+  },
+  "Riferimento": {
+    "en": "Reference",
+    "es": "Referencia",
+    "fr": "Référence",
+    "de": "Verweis",
+    "pt": "Referência"
+  },
+  "Riga": {
+    "en": "Row",
+    "es": "Fila",
+    "fr": "Ligne",
+    "de": "Zeile",
+    "pt": "Linha"
+  },
+  "Righe": {
+    "en": "Rows",
+    "es": "Filas",
+    "fr": "Lignes",
+    "de": "Zeilen",
+    "pt": "Linhas"
+  },
+  "Righe alternate": {
+    "en": "Banded rows",
+    "es": "Filas alternas",
+    "fr": "Lignes alternées",
+    "de": "Abwechselnde Zeilen",
+    "pt": "Linhas alternadas"
+  },
+  "Righe uniformi": {
+    "en": "Plain rows",
+    "es": "Filas uniformes",
+    "fr": "Lignes uniformes",
+    "de": "Einheitliche Zeilen",
+    "pt": "Linhas uniformes"
+  },
+  "Righe||motivo di sfondo a righe": {
+    "en": "Diamond",
+    "es": "Rombo",
+    "fr": "Losange",
+    "de": "Raute",
+    "pt": "Losango"
+  },
+  "Righe||righe di testo": {
+    "en": "Hollow diamond",
+    "es": "Rombo vacío",
+    "fr": "Losange vide",
+    "de": "Leere Raute",
+    "pt": "Losango vazio"
+  },
+  "Righe||set di stili con linee sotto i titoli": {
+    "en": "Lines",
+    "es": "Líneas",
+    "fr": "Lignes",
+    "de": "Linien",
+    "pt": "Linhas"
+  },
+  "Rilascia per importare documenti Word, Markdown o uno spazio di lavoro": {
+    "en": "Drop to import .docx documents, Markdown or a workspace",
+    "es": "Suelta para importar documentos .docx, Markdown o un área de trabajo",
+    "fr": "Déposez pour importer des documents .docx, Markdown ou un espace de travail",
+    "de": "Loslassen, um .docx-Dokumente, Markdown oder einen Arbeitsbereich zu importieren",
+    "pt": "Solte para importar documentos .docx, Markdown ou uma área de trabalho"
+  },
+  "Rilassata": {
+    "en": "Relaxed",
+    "es": "Relajada",
+    "fr": "Aérée",
+    "de": "Locker",
+    "pt": "Relaxada"
+  },
+  "Rilievo": {
+    "en": "Embossed",
+    "es": "Relieve",
+    "fr": "Relief",
+    "de": "Erhaben",
+    "pt": "Relevo"
+  },
+  "Rimuovi": {
+    "en": "Remove",
+    "es": "Quitar",
+    "fr": "Supprimer",
+    "de": "Entfernen",
+    "pt": "Remover"
+  },
+  "Rimuovi dai preferiti": {
+    "en": "Remove from favorites",
+    "es": "Quitar de favoritos",
+    "fr": "Retirer des favoris",
+    "de": "Aus Favoriten entfernen",
+    "pt": "Remover dos favoritos"
+  },
+  "Rimuovi ultima colonna": {
+    "en": "Remove last column",
+    "es": "Quitar la última columna",
+    "fr": "Supprimer la dernière colonne",
+    "de": "Letzte Spalte entfernen",
+    "pt": "Remover a última coluna"
+  },
+  "Rimuovi ultima riga": {
+    "en": "Remove last row",
+    "es": "Quitar la última fila",
+    "fr": "Supprimer la dernière ligne",
+    "de": "Letzte Zeile entfernen",
+    "pt": "Remover a última linha"
+  },
+  "Rinomina": {
+    "en": "Rename",
+    "es": "Cambiar el nombre",
+    "fr": "Renommer",
+    "de": "Umbenennen",
+    "pt": "Renomear"
+  },
+  "Ripristina": {
+    "en": "Redo",
+    "es": "Rehacer",
+    "fr": "Rétablir",
+    "de": "Wiederholen",
+    "pt": "Refazer"
+  },
+  "Ripristina ⇧⌘Z": {
+    "en": "Redo ⇧⌘Z",
+    "es": "Rehacer ⇧⌘Z",
+    "fr": "Rétablir ⇧⌘Z",
+    "de": "Wiederholen ⇧⌘Z",
+    "pt": "Refazer ⇧⌘Z"
+  },
+  "Riproduci il video": {
+    "en": "Play the video",
+    "es": "Reproducir el vídeo",
+    "fr": "Lire la vidéo",
+    "de": "Video abspielen",
+    "pt": "Reproduzir o vídeo"
+  },
+  "Riprova": {
+    "en": "Try again",
+    "es": "Reintentar",
+    "fr": "Réessayer",
+    "de": "Erneut versuchen",
+    "pt": "Tentar novamente"
+  },
+  "Riquadro": {
+    "en": "Box",
+    "es": "Recuadro",
+    "fr": "Encadré",
+    "de": "Rahmen",
+    "pt": "Quadro"
+  },
+  "Riquadro evidenziato": {
+    "en": "Highlighted box",
+    "es": "Recuadro destacado",
+    "fr": "Encadré mis en avant",
+    "de": "Hervorgehobener Kasten",
+    "pt": "Quadro destacado"
+  },
+  "Riservatezza": {
+    "en": "Confidentiality",
+    "es": "Confidencialidad",
+    "fr": "Confidentialité",
+    "de": "Vertraulichkeit",
+    "pt": "Confidencialidade"
+  },
+  "Riservato": {
+    "en": "Confidential",
+    "es": "Reservado",
+    "fr": "Réservé",
+    "de": "Vertraulich",
+    "pt": "Reservado"
+  },
+  "RISERVATO": {
+    "en": "RESTRICTED",
+    "es": "RESERVADO",
+    "fr": "RÉSERVÉ",
+    "de": "INTERN",
+    "pt": "RESERVADO"
+  },
+  "Risultati": {
+    "en": "Results",
+    "es": "Resultados",
+    "fr": "Résultats",
+    "de": "Ergebnisse",
+    "pt": "Resultados"
+  },
+  "Rombo": {
+    "en": "Diamond",
+    "es": "Rombo",
+    "fr": "Losange",
+    "de": "Raute",
+    "pt": "Losango"
+  },
+  "Rombo vuoto": {
+    "en": "Hollow diamond",
+    "es": "Rombo vacío",
+    "fr": "Losange vide",
+    "de": "Leere Raute",
+    "pt": "Losango vazio"
+  },
+  "Rosa": {
+    "en": "Pink",
+    "es": "Rosa",
+    "fr": "Rose",
+    "de": "Rosa",
+    "pt": "Rosa"
+  },
+  "salva": {
+    "en": "save",
+    "es": "guardar",
+    "fr": "enregistrer",
+    "de": "speichern",
+    "pt": "salvar"
+  },
+  "Salva": {
+    "en": "Save",
+    "es": "Guardar",
+    "fr": "Enregistrer",
+    "de": "Speichern",
+    "pt": "Salvar"
+  },
+  "Salvataggio interrotto": {
+    "en": "Saving interrupted",
+    "es": "Guardado interrumpido",
+    "fr": "Enregistrement interrompu",
+    "de": "Speichern unterbrochen",
+    "pt": "Salvamento interrompido"
+  },
+  "Sans serif": {
+    "en": "Sans serif",
+    "es": "Sans serif",
+    "fr": "Sans serif",
+    "de": "Serifenlos",
+    "pt": "Sem serifa"
+  },
+  "Sblocca": {
+    "en": "Unlock",
+    "es": "Desbloquear",
+    "fr": "Déverrouiller",
+    "de": "Entsperren",
+    "pt": "Desbloquear"
+  },
+  "Scegli un modello glTF (.glb o .gltf).": {
+    "en": "Choose a glTF model (.glb or .gltf).",
+    "es": "Elige un modelo glTF (.glb o .gltf).",
+    "fr": "Choisissez un modèle glTF (.glb ou .gltf).",
+    "de": "Wähle ein glTF-Modell (.glb oder .gltf).",
+    "pt": "Escolha um modelo glTF (.glb ou .gltf)."
+  },
+  "Schermo": {
+    "en": "Screen",
+    "es": "Pantalla",
+    "fr": "Écran",
+    "de": "Bildschirm",
+    "pt": "Tela"
+  },
+  "Schizzo": {
+    "en": "Sketch",
+    "es": "Boceto",
+    "fr": "Croquis",
+    "de": "Skizze",
+    "pt": "Esboço"
+  },
+  "Scorciatoie da tastiera": {
+    "en": "Keyboard shortcuts",
+    "es": "Atajos de teclado",
+    "fr": "Raccourcis clavier",
+    "de": "Tastenkürzel",
+    "pt": "Atalhos de teclado"
+  },
+  "Scritti a mano": {
+    "en": "Handwritten",
+    "es": "Manuscritas",
+    "fr": "Manuscrites",
+    "de": "Handschriftlich",
+    "pt": "Manuscritas"
+  },
+  "Scrivi nell'elemento selezionato": {
+    "en": "Write in the selected element",
+    "es": "Escribir en el elemento seleccionado",
+    "fr": "Écrire dans l'élément sélectionné",
+    "de": "Im ausgewählten Element schreiben",
+    "pt": "Escrever no elemento selecionado"
+  },
+  "Scrivi qui il testo della casella.": {
+    "en": "Write the text of the box here.",
+    "es": "Escribe aquí el texto del cuadro.",
+    "fr": "Écrivez ici le texte de la zone.",
+    "de": "Schreib hier den Text des Feldes.",
+    "pt": "Escreva aqui o texto da caixa."
+  },
+  "Scrivi, oppure incolla degli elementi da una board…": {
+    "en": "Write, or paste elements from a board…",
+    "es": "Escribe o pega elementos de un tablero…",
+    "fr": "Écrivez, ou collez des éléments d'un tableau…",
+    "de": "Schreib etwas oder füge Elemente aus einem Board ein…",
+    "pt": "Escreva ou cole elementos de um quadro…"
+  },
+  "Scrivi…": {
+    "en": "Type…",
+    "es": "Escribe…",
+    "fr": "Écrivez…",
+    "de": "Schreiben…",
+    "pt": "Escreva…"
+  },
+  "Scuro": {
+    "en": "Dark",
+    "es": "Oscuro",
+    "fr": "Sombre",
+    "de": "Dunkel",
+    "pt": "Escuro"
+  },
+  "Se «{field}» {op} {value} allora «{then}» altrimenti «{otherwise}»": {
+    "en": "If “{field}” {op} {value} then “{then}” otherwise “{otherwise}”",
+    "es": "Si «{field}» {op} {value} entonces «{then}» si no «{otherwise}»",
+    "fr": "Si « {field} » {op} {value} alors « {then} » sinon « {otherwise} »",
+    "de": "Wenn „{field}“ {op} {value} dann „{then}“ sonst „{otherwise}“",
+    "pt": "Se “{field}” {op} {value} então “{then}” senão “{otherwise}”"
+  },
+  "Se non riesci a spiegarlo in una frase, non è ancora pronto.": {
+    "en": "If you cannot explain it in one sentence, it is not ready yet.",
+    "es": "Si no consigues explicarlo en una frase, todavía no está listo.",
+    "fr": "Si vous n'arrivez pas à l'expliquer en une phrase, ce n'est pas encore prêt.",
+    "de": "Wenn du es nicht in einem Satz erklären kannst, ist es noch nicht fertig.",
+    "pt": "Se você não consegue explicar em uma frase, ainda não está pronto."
+  },
+  "Segna le citazioni con Riferimenti › Segna citazione.": {
+    "en": "Mark the citations with References › Mark citation.",
+    "es": "Marca las citas con Referencias › Marcar cita.",
+    "fr": "Marquez les citations avec Références › Marquer la citation.",
+    "de": "Markiere die Zitate über Referenzen › Zitat markieren.",
+    "pt": "Marque as citações com Referências › Marcar citação."
+  },
+  "Segna le voci con Riferimenti › Segna voce.": {
+    "en": "Mark the entries with References › Mark entry.",
+    "es": "Marca las entradas con Referencias › Marcar entrada.",
+    "fr": "Marquez les entrées avec Références › Marquer l'entrée.",
+    "de": "Markiere die Einträge über Referenzen › Eintrag markieren.",
+    "pt": "Marque os itens com Referências › Marcar item."
+  },
+  "Segnaposto": {
+    "en": "Placeholder",
+    "es": "Marcador de posición",
+    "fr": "Espace réservé",
+    "de": "Platzhalter",
+    "pt": "Espaço reservado"
+  },
+  "Segno di spunta": {
+    "en": "Check mark",
+    "es": "Marca de verificación",
+    "fr": "Coche",
+    "de": "Häkchen",
+    "pt": "Marca de seleção"
+  },
+  "Seleziona": {
+    "en": "Select",
+    "es": "Seleccionar",
+    "fr": "Sélectionner",
+    "de": "Auswählen",
+    "pt": "Selecionar"
+  },
+  "Seleziona tutto": {
+    "en": "Select all",
+    "es": "Seleccionar todo",
+    "fr": "Tout sélectionner",
+    "de": "Alles auswählen",
+    "pt": "Selecionar tudo"
+  },
+  "Seleziona un'immagine dietro al testo": {
+    "en": "Select a picture behind the text",
+    "es": "Seleccionar una imagen detrás del texto",
+    "fr": "Sélectionner une image derrière le texte",
+    "de": "Ein Bild hinter dem Text auswählen",
+    "pt": "Selecionar uma imagem atrás do texto"
+  },
+  "Seleziona…": {
+    "en": "Select…",
+    "es": "Seleccionar…",
+    "fr": "Sélectionner…",
+    "de": "Auswählen…",
+    "pt": "Selecionar…"
+  },
+  "Selezionato": {
+    "en": "Selected",
+    "es": "Seleccionado",
+    "fr": "Sélectionné",
+    "de": "Ausgewählt",
+    "pt": "Selecionado"
+  },
+  "Senza titolo": {
+    "en": "Untitled",
+    "es": "Sin título",
+    "fr": "Sans titre",
+    "de": "Ohne Titel",
+    "pt": "Sem título"
+  },
+  "Serie 1": {
+    "en": "Series 1",
+    "es": "Serie 1",
+    "fr": "Série 1",
+    "de": "Reihe 1",
+    "pt": "Série 1"
+  },
+  "Serie 2": {
+    "en": "Series 2",
+    "es": "Serie 2",
+    "fr": "Série 2",
+    "de": "Reihe 2",
+    "pt": "Série 2"
+  },
+  "Serie 3": {
+    "en": "Series 3",
+    "es": "Serie 3",
+    "fr": "Série 3",
+    "de": "Reihe 3",
+    "pt": "Série 3"
+  },
+  "Serie di Fourier": {
+    "en": "Fourier series",
+    "es": "Serie de Fourier",
+    "fr": "Série de Fourier",
+    "de": "Fourierreihe",
+    "pt": "Série de Fourier"
+  },
+  "Serif": {
+    "en": "Serif",
+    "es": "Serif",
+    "fr": "Serif",
+    "de": "Serif",
+    "pt": "Serifada"
+  },
+  "Set stilistico {n}": {
+    "en": "Stylistic set {n}",
+    "es": "Conjunto estilístico {n}",
+    "fr": "Jeu stylistique {n}",
+    "de": "Stilistischer Satz {n}",
+    "pt": "Conjunto estilístico {n}"
+  },
+  "Settembre": {
+    "en": "September",
+    "es": "Septiembre",
+    "fr": "Septembre",
+    "de": "September",
+    "pt": "Setembro"
+  },
+  "Sezione": {
+    "en": "Section",
+    "es": "Sección",
+    "fr": "Section",
+    "de": "Abschnitt",
+    "pt": "Seção"
+  },
+  "Sezione 1.01": {
+    "en": "Section 1.01",
+    "es": "Sección 1.01",
+    "fr": "Section 1.01",
+    "de": "Abschnitt 1.01",
+    "pt": "Seção 1.01"
+  },
+  "Sfera": {
+    "en": "Sphere",
+    "es": "Esfera",
+    "fr": "Sphère",
+    "de": "Kugel",
+    "pt": "Esfera"
+  },
+  "Sfondo": {
+    "en": "Background",
+    "es": "Fondo",
+    "fr": "Arrière-plan",
+    "de": "Hintergrund",
+    "pt": "Fundo"
+  },
+  "Sfumato accento": {
+    "en": "Accent gradient",
+    "es": "Degradado de acento",
+    "fr": "Dégradé d'accent",
+    "de": "Akzentverlauf",
+    "pt": "Degradê de destaque"
+  },
+  "sì": {
+    "en": "yes",
+    "es": "sí",
+    "fr": "oui",
+    "de": "ja",
+    "pt": "sim"
+  },
+  "Sidebar": {
+    "en": "Sidebar",
+    "es": "Barra lateral",
+    "fr": "Barre latérale",
+    "de": "Seitenleiste",
+    "pt": "Barra lateral"
+  },
+  "Sign up": {
+    "en": "Sign up",
+    "es": "Crear cuenta",
+    "fr": "Inscription",
+    "de": "Registrieren",
+    "pt": "Cadastrar"
+  },
+  "Simbolo": {
+    "en": "Symbol",
+    "es": "Símbolo",
+    "fr": "Symbole",
+    "de": "Symbol",
+    "pt": "Símbolo"
+  },
+  "Singola": {
+    "en": "Single",
+    "es": "Sencilla",
+    "fr": "Simple",
+    "de": "Einfach",
+    "pt": "Simples"
+  },
+  "Sinistra": {
+    "en": "Left",
+    "es": "Izquierda",
+    "fr": "Gauche",
+    "de": "Links",
+    "pt": "Esquerda"
+  },
+  "Sinistra, centro, destra": {
+    "en": "Left, center, right",
+    "es": "Izquierda, centro, derecha",
+    "fr": "Gauche, centre, droite",
+    "de": "Links, Mitte, rechts",
+    "pt": "Esquerda, centro, direita"
+  },
+  "Sistema": {
+    "en": "System",
+    "es": "Sistema",
+    "fr": "Système",
+    "de": "System",
+    "pt": "Sistema"
+  },
+  "Sito web": {
+    "en": "Website",
+    "es": "Sitio web",
+    "fr": "Site web",
+    "de": "Website",
+    "pt": "Site"
+  },
+  "Smussatura": {
+    "en": "Corner radius",
+    "es": "Redondeo",
+    "fr": "Arrondi",
+    "de": "Abrundung",
+    "pt": "Arredondamento"
+  },
+  "Smussatura card": {
+    "en": "Card corner radius",
+    "es": "Redondeo de las tarjetas",
+    "fr": "Arrondi des cartes",
+    "de": "Abrundung der Karten",
+    "pt": "Arredondamento dos cartões"
+  },
+  "Società": {
+    "en": "Company",
+    "es": "Empresa",
+    "fr": "Société",
+    "de": "Firma",
+    "pt": "Empresa"
+  },
+  "Solo il numero": {
+    "en": "The number only",
+    "es": "Solo el número",
+    "fr": "Le numéro seulement",
+    "de": "Nur die Nummer",
+    "pt": "Só o número"
+  },
+  "Solo testo a sinistra": {
+    "en": "Text on the left only",
+    "es": "Solo texto a la izquierda",
+    "fr": "Texte à gauche seulement",
+    "de": "Nur Text links",
+    "pt": "Só texto à esquerda"
+  },
+  "Sommario": {
+    "en": "Table of contents",
+    "es": "Índice",
+    "fr": "Table des matières",
+    "de": "Inhaltsverzeichnis",
+    "pt": "Sumário"
+  },
+  "Sommatoria": {
+    "en": "Summation",
+    "es": "Sumatorio",
+    "fr": "Somme",
+    "de": "Summe",
+    "pt": "Somatório"
+  },
+  "sopra": {
+    "en": "above",
+    "es": "encima",
+    "fr": "au-dessus",
+    "de": "darüber",
+    "pt": "acima"
+  },
+  "Sopra": {
+    "en": "Above",
+    "es": "Encima",
+    "fr": "Au-dessus",
+    "de": "Darüber",
+    "pt": "Acima"
+  },
+  "Sopra e sotto": {
+    "en": "Above and below",
+    "es": "Encima y debajo",
+    "fr": "Au-dessus et en dessous",
+    "de": "Oben und unten",
+    "pt": "Acima e abaixo"
+  },
+  "Sopra/sotto": {
+    "en": "Above/below",
+    "es": "Encima/debajo",
+    "fr": "Au-dessus/en dessous",
+    "de": "Oberhalb/unterhalb",
+    "pt": "Acima/abaixo"
+  },
+  "sotto": {
+    "en": "below",
+    "es": "debajo",
+    "fr": "en dessous",
+    "de": "darunter",
+    "pt": "abaixo"
+  },
+  "Sotto": {
+    "en": "Below",
+    "es": "Debajo",
+    "fr": "En dessous",
+    "de": "Darunter",
+    "pt": "Abaixo"
+  },
+  "Sottotitolo": {
+    "en": "Subtitle",
+    "es": "Subtítulo",
+    "fr": "Sous-titre",
+    "de": "Untertitel",
+    "pt": "Subtítulo"
+  },
+  "Spazio": {
+    "en": "Space",
+    "es": "Espacio",
+    "fr": "Espace",
+    "de": "Leertaste",
+    "pt": "Espaço"
+  },
+  "Spazio di lavoro": {
+    "en": "Workspace",
+    "es": "Área de trabajo",
+    "fr": "Espace de travail",
+    "de": "Arbeitsbereich",
+    "pt": "Área de trabalho"
+  },
+  "Spazio di lavoro esportato": {
+    "en": "Workspace exported",
+    "es": "Área de trabajo exportada",
+    "fr": "Espace de travail exporté",
+    "de": "Arbeitsbereich exportiert",
+    "pt": "Área de trabalho exportada"
+  },
+  "Spessa": {
+    "en": "Thick",
+    "es": "Gruesa",
+    "fr": "Épaisse",
+    "de": "Dick",
+    "pt": "Grossa"
+  },
+  "Spessore": {
+    "en": "Thickness",
+    "es": "Grosor",
+    "fr": "Épaisseur",
+    "de": "Stärke",
+    "pt": "Espessura"
+  },
+  "Sposta di 1 o 10 px": {
+    "en": "Move by 1 or 10 px",
+    "es": "Mover 1 o 10 px",
+    "fr": "Déplacer de 1 ou 10 px",
+    "de": "Um 1 oder 10 px verschieben",
+    "pt": "Mover 1 ou 10 px"
+  },
+  "Sposta il paragrafo": {
+    "en": "Move the paragraph",
+    "es": "Mover el párrafo",
+    "fr": "Déplacer le paragraphe",
+    "de": "Den Absatz verschieben",
+    "pt": "Mover o parágrafo"
+  },
+  "Sposta nel cestino": {
+    "en": "Move to the trash",
+    "es": "Mover a la papelera",
+    "fr": "Mettre à la corbeille",
+    "de": "In den Papierkorb legen",
+    "pt": "Mover para a lixeira"
+  },
+  "Standard": {
+    "en": "Standard",
+    "es": "Estándar",
+    "fr": "Standard",
+    "de": "Standard",
+    "pt": "Padrão"
+  },
+  "Standard e contestuali": {
+    "en": "Standard and contextual",
+    "es": "Estándar y contextuales",
+    "fr": "Standard et contextuelles",
+    "de": "Standard und kontextbezogen",
+    "pt": "Padrão e contextuais"
+  },
+  "Stato": {
+    "en": "Status",
+    "es": "Estado",
+    "fr": "État",
+    "de": "Status",
+    "pt": "Estado"
+  },
+  "Stella": {
+    "en": "Star",
+    "es": "Estrella",
+    "fr": "Étoile",
+    "de": "Stern",
+    "pt": "Estrela"
+  },
+  "Stile": {
+    "en": "Style",
+    "es": "Estilo",
+    "fr": "Style",
+    "de": "Stil",
+    "pt": "Estilo"
+  },
+  "Stili": {
+    "en": "Styles",
+    "es": "Estilos",
+    "fr": "Styles",
+    "de": "Formatvorlagen",
+    "pt": "Estilos"
+  },
+  "Storiche e discrezionali": {
+    "en": "Historical and discretionary",
+    "es": "Históricas y discrecionales",
+    "fr": "Historiques et discrétionnaires",
+    "de": "Historisch und diskretionär",
+    "pt": "Históricas e discricionárias"
+  },
+  "Stretta": {
+    "en": "Narrow",
+    "es": "Estrecha",
+    "fr": "Étroite",
+    "de": "Schmal",
+    "pt": "Estreita"
+  },
+  "Strumenti": {
+    "en": "Tools",
+    "es": "Herramientas",
+    "fr": "Outils",
+    "de": "Werkzeuge",
+    "pt": "Ferramentas"
+  },
+  "Struttura": {
+    "en": "Outline",
+    "es": "Estructura",
+    "fr": "Plan",
+    "de": "Gliederung",
+    "pt": "Estrutura"
+  },
+  "Su una riga sua": {
+    "en": "On its own line",
+    "es": "En su propia línea",
+    "fr": "Sur sa propre ligne",
+    "de": "In eigener Zeile",
+    "pt": "Em linha própria"
+  },
+  "Su Windows e Linux usa Ctrl al posto di ⌘ e Alt al posto di ⌥.": {
+    "en": "On Windows and Linux use Ctrl instead of ⌘ and Alt instead of ⌥.",
+    "es": "En Windows y Linux usa Ctrl en lugar de ⌘ y Alt en lugar de ⌥.",
+    "fr": "Sur Windows et Linux, utilisez Ctrl au lieu de ⌘ et Alt au lieu de ⌥.",
+    "de": "Unter Windows und Linux nimm Strg statt ⌘ und Alt statt ⌥.",
+    "pt": "No Windows e no Linux use Ctrl no lugar de ⌘ e Alt no lugar de ⌥."
+  },
+  "Suggerimento": {
+    "en": "Tip",
+    "es": "Sugerencia",
+    "fr": "Conseil",
+    "de": "Tipp",
+    "pt": "Sugestão"
+  },
+  "Sviluppo": {
+    "en": "Development",
+    "es": "Desarrollo",
+    "fr": "Développement",
+    "de": "Entwicklung",
+    "pt": "Desenvolvimento"
+  },
+  "Svuota il cestino": {
+    "en": "Empty the trash",
+    "es": "Vaciar la papelera",
+    "fr": "Vider la corbeille",
+    "de": "Papierkorb leeren",
+    "pt": "Esvaziar a lixeira"
+  },
+  "Svuotare il cestino?": {
+    "en": "Empty the trash?",
+    "es": "¿Vaciar la papelera?",
+    "fr": "Vider la corbeille ?",
+    "de": "Papierkorb leeren?",
+    "pt": "Esvaziar a lixeira?"
+  },
+  "Tab": {
+    "en": "Tab",
+    "es": "Pestaña",
+    "fr": "Onglet",
+    "de": "Tab",
+    "pt": "Aba"
+  },
+  "Tabella": {
+    "en": "Table",
+    "es": "Tabla",
+    "fr": "Tableau",
+    "de": "Tabelle",
+    "pt": "Tabela"
+  },
+  "Tabella, grafico": {
+    "en": "Table, chart",
+    "es": "Tabla, gráfico",
+    "fr": "Tableau, graphique",
+    "de": "Tabelle, Diagramm",
+    "pt": "Tabela, gráfico"
+  },
+  "Tablet": {
+    "en": "Tablet",
+    "es": "Tableta",
+    "fr": "Tablette",
+    "de": "Tablet",
+    "pt": "Tablet"
+  },
+  "Taglia": {
+    "en": "Cut",
+    "es": "Cortar",
+    "fr": "Couper",
+    "de": "Ausschneiden",
+    "pt": "Recortar"
+  },
+  "tasti": {
+    "en": "keys",
+    "es": "teclas",
+    "fr": "touches",
+    "de": "Tasten",
+    "pt": "teclas"
+  },
+  "Tecnico": {
+    "en": "Technical",
+    "es": "Técnica",
+    "fr": "Technique",
+    "de": "Technisch",
+    "pt": "Técnica"
+  },
+  "Telefono": {
+    "en": "Phone",
+    "es": "Teléfono",
+    "fr": "Téléphone",
+    "de": "Telefon",
+    "pt": "Telefone"
+  },
+  "Tema": {
+    "en": "Theme",
+    "es": "Tema",
+    "fr": "Thème",
+    "de": "Thema",
+    "pt": "Tema"
+  },
+  "Tema chiaro": {
+    "en": "Light theme",
+    "es": "Tema claro",
+    "fr": "Thème clair",
+    "de": "Helles Thema",
+    "pt": "Tema claro"
+  },
+  "Tema di sistema": {
+    "en": "System theme",
+    "es": "Tema del sistema",
+    "fr": "Thème du système",
+    "de": "Systemthema",
+    "pt": "Tema do sistema"
+  },
+  "Tema scuro": {
+    "en": "Dark theme",
+    "es": "Tema oscuro",
+    "fr": "Thème sombre",
+    "de": "Dunkles Thema",
+    "pt": "Tema escuro"
+  },
+  "Tempo": {
+    "en": "Time",
+    "es": "Tiempo",
+    "fr": "Temps",
+    "de": "Zeit",
+    "pt": "Tempo"
+  },
+  "Teorema binomiale": {
+    "en": "Binomial theorem",
+    "es": "Teorema del binomio",
+    "fr": "Théorème binomial",
+    "de": "Binomischer Lehrsatz",
+    "pt": "Teorema binomial"
+  },
+  "Teorema di Pitagora": {
+    "en": "Pythagorean theorem",
+    "es": "Teorema de Pitágoras",
+    "fr": "Théorème de Pythagore",
+    "de": "Satz des Pythagoras",
+    "pt": "Teorema de Pitágoras"
+  },
+  "testo": {
+    "en": "text",
+    "es": "texto",
+    "fr": "texte",
+    "de": "Text",
+    "pt": "texto"
+  },
+  "Testo": {
+    "en": "Text",
+    "es": "Texto",
+    "fr": "Texte",
+    "de": "Text",
+    "pt": "Texto"
+  },
+  "Testo più vicino": {
+    "en": "Text closer",
+    "es": "Texto más cerca",
+    "fr": "Texte plus proche",
+    "de": "Text näher dran",
+    "pt": "Texto mais perto"
+  },
+  "Testo quasi a contatto": {
+    "en": "Text almost touching",
+    "es": "Texto casi en contacto",
+    "fr": "Texte presque au contact",
+    "de": "Text fast anliegend",
+    "pt": "Texto quase encostando"
+  },
+  "Testo…": {
+    "en": "Text…",
+    "es": "Texto…",
+    "fr": "Texte…",
+    "de": "Text…",
+    "pt": "Texto…"
+  },
+  "Tico A4 · 12 per foglio": {
+    "en": "Tico A4 · 12 per sheet",
+    "es": "Tico A4 · 12 por hoja",
+    "fr": "Tico A4 · 12 par feuille",
+    "de": "Tico A4 · 12 pro Bogen",
+    "pt": "Tico A4 · 12 por folha"
+  },
+  "Times New Roman": {
+    "en": "Times New Roman",
+    "es": "Times New Roman",
+    "fr": "Times New Roman",
+    "de": "Times New Roman",
+    "pt": "Times New Roman"
+  },
+  "Tipo": {
+    "en": "Type",
+    "es": "Tipo",
+    "fr": "Type",
+    "de": "Typ",
+    "pt": "Tipo"
+  },
+  "Tipo di grafico": {
+    "en": "Chart type",
+    "es": "Tipo de gráfico",
+    "fr": "Type de graphique",
+    "de": "Diagrammtyp",
+    "pt": "Tipo de gráfico"
+  },
+  "Titolo": {
+    "en": "Title",
+    "es": "Título",
+    "fr": "Titre",
+    "de": "Titel",
+    "pt": "Título"
+  },
+  "Titolo 1": {
+    "en": "Heading 1",
+    "es": "Título 1",
+    "fr": "Titre 1",
+    "de": "Überschrift 1",
+    "pt": "Título 1"
+  },
+  "Titolo 1, 2, 3": {
+    "en": "Heading 1, 2, 3",
+    "es": "Título 1, 2, 3",
+    "fr": "Titre 1, 2, 3",
+    "de": "Überschrift 1, 2, 3",
+    "pt": "Título 1, 2, 3"
+  },
+  "Titolo 2": {
+    "en": "Heading 2",
+    "es": "Título 2",
+    "fr": "Titre 2",
+    "de": "Überschrift 2",
+    "pt": "Título 2"
+  },
+  "Titolo 3": {
+    "en": "Heading 3",
+    "es": "Título 3",
+    "fr": "Titre 3",
+    "de": "Überschrift 3",
+    "pt": "Título 3"
+  },
+  "Titolo a sinistra, numero a destra": {
+    "en": "Title on the left, number on the right",
+    "es": "Título a la izquierda, número a la derecha",
+    "fr": "Titre à gauche, numéro à droite",
+    "de": "Titel links, Nummer rechts",
+    "pt": "Título à esquerda, número à direita"
+  },
+  "Titolo del documento": {
+    "en": "Document title",
+    "es": "Título del documento",
+    "fr": "Titre du document",
+    "de": "Titel des Dokuments",
+    "pt": "Título do documento"
+  },
+  "Titolo del grafico": {
+    "en": "Chart title",
+    "es": "Título del gráfico",
+    "fr": "Titre du graphique",
+    "de": "Titel des Diagramms",
+    "pt": "Título do gráfico"
+  },
+  "Titolo della card": {
+    "en": "Card title",
+    "es": "Título de la tarjeta",
+    "fr": "Titre de la carte",
+    "de": "Titel der Karte",
+    "pt": "Título do cartão"
+  },
+  "Titolo di sezione": {
+    "en": "Section title",
+    "es": "Título de sección",
+    "fr": "Titre de section",
+    "de": "Abschnittstitel",
+    "pt": "Título de seção"
+  },
+  "Titolo e pagina": {
+    "en": "Title and page",
+    "es": "Título y página",
+    "fr": "Titre et page",
+    "de": "Titel und Seite",
+    "pt": "Título e página"
+  },
+  "Titolo…": {
+    "en": "Title…",
+    "es": "Título…",
+    "fr": "Titre…",
+    "de": "Titel…",
+    "pt": "Título…"
+  },
+  "Titolo||titolo di cortesia, come Sig. o Dott.": {
+    "en": "Title",
+    "es": "Tratamiento",
+    "fr": "Civilité",
+    "de": "Anrede",
+    "pt": "Tratamento"
+  },
+  "Togli intestazione": {
+    "en": "Remove header row",
+    "es": "Quitar el encabezado",
+    "fr": "Supprimer l'en-tête",
+    "de": "Kopfzeile entfernen",
+    "pt": "Remover o cabeçalho"
+  },
+  "Tondo": {
+    "en": "Round",
+    "es": "Redondo",
+    "fr": "Rond",
+    "de": "Rund",
+    "pt": "Redondo"
+  },
+  "Tooltip": {
+    "en": "Tooltip",
+    "es": "Descripción emergente",
+    "fr": "Info-bulle",
+    "de": "Kurzinfo",
+    "pt": "Dica"
+  },
+  "Torna ai file": {
+    "en": "Back to the files",
+    "es": "Volver a los archivos",
+    "fr": "Revenir aux fichiers",
+    "de": "Zurück zu den Dateien",
+    "pt": "Voltar aos arquivos"
+  },
+  "Torta": {
+    "en": "Pie",
+    "es": "Circular",
+    "fr": "Secteurs",
+    "de": "Kreis",
+    "pt": "Pizza"
+  },
+  "Trama": {
+    "en": "Pattern",
+    "es": "Trama",
+    "fr": "Motif",
+    "de": "Muster",
+    "pt": "Padrão"
+  },
+  "Tramonto": {
+    "en": "Sunset",
+    "es": "Atardecer",
+    "fr": "Coucher de soleil",
+    "de": "Sonnenuntergang",
+    "pt": "Pôr do sol"
+  },
+  "Trascina per cambiare l'altezza": {
+    "en": "Drag to change the height",
+    "es": "Arrastra para cambiar la altura",
+    "fr": "Faites glisser pour changer la hauteur",
+    "de": "Zum Ändern der Höhe ziehen",
+    "pt": "Arraste para mudar a altura"
+  },
+  "Trascina per ruotare · rotellina per lo zoom": {
+    "en": "Drag to rotate · scroll wheel to zoom",
+    "es": "Arrastra para girar · rueda para el zoom",
+    "fr": "Faites glisser pour tourner · molette pour zoomer",
+    "de": "Ziehen zum Drehen · Mausrad zum Zoomen",
+    "pt": "Arraste para girar · rodinha para o zoom"
+  },
+  "Trascina per spostare il modello": {
+    "en": "Drag to move the model",
+    "es": "Arrastra para mover el modelo",
+    "fr": "Faites glisser pour déplacer le modèle",
+    "de": "Ziehen, um das Modell zu verschieben",
+    "pt": "Arraste para mover o modelo"
+  },
+  "Trattati": {
+    "en": "Treaties",
+    "es": "Tratados",
+    "fr": "Traités",
+    "de": "Verträge",
+    "pt": "Tratados"
+  },
+  "Tratteggiata": {
+    "en": "Dashed",
+    "es": "Discontinua",
+    "fr": "Tirets",
+    "de": "Gestrichelt",
+    "pt": "Tracejada"
+  },
+  "Trattino": {
+    "en": "Dashed",
+    "es": "Raya",
+    "fr": "Tiret",
+    "de": "Strich",
+    "pt": "Traço"
+  },
+  "Tratto": {
+    "en": "Stroke",
+    "es": "Trazo",
+    "fr": "Trait",
+    "de": "Strich",
+    "pt": "Traço"
+  },
+  "Tre colonne": {
+    "en": "Three columns",
+    "es": "Tres columnas",
+    "fr": "Trois colonnes",
+    "de": "Drei Spalten",
+    "pt": "Três colunas"
+  },
+  "Triangolo": {
+    "en": "Triangle",
+    "es": "Triángulo",
+    "fr": "Triangle",
+    "de": "Dreieck",
+    "pt": "Triângulo"
+  },
+  "Triangolo vuoto": {
+    "en": "Hollow triangle",
+    "es": "Triángulo vacío",
+    "fr": "Triangle vide",
+    "de": "Leeres Dreieck",
+    "pt": "Triângulo vazio"
+  },
+  "Trova e sostituisci": {
+    "en": "Find and replace",
+    "es": "Buscar y reemplazar",
+    "fr": "Rechercher et remplacer",
+    "de": "Suchen und ersetzen",
+    "pt": "Localizar e substituir"
+  },
+  "Tutte": {
+    "en": "All",
+    "es": "Todas",
+    "fr": "Toutes",
+    "de": "Alle",
+    "pt": "Todas"
+  },
+  "Tutti": {
+    "en": "All",
+    "es": "Todos",
+    "fr": "Tous",
+    "de": "Alle",
+    "pt": "Todos"
+  },
+  "Tutti i comandi": {
+    "en": "All the commands",
+    "es": "Todos los comandos",
+    "fr": "Toutes les commandes",
+    "de": "Alle Befehle",
+    "pt": "Todos os comandos"
+  },
+  "Tutti i file": {
+    "en": "All files",
+    "es": "Todos los archivos",
+    "fr": "Tous les fichiers",
+    "de": "Alle Dateien",
+    "pt": "Todos os arquivos"
+  },
+  "Tutti|Board|Doc": {
+    "en": "All|Boards|Docs",
+    "es": "Todos|Tableros|Docs",
+    "fr": "Tous|Tableaux|Docs",
+    "de": "Alle|Boards|Docs",
+    "pt": "Todos|Quadros|Docs"
+  },
+  "Tutto resta in questo browser. Trascina qui un file Word o Markdown per aprirlo.": {
+    "en": "Everything stays in this browser. Drag a .docx or Markdown file here to open it.",
+    "es": "Todo se queda en este navegador. Arrastra aquí un archivo .docx o Markdown para abrirlo.",
+    "fr": "Tout reste dans ce navigateur. Faites glisser ici un fichier .docx ou Markdown pour l'ouvrir.",
+    "de": "Alles bleibt in diesem Browser. Zieh eine .docx- oder Markdown-Datei hierher, um sie zu öffnen.",
+    "pt": "Tudo fica neste navegador. Arraste aqui um arquivo .docx ou Markdown para abri-lo."
+  },
+  "Uguale a": {
+    "en": "Equal to",
+    "es": "Igual a",
+    "fr": "Égal à",
+    "de": "Gleich",
+    "pt": "Igual a"
+  },
+  "Un documento di esempio. Prova la barra degli strumenti in alto, oppure seleziona del testo per il menu contestuale. Gli {styles} della scheda Home si modificano con un clic destro.": {
+    "en": "A sample document. Try the toolbar at the top, or select some text for the context menu. The {styles} on the Home tab are edited with a right-click.",
+    "es": "Un documento de ejemplo. Prueba la barra de herramientas de arriba, o selecciona texto para el menú contextual. Los {styles} de la pestaña Inicio se modifican con un clic derecho.",
+    "fr": "Un document d'exemple. Essayez la barre d'outils en haut, ou sélectionnez du texte pour le menu contextuel. Les {styles} de l'onglet Accueil se modifient d'un clic droit.",
+    "de": "Ein Beispieldokument. Probier die Leiste oben aus oder markiere Text für das Kontextmenü. Die {styles} im Tab Start änderst du per Rechtsklick.",
+    "pt": "Um documento de exemplo. Experimente a barra de ferramentas do topo, ou selecione um texto para o menu de contexto. Os {styles} da aba Início são modificados com um clique direito."
+  },
+  "Una nota a lato: un approfondimento, una definizione, un dato.": {
+    "en": "A note on the side: a detail, a definition, a figure.",
+    "es": "Una nota al lado: un detalle, una definición, un dato.",
+    "fr": "Une note en marge : un approfondissement, une définition, un chiffre.",
+    "de": "Eine Notiz am Rand: eine Vertiefung, eine Definition, eine Zahl.",
+    "pt": "Uma nota ao lado: um aprofundamento, uma definição, um dado."
+  },
+  "URGENTE": {
+    "en": "URGENT",
+    "es": "URGENTE",
+    "fr": "URGENT",
+    "de": "DRINGEND",
+    "pt": "URGENTE"
+  },
+  "Urgenza": {
+    "en": "Urgency",
+    "es": "Urgencia",
+    "fr": "Urgence",
+    "de": "Dringlichkeit",
+    "pt": "Urgência"
+  },
+  "usa il valore della board ({radius} px)": {
+    "en": "use the board value ({radius} px)",
+    "es": "usar el valor del tablero ({radius} px)",
+    "fr": "utiliser la valeur du tableau ({radius} px)",
+    "de": "Wert des Boards verwenden ({radius} px)",
+    "pt": "usar o valor do quadro ({radius} px)"
+  },
+  "usa lo stile della board": {
+    "en": "use the board style",
+    "es": "usar el estilo del tablero",
+    "fr": "utiliser le style du tableau",
+    "de": "Board-Stil verwenden",
+    "pt": "usar o estilo do quadro"
+  },
+  "Usa lo stile della board": {
+    "en": "Use the board style",
+    "es": "Usar el estilo del tablero",
+    "fr": "Utiliser le style du tableau",
+    "de": "Board-Stil verwenden",
+    "pt": "Usar o estilo do quadro"
+  },
+  "Usati di recente": {
+    "en": "Recently used",
+    "es": "Usados recientemente",
+    "fr": "Utilisés récemment",
+    "de": "Zuletzt verwendet",
+    "pt": "Usados recentemente"
+  },
+  "Utenti": {
+    "en": "Users",
+    "es": "Usuarios",
+    "fr": "Utilisateurs",
+    "de": "Nutzer",
+    "pt": "Usuários"
+  },
+  "Vai a tutti i file": {
+    "en": "Go to all the files",
+    "es": "Ir a todos los archivos",
+    "fr": "Aller à tous les fichiers",
+    "de": "Zu allen Dateien",
+    "pt": "Ir para todos os arquivos"
+  },
+  "Vai alla pagina": {
+    "en": "Go to the page",
+    "es": "Ir a la página",
+    "fr": "Aller à la page",
+    "de": "Zur Seite",
+    "pt": "Ir para a página"
+  },
+  "Validare il copy con 5 utenti": {
+    "en": "Validate the copy with 5 users",
+    "es": "Validar el texto con 5 usuarios",
+    "fr": "Valider le texte avec 5 utilisateurs",
+    "de": "Den Text mit 5 Nutzern prüfen",
+    "pt": "Validar o texto com 5 usuários"
+  },
+  "Valore": {
+    "en": "Value",
+    "es": "Valor",
+    "fr": "Valeur",
+    "de": "Wert",
+    "pt": "Valor"
+  },
+  "Valori al posto delle percentuali": {
+    "en": "Values instead of percentages",
+    "es": "Valores en lugar de porcentajes",
+    "fr": "Valeurs au lieu des pourcentages",
+    "de": "Werte statt Prozent",
+    "pt": "Valores no lugar das porcentagens"
+  },
+  "Valutazione": {
+    "en": "Rating",
+    "es": "Valoración",
+    "fr": "Évaluation",
+    "de": "Bewertung",
+    "pt": "Avaliação"
+  },
+  "Variante": {
+    "en": "Variant",
+    "es": "Variante",
+    "fr": "Variante",
+    "de": "Variante",
+    "pt": "Variante"
+  },
+  "Vendite": {
+    "en": "Sales",
+    "es": "Ventas",
+    "fr": "Ventes",
+    "de": "Umsatz",
+    "pt": "Vendas"
+  },
+  "Verde": {
+    "en": "Green",
+    "es": "Verde",
+    "fr": "Vert",
+    "de": "Grün",
+    "pt": "Verde"
+  },
+  "Verticale": {
+    "en": "Portrait",
+    "es": "Vertical",
+    "fr": "Portrait",
+    "de": "Hochformat",
+    "pt": "Retrato"
+  },
+  "Vettore": {
+    "en": "Vector",
+    "es": "Vector",
+    "fr": "Vecteur",
+    "de": "Vektor",
+    "pt": "Vetor"
+  },
+  "vettoriale, dalla stampa": {
+    "en": "vector, from the print dialog",
+    "es": "vectorial, desde la impresión",
+    "fr": "vectoriel, via l'impression",
+    "de": "vektorbasiert, über den Druck",
+    "pt": "vetorial, pela impressão"
+  },
+  "Video": {
+    "en": "Video",
+    "es": "Vídeo",
+    "fr": "Vidéo",
+    "de": "Video",
+    "pt": "Vídeo"
+  },
+  "Video {provider}": {
+    "en": "{provider} video",
+    "es": "Vídeo de {provider}",
+    "fr": "Vidéo {provider}",
+    "de": "{provider}-Video",
+    "pt": "Vídeo do {provider}"
+  },
+  "Viola": {
+    "en": "Purple",
+    "es": "Morado",
+    "fr": "Violet",
+    "de": "Violett",
+    "pt": "Roxo"
+  },
+  "Visitatore": {
+    "en": "Visitor",
+    "es": "Visitante",
+    "fr": "Visiteur",
+    "de": "Besucher",
+    "pt": "Visitante"
+  },
+  "Vivaci": {
+    "en": "Vivid",
+    "es": "Vivos",
+    "fr": "Vifs",
+    "de": "Kräftig",
+    "pt": "Vivas"
+  },
+  "Voci (separate da |)": {
+    "en": "Items (separated by |)",
+    "es": "Elementos (separados por |)",
+    "fr": "Éléments (séparés par |)",
+    "de": "Einträge (getrennt durch |)",
+    "pt": "Itens (separados por |)"
+  },
+  "Vuota": {
+    "en": "Empty",
+    "es": "Vacía",
+    "fr": "Vide",
+    "de": "Leer",
+    "pt": "Vazia"
+  },
+  "Vuoto": {
+    "en": "Empty",
+    "es": "Vacío",
+    "fr": "Vide",
+    "de": "Leer",
+    "pt": "Vazio"
+  },
+  "Wireframe": {
+    "en": "Wireframe",
+    "es": "Wireframe",
+    "fr": "Wireframe",
+    "de": "Wireframe",
+    "pt": "Wireframe"
+  },
+  "word": {
+    "en": "word",
+    "es": "word",
+    "fr": "word",
+    "de": "Word",
+    "pt": "word"
+  },
+  "Word, Markdown, HTML o testo": {
+    "en": ".docx, Markdown, HTML or text",
+    "es": ".docx, Markdown, HTML o texto",
+    "fr": ".docx, Markdown, HTML ou texte",
+    "de": ".docx, Markdown, HTML oder Text",
+    "pt": ".docx, Markdown, HTML ou texto"
+  },
+  "Zero barrato": {
+    "en": "Slashed zero",
+    "es": "Cero barrado",
+    "fr": "Zéro barré",
+    "de": "Durchgestrichene Null",
+    "pt": "Zero cortado"
+  },
+  "zoom": {
+    "en": "zoom",
+    "es": "zoom",
+    "fr": "zoom",
+    "de": "Zoom",
+    "pt": "zoom"
+  },
+  "Zoom": {
+    "en": "Zoom",
+    "es": "Zoom",
+    "fr": "Zoom",
+    "de": "Zoom",
+    "pt": "Zoom"
+  },
+  "Zoom al 100%": {
+    "en": "Zoom to 100%",
+    "es": "Zoom al 100 %",
+    "fr": "Zoom à 100 %",
+    "de": "Zoom auf 100 %",
+    "pt": "Zoom em 100%"
+  }
+}

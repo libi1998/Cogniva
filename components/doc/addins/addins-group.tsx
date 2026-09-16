@@ -14,8 +14,10 @@ import type { RibbonCtx } from "../ribbon/shared"
 import { ADDIN_ICONS } from "./addin-icons"
 import { AddinsDialog } from "./addins-dialog"
 
+import { useT } from "@/lib/i18n/client"
 /** Il gruppo «Componenti aggiuntivi» in fondo alla scheda Home, come in Word */
 export function AddinsGroup({ ctx }: { ctx: RibbonCtx }) {
+  const t = useT()
   const enabled = useEnabledAddins()
   const [gallery, setGallery] = React.useState(false)
   const open = (id: AddinId) => ctx.openTaskPane({ kind: "addin", id })
@@ -23,21 +25,25 @@ export function AddinsGroup({ ctx }: { ctx: RibbonCtx }) {
   const list = ADDINS.filter((a) => enabled.includes(a.id))
 
   return (
-    <RibbonGroup label="Componenti aggiuntivi" safe>
+    <RibbonGroup label={t("Componenti aggiuntivi")} safe>
       <RibbonMenu
         className="w-64"
         trigger={
           <RibbonButton
             large
             chevron
-            label="Componenti aggiuntivi"
-            title="Codice QR, leggibilità, firma, Wikipedia e altri strumenti"
+            label={t("Componenti aggiuntivi")}
+            title={t(
+              "Codice QR, leggibilità, firma, Wikipedia e altri strumenti"
+            )}
             active={active !== null}
             icon={<Blocks className="size-5" />}
           />
         }
       >
-        <DropdownMenuLabel>I miei componenti aggiuntivi</DropdownMenuLabel>
+        <DropdownMenuLabel>
+          {t("I miei componenti aggiuntivi")}
+        </DropdownMenuLabel>
         {list.length ? (
           list.map((addin) => (
             <DropdownMenuItem
@@ -55,11 +61,11 @@ export function AddinsGroup({ ctx }: { ctx: RibbonCtx }) {
             </DropdownMenuItem>
           ))
         ) : (
-          <DropdownMenuItem disabled>Nessuno attivo</DropdownMenuItem>
+          <DropdownMenuItem disabled>{t("Nessuno attivo")}</DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => setGallery(true)}>
-          <Blocks className="size-4" /> Altri componenti aggiuntivi…
+          <Blocks className="size-4" /> {t("Altri componenti aggiuntivi…")}
         </DropdownMenuItem>
       </RibbonMenu>
       <AddinsDialog

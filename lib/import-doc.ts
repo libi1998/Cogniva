@@ -7,6 +7,7 @@ import { createDocExtensions } from "@/components/doc/extensions"
 import { newDocTheme } from "./doc-design"
 import type { WFile } from "./types"
 
+import { tr } from "@/lib/i18n/client"
 /**
  * Importazione di documenti Word (.docx), Markdown (.md), HTML e testo.
  *
@@ -30,7 +31,7 @@ function makeDoc(title: string, content: JSONContent): WFile {
   return {
     id: nanoid(10),
     kind: "doc",
-    title: title || "Documento importato",
+    title: title || tr("Documento importato"),
     icon: "file-text",
     createdAt: now,
     updatedAt: now,
@@ -241,8 +242,10 @@ export async function importDocumentFile(file: File) {
     return { file: await importText(file), warnings: 0 }
   if (name.endsWith(".doc")) {
     throw new Error(
-      "Il vecchio formato .doc non è supportato: salvalo come .docx da Word e riprova."
+      tr(
+        "Il vecchio formato .doc non è supportato: salvalo come .docx da Word e riprova."
+      )
     )
   }
-  throw new Error("Formato non supportato")
+  throw new Error(tr("Formato non supportato"))
 }

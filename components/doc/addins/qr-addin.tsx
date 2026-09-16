@@ -7,26 +7,63 @@ import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import type { AddinApi } from "./api"
 
+import { useT, tr } from "@/lib/i18n/client"
 type Kind = "text" | "wifi" | "email" | "phone"
 
 const KINDS: { value: Kind; label: string }[] = [
-  { value: "text", label: "Link o testo" },
+  {
+    value: "text",
+    get label() {
+      return tr("Link o testo")
+    },
+  },
   { value: "wifi", label: "Wi-Fi" },
-  { value: "email", label: "E-mail" },
-  { value: "phone", label: "Telefono" },
+  {
+    value: "email",
+    get label() {
+      return tr("E-mail")
+    },
+  },
+  {
+    value: "phone",
+    get label() {
+      return tr("Telefono")
+    },
+  },
 ]
 
 const LEVELS = [
-  { value: "L", label: "Bassa (7%)" },
-  { value: "M", label: "Media (15%)" },
-  { value: "Q", label: "Alta (25%)" },
-  { value: "H", label: "Massima (30%)" },
+  {
+    value: "L",
+    get label() {
+      return tr("Bassa (7%)")
+    },
+  },
+  {
+    value: "M",
+    get label() {
+      return tr("Media (15%)")
+    },
+  },
+  {
+    value: "Q",
+    get label() {
+      return tr("Alta (25%)")
+    },
+  },
+  {
+    value: "H",
+    get label() {
+      return tr("Massima (30%)")
+    },
+  },
 ] as const
 
 /** Nel formato Wi-Fi i caratteri speciali vanno protetti */
 const wifiEscape = (value: string) => value.replace(/([\;,:"])/g, "\\$1")
 
 export function QrAddin({ api }: { api: AddinApi }) {
+  const t = useT()
   const [kind, setKind] = React.useState<Kind>("text")
   const [text, setText] = React.useState(
     () => api.selectionText() || "https://"
@@ -80,12 +117,12 @@ export function QrAddin({ api }: { api: AddinApi }) {
       .catch(() => {
         if (!live) return
         setPreview(null)
-        setError("Il testo è troppo lungo per un codice QR.")
+        setError(t("Il testo è troppo lungo per un codice QR."))
       })
     return () => {
       live = false
     }
-  }, [payload, level, color, transparent])
+  }, [payload, level, color, transparent, t])
 
   const field = "space-y-1 block"
   const label = "text-xs font-medium text-muted-foreground"
@@ -112,7 +149,7 @@ export function QrAddin({ api }: { api: AddinApi }) {
 
       {kind === "text" ? (
         <label className={field}>
-          <span className={label}>Contenuto</span>
+          <span className={label}>{t("Contenuto")}</span>
           <textarea
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -123,7 +160,7 @@ export function QrAddin({ api }: { api: AddinApi }) {
       ) : kind === "wifi" ? (
         <>
           <label className={field}>
-            <span className={label}>Nome della rete (SSID)</span>
+            <span className={label}>{t("Nome della rete (SSID)")}</span>
             <Input
               className="h-8"
               value={ssid}
@@ -131,7 +168,7 @@ export function QrAddin({ api }: { api: AddinApi }) {
             />
           </label>
           <label className={field}>
-            <span className={label}>Sicurezza</span>
+            <span className={label}>{t("Sicurezza")}</span>
             <select
               value={security}
               onChange={(e) => setSecurity(e.target.value)}
@@ -139,12 +176,12 @@ export function QrAddin({ api }: { api: AddinApi }) {
             >
               <option value="WPA">WPA/WPA2/WPA3</option>
               <option value="WEP">WEP</option>
-              <option value="nopass">Nessuna</option>
+              <option value="nopass">{t("Nessuna")}</option>
             </select>
           </label>
           {security !== "nopass" ? (
             <label className={field}>
-              <span className={label}>Password</span>
+              <span className={label}>{t("Password")}</span>
               <Input
                 className="h-8"
                 type="text"
@@ -158,7 +195,7 @@ export function QrAddin({ api }: { api: AddinApi }) {
       ) : kind === "email" ? (
         <>
           <label className={field}>
-            <span className={label}>Indirizzo</span>
+            <span className={label}>{t("Indirizzo")}</span>
             <Input
               className="h-8"
               type="email"
@@ -167,7 +204,7 @@ export function QrAddin({ api }: { api: AddinApi }) {
             />
           </label>
           <label className={field}>
-            <span className={label}>Oggetto (facoltativo)</span>
+            <span className={label}>{t("Oggetto (facoltativo)")}</span>
             <Input
               className="h-8"
               value={subject}
@@ -177,7 +214,7 @@ export function QrAddin({ api }: { api: AddinApi }) {
         </>
       ) : (
         <label className={field}>
-          <span className={label}>Numero</span>
+          <span className={label}>{t("Numero")}</span>
           <Input
             className="h-8"
             type="tel"
@@ -192,20 +229,20 @@ export function QrAddin({ api }: { api: AddinApi }) {
           // eslint-disable-next-line @next/next/no-img-element -- anteprima generata nel browser
           <img
             src={preview}
-            alt="Anteprima del codice QR"
+            alt={t("Anteprima del codice QR")}
             className="size-40"
             data-testid="qr-preview"
           />
         ) : (
           <span className="flex size-40 items-center justify-center text-center text-xs text-muted-foreground">
-            {error || "Scrivi il contenuto del codice"}
+            {error || t("Scrivi il contenuto del codice")}
           </span>
         )}
       </div>
 
       <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-2">
         <label className={field}>
-          <span className={label}>Colore</span>
+          <span className={label}>{t("Colore")}</span>
           <input
             type="color"
             value={color}
@@ -214,7 +251,7 @@ export function QrAddin({ api }: { api: AddinApi }) {
           />
         </label>
         <label className={field}>
-          <span className={label}>Correzione errori</span>
+          <span className={label}>{t("Correzione errori")}</span>
           <select
             value={level}
             onChange={(e) => setLevel(e.target.value as typeof level)}
@@ -234,11 +271,12 @@ export function QrAddin({ api }: { api: AddinApi }) {
           checked={transparent}
           onChange={(e) => setTransparent(e.target.checked)}
         />
-        Sfondo trasparente
+        {t("Sfondo trasparente")}
       </label>
       <label className={field}>
         <span className={cn(label, "flex justify-between")}>
-          Larghezza nel documento <span className="tabular-nums">{width}%</span>
+          {t("Larghezza nel documento")}{" "}
+          <span className="tabular-nums">{width}%</span>
         </span>
         <input
           type="range"
@@ -257,12 +295,15 @@ export function QrAddin({ api }: { api: AddinApi }) {
           preview &&
           api.insertImage(
             preview,
-            `Codice QR: ${kind === "wifi" ? `rete Wi-Fi ${ssid}` : payload}`,
+            t("Codice QR: {content}", {
+              content:
+                kind === "wifi" ? t("rete Wi-Fi {ssid}", { ssid }) : payload,
+            }),
             `${width}%`
           )
         }
       >
-        Inserisci codice QR
+        {t("Inserisci codice QR")}
       </Button>
     </div>
   )

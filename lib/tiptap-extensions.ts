@@ -23,6 +23,7 @@ import {
 } from "@tiptap/extension-table"
 import { Image } from "@tiptap/extension-image"
 
+import { tr as translate } from "@/lib/i18n/client"
 declare module "@tiptap/core" {
   interface Storage {
     blockStyle: { resolveNext: NextStyleResolver | null }
@@ -1375,19 +1376,67 @@ export const IMAGE_WRAPS: { value: ImageWrap; label: string; hint: string }[] =
   [
     {
       value: "inline",
-      label: "In linea con il testo",
-      hint: "Su una riga sua",
+      get label() {
+        return translate("In linea con il testo")
+      },
+      get hint() {
+        return translate("Su una riga sua")
+      },
     },
-    { value: "square", label: "Quadrato", hint: "Il testo le gira intorno" },
-    { value: "tight", label: "Ravvicinato", hint: "Testo più vicino" },
-    { value: "through", label: "All'interno", hint: "Testo quasi a contatto" },
+    {
+      value: "square",
+      get label() {
+        return translate("Quadrato")
+      },
+      get hint() {
+        return translate("Il testo le gira intorno")
+      },
+    },
+    {
+      value: "tight",
+      get label() {
+        return translate("Ravvicinato")
+      },
+      get hint() {
+        return translate("Testo più vicino")
+      },
+    },
+    {
+      value: "through",
+      get label() {
+        return translate("All'interno")
+      },
+      get hint() {
+        return translate("Testo quasi a contatto")
+      },
+    },
     {
       value: "topBottom",
-      label: "Sopra e sotto",
-      hint: "Niente testo ai lati",
+      get label() {
+        return translate("Sopra e sotto")
+      },
+      get hint() {
+        return translate("Niente testo ai lati")
+      },
     },
-    { value: "behind", label: "Dietro al testo", hint: "Posizione libera" },
-    { value: "front", label: "Davanti al testo", hint: "Posizione libera" },
+    {
+      value: "behind",
+      get label() {
+        return translate("Dietro al testo")
+      },
+      get hint() {
+        return translate("Posizione libera")
+      },
+    },
+    {
+      value: "front",
+      get label() {
+        return translate("Davanti al testo")
+      },
+      get hint() {
+        return translate("Posizione libera")
+      },
+    },
   ]
 
 export const isFloatWrap = (w: string) =>

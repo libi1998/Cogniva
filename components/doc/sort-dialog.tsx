@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog"
 import { sortTarget, type SortOptions } from "@/lib/doc-typography"
 
+import { useT } from "@/lib/i18n/client"
 /** «Ordina testo», come in Word: paragrafi, voci di elenco o righe di tabella */
 export function SortDialog({
   open,
@@ -40,6 +41,7 @@ function SortForm({
   editor: Editor
   onClose: () => void
 }) {
+  const t = useT()
   // cosa si ordina si decide all'apertura: il cursore non si muove intanto
   const [target] = React.useState(() => sortTarget(editor.state))
   const columns =
@@ -48,7 +50,7 @@ function SortForm({
     target.kind === "table"
       ? Array.from({ length: columns }, (_, i) => {
           const text = target.node.firstChild?.maybeChild(i)?.textContent.trim()
-          return text || `Colonna ${i + 1}`
+          return text || t("Colonna {number}", { number: i + 1 })
         })
       : []
   const [options, setOptions] = React.useState<SortOptions>(() => {
@@ -77,30 +79,32 @@ function SortForm({
 
   const what =
     target.kind === "table"
-      ? "le righe della tabella"
+      ? t("Si ordinano le righe della tabella.")
       : target.kind === "list"
-        ? "le voci dell'elenco"
+        ? t("Si ordinano le voci dell'elenco.")
         : target.start === target.end
-          ? "il paragrafo"
-          : `${target.end - target.start + 1} paragrafi`
+          ? t("Si ordina il paragrafo.")
+          : t("Si ordinano {count} paragrafi.", {
+              count: target.end - target.start + 1,
+            })
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault()
         const done = editor.chain().focus().sortBlocks(options).run()
-        if (!done) toast.info("Serve più di un elemento da ordinare")
+        if (!done) toast.info(t("Serve più di un elemento da ordinare"))
         onClose()
       }}
     >
       <DialogHeader className="border-b border-border px-5 py-4">
-        <DialogTitle>Ordina testo</DialogTitle>
-        <DialogDescription>Si ordinano {what}.</DialogDescription>
+        <DialogTitle>{t("Ordina testo")}</DialogTitle>
+        <DialogDescription>{what}</DialogDescription>
       </DialogHeader>
       <div className="space-y-3 px-5 py-4 text-sm">
         {target.kind === "table" ? (
           <label className="flex items-center justify-between gap-3">
-            <span className="text-muted-foreground">Ordina per</span>
+            <span className="text-muted-foreground">{t("Ordina per")}</span>
             <select
               value={options.column}
               onChange={(e) => set({ column: Number(e.target.value) })}
@@ -115,24 +119,24 @@ function SortForm({
           </label>
         ) : null}
         <label className="flex items-center justify-between gap-3">
-          <span className="text-muted-foreground">Tipo</span>
+          <span className="text-muted-foreground">{t("Tipo")}</span>
           <select
             value={options.by}
             onChange={(e) => set({ by: e.target.value as SortOptions["by"] })}
             className="h-8 w-48 rounded-md border border-input bg-transparent px-2 text-sm"
           >
-            <option value="text">Testo</option>
-            <option value="number">Numero</option>
-            <option value="date">Data</option>
+            <option value="text">{t("Testo")}</option>
+            <option value="number">{t("Numero")}</option>
+            <option value="date">{t("Data")}</option>
           </select>
         </label>
         <div className="flex items-center justify-between gap-3">
-          <span className="text-muted-foreground">Ordine</span>
+          <span className="text-muted-foreground">{t("Ordine")}</span>
           <div className="flex w-48 flex-col gap-1">
             {(
               [
-                ["asc", "Crescente (A → Z)"],
-                ["desc", "Decrescente (Z → A)"],
+                ["asc", t("Crescente (A → Z)")],
+                ["desc", t("Decrescente (Z → A)")],
               ] as const
             ).map(([value, label]) => (
               <label key={value} className="flex items-center gap-2">
@@ -154,15 +158,15 @@ function SortForm({
               checked={Boolean(options.header)}
               onChange={(e) => set({ header: e.target.checked })}
             />
-            La prima riga è l&apos;intestazione
+            {t("La prima riga è l'intestazione")}
           </label>
         ) : null}
       </div>
       <DialogFooter className="border-t border-border px-5 py-3">
         <Button type="button" variant="ghost" onClick={onClose}>
-          Annulla
+          {t("Annulla")}
         </Button>
-        <Button type="submit">Ordina</Button>
+        <Button type="submit">{t("Ordina")}</Button>
       </DialogFooter>
     </form>
   )

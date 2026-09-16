@@ -49,6 +49,7 @@ import { TrackChanges } from "@/lib/track-changes"
 import { DocVideo } from "./video-node"
 import { Model3D } from "./model3d-node"
 
+import { tr } from "@/lib/i18n/client"
 /**
  * Tutte le estensioni del documento. Le usano l'editor e, senza editor, le
  * importazioni (Word, Markdown) e le esportazioni: lo schema è uno solo.
@@ -83,7 +84,16 @@ export function createDocExtensions(): AnyExtension[] {
     Subscript,
     Superscript,
     TaskList,
-    TaskItem.configure({ nested: true }),
+    TaskItem.configure({
+      nested: true,
+      // l'etichetta che leggono i lettori di schermo, nella lingua dell'app
+      a11y: {
+        checkboxLabel: (node) =>
+          node.textContent
+            ? tr("Casella di {task}", { task: node.textContent })
+            : tr("Casella da spuntare, vuota"),
+      },
+    }),
     ListStyles,
     SortBlocks,
     Field,
@@ -129,11 +139,11 @@ export function createDocExtensions(): AnyExtension[] {
     Placeholder.configure({
       showOnlyCurrent: false,
       placeholder: ({ editor, node, hasAnchor }) => {
-        if (node.type.name === "docTitle") return "Senza titolo"
-        if (node.type.name === "heading") return hasAnchor ? "Titolo…" : ""
+        if (node.type.name === "docTitle") return tr("Senza titolo")
+        if (node.type.name === "heading") return hasAnchor ? tr("Titolo…") : ""
         // il corpo suggerisce solo dove si sta scrivendo o se è tutto vuoto
         return hasAnchor || editor.state.doc.childCount <= 2
-          ? "Scrivi, oppure incolla degli elementi da una board…"
+          ? tr("Scrivi, oppure incolla degli elementi da una board…")
           : ""
       },
     }),

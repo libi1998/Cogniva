@@ -1,5 +1,6 @@
 "use client"
 
+import type { Route } from "next"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { FileQuestion, Plus } from "lucide-react"
@@ -10,6 +11,7 @@ import { useDocumentTitle } from "@/lib/use-document-title"
 import type { FileKind } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
+import { useT, hrefFor } from "@/lib/i18n/client"
 /*
  * Gli stati di un file prima che sia pronto. Lo spazio di lavoro vive nel
  * browser: il server (e il prerender) disegnano questi scheletri, che hanno
@@ -51,11 +53,12 @@ export function PanelSkeleton({ width }: { width: number }) {
 }
 
 export function BoardSkeleton() {
+  const t = useT()
   return (
     <div
       className="flex h-dvh flex-col bg-muted"
       aria-busy="true"
-      aria-label="Carico la board"
+      aria-label={t("Carico la board")}
     >
       <TopBarSkeleton />
       <div className="relative flex min-h-0 flex-1">
@@ -87,11 +90,14 @@ export function BoardSkeleton() {
 
 /** Un file che non c'è: link vecchio, file eliminato o di un altro browser */
 export function FileMissing({ kind }: { kind: FileKind }) {
+  const t = useT()
   const router = useRouter()
-  useDocumentTitle("File non trovato · Cogniva")
+  useDocumentTitle(t("File non trovato · Cogniva"))
   const create = () => {
     const id = getWorkspace().createFile(kind)
-    router.replace(kind === "board" ? `/board/${id}` : `/doc/${id}`)
+    router.replace(
+      hrefFor(kind === "board" ? `/board/${id}` : `/doc/${id}`) as Route
+    )
   }
   return (
     <main className="flex h-dvh flex-col items-center justify-center gap-4 bg-muted px-6 text-center">
@@ -101,21 +107,25 @@ export function FileMissing({ kind }: { kind: FileKind }) {
       <div className="max-w-sm space-y-1.5">
         <h1 className="text-base font-semibold text-foreground">
           {kind === "board"
-            ? "Questa board non c'è"
-            : "Questo documento non c'è"}
+            ? t("Questa board non c'è")
+            : t("Questo documento non c'è")}
         </h1>
         <p className="text-sm text-muted-foreground">
-          Potrebbe essere stato eliminato per sempre, oppure è salvato in un
-          altro browser: lo spazio di lavoro vive solo su questo dispositivo.
+          {t(
+            "Potrebbe essere stato eliminato per sempre, oppure è salvato in un altro browser: lo spazio di lavoro vive solo su questo dispositivo."
+          )}
         </p>
       </div>
       <div className="flex flex-wrap justify-center gap-2">
-        <Link href="/" className={cn(buttonVariants({ size: "default" }))}>
-          Torna ai file
+        <Link
+          href={hrefFor("/") as Route}
+          className={cn(buttonVariants({ size: "default" }))}
+        >
+          {t("Torna ai file")}
         </Link>
         <Button variant="outline" onClick={create}>
           <Plus className="size-4" />
-          {kind === "board" ? "Nuova board" : "Nuovo documento"}
+          {kind === "board" ? t("Nuova board") : t("Nuovo documento")}
         </Button>
       </div>
     </main>

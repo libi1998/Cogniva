@@ -1,5 +1,6 @@
 "use client"
 
+import type { Route } from "next"
 import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -58,13 +59,29 @@ import type { FileKind, WFile } from "@/lib/types"
 import { useDocumentTitle } from "@/lib/use-document-title"
 import { cn } from "@/lib/utils"
 
+import { useT, tr, hrefFor, timeAgo, currentLocale } from "@/lib/i18n/client"
 type Filter = "all" | "board" | "doc" | "starred" | "trash"
 type Sort = "updated" | "created" | "name"
 
 const SORTS: { value: Sort; label: string }[] = [
-  { value: "updated", label: "Modificati di recente" },
-  { value: "created", label: "Creati di recente" },
-  { value: "name", label: "Nome" },
+  {
+    value: "updated",
+    get label() {
+      return tr("Modificati di recente")
+    },
+  },
+  {
+    value: "created",
+    get label() {
+      return tr("Creati di recente")
+    },
+  },
+  {
+    value: "name",
+    get label() {
+      return tr("Nome")
+    },
+  },
 ]
 
 const NAV: {
@@ -75,52 +92,58 @@ const NAV: {
 }[] = [
   {
     key: "all",
-    label: "Tutti i file",
-    short: "Tutti",
+    get label() {
+      return tr("Tutti i file")
+    },
+    get short() {
+      return tr("Tutti")
+    },
     icon: <LayoutGrid className="size-4" />,
   },
   {
     key: "board",
-    label: "Board",
-    short: "Board",
+    get label() {
+      return tr("Board")
+    },
+    get short() {
+      return tr("Board")
+    },
     icon: <Shapes className="size-4" />,
   },
   {
     key: "doc",
-    label: "Documenti",
-    short: "Documenti",
+    get label() {
+      return tr("Documenti")
+    },
+    get short() {
+      return tr("Documenti")
+    },
     icon: <FileText className="size-4" />,
   },
   {
     key: "starred",
-    label: "Preferiti",
-    short: "Preferiti",
+    get label() {
+      return tr("Preferiti")
+    },
+    get short() {
+      return tr("Preferiti")
+    },
     icon: <Star className="size-4" />,
   },
 ]
 
-function timeAgo(ts: number) {
-  const s = Math.floor((Date.now() - ts) / 1000)
-  if (s < 60) return "adesso"
-  if (s < 3600) return `${Math.floor(s / 60)} min fa`
-  if (s < 86400) return `${Math.floor(s / 3600)} h fa`
-  if (s < 604800) return `${Math.floor(s / 86400)} g fa`
-  return new Date(ts).toLocaleDateString("it-IT", {
-    day: "numeric",
-    month: "short",
-  })
-}
-
 function exportAll() {
   const blob = new Blob([exportWorkspace()], { type: "application/json" })
   download(blob, `cogniva-${new Date().toISOString().slice(0, 10)}.json`)
-  toast.success("Spazio di lavoro esportato", {
-    description:
-      "Il file .json si reimporta da «Importa» anche su un altro computer.",
+  toast.success(tr("Spazio di lavoro esportato"), {
+    description: tr(
+      "Il file .json si reimporta da «Importa» anche su un altro computer."
+    ),
   })
 }
 
 export function HomeScreen() {
+  const t = useT()
   const router = useRouter()
   const hydrated = useStore((s) => s.hydrated)
   const files = useStore((s) => s.files)
@@ -153,7 +176,7 @@ export function HomeScreen() {
     .filter((f) => !query || searchText(f).includes(query))
     .sort((a, b) =>
       sort === "name"
-        ? a.title.localeCompare(b.title, "it")
+        ? a.title.localeCompare(b.title, currentLocale())
         : sort === "created"
           ? b.createdAt - a.createdAt
           : b.updatedAt - a.updatedAt
@@ -161,16 +184,18 @@ export function HomeScreen() {
 
   const create = (kind: FileKind) => {
     const id = getWorkspace().createFile(kind)
-    router.push(kind === "board" ? `/board/${id}` : `/doc/${id}`)
+    router.push(
+      hrefFor(kind === "board" ? `/board/${id}` : `/doc/${id}`) as Route
+    )
   }
 
   const pickFiles = () => fileInput.current?.click()
 
   const trashFile = (f: WFile) => {
     getWorkspace().trashFile(f.id)
-    toast.success(`«${f.title}» spostato nel cestino`, {
+    toast.success(t("«{title}» spostato nel cestino", { title: f.title }), {
       action: {
-        label: "Annulla",
+        label: t("Annulla||annulla l'ultima modifica"),
         onClick: () => getWorkspace().restoreFile(f.id),
       },
     })
@@ -196,7 +221,7 @@ export function HomeScreen() {
             variant="ghost"
             size="sm"
             className="h-8 gap-1.5 text-xs"
-            aria-label="Ordina"
+            aria-label={t("Ordina||ordina l'elenco dei file")}
           />
         }
       >
@@ -206,7 +231,7 @@ export function HomeScreen() {
         </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-52">
-        <DropdownMenuLabel>Ordina per</DropdownMenuLabel>
+        <DropdownMenuLabel>{t("Ordina per")}</DropdownMenuLabel>
         {SORTS.map((s) => (
           <DropdownMenuItem
             key={s.value}
@@ -240,7 +265,10 @@ export function HomeScreen() {
       }}
     >
       <aside className="hidden w-[236px] shrink-0 flex-col border-r border-border bg-card p-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))] pl-[max(0.75rem,env(safe-area-inset-left))] md:flex">
-        <Link href="/" className="mb-5 flex items-center gap-2 px-2 pt-2">
+        <Link
+          href={hrefFor("/") as Route}
+          className="mb-5 flex items-center gap-2 px-2 pt-2"
+        >
           <LogoMark />
           <span className="text-[15px] font-bold tracking-[-0.01em] text-foreground">
             Cogniva
@@ -252,18 +280,18 @@ export function HomeScreen() {
             className="h-9 w-full justify-start gap-2"
             onClick={() => create("board")}
           >
-            <Plus className="size-4" /> Nuova board
+            <Plus className="size-4" /> {t("Nuova board")}
           </Button>
           <Button
             variant="outline"
             className="h-9 w-full justify-start gap-2"
             onClick={() => create("doc")}
           >
-            <FileText className="size-4" /> Nuovo documento
+            <FileText className="size-4" /> {t("Nuovo documento")}
           </Button>
         </div>
 
-        <nav className="space-y-0.5" aria-label="Filtri">
+        <nav className="space-y-0.5" aria-label={t("Filtri")}>
           {NAV.map((n) => (
             <NavButton
               key={n.key}
@@ -278,7 +306,7 @@ export function HomeScreen() {
           <NavButton
             active={filter === "trash"}
             icon={<Trash2 className="size-4" />}
-            label="Cestino"
+            label={t("Cestino")}
             count={counts.trash}
             onClick={() => setFilter("trash")}
           />
@@ -294,7 +322,7 @@ export function HomeScreen() {
                 />
               }
             >
-              <Upload className="size-4" /> Importa
+              <Upload className="size-4" /> {t("Importa")}
             </DropdownMenuTrigger>
             <DropdownMenuContent side="top" align="start" className="w-64">
               <ImportItems onPick={pickFiles} />
@@ -306,11 +334,12 @@ export function HomeScreen() {
             disabled={!hydrated}
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
           >
-            <Download className="size-4" /> Esporta tutto
+            <Download className="size-4" /> {t("Esporta tutto")}
           </button>
           <p className="px-2.5 pt-2 text-[11px] leading-snug text-muted-foreground">
-            Tutto resta in questo browser. Trascina qui un file Word o Markdown
-            per aprirlo.
+            {t(
+              "Tutto resta in questo browser. Trascina qui un file Word o Markdown per aprirlo."
+            )}
           </p>
         </div>
       </aside>
@@ -332,7 +361,7 @@ export function HomeScreen() {
         <header className="shrink-0 border-b border-border bg-card pt-[env(safe-area-inset-top)] safe-x md:px-5">
           <div className="flex h-14 items-center gap-2 sm:gap-3">
             <Link
-              href="/"
+              href={hrefFor("/") as Route}
               className="flex shrink-0 items-center gap-2 md:hidden"
               aria-label="Cogniva"
             >
@@ -358,7 +387,7 @@ export function HomeScreen() {
                       variant="ghost"
                       size="icon"
                       className="md:hidden"
-                      aria-label="Altre azioni"
+                      aria-label={t("Altre azioni")}
                     />
                   }
                 >
@@ -368,10 +397,10 @@ export function HomeScreen() {
                   <ImportItems onPick={pickFiles} />
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={exportAll} disabled={!hydrated}>
-                    <Download className="size-4" /> Esporta tutto
+                    <Download className="size-4" /> {t("Esporta tutto")}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={openCommandPalette}>
-                    <Search className="size-4" /> Tutti i comandi
+                    <Search className="size-4" /> {t("Tutti i comandi")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -379,14 +408,14 @@ export function HomeScreen() {
                 <DropdownMenuTrigger
                   render={<Button size="sm" className="ml-1 h-8 md:hidden" />}
                 >
-                  <Plus className="size-4" /> Nuovo
+                  <Plus className="size-4" /> {t("Nuovo")}
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuItem onClick={() => create("board")}>
-                    <Shapes className="size-4" /> Nuova board
+                    <Shapes className="size-4" /> {t("Nuova board")}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => create("doc")}>
-                    <FileText className="size-4" /> Nuovo documento
+                    <FileText className="size-4" /> {t("Nuovo documento")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -396,10 +425,10 @@ export function HomeScreen() {
           <div className="space-y-2 pb-2.5 md:hidden">
             <SearchField value={q} onChange={setQ} />
             <nav
-              aria-label="Filtri"
+              aria-label={t("Filtri")}
               className="-mx-[max(0.5rem,env(safe-area-inset-left))] flex [scrollbar-width:none] gap-1.5 overflow-x-auto px-[max(0.5rem,env(safe-area-inset-left))] sm:-mx-3 sm:px-3"
             >
-              {[...NAV, { key: "trash" as const, short: "Cestino" }].map(
+              {[...NAV, { key: "trash" as const, short: tr("Cestino") }].map(
                 (n) => (
                   <button
                     key={n.key}
@@ -430,7 +459,7 @@ export function HomeScreen() {
           <div className="flex min-h-11 flex-wrap items-center gap-x-3 gap-y-1 border-b border-border bg-card/60 py-2 safe-x text-xs text-muted-foreground md:px-6">
             <Clock className="size-3.5 shrink-0" />
             <span className="min-w-0 flex-1">
-              I file nel cestino si eliminano da soli dopo 30 giorni.
+              {t("I file nel cestino si eliminano da soli dopo 30 giorni.")}
             </span>
             {trash.length ? (
               <Button
@@ -439,7 +468,7 @@ export function HomeScreen() {
                 className="h-7 text-xs text-destructive hover:text-destructive"
                 onClick={() => setConfirmEmpty(true)}
               >
-                Svuota il cestino
+                {t("Svuota il cestino")}
               </Button>
             ) : null}
           </div>
@@ -472,8 +501,9 @@ export function HomeScreen() {
 
         {dragging ? (
           <div className="pointer-events-none absolute inset-3 z-30 flex items-center justify-center rounded-2xl border-2 border-dashed border-primary bg-primary/10 p-6 text-center text-sm font-medium text-primary backdrop-blur-[1px]">
-            Rilascia per importare documenti Word, Markdown o uno spazio di
-            lavoro
+            {t(
+              "Rilascia per importare documenti Word, Markdown o uno spazio di lavoro"
+            )}
           </div>
         ) : null}
       </main>
@@ -481,7 +511,7 @@ export function HomeScreen() {
       <Dialog open={!!renaming} onOpenChange={(o) => !o && setRenaming(null)}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle>Rinomina</DialogTitle>
+            <DialogTitle>{t("Rinomina")}</DialogTitle>
           </DialogHeader>
           <form
             className="contents"
@@ -495,7 +525,7 @@ export function HomeScreen() {
           >
             <Input
               autoFocus
-              aria-label="Nuovo nome"
+              aria-label={t("Nuovo nome")}
               value={renaming?.value ?? ""}
               enterKeyHint="done"
               onChange={(e) =>
@@ -508,9 +538,9 @@ export function HomeScreen() {
                 variant="outline"
                 onClick={() => setRenaming(null)}
               >
-                Annulla
+                {t("Annulla")}
               </Button>
-              <Button type="submit">Salva</Button>
+              <Button type="submit">{t("Salva")}</Button>
             </DialogFooter>
           </form>
         </DialogContent>
@@ -519,27 +549,29 @@ export function HomeScreen() {
       <Dialog open={confirmEmpty} onOpenChange={setConfirmEmpty}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
-            <DialogTitle>Svuotare il cestino?</DialogTitle>
+            <DialogTitle>{t("Svuotare il cestino?")}</DialogTitle>
             <DialogDescription>
               {trash.length === 1
-                ? "Il file verrà eliminato per sempre."
-                : `I ${trash.length} file verranno eliminati per sempre.`}{" "}
-              Non si può annullare.
+                ? t("Il file verrà eliminato per sempre.")
+                : t("I {count} file verranno eliminati per sempre.", {
+                    count: trash.length,
+                  })}{" "}
+              {t("Non si può annullare.")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button variant="outline" onClick={() => setConfirmEmpty(false)}>
-              Annulla
+              {t("Annulla")}
             </Button>
             <Button
               variant="destructive"
               onClick={() => {
                 getWorkspace().emptyTrash()
                 setConfirmEmpty(false)
-                toast.success("Cestino svuotato")
+                toast.success(t("Cestino svuotato"))
               }}
             >
-              Elimina per sempre
+              {t("Elimina per sempre")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -557,6 +589,7 @@ function SearchField({
   onChange: (value: string) => void
   className?: string
 }) {
+  const t = useT()
   return (
     <div className={cn("relative w-full", className)}>
       <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -564,15 +597,15 @@ function SearchField({
         type="search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        placeholder="Cerca nei titoli e nel testo…"
-        aria-label="Cerca"
+        placeholder={t("Cerca nei titoli e nel testo…")}
+        aria-label={t("Cerca")}
         enterKeyHint="search"
         className="h-9 border-transparent bg-muted pl-8 text-sm focus-visible:bg-background pointer-fine:pr-14 [&::-webkit-search-cancel-button]:hidden"
       />
       <button
         type="button"
         onClick={openCommandPalette}
-        title="Tutti i comandi"
+        title={t("Tutti i comandi")}
         className="absolute top-1/2 right-2 hidden -translate-y-1/2 pointer-fine:block"
       >
         <Kbd>⌘K</Kbd>
@@ -582,15 +615,16 @@ function SearchField({
 }
 
 function ImportItems({ onPick }: { onPick: () => void }) {
+  const t = useT()
   return (
     <>
-      <DropdownMenuLabel>Apri come documento</DropdownMenuLabel>
+      <DropdownMenuLabel>{t("Apri come documento")}</DropdownMenuLabel>
       <DropdownMenuItem onClick={onPick}>
         <FileType2 className="size-4" />
         <div className="flex flex-col">
-          <span>Word, Markdown, HTML o testo</span>
+          <span>{t("Word, Markdown, HTML o testo")}</span>
           <span className="text-[11px] text-muted-foreground">
-            .docx · .md · .html · .txt
+            {t(".docx · .md · .html · .txt")}
           </span>
         </div>
       </DropdownMenuItem>
@@ -598,9 +632,9 @@ function ImportItems({ onPick }: { onPick: () => void }) {
       <DropdownMenuItem onClick={onPick}>
         <FileUp className="size-4" />
         <div className="flex flex-col">
-          <span>Spazio di lavoro</span>
+          <span>{t("Spazio di lavoro")}</span>
           <span className="text-[11px] text-muted-foreground">
-            .json esportato da Cogniva
+            {t(".json esportato da Cogniva")}
           </span>
         </div>
       </DropdownMenuItem>
@@ -653,13 +687,14 @@ function EmptyState({
   onCreate: (kind: FileKind) => void
   onImport: () => void
 }) {
+  const t = useT()
   const message = searching
-    ? "Nessun file contiene quello che cerchi."
+    ? t("Nessun file contiene quello che cerchi.")
     : filter === "trash"
-      ? "Il cestino è vuoto."
+      ? t("Il cestino è vuoto.")
       : filter === "starred"
-        ? "Nessun preferito: aggiungili dal menu di un file."
-        : "Non c'è ancora niente qui."
+        ? t("Nessun preferito: aggiungili dal menu di un file.")
+        : t("Non c'è ancora niente qui.")
   return (
     <div className="flex h-full min-h-72 flex-col items-center justify-center gap-3 px-4 text-center">
       <div className="flex size-14 items-center justify-center rounded-2xl bg-accent text-primary">
@@ -673,13 +708,13 @@ function EmptyState({
       {!searching && filter !== "trash" && filter !== "starred" ? (
         <div className="flex flex-wrap justify-center gap-2">
           <Button size="sm" onClick={() => onCreate("board")}>
-            Crea una board
+            {t("Crea una board")}
           </Button>
           <Button size="sm" variant="outline" onClick={() => onCreate("doc")}>
-            Crea un documento
+            {t("Crea un documento")}
           </Button>
           <Button size="sm" variant="ghost" onClick={onImport}>
-            Importa da Word
+            {t("Importa da Word")}
           </Button>
         </div>
       ) : null}
@@ -698,6 +733,7 @@ function FileCard({
   onRename: () => void
   onTrash: () => void
 }) {
+  const t = useT()
   const inTrash = Boolean(f.deletedAt)
   const snippet = query ? searchSnippet(f, query) : ""
   const body = (
@@ -718,12 +754,12 @@ function FileCard({
         />
         <div className="min-w-0 flex-1">
           <p className="truncate text-[13px] font-semibold text-foreground sm:text-sm">
-            {f.title || "Senza titolo"}
+            {f.title || t("Senza titolo")}
           </p>
           <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
-            {f.kind === "board" ? "Board" : "Documento"} ·{" "}
+            {f.kind === "board" ? t("Board") : t("Documento")} ·{" "}
             {inTrash
-              ? `eliminato ${timeAgo(f.deletedAt!)}`
+              ? t("eliminato {timeAgo}", { timeAgo: timeAgo(f.deletedAt!) })
               : timeAgo(f.updatedAt)}
           </p>
           {snippet ? (
@@ -758,7 +794,7 @@ function FileCard({
 
       {f.starred && !inTrash ? (
         <Star
-          aria-label="Preferito"
+          aria-label={t("Preferito")}
           className="pointer-events-none absolute top-2.5 right-10 size-4 fill-amber-400 text-amber-500"
         />
       ) : null}
@@ -771,24 +807,24 @@ function FileCard({
             className="h-7 min-w-0 flex-1 gap-1 text-xs"
             onClick={() => {
               getWorkspace().restoreFile(f.id)
-              toast.success(`«${f.title}» ripristinato`)
+              toast.success(t("«{title}» ripristinato", { title: f.title }))
             }}
           >
             <RotateCcw className="size-3.5" />
-            <span className="truncate">Ripristina</span>
+            <span className="truncate">{t("Ripristina")}</span>
           </Button>
           <Button
             variant="ghost"
             size="sm"
             className="h-7 gap-1 text-xs text-destructive hover:text-destructive"
-            aria-label="Elimina per sempre"
+            aria-label={t("Elimina per sempre")}
             onClick={() => {
               getWorkspace().deleteForever(f.id)
-              toast.success("Eliminato per sempre")
+              toast.success(t("Eliminato per sempre"))
             }}
           >
             <Trash2 className="size-3.5" />
-            <span className="hidden min-[400px]:inline">Elimina</span>
+            <span className="hidden min-[400px]:inline">{t("Elimina")}</span>
           </Button>
         </div>
       ) : (
@@ -797,7 +833,7 @@ function FileCard({
             render={
               <button
                 type="button"
-                aria-label={`Azioni per ${f.title}`}
+                aria-label={t("Azioni per {title}", { title: f.title })}
                 // sui dispositivi senza hover il pulsante resta sempre a vista
                 className="absolute top-2 right-2 flex size-7 items-center justify-center rounded-lg bg-card/90 text-muted-foreground opacity-0 shadow-sm backdrop-blur transition group-hover:opacity-100 focus-visible:opacity-100 data-popup-open:opacity-100 pointer-coarse:size-8 pointer-coarse:opacity-100"
               />
@@ -807,20 +843,22 @@ function FileCard({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
             <DropdownMenuItem onClick={onRename}>
-              <Pencil className="size-4" /> Rinomina
+              <Pencil className="size-4" /> {t("Rinomina")}
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => getWorkspace().duplicateFile(f.id)}
             >
-              <Copy className="size-4" /> Duplica
+              <Copy className="size-4" /> {t("Duplica")}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => getWorkspace().toggleStar(f.id)}>
               <Star className="size-4" />
-              {f.starred ? "Rimuovi dai preferiti" : "Aggiungi ai preferiti"}
+              {f.starred
+                ? t("Rimuovi dai preferiti")
+                : t("Aggiungi ai preferiti")}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive" onClick={onTrash}>
-              <Trash2 className="size-4" /> Sposta nel cestino
+              <Trash2 className="size-4" /> {t("Sposta nel cestino")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

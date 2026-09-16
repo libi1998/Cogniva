@@ -5,6 +5,7 @@ import type {
 } from "./thesaurus.worker"
 import { thesaurusFor } from "./catalog"
 
+import { tr } from "@/lib/i18n/client"
 export type { LookupResult, Meaning } from "./thesaurus.worker"
 
 let worker: Worker | null = null
@@ -34,12 +35,12 @@ function getWorker() {
       pending.delete(message.id)
       if (message.type === "result") job.resolve(message.result)
       else if (message.type === "cached") job.resolve(message.cached)
-      else job.reject(new Error(message.message))
+      else job.reject(new Error(tr(message.message)))
     }
   )
   worker.addEventListener("error", (event) => {
     for (const [id, job] of pending) {
-      job.reject(new Error(event.message || "Il thesaurus si è fermato"))
+      job.reject(new Error(event.message || tr("Il thesaurus si è fermato")))
       pending.delete(id)
     }
     worker?.terminate()
@@ -77,7 +78,7 @@ export function lookupSynonyms(
   const source = thesaurusFor(lang)
   if (!source) {
     return Promise.reject(
-      new Error("Non c'è ancora un thesaurus per questa lingua.")
+      new Error(tr("Non c'è ancora un thesaurus per questa lingua."))
     )
   }
   return send<LookupResult>({ type: "lookup", source, word }, onProgress)

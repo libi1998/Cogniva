@@ -8,6 +8,7 @@ import { getPagination, pageAt } from "./pagination"
 import { docTitleText } from "./tiptap-extensions"
 import type { PageNumberFormat } from "./types"
 
+import { tr as translate, currentRegion } from "@/lib/i18n/client"
 /**
  * Campi, segnalibri, caselle di testo, capolettera e frontespizio: le parti
  * della scheda Inserisci che nel documento hanno bisogno di un nodo o di un
@@ -48,7 +49,7 @@ export const DATE_FORMATS: {
     id: "long",
     kind: "date",
     render: (d) =>
-      d.toLocaleDateString("it-IT", {
+      d.toLocaleDateString(currentRegion(), {
         day: "numeric",
         month: "long",
         year: "numeric",
@@ -58,7 +59,7 @@ export const DATE_FORMATS: {
     id: "weekday",
     kind: "date",
     render: (d) =>
-      d.toLocaleDateString("it-IT", {
+      d.toLocaleDateString(currentRegion(), {
         weekday: "long",
         day: "numeric",
         month: "long",
@@ -69,7 +70,7 @@ export const DATE_FORMATS: {
     id: "short",
     kind: "date",
     render: (d) =>
-      d.toLocaleDateString("it-IT", {
+      d.toLocaleDateString(currentRegion(), {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
@@ -79,7 +80,7 @@ export const DATE_FORMATS: {
     id: "short2",
     kind: "date",
     render: (d) =>
-      d.toLocaleDateString("it-IT", {
+      d.toLocaleDateString(currentRegion(), {
         day: "numeric",
         month: "numeric",
         year: "2-digit",
@@ -90,13 +91,13 @@ export const DATE_FORMATS: {
     id: "month",
     kind: "date",
     render: (d) =>
-      d.toLocaleDateString("it-IT", { month: "long", year: "numeric" }),
+      d.toLocaleDateString(currentRegion(), { month: "long", year: "numeric" }),
   },
   {
     id: "abbr",
     kind: "date",
     render: (d) =>
-      d.toLocaleDateString("it-IT", {
+      d.toLocaleDateString(currentRegion(), {
         day: "numeric",
         month: "short",
         year: "numeric",
@@ -106,21 +107,27 @@ export const DATE_FORMATS: {
     id: "time",
     kind: "time",
     render: (d) =>
-      d.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" }),
+      d.toLocaleTimeString(currentRegion(), {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
   },
   {
     id: "time-seconds",
     kind: "time",
-    render: (d) => d.toLocaleTimeString("it-IT"),
+    render: (d) => d.toLocaleTimeString(currentRegion()),
   },
   {
     id: "datetime",
     kind: "time",
     render: (d) =>
-      `${d.toLocaleDateString("it-IT")} ${d.toLocaleTimeString("it-IT", {
-        hour: "2-digit",
-        minute: "2-digit",
-      })}`,
+      `${d.toLocaleDateString(currentRegion())} ${d.toLocaleTimeString(
+        currentRegion(),
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+        }
+      )}`,
   },
 ]
 
@@ -129,14 +136,48 @@ export const REF_FORMATS: {
   label: string
   for: "bm" | "seq" | "any"
 }[] = [
-  { id: "text", label: "Testo", for: "any" },
-  { id: "page", label: "Numero di pagina", for: "any" },
-  { id: "position", label: "Sopra/sotto", for: "any" },
-  { id: "label", label: "Etichetta e numero", for: "seq" },
-  { id: "number", label: "Solo il numero", for: "seq" },
+  {
+    id: "text",
+    get label() {
+      return translate("Testo")
+    },
+    for: "any",
+  },
+  {
+    id: "page",
+    get label() {
+      return translate("Numero di pagina")
+    },
+    for: "any",
+  },
+  {
+    id: "position",
+    get label() {
+      return translate("Sopra/sotto")
+    },
+    for: "any",
+  },
+  {
+    id: "label",
+    get label() {
+      return translate("Etichetta e numero")
+    },
+    for: "seq",
+  },
+  {
+    id: "number",
+    get label() {
+      return translate("Solo il numero")
+    },
+    for: "seq",
+  },
 ]
 
-export const CAPTION_LABELS = ["Figura", "Tabella", "Equazione"]
+export const captionLabels = () => [
+  translate("Figura"),
+  translate("Tabella"),
+  translate("Equazione"),
+]
 
 type FieldContext = {
   /** posizione → valore di ogni didascalia numerata */
@@ -160,7 +201,7 @@ function fieldContext(state: EditorState): FieldContext {
   const bookmarks: FieldContext["bookmarks"] = new Map()
   state.doc.descendants((node, pos) => {
     if (node.type.name === "field" && node.attrs.kind === "seq") {
-      const label = String(node.attrs.label ?? "Figura")
+      const label = String(node.attrs.label ?? translate("Figura"))
       const n = (counters.get(label) ?? 0) + 1
       counters.set(label, n)
       seqAt.set(pos, n)
@@ -243,9 +284,9 @@ export function fieldText(
     case "pages":
       return String(getPagination(state).pages + pageStart - 1)
     case "title":
-      return ctx.title || "Senza titolo"
+      return ctx.title || translate("Senza titolo")
     case "author":
-      return getAuthor() || "Autore"
+      return getAuthor() || translate("Autore")
     case "words":
       return String(ctx.words)
     case "seq": {
@@ -258,7 +299,7 @@ export function fieldText(
       const target = a.target ?? ""
       if (target.startsWith("seq:")) {
         const item = ctx.seq.get(target.slice(4))
-        if (!item) return "Errore! Riferimento non trovato."
+        if (!item) return translate("Errore! Riferimento non trovato.")
         const number = formatPageNumber(item.n, item.format as PageNumberFormat)
         if (a.format === "number") return number
         if (a.format === "page")
@@ -266,7 +307,8 @@ export function fieldText(
             pageAt(state, item.pos) + pageStart - 1,
             pageFormat
           )
-        if (a.format === "position") return item.pos < pos ? "sopra" : "sotto"
+        if (a.format === "position")
+          return item.pos < pos ? translate("sopra") : translate("sotto")
         if (a.format === "text") {
           const $item = state.doc.resolve(item.pos)
           return textWithFields(state, $item.parent, $item.before())
@@ -274,13 +316,14 @@ export function fieldText(
         return `${item.label} ${number}`
       }
       const range = ctx.bookmarks.get(target.replace(/^bm:/, ""))
-      if (!range) return "Errore! Segnalibro non definito."
+      if (!range) return translate("Errore! Segnalibro non definito.")
       if (a.format === "page")
         return formatPageNumber(
           pageAt(state, range.from) + pageStart - 1,
           pageFormat
         )
-      if (a.format === "position") return range.from < pos ? "sopra" : "sotto"
+      if (a.format === "position")
+        return range.from < pos ? translate("sopra") : translate("sotto")
       return state.doc.textBetween(range.from, range.to, " ").trim()
     }
     default:
@@ -289,15 +332,33 @@ export function fieldText(
 }
 
 export const FIELD_LABELS: Record<FieldKind, string> = {
-  date: "Data",
-  time: "Ora",
-  page: "Numero di pagina",
-  pages: "Numero di pagine",
-  title: "Titolo",
-  author: "Autore",
-  words: "Numero di parole",
-  ref: "Riferimento",
-  seq: "Numero didascalia",
+  get date() {
+    return translate("Data")
+  },
+  get time() {
+    return translate("Ora")
+  },
+  get page() {
+    return translate("Numero di pagina")
+  },
+  get pages() {
+    return translate("Numero di pagine")
+  },
+  get title() {
+    return translate("Titolo")
+  },
+  get author() {
+    return translate("Autore")
+  },
+  get words() {
+    return translate("Numero di parole")
+  },
+  get ref() {
+    return translate("Riferimento")
+  },
+  get seq() {
+    return translate("Numero didascalia")
+  },
 }
 
 /** Formato dei numeri di pagina del documento, nella memoria dell'editor */
@@ -411,7 +472,8 @@ export const Field = Node.create<Record<string, never>, FieldSettings>({
           settings?.pageStart ?? 1
         )
         if (dom.textContent !== value) dom.textContent = value
-        dom.title = FIELD_LABELS[current.attrs.kind as FieldKind] ?? "Campo"
+        dom.title =
+          FIELD_LABELS[current.attrs.kind as FieldKind] ?? translate("Campo")
       }
       // i campi di pagina cambiano quando si sposta il testo prima di loro
       const onTransaction = () => render()
@@ -659,8 +721,12 @@ export const TEXT_BOX_PRESETS: {
 }[] = [
   {
     id: "simple",
-    label: "Casella semplice",
-    hint: "Bordo sottile, nel testo",
+    get label() {
+      return translate("Casella semplice")
+    },
+    get hint() {
+      return translate("Bordo sottile, nel testo")
+    },
     attrs: {
       layout: "inline",
       width: 100,
@@ -668,12 +734,18 @@ export const TEXT_BOX_PRESETS: {
       border: "thin",
       shadow: false,
     },
-    text: "Scrivi qui il testo della casella.",
+    get text() {
+      return translate("Scrivi qui il testo della casella.")
+    },
   },
   {
     id: "sidebar",
-    label: "Barra laterale",
-    hint: "A destra, il testo le scorre accanto",
+    get label() {
+      return translate("Barra laterale")
+    },
+    get hint() {
+      return translate("A destra, il testo le scorre accanto")
+    },
     attrs: {
       layout: "right",
       width: 38,
@@ -681,12 +753,20 @@ export const TEXT_BOX_PRESETS: {
       border: "none",
       shadow: false,
     },
-    text: "Una nota a lato: un approfondimento, una definizione, un dato.",
+    get text() {
+      return translate(
+        "Una nota a lato: un approfondimento, una definizione, un dato."
+      )
+    },
   },
   {
     id: "pull-quote",
-    label: "Citazione in evidenza",
-    hint: "A sinistra, con la barra dell'accento",
+    get label() {
+      return translate("Citazione in evidenza")
+    },
+    get hint() {
+      return translate("A sinistra, con la barra dell'accento")
+    },
     attrs: {
       layout: "left",
       width: 42,
@@ -694,12 +774,18 @@ export const TEXT_BOX_PRESETS: {
       border: "left",
       shadow: false,
     },
-    text: "«Una frase da mettere in risalto.»",
+    get text() {
+      return translate("«Una frase da mettere in risalto.»")
+    },
   },
   {
     id: "callout",
-    label: "Riquadro evidenziato",
-    hint: "Centrato, con ombra",
+    get label() {
+      return translate("Riquadro evidenziato")
+    },
+    get hint() {
+      return translate("Centrato, con ombra")
+    },
     attrs: {
       layout: "center",
       width: 80,
@@ -707,12 +793,18 @@ export const TEXT_BOX_PRESETS: {
       border: "accent",
       shadow: true,
     },
-    text: "Importante: un'informazione da non perdere.",
+    get text() {
+      return translate("Importante: un'informazione da non perdere.")
+    },
   },
   {
     id: "dashed",
-    label: "Promemoria",
-    hint: "Bordo tratteggiato",
+    get label() {
+      return translate("Promemoria")
+    },
+    get hint() {
+      return translate("Bordo tratteggiato")
+    },
     attrs: {
       layout: "inline",
       width: 100,
@@ -720,7 +812,9 @@ export const TEXT_BOX_PRESETS: {
       border: "dashed",
       shadow: false,
     },
-    text: "Da completare…",
+    get text() {
+      return translate("Da completare…")
+    },
   },
 ]
 

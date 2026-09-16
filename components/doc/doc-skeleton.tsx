@@ -6,16 +6,18 @@ import {
   TopBarSkeleton,
 } from "@/components/shared/workspace-states"
 
+import { useT } from "@/lib/i18n/client"
 /**
  * Il documento prima che lo spazio di lavoro sia caricato: la barra a schede
  * è quella vera (ricorda anche se era compressa), il foglio è un segnaposto.
  */
 export function DocSkeleton() {
+  const t = useT()
   return (
     <div
       className="flex h-dvh flex-col bg-muted"
       aria-busy="true"
-      aria-label="Carico il documento"
+      aria-label={t("Carico il documento")}
     >
       <TopBarSkeleton />
       <Ribbon ctx={null} />

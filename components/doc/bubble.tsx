@@ -20,6 +20,7 @@ import { cn } from "@/lib/utils"
 import { guardClicks, typingOutside } from "./focus-guard"
 import type { DocState } from "./use-doc-state"
 
+import { useT } from "@/lib/i18n/client"
 function B({
   active,
   onClick,
@@ -58,6 +59,7 @@ export function DocBubbleMenu({
   st: DocState
   onComment: () => void
 }) {
+  const t = useT()
   if (!editor) return null
   return (
     <BubbleMenu
@@ -75,7 +77,7 @@ export function DocBubbleMenu({
     >
       <div className="contents" onClickCapture={guardClicks(editor)}>
         <B
-          title="Titolo 1"
+          title={t("Titolo 1")}
           active={st.heading1}
           onClick={() =>
             editor.chain().focus().toggleHeading({ level: 1 }).run()
@@ -84,7 +86,7 @@ export function DocBubbleMenu({
           <Heading1 className="size-4" />
         </B>
         <B
-          title="Titolo 2"
+          title={t("Titolo 2")}
           active={st.heading2}
           onClick={() =>
             editor.chain().focus().toggleHeading({ level: 2 }).run()
@@ -94,53 +96,56 @@ export function DocBubbleMenu({
         </B>
         <div className="mx-0.5 h-4 w-px bg-white/15" />
         <B
-          title="Grassetto"
+          title={t("Grassetto")}
           active={st.bold}
           onClick={() => editor.chain().focus().toggleBold().run()}
         >
           <Bold className="size-3.5" />
         </B>
         <B
-          title="Corsivo"
+          title={t("Corsivo")}
           active={st.italic}
           onClick={() => editor.chain().focus().toggleItalic().run()}
         >
           <Italic className="size-3.5" />
         </B>
         <B
-          title="Sottolineato"
+          title={t("Sottolineato")}
           active={st.underline}
           onClick={() => editor.chain().focus().toggleUnderline().run()}
         >
           <Underline className="size-3.5" />
         </B>
         <B
-          title="Barrato"
+          title={t("Barrato")}
           active={st.strike}
           onClick={() => editor.chain().focus().toggleStrike().run()}
         >
           <Strikethrough className="size-3.5" />
         </B>
         <B
-          title="Evidenzia"
+          title={t("Evidenzia")}
           active={st.highlight}
           onClick={() => editor.chain().focus().toggleHighlight().run()}
         >
           <Highlighter className="size-3.5" />
         </B>
         <B
-          title="Codice"
+          title={t("Codice")}
           active={st.code}
           onClick={() => editor.chain().focus().toggleCode().run()}
         >
           <Code className="size-3.5" />
         </B>
         <B
-          title="Link"
+          title={t("Link")}
           active={st.link}
           onClick={() => {
             const prev = editor.getAttributes("link").href as string | undefined
-            const url = window.prompt("Indirizzo del link", prev ?? "https://")
+            const url = window.prompt(
+              t("Indirizzo del link"),
+              prev ?? "https://"
+            )
             if (url === null) return
             if (url === "")
               editor.chain().focus().extendMarkRange("link").unsetLink().run()
@@ -156,7 +161,7 @@ export function DocBubbleMenu({
           <Link2 className="size-3.5" />
         </B>
         <div className="mx-0.5 h-4 w-px bg-white/15" />
-        <B title="Nuovo commento (⌥⌘M)" onClick={onComment}>
+        <B title={t("Nuovo commento (⌥⌘M)")} onClick={onComment}>
           <MessageSquarePlus className="size-3.5" />
         </B>
       </div>

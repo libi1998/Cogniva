@@ -5,6 +5,7 @@ import { Decoration, DecorationSet, type EditorView } from "@tiptap/pm/view"
 import type { Node as PMNode } from "@tiptap/pm/model"
 import { footnoteKey, noteLabel } from "./tiptap-extensions"
 
+import { tr as translate } from "@/lib/i18n/client"
 /**
  * Pagine vere, come in Word.
  *
@@ -757,7 +758,7 @@ function notesWidget(state: EditorState, paginated: boolean) {
     const title = document.createElement("p")
     title.className = "doc-notes-title"
     title.setAttribute("data-gap-item", "")
-    title.textContent = "Note"
+    title.textContent = translate("Note")
     const list = document.createElement("ol")
     notes.forEach((note, index) => {
       const li = document.createElement("li")
@@ -770,7 +771,7 @@ function notesWidget(state: EditorState, paginated: boolean) {
       else {
         const empty = document.createElement("span")
         empty.className = "doc-notes-empty"
-        empty.textContent = "Nota vuota: scrivila nel pannello"
+        empty.textContent = translate("Nota vuota: scrivila nel pannello")
         button.appendChild(empty)
       }
       li.appendChild(button)

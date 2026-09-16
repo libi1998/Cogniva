@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input"
 import {
   ADDINS,
+  CATEGORY_LABELS,
   setAddinEnabled,
   useEnabledAddins,
   type AddinId,
@@ -20,13 +21,8 @@ import {
 import { cn } from "@/lib/utils"
 import { ADDIN_ICONS, ADDIN_TINTS } from "./addin-icons"
 
-const FILTERS = [
-  "Tutti",
-  "Attivi",
-  "Contenuti",
-  "Scrittura",
-  "Ricerca",
-] as const
+import { useT } from "@/lib/i18n/client"
+const FILTERS = ["all", "active", "content", "writing", "research"] as const
 
 /** «Componenti aggiuntivi» di Word: la raccolta da cui si aggiungono e rimuovono */
 export function AddinsDialog({
@@ -38,14 +34,15 @@ export function AddinsDialog({
   onClose: () => void
   onOpenAddin: (id: AddinId) => void
 }) {
+  const t = useT()
   const enabled = useEnabledAddins()
-  const [filter, setFilter] = React.useState<(typeof FILTERS)[number]>("Tutti")
+  const [filter, setFilter] = React.useState<(typeof FILTERS)[number]>("all")
   const [query, setQuery] = React.useState("")
   const q = query.trim().toLocaleLowerCase()
   const list = ADDINS.filter(
     (a) =>
-      (filter === "Tutti" ||
-        (filter === "Attivi"
+      (filter === "all" ||
+        (filter === "active"
           ? enabled.includes(a.id)
           : a.category === filter)) &&
       (!q ||
@@ -58,19 +55,20 @@ export function AddinsDialog({
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogContent className="gap-0 p-0 sm:max-w-[680px]">
         <DialogHeader className="border-b border-border px-5 py-4">
-          <DialogTitle>Componenti aggiuntivi</DialogTitle>
+          <DialogTitle>{t("Componenti aggiuntivi")}</DialogTitle>
           <DialogDescription>
-            Strumenti in più per i documenti, scritti e verificati da Cogniva:
-            nessun codice di terzi gira nella pagina.
+            {t(
+              "Strumenti in più per i documenti, scritti e verificati da Cogniva: nessun codice di terzi gira nella pagina."
+            )}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-wrap items-center gap-2 border-b border-border px-5 py-3">
           <div className="relative min-w-40 flex-1">
             <Search className="pointer-events-none absolute top-1/2 left-2 size-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
-              aria-label="Cerca componenti aggiuntivi"
+              aria-label={t("Cerca componenti aggiuntivi")}
               className="h-8 pl-7"
-              placeholder="Cerca"
+              placeholder={t("Cerca")}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -78,7 +76,7 @@ export function AddinsDialog({
           <div
             className="flex flex-wrap gap-1"
             role="tablist"
-            aria-label="Filtra"
+            aria-label={t("Filtra")}
           >
             {FILTERS.map((f) => (
               <button
@@ -94,7 +92,11 @@ export function AddinsDialog({
                     : "bg-muted text-muted-foreground hover:text-foreground"
                 )}
               >
-                {f}
+                {f === "all"
+                  ? t("Tutti")
+                  : f === "active"
+                    ? t("Attivi")
+                    : CATEGORY_LABELS[f]}
               </button>
             ))}
           </div>
@@ -128,12 +130,14 @@ export function AddinsDialog({
                 <div className="flex flex-wrap gap-1 text-[10px]">
                   {addin.network.length ? (
                     <span className="flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-amber-700 dark:text-amber-300">
-                      <Globe className="size-3" /> Usa internet:{" "}
-                      {addin.network.join(", ")}
+                      <Globe className="size-3" />{" "}
+                      {t("Usa internet: {services}", {
+                        services: addin.network.join(", "),
+                      })}
                     </span>
                   ) : (
                     <span className="flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-emerald-700 dark:text-emerald-300">
-                      <WifiOff className="size-3" /> Funziona offline
+                      <WifiOff className="size-3" /> {t("Funziona offline")}
                     </span>
                   )}
                   {addin.permissions.map((p) => (
@@ -155,10 +159,10 @@ export function AddinsDialog({
                   >
                     {active ? (
                       <>
-                        <Check className="size-3.5" /> Aggiunto
+                        <Check className="size-3.5" /> {t("Aggiunto")}
                       </>
                     ) : (
-                      "Aggiungi"
+                      t("Aggiungi")
                     )}
                   </Button>
                   <Button
@@ -172,7 +176,7 @@ export function AddinsDialog({
                       onClose()
                     }}
                   >
-                    Apri
+                    {t("Apri")}
                   </Button>
                 </div>
               </article>
@@ -180,7 +184,7 @@ export function AddinsDialog({
           })}
           {!list.length ? (
             <p className="col-span-full py-8 text-center text-sm text-muted-foreground">
-              Nessun componente aggiuntivo trovato.
+              {t("Nessun componente aggiuntivo trovato.")}
             </p>
           ) : null}
         </div>

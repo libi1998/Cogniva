@@ -5,6 +5,7 @@ import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.j
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js"
 import type { Shape3D, View3D } from "./catalog"
 
+import { tr } from "@/lib/i18n/client"
 /**
  * Il visualizzatore dei modelli 3D nel documento: luce da studio, camera che
  * inquadra il modello, rotazione col trascinamento e zoom con la rotellina
@@ -205,7 +206,7 @@ export function createViewer(
       },
       () => {
         if (disposed || token !== loadToken) return
-        onError("Modello non leggibile: serve un glTF autonomo (.glb).")
+        onError(tr("Modello non leggibile: serve un glTF autonomo (.glb)."))
       }
     )
   }

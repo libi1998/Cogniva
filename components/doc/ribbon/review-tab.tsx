@@ -79,8 +79,11 @@ import { ReadAloudGroup } from "../read-aloud"
 import { RibbonButton, RibbonGroup, RibbonMenu, RibbonRows } from "./ribbon-ui"
 import type { RibbonCtx } from "./shared"
 
+import { useT, tr, useLocale, useRegion } from "@/lib/i18n/client"
 /** «Conteggio parole» di Word: tutto quello che si conta in un documento */
 function WordCount({ ctx }: { ctx: RibbonCtx }) {
+  const t = useT()
+  const region = useRegion()
   const [stats, setStats] = React.useState<[string, number][]>([])
   const measure = () => {
     const { doc } = ctx.editor.state
@@ -98,11 +101,11 @@ function WordCount({ ctx }: { ctx: RibbonCtx }) {
     const paragraphs = count.paragraphs
     const words = text.match(/[\p{L}\p{N}]+(?:['’-][\p{L}\p{N}]+)*/gu) ?? []
     setStats([
-      ["Pagine", ctx.pages],
-      ["Parole", words.length],
-      ["Caratteri (spazi esclusi)", text.replace(/\s/g, "").length],
-      ["Caratteri (spazi inclusi)", text.replace(/\n/g, "").length],
-      ["Paragrafi", paragraphs],
+      [t("Pagine"), ctx.pages],
+      [t("Parole"), words.length],
+      [t("Caratteri (spazi esclusi)"), text.replace(/\s/g, "").length],
+      [t("Caratteri (spazi inclusi)"), text.replace(/\n/g, "").length],
+      [t("Paragrafi"), paragraphs],
     ])
   }
 
@@ -112,7 +115,7 @@ function WordCount({ ctx }: { ctx: RibbonCtx }) {
         render={
           <RibbonButton
             large
-            label="Conteggio parole"
+            label={t("Conteggio parole")}
             icon={<WholeWord className="size-5" />}
           />
         }
@@ -123,13 +126,13 @@ function WordCount({ ctx }: { ctx: RibbonCtx }) {
         initialFocus={false}
         finalFocus={false}
       >
-        <p className="mb-2 text-xs font-semibold">Conteggio parole</p>
+        <p className="mb-2 text-xs font-semibold">{t("Conteggio parole")}</p>
         <dl className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 text-xs">
           {stats.map(([label, value]) => (
             <React.Fragment key={label}>
               <dt className="text-muted-foreground">{label}</dt>
               <dd className="text-right tabular-nums">
-                {value.toLocaleString("it-IT")}
+                {value.toLocaleString(region)}
               </dd>
             </React.Fragment>
           ))}
@@ -140,6 +143,7 @@ function WordCount({ ctx }: { ctx: RibbonCtx }) {
 }
 
 function AuthorName() {
+  const t = useT()
   const author = useAuthor()
   const [draft, setDraft] = React.useState<string | null>(null)
   return (
@@ -153,7 +157,7 @@ function AuthorName() {
         render={
           <RibbonButton
             label={author}
-            title="Il nome con cui firmi commenti e risposte"
+            title={t("Il nome con cui firmi commenti e risposte")}
             icon={<UserPen className="size-4" />}
             className="max-w-[140px] justify-start"
           />
@@ -161,7 +165,7 @@ function AuthorName() {
       />
       <PopoverContent align="start" className="w-60 p-3">
         <label className="text-xs font-medium" htmlFor="doc-author">
-          Nome autore
+          {t("Nome autore")}
         </label>
         <Input
           id="doc-author"
@@ -173,7 +177,7 @@ function AuthorName() {
           }}
         />
         <p className="mt-1.5 text-[11px] text-muted-foreground">
-          Resta in questo browser, per tutti i documenti.
+          {t("Resta in questo browser, per tutti i documenti.")}
         </p>
       </PopoverContent>
     </Popover>
@@ -193,14 +197,16 @@ function AccessibilityDialog({
   onClose: () => void
   ctx: RibbonCtx
 }) {
+  const t = useT()
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogContent className="gap-0 p-0 sm:max-w-[520px]">
         <DialogHeader className="border-b border-border px-5 py-4">
-          <DialogTitle>Verifica accessibilità</DialogTitle>
+          <DialogTitle>{t("Verifica accessibilità")}</DialogTitle>
           <DialogDescription>
-            Quello che rende il documento difficile da leggere per chi usa un
-            lettore di schermo o vede poco.
+            {t(
+              "Quello che rende il documento difficile da leggere per chi usa un lettore di schermo o vede poco."
+            )}
           </DialogDescription>
         </DialogHeader>
         {open ? <AccessibilityList ctx={ctx} onClose={onClose} /> : null}
@@ -216,6 +222,7 @@ function AccessibilityList({
   ctx: RibbonCtx
   onClose: () => void
 }) {
+  const t = useT()
   const { editor, theme } = ctx
   const paper =
     theme.paper && theme.paper.startsWith("#") ? theme.paper : "#ffffff"
@@ -224,7 +231,11 @@ function AccessibilityList({
   )
   const [alts, setAlts] = React.useState<Record<string, string>>({})
   const refresh = () => setIssues(checkAccessibility(editor.state.doc, paper))
-  const labels = { error: "Errore", warning: "Avviso", tip: "Suggerimento" }
+  const labels = {
+    error: t("Errore"),
+    warning: t("Avviso"),
+    tip: t("Suggerimento"),
+  }
 
   return (
     <div>
@@ -274,7 +285,7 @@ function AccessibilityList({
                       onClose()
                     }}
                   >
-                    Vai
+                    {t("Vai")}
                   </Button>
                 ) : null}
               </div>
@@ -298,11 +309,11 @@ function AccessibilityList({
                     onChange={(e) =>
                       setAlts({ ...alts, [issue.id]: e.target.value })
                     }
-                    placeholder="Es. Grafico delle vendite in crescita"
+                    placeholder={t("Es. Grafico delle vendite in crescita")}
                     className="h-8 flex-1 rounded-md border border-input bg-transparent px-2 text-sm"
                   />
                   <Button type="submit" size="sm" className="h-8">
-                    Salva
+                    {t("Salva")}
                   </Button>
                 </form>
               ) : null}
@@ -310,17 +321,17 @@ function AccessibilityList({
           ))
         ) : (
           <p className="flex items-center gap-2 py-6 text-sm">
-            <Check className="size-4 text-emerald-500" /> Nessun problema di
-            accessibilità trovato.
+            <Check className="size-4 text-emerald-500" />{" "}
+            {t("Nessun problema di accessibilità trovato.")}
           </p>
         )}
       </div>
       <DialogFooter className="border-t border-border px-5 py-3">
         <Button type="button" variant="outline" onClick={refresh}>
-          Ricontrolla
+          {t("Ricontrolla")}
         </Button>
         <Button type="button" onClick={onClose}>
-          Chiudi
+          {t("Chiudi")}
         </Button>
       </DialogFooter>
     </div>
@@ -340,16 +351,20 @@ function TranslateDialog({
   ctx: RibbonCtx
   scope: "selection" | "document"
 }) {
+  const t = useT()
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogContent className="gap-0 p-0 sm:max-w-[460px]">
         <DialogHeader className="border-b border-border px-5 py-4">
           <DialogTitle>
-            {scope === "selection" ? "Traduci selezione" : "Traduci documento"}
+            {scope === "selection"
+              ? t("Traduci selezione")
+              : t("Traduci documento")}
           </DialogTitle>
           <DialogDescription>
-            La traduzione avviene sul tuo dispositivo: il testo non viene
-            inviato a nessun servizio.
+            {t(
+              "La traduzione avviene sul tuo dispositivo: il testo non viene inviato a nessun servizio."
+            )}
           </DialogDescription>
         </DialogHeader>
         {open ? (
@@ -364,9 +379,24 @@ function TranslateDialog({
 const loadLocalTranslator = () => import("@/lib/translate/local")
 
 const ENGINES: { value: TranslateEngine; label: string }[] = [
-  { value: "auto", label: "Automatico" },
-  { value: "browser", label: "Browser" },
-  { value: "device", label: "Modello Cogniva" },
+  {
+    value: "auto",
+    get label() {
+      return tr("Automatico")
+    },
+  },
+  {
+    value: "browser",
+    get label() {
+      return tr("Browser")
+    },
+  },
+  {
+    value: "device",
+    get label() {
+      return tr("Modello Cogniva")
+    },
+  },
 ]
 
 function readEngine(): TranslateEngine {
@@ -425,12 +455,18 @@ function TranslateForm({
   scope: "selection" | "document"
   onClose: () => void
 }) {
+  const t = useT()
   const { editor, theme } = ctx
   const router = useRouter()
+  const locale = useLocale()
+  const region = useRegion()
   const [source, setSource] = React.useState(
-    (theme.language || "it-IT").slice(0, 2)
+    (theme.language || region).slice(0, 2)
   )
-  const [target, setTarget] = React.useState(source === "en" ? "it" : "en")
+  // si traduce verso la lingua di chi usa l'app, o in inglese se è la stessa
+  const [target, setTarget] = React.useState<string>(
+    source === locale ? (locale === "en" ? "it" : "en") : locale
+  )
   const [engine, setEngine] = React.useState<TranslateEngine>(readEngine)
   const [busy, setBusy] = React.useState(false)
   const [progress, setProgress] = React.useState<TranslateProgress | null>(null)
@@ -516,7 +552,7 @@ function TranslateForm({
         const file: WFile = {
           id: nanoid(10),
           kind: "doc",
-          title: `${ctx.title || "Documento"} (${TRANSLATE_LANGUAGES.find((l) => l.code === target)?.label ?? target})`,
+          title: `${ctx.title || t("Documento")} (${TRANSLATE_LANGUAGES.find((l) => l.code === target)?.label ?? target})`,
           icon: "file-text",
           createdAt: now,
           updatedAt: now,
@@ -526,14 +562,16 @@ function TranslateForm({
           },
         }
         const id = getWorkspace().addFile(file)
-        toast.success("Traduzione pronta in un nuovo documento")
+        toast.success(t("Traduzione pronta in un nuovo documento"))
         onClose()
         router.push(fileHref({ kind: "doc", id }) as Route)
       })
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === "AbortError") return
         toast.error(
-          error instanceof Error ? error.message : "Traduzione non riuscita"
+          error instanceof Error
+            ? t(error.message)
+            : t("Traduzione non riuscita")
         )
       })
       .finally(() => {
@@ -563,7 +601,7 @@ function TranslateForm({
       <div className="space-y-3 px-5 py-4 text-sm">
         <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-3">
           <label className="block min-w-0 space-y-1">
-            <span className="text-xs text-muted-foreground">Da</span>
+            <span className="text-xs text-muted-foreground">{t("Da")}</span>
             <select
               value={source}
               disabled={busy}
@@ -583,7 +621,7 @@ function TranslateForm({
             </select>
           </label>
           <label className="block min-w-0 space-y-1">
-            <span className="text-xs text-muted-foreground">A</span>
+            <span className="text-xs text-muted-foreground">{t("A")}</span>
             <select
               value={target}
               disabled={busy}
@@ -603,10 +641,12 @@ function TranslateForm({
         </div>
 
         <div className="space-y-1">
-          <span className="text-xs text-muted-foreground">Traduttore</span>
+          <span className="text-xs text-muted-foreground">
+            {t("Traduttore")}
+          </span>
           <div
             role="radiogroup"
-            aria-label="Traduttore"
+            aria-label={t("Traduttore")}
             className="grid grid-cols-3 gap-1 rounded-md bg-muted p-0.5"
           >
             {ENGINES.map((e) => (
@@ -637,27 +677,40 @@ function TranslateForm({
             )}
           >
             {checking
-              ? "Controllo i traduttori disponibili…"
+              ? t("Controllo i traduttori disponibili…")
               : uses === "browser"
                 ? browserState === "available"
-                  ? "Traduttore integrato del browser, pronto."
-                  : "Traduttore integrato del browser: la prima volta scarica la coppia di lingue."
+                  ? t("Traduttore integrato del browser, pronto.")
+                  : t(
+                      "Traduttore integrato del browser: la prima volta scarica la coppia di lingue."
+                    )
                 : uses === "device"
                   ? download
-                    ? `Modello OPUS-MT sul dispositivo: la prima volta scarica circa ${download} MB, poi funziona anche offline.`
-                    : "Modello OPUS-MT sul dispositivo, già scaricato: funziona anche offline."
+                    ? t(
+                        "Modello OPUS-MT sul dispositivo: la prima volta scarica circa {download} MB, poi funziona anche offline.",
+                        { download }
+                      )
+                    : t(
+                        "Modello OPUS-MT sul dispositivo, già scaricato: funziona anche offline."
+                      )
                   : engine === "browser"
                     ? browserState === "missing"
-                      ? "Questo browser non ha un traduttore integrato: scegli «Modello Cogniva»."
-                      : "Il traduttore del browser non ha questa coppia di lingue."
-                    : "Per questa coppia di lingue non c'è un modello sul dispositivo."}
+                      ? t(
+                          "Questo browser non ha un traduttore integrato: scegli «Modello Cogniva»."
+                        )
+                      : t(
+                          "Il traduttore del browser non ha questa coppia di lingue."
+                        )
+                    : t(
+                        "Per questa coppia di lingue non c'è un modello sul dispositivo."
+                      )}
           </p>
         </div>
 
         {scope === "selection" ? (
           <>
             <p className="max-h-24 overflow-y-auto rounded-md border border-border bg-muted/40 p-2 text-xs whitespace-pre-wrap">
-              {selection.text || "Seleziona prima del testo nel documento."}
+              {selection.text || t("Seleziona prima del testo nel documento.")}
             </p>
             {result !== null ? (
               <p
@@ -670,8 +723,9 @@ function TranslateForm({
           </>
         ) : (
           <p className="text-xs text-muted-foreground">
-            Si crea un nuovo documento tradotto con la stessa formattazione:
-            l&apos;originale non cambia.
+            {t(
+              "Si crea un nuovo documento tradotto con la stessa formattazione: l'originale non cambia."
+            )}
           </p>
         )}
 
@@ -680,10 +734,13 @@ function TranslateForm({
             <div className="flex justify-between text-xs text-muted-foreground">
               <span>
                 {!progress
-                  ? "Preparo il traduttore…"
+                  ? t("Preparo il traduttore…")
                   : progress.phase === "download"
-                    ? "Scarico il modello di traduzione…"
-                    : `Traduco ${progress.done} di ${progress.total}…`}
+                    ? t("Scarico il modello di traduzione…")
+                    : t("Traduco {done} di {total}…", {
+                        done: progress.done,
+                        total: progress.total,
+                      })}
               </span>
               {fraction !== null ? (
                 <span className="tabular-nums">
@@ -718,11 +775,11 @@ function TranslateForm({
       <DialogFooter className="border-t border-border px-5 py-3">
         {busy ? (
           <Button type="button" variant="ghost" onClick={cancel}>
-            Annulla
+            {t("Annulla")}
           </Button>
         ) : (
           <Button type="button" variant="ghost" onClick={onClose}>
-            Chiudi
+            {t("Chiudi")}
           </Button>
         )}
         {result !== null ? (
@@ -733,22 +790,24 @@ function TranslateForm({
               onClick={() => {
                 void navigator.clipboard
                   ?.writeText(previewText(editor, result))
-                  .then(() => toast.success("Traduzione copiata"))
+                  .then(() => toast.success(t("Traduzione copiata")))
               }}
             >
-              Copia
+              {t("Copia")}
             </Button>
             <Button
               type="button"
               onClick={() => {
                 if (!replaceWithTranslation(editor, selection, result)) {
-                  toast.error("Il documento è cambiato: ripeti la traduzione")
+                  toast.error(
+                    t("Il documento è cambiato: ripeti la traduzione")
+                  )
                   return
                 }
                 onClose()
               }}
             >
-              Sostituisci
+              {t("Sostituisci")}
             </Button>
           </>
         ) : (
@@ -762,7 +821,7 @@ function TranslateForm({
             }
             onClick={run}
           >
-            {busy ? "Traduzione…" : "Traduci"}
+            {busy ? t("Traduzione…") : t("Traduci")}
           </Button>
         )}
       </DialogFooter>
@@ -783,6 +842,7 @@ function CompareDialog({
   ctx: RibbonCtx
   fileId: string | null
 }) {
+  const t = useT()
   const router = useRouter()
   const author = useAuthor()
   const docs = useStore(
@@ -799,21 +859,24 @@ function CompareDialog({
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
       <DialogContent className="gap-0 p-0 sm:max-w-[460px]">
         <DialogHeader className="border-b border-border px-5 py-4">
-          <DialogTitle>Confronta documenti</DialogTitle>
+          <DialogTitle>{t("Confronta documenti")}</DialogTitle>
           <DialogDescription>
-            Le differenze diventano revisioni in un documento nuovo: le accetti
-            o le rifiuti una per una.
+            {t(
+              "Le differenze diventano revisioni in un documento nuovo: le accetti o le rifiuti una per una."
+            )}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-3 px-5 py-4 text-sm">
           <label className="block space-y-1">
-            <span className="text-xs text-muted-foreground">Confronta con</span>
+            <span className="text-xs text-muted-foreground">
+              {t("Confronta con")}
+            </span>
             <select
               value={revised}
               onChange={(e) => setRevised(e.target.value)}
               className="h-8 w-full rounded-md border border-input bg-transparent px-2 text-sm"
             >
-              <option value="">Scegli un documento…</option>
+              <option value="">{t("Scegli un documento…")}</option>
               {docs.map((d) => (
                 <option key={d.id} value={d.id}>
                   {d.title}
@@ -829,14 +892,14 @@ function CompareDialog({
                 onChange={() => setDirection(value)}
               />
               {value === "this-original"
-                ? "Questo è l'originale, l'altro la revisione"
-                : "L'altro è l'originale, questo la revisione"}
+                ? t("Questo è l'originale, l'altro la revisione")
+                : t("L'altro è l'originale, questo la revisione")}
             </label>
           ))}
         </div>
         <DialogFooter className="border-t border-border px-5 py-3">
           <Button type="button" variant="ghost" onClick={onClose}>
-            Annulla
+            {t("Annulla")}
           </Button>
           <Button
             type="button"
@@ -853,7 +916,10 @@ function CompareDialog({
               const file: WFile = {
                 id: nanoid(10),
                 kind: "doc",
-                title: `Confronto — ${ctx.title} / ${other.title}`,
+                title: t("Confronto — {original} / {revised}", {
+                  original: ctx.title,
+                  revised: other.title,
+                }),
                 icon: "file-text",
                 createdAt: now,
                 updatedAt: now,
@@ -867,7 +933,7 @@ function CompareDialog({
               router.push(fileHref({ kind: "doc", id }) as Route)
             }}
           >
-            Confronta
+            {t("Confronta")}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -878,6 +944,8 @@ function CompareDialog({
 /* ---------------------------- riquadro revisioni -------------------------- */
 
 function ChangesPane({ ctx }: { ctx: RibbonCtx }) {
+  const t = useT()
+  const region = useRegion()
   const { editor } = ctx
   const [changes, setChanges] = React.useState<ChangeInfo[]>([])
   const refresh = () => setChanges(listChanges(editor.state.doc))
@@ -894,7 +962,7 @@ function ChangesPane({ ctx }: { ctx: RibbonCtx }) {
         render={
           <RibbonButton
             compact
-            label="Riquadro revisioni"
+            label={t("Riquadro revisioni")}
             icon={<ListTodo className="size-4" />}
             className="justify-start"
           />
@@ -902,9 +970,10 @@ function ChangesPane({ ctx }: { ctx: RibbonCtx }) {
       />
       <PopoverContent align="start" className="w-80 p-0" finalFocus={false}>
         <p className="border-b border-border px-3 py-2 text-xs font-medium">
-          Revisioni: {changes.filter((c) => c.kind === "insertion").length}{" "}
-          inserimenti, {changes.filter((c) => c.kind === "deletion").length}{" "}
-          eliminazioni
+          {t("Revisioni: {insertions} inserimenti, {deletions} eliminazioni", {
+            insertions: changes.filter((c) => c.kind === "insertion").length,
+            deletions: changes.filter((c) => c.kind === "deletion").length,
+          })}
         </p>
         <div className="max-h-80 overflow-y-auto p-1">
           {changes.length ? (
@@ -919,10 +988,10 @@ function ChangesPane({ ctx }: { ctx: RibbonCtx }) {
                   className="block w-full text-left"
                 >
                   <span className="block text-[11px] text-muted-foreground">
-                    {c.author || "Autore"} ·{" "}
-                    {c.kind === "insertion" ? "Inserito" : "Eliminato"}
+                    {c.author || t("Autore")} ·{" "}
+                    {c.kind === "insertion" ? t("Inserito") : t("Eliminato")}
                     {c.date
-                      ? ` · ${new Date(c.date).toLocaleString("it-IT", { dateStyle: "short", timeStyle: "short" })}`
+                      ? ` · ${new Date(c.date).toLocaleString(region, { dateStyle: "short", timeStyle: "short" })}`
                       : ""}
                   </span>
                   <span
@@ -946,7 +1015,7 @@ function ChangesPane({ ctx }: { ctx: RibbonCtx }) {
                       refresh()
                     }}
                   >
-                    <Check className="size-3" /> Accetta
+                    <Check className="size-3" /> {t("Accetta")}
                   </Button>
                   <Button
                     type="button"
@@ -959,14 +1028,14 @@ function ChangesPane({ ctx }: { ctx: RibbonCtx }) {
                       refresh()
                     }}
                   >
-                    <X className="size-3" /> Rifiuta
+                    <X className="size-3" /> {t("Rifiuta")}
                   </Button>
                 </div>
               </div>
             ))
           ) : (
             <p className="px-2 py-3 text-xs text-muted-foreground">
-              Nessuna revisione.
+              {t("Nessuna revisione.")}
             </p>
           )}
         </div>
@@ -978,46 +1047,83 @@ function ChangesPane({ ctx }: { ctx: RibbonCtx }) {
 const MARKUPS: { value: DocMarkup; label: string; hint: string }[] = [
   {
     value: "simple",
-    label: "Revisioni semplici",
-    hint: "Testo finale, una riga rossa accanto",
+    get label() {
+      return tr("Revisioni semplici")
+    },
+    get hint() {
+      return tr("Testo finale, una riga rossa accanto")
+    },
   },
   {
     value: "all",
-    label: "Tutti i commenti con markup",
-    hint: "Inserimenti e eliminazioni colorati",
+    get label() {
+      return tr("Tutti i commenti con markup")
+    },
+    get hint() {
+      return tr("Inserimenti e eliminazioni colorati")
+    },
   },
   {
     value: "none",
-    label: "Nessun markup",
-    hint: "Il documento come sarà accettando tutto",
+    get label() {
+      return tr("Nessun markup")
+    },
+    get hint() {
+      return tr("Il documento come sarà accettando tutto")
+    },
   },
   {
     value: "original",
-    label: "Originale",
-    hint: "Il documento prima delle revisioni",
+    get label() {
+      return tr("Originale")
+    },
+    get hint() {
+      return tr("Il documento prima delle revisioni")
+    },
   },
 ]
 
 const PROTECTIONS: { value: DocProtection; label: string; hint: string }[] = [
   {
     value: "none",
-    label: "Nessuna restrizione",
-    hint: "Tutti possono modificare",
+    get label() {
+      return tr("Nessuna restrizione")
+    },
+    get hint() {
+      return tr("Tutti possono modificare")
+    },
   },
   {
     value: "tracked",
-    label: "Solo revisioni",
-    hint: "Ogni modifica viene rilevata",
+    get label() {
+      return tr("Solo revisioni")
+    },
+    get hint() {
+      return tr("Ogni modifica viene rilevata")
+    },
   },
   {
     value: "comments",
-    label: "Solo commenti",
-    hint: "Il testo non si modifica, si commenta",
+    get label() {
+      return tr("Solo commenti")
+    },
+    get hint() {
+      return tr("Il testo non si modifica, si commenta")
+    },
   },
-  { value: "readonly", label: "Sola lettura", hint: "Nessuna modifica" },
+  {
+    value: "readonly",
+    get label() {
+      return tr("Sola lettura")
+    },
+    get hint() {
+      return tr("Nessuna modifica")
+    },
+  },
 ]
 
 export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
+  const t = useT()
   const { editor, st, theme, setTheme, comments } = ctx
   const current = comments.list.find((c) => c.id === comments.active)
   const resolved = comments.list.filter((c) => c.resolved).length
@@ -1032,7 +1138,7 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
     if (mode === "all" || mode === "all-stop") chain.acceptAllChanges()
     else chain.acceptChange()
     const done = chain.run()
-    if (!done) toast.info("Nessuna revisione qui")
+    if (!done) toast.info(t("Nessuna revisione qui"))
     if (mode === "next") editor.chain().focus().goToChange(1).run()
     if (mode === "all-stop") setTheme({ trackChanges: false })
   }
@@ -1041,26 +1147,26 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
     if (mode === "all" || mode === "all-stop") chain.rejectAllChanges()
     else chain.rejectChange()
     const done = chain.run()
-    if (!done) toast.info("Nessuna revisione qui")
+    if (!done) toast.info(t("Nessuna revisione qui"))
     if (mode === "next") editor.chain().focus().goToChange(1).run()
     if (mode === "all-stop") setTheme({ trackChanges: false })
   }
 
   return (
     <>
-      <RibbonGroup label="Strumenti di correzione" safe>
+      <RibbonGroup label={t("Strumenti di correzione")} safe>
         <RibbonButton
           large
-          label="Ortografia"
-          title="Sottolinea le parole sconosciute mentre scrivi"
+          label={t("Ortografia")}
+          title={t("Sottolinea le parole sconosciute mentre scrivi")}
           active={theme.spellcheck}
           icon={<SpellCheck className="size-5" />}
           onClick={() => setTheme({ spellcheck: !theme.spellcheck })}
         />
         <RibbonButton
           large
-          label="Thesaurus"
-          title="Sinonimi della parola selezionata (Maiusc+F7)"
+          label={t("Thesaurus")}
+          title={t("Sinonimi della parola selezionata (Maiusc+F7)")}
           active={ctx.taskPane?.kind === "thesaurus"}
           icon={<BookA className="size-5" />}
           onClick={() =>
@@ -1078,32 +1184,32 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
 
       <ReadAloudGroup editor={ctx.editor} language={ctx.theme.language} />
 
-      <RibbonGroup label="Accessibilità" safe>
+      <RibbonGroup label={t("Accessibilità")} safe>
         <RibbonButton
           large
-          label="Verifica accessibilità"
+          label={t("Verifica accessibilità")}
           icon={<Accessibility className="size-5" />}
           onClick={() => setDialog("a11y")}
         />
       </RibbonGroup>
 
-      <RibbonGroup label="Lingua" safe>
+      <RibbonGroup label={t("Lingua")} safe>
         <RibbonMenu
           className="w-56"
           trigger={
             <RibbonButton
               large
               chevron
-              label="Traduci"
+              label={t("Traduci")}
               icon={<Languages className="size-5" />}
             />
           }
         >
           <DropdownMenuItem onClick={() => setDialog("translate-selection")}>
-            Traduci selezione
+            {t("Traduci selezione")}
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setDialog("translate-document")}>
-            Traduci documento
+            {t("Traduci documento")}
           </DropdownMenuItem>
         </RibbonMenu>
         <RibbonMenu
@@ -1112,12 +1218,12 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
             <RibbonButton
               large
               chevron
-              label="Lingua"
+              label={t("Lingua")}
               icon={<Globe className="size-5" />}
             />
           }
         >
-          <DropdownMenuLabel>Lingua di correzione</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("Lingua di correzione")}</DropdownMenuLabel>
           {PROOFING_LANGUAGES.map((l) => (
             <DropdownMenuItem
               key={l.code}
@@ -1130,11 +1236,11 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonMenu>
       </RibbonGroup>
 
-      <RibbonGroup label="Commenti">
+      <RibbonGroup label={t("Commenti")}>
         <RibbonButton
           large
-          label="Nuovo commento"
-          title="Commenta il testo selezionato (⌥⌘M)"
+          label={t("Nuovo commento")}
+          title={t("Commenta il testo selezionato (⌥⌘M)")}
           icon={<MessageSquarePlus className="size-5" />}
           onClick={() => {
             if (!theme.comments) setTheme({ comments: true })
@@ -1147,7 +1253,7 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
             trigger={
               <RibbonButton
                 chevron
-                label="Elimina"
+                label={t("Elimina")}
                 disabled={comments.list.length === 0}
                 icon={<Trash2 className="size-4" />}
                 className="justify-start"
@@ -1158,27 +1264,27 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
               disabled={!current}
               onClick={() => current && comments.remove(current.id)}
             >
-              Elimina questo commento
+              {t("Elimina questo commento")}
             </DropdownMenuItem>
             <DropdownMenuItem
               disabled={resolved === 0}
               onClick={() => comments.removeAll(true)}
             >
-              Elimina i commenti risolti ({resolved})
+              {t("Elimina i commenti risolti ({count})", { count: resolved })}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => comments.removeAll(false)}>
-              Elimina tutti i commenti
+              {t("Elimina tutti i commenti")}
             </DropdownMenuItem>
           </RibbonMenu>
           <RibbonButton
-            label="Precedente"
+            label={t("Precedente")}
             disabled={comments.list.length === 0}
             icon={<ChevronLeft className="size-4" />}
             className="justify-start"
             onClick={() => comments.step(-1)}
           />
           <RibbonButton
-            label="Successivo"
+            label={t("Successivo")}
             disabled={comments.list.length === 0}
             icon={<ChevronRight className="size-4" />}
             className="justify-start"
@@ -1187,7 +1293,7 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
         <RibbonRows>
           <RibbonButton
-            label={current?.resolved ? "Riapri" : "Risolvi"}
+            label={current?.resolved ? t("Riapri") : t("Risolvi")}
             disabled={!current}
             icon={<CircleCheck className="size-4" />}
             className="justify-start"
@@ -1197,7 +1303,9 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
           />
           <RibbonButton
             data-safe=""
-            label={theme.comments ? "Nascondi commenti" : "Mostra commenti"}
+            label={
+              theme.comments ? t("Nascondi commenti") : t("Mostra commenti")
+            }
             icon={
               theme.comments ? (
                 <MessageSquareOff className="size-4" />
@@ -1212,12 +1320,12 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label="Rilevamento">
+      <RibbonGroup label={t("Rilevamento")}>
         <RibbonButton
           large
           data-safe=""
-          label="Revisioni"
-          title="Rileva inserimenti ed eliminazioni di chi scrive"
+          label={t("Revisioni")}
+          title={t("Rileva inserimenti ed eliminazioni di chi scrive")}
           active={tracking}
           disabled={theme.protection === "tracked"}
           icon={<FilePenLine className="size-5" />}
@@ -1233,7 +1341,7 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
                 data-safe=""
                 label={
                   MARKUPS.find((m) => m.value === (theme.markup ?? "all"))
-                    ?.label ?? "Markup"
+                    ?.label ?? t("Markup")
                 }
                 icon={<Eye className="size-4" />}
                 className="justify-start"
@@ -1261,15 +1369,15 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label="Modifiche">
+      <RibbonGroup label={t("Modifiche")}>
         <ChangeMenu
-          label="Accetta"
+          kind="accept"
           icon={<Check className="size-5" />}
           onPick={accept}
           active={st.onChange}
         />
         <ChangeMenu
-          label="Rifiuta"
+          kind="reject"
           icon={<X className="size-5" />}
           onPick={reject}
           active={st.onChange}
@@ -1277,45 +1385,47 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
         <RibbonRows>
           <RibbonButton
             compact
-            label="Precedente"
+            label={t("Precedente")}
             icon={<ChevronLeft className="size-4" />}
             className="justify-start"
             onClick={() =>
               editor.chain().focus().goToChange(-1).run() ||
-              toast.info("Nessuna revisione")
+              toast.info(t("Nessuna revisione"))
             }
           />
           <RibbonButton
             compact
-            label="Successiva"
+            label={t("Successiva")}
             icon={<ChevronRight className="size-4" />}
             className="justify-start"
             onClick={() =>
               editor.chain().focus().goToChange(1).run() ||
-              toast.info("Nessuna revisione")
+              toast.info(t("Nessuna revisione"))
             }
           />
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label="Confronta" safe>
+      <RibbonGroup label={t("Confronta")} safe>
         <RibbonButton
           large
-          label="Confronta"
-          title="Confronta questo documento con un altro dell'area di lavoro"
+          label={t("Confronta")}
+          title={t(
+            "Confronta questo documento con un altro dell'area di lavoro"
+          )}
           icon={<FileDiff className="size-5" />}
           onClick={() => setDialog("compare")}
         />
       </RibbonGroup>
 
-      <RibbonGroup label="Proteggi" safe>
+      <RibbonGroup label={t("Proteggi")} safe>
         <RibbonMenu
           className="w-64"
           trigger={
             <RibbonButton
               large
               chevron
-              label="Limita modifica"
+              label={t("Limita modifica")}
               active={theme.protection !== "none"}
               icon={<Lock className="size-5" />}
             />
@@ -1338,11 +1448,13 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonMenu>
       </RibbonGroup>
 
-      <RibbonGroup label="Input penna" safe>
+      <RibbonGroup label={t("Input penna")} safe>
         <RibbonButton
           large
           label={
-            theme.inkVisible ? "Nascondi input penna" : "Mostra input penna"
+            theme.inkVisible
+              ? t("Nascondi input penna")
+              : t("Mostra input penna")
           }
           active={!theme.inkVisible}
           icon={<PenOff className="size-5" />}
@@ -1370,23 +1482,44 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
 }
 
 function ChangeMenu({
-  label,
+  kind,
   icon,
   onPick,
   active,
 }: {
-  label: "Accetta" | "Rifiuta"
+  kind: "accept" | "reject"
   icon: React.ReactNode
   onPick: (mode: "next" | "this" | "all" | "all-stop") => void
   active: boolean
 }) {
-  const verb = label.toLowerCase()
+  const t = useT()
+  // frasi intere: in altre lingue verbo e complemento cambiano di posto
+  const text =
+    kind === "accept"
+      ? {
+          label: t("Accetta"),
+          title: t("Accetta la revisione e passa alla successiva"),
+          more: t("Altre opzioni: accetta"),
+          next: t("Accetta e sposta alla successiva"),
+          one: t("Accetta questa modifica"),
+          all: t("Accetta tutte le modifiche"),
+          allStop: t("Accetta tutte le modifiche e interrompi rilevamento"),
+        }
+      : {
+          label: t("Rifiuta"),
+          title: t("Rifiuta la revisione e passa alla successiva"),
+          more: t("Altre opzioni: rifiuta"),
+          next: t("Rifiuta e sposta alla successiva"),
+          one: t("Rifiuta questa modifica"),
+          all: t("Rifiuta tutte le modifiche"),
+          allStop: t("Rifiuta tutte le modifiche e interrompi rilevamento"),
+        }
   return (
     <span className="flex flex-col items-center">
       <RibbonButton
         large
-        label={label}
-        title={`${label} la revisione e passa alla successiva`}
+        label={text.label}
+        title={text.title}
         active={active}
         icon={icon}
         className="h-[42px]"
@@ -1396,24 +1529,24 @@ function ChangeMenu({
         className="w-64"
         trigger={
           <RibbonButton
-            title={`Altre opzioni: ${verb}`}
+            title={text.more}
             className="h-4 w-full"
             icon={<ChevronDown className="size-3 opacity-60" />}
           />
         }
       >
         <DropdownMenuItem onClick={() => onPick("next")}>
-          {label} e sposta alla successiva
+          {text.next}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onPick("this")}>
-          {label} questa modifica
+          {text.one}
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => onPick("all")}>
-          {label} tutte le modifiche
+          {text.all}
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => onPick("all-stop")}>
-          {label} tutte le modifiche e interrompi rilevamento
+          {text.allStop}
         </DropdownMenuItem>
       </RibbonMenu>
     </span>

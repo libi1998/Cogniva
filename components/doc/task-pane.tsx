@@ -12,6 +12,7 @@ import { createAddinApi, type AddinApi } from "./addins/api"
 import type { TaskPane } from "./ribbon/shared"
 import { ThesaurusPane } from "./thesaurus-pane"
 
+import { useT, currentRegion } from "@/lib/i18n/client"
 // ogni componente aggiuntivo si scarica solo quando si apre
 const PANES: Record<
   AddinId,
@@ -59,7 +60,8 @@ export function TaskPaneHost({
   theme: DocTheme | null | undefined
   onClose: () => void
 }) {
-  const language = theme?.language || "it-IT"
+  const t = useT()
+  const language = theme?.language || currentRegion()
   if (pane.kind === "thesaurus") {
     return (
       <ThesaurusPane
@@ -95,7 +97,7 @@ export function TaskPaneHost({
         <button
           type="button"
           onClick={onClose}
-          aria-label={`Chiudi ${info.name}`}
+          aria-label={t("Chiudi {name}", { name: info.name })}
           className="flex size-7 items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground"
         >
           <X className="size-4" />

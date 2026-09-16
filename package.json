@@ -13,7 +13,9 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write \"**/*.{ts,tsx,css}\"",
-    "check": "tsc --noEmit && eslint && prettier --check \"**/*.{ts,tsx,css}\"",
+    "check": "tsc --noEmit && eslint && prettier --check \"**/*.{ts,tsx,css}\" && node scripts/i18n.mjs --check",
+    "i18n": "node scripts/i18n.mjs",
+    "i18n:check": "node scripts/i18n.mjs --check",
     "fonts": "node scripts/fetch-fonts.mjs",
     "icons": "node scripts/gen-icons.mjs",
     "test:e2e": "playwright test"

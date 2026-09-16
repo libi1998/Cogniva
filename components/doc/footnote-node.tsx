@@ -17,7 +17,9 @@ import {
 } from "@/lib/tiptap-extensions"
 import { cn } from "@/lib/utils"
 
+import { useT } from "@/lib/i18n/client"
 function FootnoteView({ editor, getPos, selected, node }: NodeViewProps) {
+  const t = useT()
   const number =
     useEditorState({
       editor,
@@ -33,7 +35,7 @@ function FootnoteView({ editor, getPos, selected, node }: NodeViewProps) {
       as="sup"
       className={cn("doc-fn", selected && "is-selected")}
       data-kind={kind}
-      title={String(node.attrs.text || "Nota vuota")}
+      title={String(node.attrs.text || t("Nota vuota"))}
       contentEditable={false}
     >
       {number ? noteLabel(kind, number) : "*"}

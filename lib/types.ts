@@ -3,6 +3,7 @@ import type { SwatchKey } from "./palette"
 import type { ChartSpec } from "./chart"
 import type { DocStyleDef } from "./doc-styles"
 
+import { tr } from "@/lib/i18n/client"
 export type FileKind = "board" | "doc"
 
 type FileMeta = {
@@ -260,7 +261,12 @@ export const PAGE_FORMATS: Record<
   PageFormat,
   { label: string; mm: [number, number] | null }
 > = {
-  screen: { label: "Schermo", mm: null },
+  screen: {
+    get label() {
+      return tr("Schermo")
+    },
+    mm: null,
+  },
   a4: { label: "A4", mm: [210, 297] },
   a5: { label: "A5", mm: [148, 210] },
   a3: { label: "A3", mm: [297, 420] },
@@ -268,9 +274,24 @@ export const PAGE_FORMATS: Record<
   legal: { label: "Legal", mm: [215.9, 355.6] },
   tabloid: { label: "Tabloid", mm: [279.4, 431.8] },
   // buste (scheda Corrispondenza), in orizzontale
-  dl: { label: "Busta DL", mm: [110, 220] },
-  c5: { label: "Busta C5", mm: [162, 229] },
-  c6: { label: "Busta C6", mm: [114, 162] },
+  dl: {
+    get label() {
+      return tr("Busta DL")
+    },
+    mm: [110, 220],
+  },
+  c5: {
+    get label() {
+      return tr("Busta C5")
+    },
+    mm: [162, 229],
+  },
+  c6: {
+    get label() {
+      return tr("Busta C6")
+    },
+    mm: [114, 162],
+  },
 }
 
 export type DocMargins = {

@@ -3,6 +3,7 @@
 import { DB_FILES, DB_NAME, DB_VERSION } from "./boot-script"
 import type { WFile } from "./types"
 
+import { tr } from "@/lib/i18n/client"
 /**
  * Salvataggio in IndexedDB, un record per file.
  *
@@ -68,7 +69,7 @@ function openDb(): Promise<IDBDatabase> {
     }
     request.onblocked = () => {
       dbPromise = null
-      reject(new Error("Database bloccato"))
+      reject(new Error(tr("Database bloccato")))
     }
   })
   return dbPromise
@@ -78,7 +79,8 @@ function done(tx: IDBTransaction) {
   return new Promise<void>((resolve, reject) => {
     tx.oncomplete = () => resolve()
     tx.onerror = () => reject(tx.error)
-    tx.onabort = () => reject(tx.error ?? new Error("Salvataggio interrotto"))
+    tx.onabort = () =>
+      reject(tx.error ?? new Error(tr("Salvataggio interrotto")))
   })
 }
 

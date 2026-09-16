@@ -1,5 +1,6 @@
 import type { InkStroke } from "./types"
 
+import { tr } from "@/lib/i18n/client"
 /**
  * Input penna della scheda Disegno: tratti morbidi, gomma, riconoscimento
  * delle forme («Da input penna a forma») e penne personalizzate.
@@ -49,9 +50,15 @@ export const PEN_WIDTHS: Record<PenKind, number[]> = {
 }
 
 export const PEN_LABELS: Record<PenKind, string> = {
-  pen: "Penna",
-  pencil: "Matita",
-  highlighter: "Evidenziatore",
+  get pen() {
+    return tr("Penna")
+  },
+  get pencil() {
+    return tr("Matita")
+  },
+  get highlighter() {
+    return tr("Evidenziatore")
+  },
 }
 
 /** Il path SVG di un tratto: curve fra i punti medi, morbide anche se lente */

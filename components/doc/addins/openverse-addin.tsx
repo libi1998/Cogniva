@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
 import { paragraph, type AddinApi } from "./api"
 
+import { useT, tr } from "@/lib/i18n/client"
 /**
  * Immagini libere da Openverse (WordPress): Creative Commons e pubblico
  * dominio. L'immagine entra con autore, licenza e fonte nella didascalia.
@@ -33,7 +34,7 @@ const licenseName = (r: Result) =>
   r.license === "cc0"
     ? "CC0"
     : r.license === "pdm"
-      ? "Pubblico dominio"
+      ? tr("Pubblico dominio")
       : `CC ${r.license.toUpperCase()} ${r.licenseVersion}`.trim()
 
 async function search(
@@ -48,8 +49,8 @@ async function search(
     { signal }
   )
   if (response.status === 429)
-    throw new Error("Troppe ricerche: riprova fra un minuto.")
-  if (!response.ok) throw new Error("Openverse non risponde")
+    throw new Error(tr("Troppe ricerche: riprova fra un minuto."))
+  if (!response.ok) throw new Error(tr("Openverse non risponde"))
   const data = (await response.json()) as {
     results?: {
       id: string
@@ -72,10 +73,10 @@ async function search(
     return [
       {
         id: r.id,
-        title: r.title || "Senza titolo",
+        title: r.title || tr("Senza titolo"),
         url,
         thumbnail,
-        creator: r.creator || "Autore sconosciuto",
+        creator: r.creator || tr("Autore sconosciuto"),
         creatorUrl: safe(r.creator_url),
         license: r.license,
         licenseVersion: r.license_version ?? "",
@@ -88,6 +89,7 @@ async function search(
 }
 
 export function OpenverseAddin({ api }: { api: AddinApi }) {
+  const t = useT()
   const [query, setQuery] = React.useState(() =>
     api.selectionText().slice(0, 60)
   )
@@ -109,11 +111,11 @@ export function OpenverseAddin({ api }: { api: AddinApi }) {
       search(q, commercial, controller.signal)
         .then((list) => {
           setResults(list)
-          setError(list.length ? "" : "Nessuna immagine trovata.")
+          setError(list.length ? "" : t("Nessuna immagine trovata."))
         })
         .catch((e: unknown) => {
           if (controller.signal.aborted) return
-          setError(e instanceof Error ? e.message : "Ricerca non riuscita")
+          setError(e instanceof Error ? e.message : t("Ricerca non riuscita"))
         })
         .finally(() => !controller.signal.aborted && setLoading(false))
     }, 400)
@@ -121,7 +123,7 @@ export function OpenverseAddin({ api }: { api: AddinApi }) {
       window.clearTimeout(timer)
       controller.abort()
     }
-  }, [query, commercial])
+  }, [query, commercial, t])
 
   if (chosen) {
     const insert = () =>
@@ -136,7 +138,7 @@ export function OpenverseAddin({ api }: { api: AddinApi }) {
             href: chosen.landing ?? undefined,
             italic: true,
           },
-          { text: " di ", italic: true },
+          { text: ` ${t("di")} `, italic: true },
           {
             text: chosen.creator,
             href: chosen.creatorUrl ?? undefined,
@@ -157,7 +159,7 @@ export function OpenverseAddin({ api }: { api: AddinApi }) {
           onClick={() => setChosen(null)}
           className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
         >
-          <ArrowLeft className="size-3.5" /> Risultati
+          <ArrowLeft className="size-3.5" /> {t("Risultati")}
         </button>
         {/* eslint-disable-next-line @next/next/no-img-element -- immagine remota scelta dall'utente */}
         <img
@@ -167,20 +169,20 @@ export function OpenverseAddin({ api }: { api: AddinApi }) {
         />
         <dl className="space-y-1 text-xs">
           <div>
-            <dt className="text-muted-foreground">Titolo</dt>
+            <dt className="text-muted-foreground">{t("Titolo")}</dt>
             <dd className="text-sm">{chosen.title}</dd>
           </div>
           <div>
-            <dt className="text-muted-foreground">Autore</dt>
+            <dt className="text-muted-foreground">{t("Autore")}</dt>
             <dd>{chosen.creator}</dd>
           </div>
           <div>
-            <dt className="text-muted-foreground">Licenza</dt>
+            <dt className="text-muted-foreground">{t("Licenza")}</dt>
             <dd>{licenseName(chosen)}</dd>
           </div>
         </dl>
         <Button type="button" className="w-full" onClick={insert}>
-          Inserisci con autore e licenza
+          {t("Inserisci con autore e licenza")}
         </Button>
         {chosen.landing ? (
           <a
@@ -189,8 +191,10 @@ export function OpenverseAddin({ api }: { api: AddinApi }) {
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground"
           >
-            <ExternalLink className="size-3.5" /> Pagina dell&apos;immagine (
-            {chosen.provider})
+            <ExternalLink className="size-3.5" />{" "}
+            {t("Pagina dell'immagine ({provider})", {
+              provider: chosen.provider,
+            })}
           </a>
         ) : null}
       </div>
@@ -202,10 +206,10 @@ export function OpenverseAddin({ api }: { api: AddinApi }) {
       <div className="relative">
         <Search className="pointer-events-none absolute top-1/2 left-2 size-3.5 -translate-y-1/2 text-muted-foreground" />
         <Input
-          aria-label="Cerca immagini libere"
+          aria-label={t("Cerca immagini libere")}
           className="h-8 pl-7"
           value={query}
-          placeholder="Cerca immagini (in inglese trovi di più)"
+          placeholder={t("Cerca immagini (in inglese trovi di più)")}
           onChange={(e) => setQuery(e.target.value)}
         />
       </div>
@@ -215,7 +219,7 @@ export function OpenverseAddin({ api }: { api: AddinApi }) {
           checked={commercial}
           onChange={(e) => setCommercial(e.target.checked)}
         />
-        Solo uso commerciale consentito
+        {t("Solo uso commerciale consentito")}
       </label>
       {loading ? (
         <LoaderCircle className="mx-auto size-5 animate-spin text-muted-foreground" />
@@ -246,8 +250,9 @@ export function OpenverseAddin({ api }: { api: AddinApi }) {
         ))}
       </div>
       <p className="text-[11px] leading-snug text-muted-foreground">
-        Le parole cercate vanno a api.openverse.org; le immagini si caricano dai
-        siti che le ospitano. Controlla sempre la licenza prima di pubblicare.
+        {t(
+          "Le parole cercate vanno a api.openverse.org; le immagini si caricano dai siti che le ospitano. Controlla sempre la licenza prima di pubblicare."
+        )}
       </p>
     </div>
   )

@@ -1,6 +1,7 @@
 import { fontMap, fontStack } from "./fonts"
 import type { DocTheme } from "./types"
 
+import { tr } from "@/lib/i18n/client"
 /**
  * Stili di paragrafo come in Word: «Normale», «Titolo 1», «Citazione»… e
  * quelli creati da chi scrive.
@@ -87,21 +88,27 @@ const r1 = (n: number) => Math.round(n * 10) / 10
 
 export const BUILTIN_STYLES: Record<string, Builtin> = {
   normal: {
-    name: "Normale",
+    get name() {
+      return tr("Normale")
+    },
     kind: "paragraph",
     basedOn: null,
     next: "normal",
     props: () => ({}),
   },
   "no-spacing": {
-    name: "Nessuna spaziatura",
+    get name() {
+      return tr("Nessuna spaziatura")
+    },
     kind: "paragraph",
     basedOn: "normal",
     next: "no-spacing",
     props: () => ({ spaceBefore: 0, spaceAfter: 0, lineHeight: 1.15 }),
   },
   title: {
-    name: "Titolo",
+    get name() {
+      return tr("Titolo")
+    },
     kind: "title",
     basedOn: "normal",
     next: "normal",
@@ -116,7 +123,9 @@ export const BUILTIN_STYLES: Record<string, Builtin> = {
     }),
   },
   subtitle: {
-    name: "Sottotitolo",
+    get name() {
+      return tr("Sottotitolo")
+    },
     kind: "paragraph",
     basedOn: "normal",
     next: "normal",
@@ -128,7 +137,9 @@ export const BUILTIN_STYLES: Record<string, Builtin> = {
     }),
   },
   heading1: {
-    name: "Titolo 1",
+    get name() {
+      return tr("Titolo 1")
+    },
     kind: "heading",
     level: 1,
     basedOn: "normal",
@@ -144,7 +155,9 @@ export const BUILTIN_STYLES: Record<string, Builtin> = {
     }),
   },
   heading2: {
-    name: "Titolo 2",
+    get name() {
+      return tr("Titolo 2")
+    },
     kind: "heading",
     level: 2,
     basedOn: "normal",
@@ -160,7 +173,9 @@ export const BUILTIN_STYLES: Record<string, Builtin> = {
     }),
   },
   heading3: {
-    name: "Titolo 3",
+    get name() {
+      return tr("Titolo 3")
+    },
     kind: "heading",
     level: 3,
     basedOn: "normal",
@@ -175,14 +190,18 @@ export const BUILTIN_STYLES: Record<string, Builtin> = {
     }),
   },
   quote: {
-    name: "Citazione",
+    get name() {
+      return tr("Citazione")
+    },
     kind: "quote",
     basedOn: "normal",
     next: "normal",
     props: () => ({ background: "accent-soft", border: "left" }),
   },
   "intense-quote": {
-    name: "Citazione intensa",
+    get name() {
+      return tr("Citazione intensa")
+    },
     kind: "quote",
     basedOn: "quote",
     next: "normal",
@@ -195,7 +214,9 @@ export const BUILTIN_STYLES: Record<string, Builtin> = {
     }),
   },
   caption: {
-    name: "Didascalia",
+    get name() {
+      return tr("Didascalia")
+    },
     kind: "paragraph",
     basedOn: "normal",
     next: "normal",
@@ -207,7 +228,9 @@ export const BUILTIN_STYLES: Record<string, Builtin> = {
     }),
   },
   code: {
-    name: "Codice",
+    get name() {
+      return tr("Codice")
+    },
     kind: "code",
     basedOn: "normal",
     next: "normal",
@@ -276,7 +299,9 @@ export const STYLE_SETS: StyleSet[] = [
   },
   {
     id: "classic",
-    name: "Classico",
+    get name() {
+      return tr("Classico")
+    },
     styles: {
       title: (n) => ({
         align: "center",
@@ -302,7 +327,9 @@ export const STYLE_SETS: StyleSet[] = [
   },
   {
     id: "minimal",
-    name: "Minimale",
+    get name() {
+      return tr("Minimale")
+    },
     styles: {
       title: (n) => ({
         size: r1(n.size * 2),
@@ -327,7 +354,9 @@ export const STYLE_SETS: StyleSet[] = [
   },
   {
     id: "lines",
-    name: "Righe",
+    get name() {
+      return tr("Righe||set di stili con linee sotto i titoli")
+    },
     styles: {
       title: (n) => ({
         border: "bottom",
@@ -340,7 +369,9 @@ export const STYLE_SETS: StyleSet[] = [
   },
   {
     id: "accent",
-    name: "Accento",
+    get name() {
+      return tr("Accento")
+    },
     styles: {
       title: () => ({ color: "accent" }),
       subtitle: () => ({ color: "accent" }),
@@ -351,7 +382,9 @@ export const STYLE_SETS: StyleSet[] = [
   },
   {
     id: "elegant",
-    name: "Elegante",
+    get name() {
+      return tr("Elegante")
+    },
     styles: {
       title: (n) => ({
         align: "center",
@@ -374,7 +407,9 @@ export const STYLE_SETS: StyleSet[] = [
   },
   {
     id: "compact",
-    name: "Compatto",
+    get name() {
+      return tr("Compatto")
+    },
     styles: {
       normal: (n) => ({ lineHeight: 1.4, spaceAfter: r1(n.size * 0.45) }),
       title: (n) => ({
@@ -400,7 +435,9 @@ export const STYLE_SETS: StyleSet[] = [
   },
   {
     id: "technical",
-    name: "Tecnico",
+    get name() {
+      return tr("Tecnico")
+    },
     styles: {
       title: () => ({ font: "jetbrains", letterSpacing: -0.5 }),
       heading1: () => ({
@@ -415,7 +452,9 @@ export const STYLE_SETS: StyleSet[] = [
   },
   {
     id: "boxed",
-    name: "Riquadro",
+    get name() {
+      return tr("Riquadro")
+    },
     styles: {
       title: (n) => ({
         background: "accent-soft",
@@ -593,10 +632,12 @@ export function styleFontStack(theme: DocTheme, font: string) {
 /** Il nome del carattere come lo mostra Word: «Inter (Corpo)» */
 export function styleFontLabel(theme: DocTheme, font: string) {
   if (font === "+body")
-    return `${fontMap[theme.font]?.label ?? theme.font} (Corpo)`
+    return tr("{font} (Corpo)", {
+      font: fontMap[theme.font]?.label ?? theme.font,
+    })
   if (font === "+heading") {
     const key = theme.headingFont || theme.font
-    return `${fontMap[key]?.label ?? key} (Titoli)`
+    return tr("{font} (Titoli)", { font: fontMap[key]?.label ?? key })
   }
   return fontMap[font]?.label ?? font
 }

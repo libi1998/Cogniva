@@ -14,6 +14,7 @@ import {
   type Transaction,
 } from "@tiptap/pm/state"
 
+import { tr as translate } from "@/lib/i18n/client"
 /**
  * «Revisioni» come in Word. Con il rilevamento attivo il testo scritto porta
  * il marchio «inserito» e quello cancellato non sparisce: prende il marchio
@@ -156,7 +157,10 @@ export function trackTransaction(
   const insertion = schema.marks.insertion
   const deletion = schema.marks.deletion
   if (!insertion || !deletion) return null
-  const attrs = { author: settings.author || "Autore", date: Date.now() }
+  const attrs = {
+    author: settings.author || translate("Autore"),
+    date: Date.now(),
+  }
   const out = state.tr
   const kept: Kept[] = []
   let tracked = false
@@ -316,7 +320,10 @@ export function finishComposition(
   }
   const insertion = state.schema.marks.insertion
   const deletion = state.schema.marks.deletion
-  const attrs = { author: settings.author || "Autore", date: Date.now() }
+  const attrs = {
+    author: settings.author || translate("Autore"),
+    date: Date.now(),
+  }
   const base = comp.pos + 1
   const tr = state.tr
   if (endB > start) {

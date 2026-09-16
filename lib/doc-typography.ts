@@ -2,12 +2,32 @@ import { Extension } from "@tiptap/core"
 import { Fragment, type Node as PMNode } from "@tiptap/pm/model"
 import { TextSelection, type EditorState } from "@tiptap/pm/state"
 
+import { tr as translate, currentLocale } from "@/lib/i18n/client"
 /**
  * Tipografia della scheda Home che Word ha e lo starter kit no: effetti del
  * testo (ombra, contorno, bagliore, riempimento sfumato), stili di
  * sottolineatura, maiuscoletto, numeri, legature e set stilistici; raccolte di
  * elenchi puntati e numerati, elenchi a più livelli e «Ordina».
  */
+
+/**
+ * Le parole di «Articolo 1 · Sezione 1.01» e «Capitolo 1» nella lingua del
+ * documento. Le stesse sono in app/globals.css (--doc-article…).
+ */
+export const NUMBERING_WORDS: Record<
+  string,
+  { article: string; section: string; chapter: string }
+> = {
+  it: { article: "Articolo", section: "Sezione", chapter: "Capitolo" },
+  en: { article: "Article", section: "Section", chapter: "Chapter" },
+  es: { article: "Artículo", section: "Sección", chapter: "Capítulo" },
+  fr: { article: "Article", section: "Section", chapter: "Chapitre" },
+  de: { article: "Artikel", section: "Abschnitt", chapter: "Kapitel" },
+  pt: { article: "Artigo", section: "Seção", chapter: "Capítulo" },
+}
+
+export const numberingWords = (language: string) =>
+  NUMBERING_WORDS[language.slice(0, 2).toLowerCase()] ?? NUMBERING_WORDS.en
 
 /* ----------------------------- effetti testo ----------------------------- */
 
@@ -48,12 +68,16 @@ export const TEXT_EFFECT_PRESETS: {
 }[] = [
   {
     id: "soft-shadow",
-    label: "Ombra morbida",
+    get label() {
+      return translate("Ombra morbida")
+    },
     attrs: { textShadow: "0 1px 3px rgba(0,0,0,0.35)" },
   },
   {
     id: "offset-shadow",
-    label: "Ombra spostata",
+    get label() {
+      return translate("Ombra spostata")
+    },
     attrs: {
       textShadow:
         "0.06em 0.06em 0 color-mix(in srgb, currentColor 28%, transparent)",
@@ -61,12 +85,16 @@ export const TEXT_EFFECT_PRESETS: {
   },
   {
     id: "accent-glow",
-    label: "Bagliore accento",
+    get label() {
+      return translate("Bagliore accento")
+    },
     attrs: { textShadow: "0 0 0.3em var(--doc-accent, #6366f1)" },
   },
   {
     id: "neon",
-    label: "Neon",
+    get label() {
+      return translate("Neon")
+    },
     attrs: {
       textShadow:
         "0 0 1px #fff, 0 0 0.25em var(--doc-accent, #6366f1), 0 0 0.6em var(--doc-accent, #6366f1)",
@@ -74,31 +102,41 @@ export const TEXT_EFFECT_PRESETS: {
   },
   {
     id: "outline",
-    label: "Contorno",
+    get label() {
+      return translate("Contorno")
+    },
     attrs: { textFill: "hollow", textStroke: "1px currentColor" },
   },
   {
     id: "accent-outline",
-    label: "Contorno accento",
+    get label() {
+      return translate("Contorno accento")
+    },
     attrs: { textStroke: "0.6px var(--doc-accent, #6366f1)" },
   },
   {
     id: "emboss",
-    label: "Rilievo",
+    get label() {
+      return translate("Rilievo")
+    },
     attrs: {
       textShadow: "0 -1px 0 rgba(0,0,0,0.35), 0 1px 0 rgba(255,255,255,0.5)",
     },
   },
   {
     id: "engrave",
-    label: "Incisione",
+    get label() {
+      return translate("Incisione")
+    },
     attrs: {
       textShadow: "0 1px 0 rgba(255,255,255,0.5), 0 -1px 0 rgba(0,0,0,0.35)",
     },
   },
   {
     id: "gradient-accent",
-    label: "Sfumato accento",
+    get label() {
+      return translate("Sfumato accento")
+    },
     attrs: {
       textFill:
         "linear-gradient(90deg, var(--doc-accent, #6366f1), color-mix(in srgb, var(--doc-accent, #6366f1) 40%, #ec4899))",
@@ -106,17 +144,23 @@ export const TEXT_EFFECT_PRESETS: {
   },
   {
     id: "gradient-sunset",
-    label: "Tramonto",
+    get label() {
+      return translate("Tramonto")
+    },
     attrs: { textFill: "linear-gradient(90deg, #f97316, #e11d48, #9333ea)" },
   },
   {
     id: "gradient-ocean",
-    label: "Oceano",
+    get label() {
+      return translate("Oceano")
+    },
     attrs: { textFill: "linear-gradient(90deg, #0ea5e9, #6366f1)" },
   },
   {
     id: "long-shadow",
-    label: "Ombra lunga",
+    get label() {
+      return translate("Ombra lunga")
+    },
     attrs: {
       textShadow:
         "1px 1px 0 color-mix(in srgb, currentColor 20%, transparent), 2px 2px 0 color-mix(in srgb, currentColor 16%, transparent), 3px 3px 0 color-mix(in srgb, currentColor 12%, transparent)",
@@ -125,71 +169,227 @@ export const TEXT_EFFECT_PRESETS: {
 ]
 
 export const SHADOW_PRESETS: { label: string; value: string | null }[] = [
-  { label: "Nessuna", value: null },
-  { label: "Esterna in basso", value: "0 2px 3px rgba(0,0,0,0.35)" },
-  { label: "Esterna a destra", value: "2px 1px 2px rgba(0,0,0,0.35)" },
-  { label: "Diffusa", value: "0 0 6px rgba(0,0,0,0.45)" },
-  { label: "Netta", value: "0.06em 0.06em 0 rgba(0,0,0,0.3)" },
   {
-    label: "Interna",
+    get label() {
+      return translate("Nessuna")
+    },
+    value: null,
+  },
+  {
+    get label() {
+      return translate("Esterna in basso")
+    },
+    value: "0 2px 3px rgba(0,0,0,0.35)",
+  },
+  {
+    get label() {
+      return translate("Esterna a destra")
+    },
+    value: "2px 1px 2px rgba(0,0,0,0.35)",
+  },
+  {
+    get label() {
+      return translate("Diffusa")
+    },
+    value: "0 0 6px rgba(0,0,0,0.45)",
+  },
+  {
+    get label() {
+      return translate("Netta")
+    },
+    value: "0.06em 0.06em 0 rgba(0,0,0,0.3)",
+  },
+  {
+    get label() {
+      return translate("Interna")
+    },
     value: "0 1px 1px rgba(255,255,255,0.4), 0 -1px 1px rgba(0,0,0,0.3)",
   },
 ]
 
 export const GLOW_COLORS: { label: string; value: string | null }[] = [
-  { label: "Nessuno", value: null },
-  { label: "Accento", value: "var(--doc-accent, #6366f1)" },
-  { label: "Giallo", value: "#facc15" },
-  { label: "Verde", value: "#22c55e" },
-  { label: "Azzurro", value: "#38bdf8" },
-  { label: "Rosa", value: "#f472b6" },
-  { label: "Bianco", value: "#ffffff" },
+  {
+    get label() {
+      return translate("Nessuno")
+    },
+    value: null,
+  },
+  {
+    get label() {
+      return translate("Accento")
+    },
+    value: "var(--doc-accent, #6366f1)",
+  },
+  {
+    get label() {
+      return translate("Giallo")
+    },
+    value: "#facc15",
+  },
+  {
+    get label() {
+      return translate("Verde")
+    },
+    value: "#22c55e",
+  },
+  {
+    get label() {
+      return translate("Azzurro")
+    },
+    value: "#38bdf8",
+  },
+  {
+    get label() {
+      return translate("Rosa")
+    },
+    value: "#f472b6",
+  },
+  {
+    get label() {
+      return translate("Bianco")
+    },
+    value: "#ffffff",
+  },
 ]
 
 export const glowShadow = (color: string) =>
   `0 0 0.18em ${color}, 0 0 0.45em ${color}`
 
 export const UNDERLINE_STYLES: { label: string; value: string }[] = [
-  { label: "Singola", value: "underline solid" },
-  { label: "Doppia", value: "underline double" },
-  { label: "Spessa", value: "underline solid 0.12em" },
-  { label: "Punteggiata", value: "underline dotted" },
-  { label: "Tratteggiata", value: "underline dashed" },
-  { label: "Ondulata", value: "underline wavy" },
-  { label: "Barrato doppio", value: "line-through double" },
+  {
+    get label() {
+      return translate("Singola")
+    },
+    value: "underline solid",
+  },
+  {
+    get label() {
+      return translate("Doppia")
+    },
+    value: "underline double",
+  },
+  {
+    get label() {
+      return translate("Spessa")
+    },
+    value: "underline solid 0.12em",
+  },
+  {
+    get label() {
+      return translate("Punteggiata")
+    },
+    value: "underline dotted",
+  },
+  {
+    get label() {
+      return translate("Tratteggiata")
+    },
+    value: "underline dashed",
+  },
+  {
+    get label() {
+      return translate("Ondulata")
+    },
+    value: "underline wavy",
+  },
+  {
+    get label() {
+      return translate("Barrato doppio")
+    },
+    value: "line-through double",
+  },
 ]
 
 export const NUMERIC_STYLES: { label: string; value: string | null }[] = [
-  { label: "Predefiniti", value: null },
-  { label: "Allineati proporzionali", value: "lining-nums proportional-nums" },
-  { label: "Allineati tabulari", value: "lining-nums tabular-nums" },
-  { label: "Non allineati (old style)", value: "oldstyle-nums" },
-  { label: "Frazioni", value: "diagonal-fractions" },
-  { label: "Zero barrato", value: "slashed-zero" },
+  {
+    get label() {
+      return translate("Predefiniti")
+    },
+    value: null,
+  },
+  {
+    get label() {
+      return translate("Allineati proporzionali")
+    },
+    value: "lining-nums proportional-nums",
+  },
+  {
+    get label() {
+      return translate("Allineati tabulari")
+    },
+    value: "lining-nums tabular-nums",
+  },
+  {
+    get label() {
+      return translate("Non allineati (old style)")
+    },
+    value: "oldstyle-nums",
+  },
+  {
+    get label() {
+      return translate("Frazioni")
+    },
+    value: "diagonal-fractions",
+  },
+  {
+    get label() {
+      return translate("Zero barrato")
+    },
+    value: "slashed-zero",
+  },
 ]
 
 export const LIGATURE_STYLES: { label: string; value: string | null }[] = [
-  { label: "Standard", value: null },
-  { label: "Standard e contestuali", value: "common-ligatures contextual" },
   {
-    label: "Storiche e discrezionali",
+    get label() {
+      return translate("Standard")
+    },
+    value: null,
+  },
+  {
+    get label() {
+      return translate("Standard e contestuali")
+    },
+    value: "common-ligatures contextual",
+  },
+  {
+    get label() {
+      return translate("Storiche e discrezionali")
+    },
     value: "historical-ligatures discretionary-ligatures",
   },
   {
-    label: "Tutte",
+    get label() {
+      return translate("Tutte")
+    },
     value:
       "common-ligatures discretionary-ligatures historical-ligatures contextual",
   },
-  { label: "Nessuna", value: "none" },
+  {
+    get label() {
+      return translate("Nessuna")
+    },
+    value: "none",
+  },
 ]
 
 export const STYLISTIC_SETS: { label: string; value: string | null }[] = [
-  { label: "Predefinito", value: null },
+  {
+    get label() {
+      return translate("Predefinito")
+    },
+    value: null,
+  },
   ...[1, 2, 3, 4, 5, 6].map((n) => ({
-    label: `Set stilistico ${n}`,
+    label: translate("Set stilistico {n}", { n }),
     value: `'ss0${n}' 1`,
   })),
-  { label: "Alternative contestuali", value: `'salt' 1` },
+  {
+    get label() {
+      return translate("Alternative contestuali")
+    },
+    value: `'salt' 1`,
+  },
 ]
 
 declare module "@tiptap/core" {
@@ -348,14 +548,62 @@ export const BULLET_STYLES: {
   label: string
   glyph: string
 }[] = [
-  { value: null, label: "Punto", glyph: "•" },
-  { value: "circle", label: "Cerchio", glyph: "○" },
-  { value: "square", label: "Quadrato", glyph: "▪" },
-  { value: "diamond", label: "Rombo", glyph: "◆" },
-  { value: "arrow", label: "Freccia", glyph: "➢" },
-  { value: "check", label: "Segno di spunta", glyph: "✓" },
-  { value: "dash", label: "Trattino", glyph: "–" },
-  { value: "star", label: "Stella", glyph: "★" },
+  {
+    value: null,
+    get label() {
+      return translate("Punto")
+    },
+    glyph: "•",
+  },
+  {
+    value: "circle",
+    get label() {
+      return translate("Cerchio")
+    },
+    glyph: "○",
+  },
+  {
+    value: "square",
+    get label() {
+      return translate("Quadrato")
+    },
+    glyph: "▪",
+  },
+  {
+    value: "diamond",
+    get label() {
+      return translate("Rombo")
+    },
+    glyph: "◆",
+  },
+  {
+    value: "arrow",
+    get label() {
+      return translate("Freccia")
+    },
+    glyph: "➢",
+  },
+  {
+    value: "check",
+    get label() {
+      return translate("Segno di spunta")
+    },
+    glyph: "✓",
+  },
+  {
+    value: "dash",
+    get label() {
+      return translate("Trattino")
+    },
+    glyph: "–",
+  },
+  {
+    value: "star",
+    get label() {
+      return translate("Stella")
+    },
+    glyph: "★",
+  },
 ]
 
 export const NUMBER_STYLES: {
@@ -366,10 +614,28 @@ export const NUMBER_STYLES: {
   { value: null, label: "1. 2. 3.", sample: ["1.", "2.", "3."] },
   { value: "decimal-paren", label: "1) 2) 3)", sample: ["1)", "2)", "3)"] },
   { value: "upper-roman", label: "I. II. III.", sample: ["I.", "II.", "III."] },
-  { value: "lower-roman", label: "i. ii. iii.", sample: ["i.", "ii.", "iii."] },
+  {
+    value: "lower-roman",
+    get label() {
+      return translate("i. ii. iii.")
+    },
+    sample: ["i.", "ii.", "iii."],
+  },
   { value: "upper-alpha", label: "A. B. C.", sample: ["A.", "B.", "C."] },
-  { value: "lower-alpha", label: "a. b. c.", sample: ["a.", "b.", "c."] },
-  { value: "alpha-paren", label: "a) b) c)", sample: ["a)", "b)", "c)"] },
+  {
+    value: "lower-alpha",
+    get label() {
+      return translate("a. b. c.")
+    },
+    sample: ["a.", "b.", "c."],
+  },
+  {
+    value: "alpha-paren",
+    get label() {
+      return translate("a) b) c)")
+    },
+    sample: ["a)", "b)", "c)"],
+  },
   {
     value: "leading-zero",
     label: "01. 02. 03.",
@@ -398,20 +664,30 @@ export const LIST_LEVELS: {
   {
     value: "outline",
     kind: "ordered",
-    label: "I. · A. · 1.",
+    get label() {
+      return translate("I. · A. · 1.")
+    },
     sample: ["I.", "A.", "1."],
   },
   {
     value: "article",
     kind: "ordered",
-    label: "Articolo 1 · Sezione 1.01",
-    sample: ["Articolo 1", "Sezione 1.01", "(a)"],
+    get label() {
+      return translate("Articolo 1 · Sezione 1.01")
+    },
+    get sample() {
+      return [translate("Articolo 1"), translate("Sezione 1.01"), "(a)"]
+    },
   },
   {
     value: "chapter",
     kind: "ordered",
-    label: "Capitolo 1 · 1.1",
-    sample: ["Capitolo 1", "1.1", "a)"],
+    get label() {
+      return translate("Capitolo 1 · 1.1")
+    },
+    get sample() {
+      return [translate("Capitolo 1"), "1.1", "a)"]
+    },
   },
   { value: null, kind: "bullet", label: "• · ○ · ▪", sample: ["•", "○", "▪"] },
   {
@@ -565,7 +841,10 @@ export type SortOptions = {
   header?: boolean
 }
 
-const collator = new Intl.Collator("it", { numeric: true, sensitivity: "base" })
+const collator = new Intl.Collator(currentLocale(), {
+  numeric: true,
+  sensitivity: "base",
+})
 
 function parseDateText(text: string): number {
   const t = text.trim()
