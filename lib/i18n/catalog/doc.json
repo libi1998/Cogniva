@@ -4066,6 +4066,13 @@
     "de": "Adresse nicht erkannt: YouTube, Vimeo, Loom, Dailymotion oder eine Videodatei (.mp4, .webm).",
     "pt": "Endereço não reconhecido: YouTube, Vimeo, Loom, Dailymotion ou um arquivo de vídeo (.mp4, .webm)."
   },
+  "Indirizzo non valido": {
+    "en": "Invalid address",
+    "es": "Dirección no válida",
+    "fr": "Adresse non valide",
+    "de": "Ungültige Adresse",
+    "pt": "Endereço inválido"
+  },
   "Inferiore": {
     "en": "Bottom",
     "es": "Inferior",
@@ -9077,6 +9084,13 @@
     "fr": "Un chef, plusieurs branches",
     "de": "Ein Kopf, mehrere Zweige",
     "pt": "Um chefe, vários ramos"
+  },
+  "Un collegamento può portare a un sito, a un'e-mail o a un punto del documento.": {
+    "en": "A link can point to a website, an email address or a place in the document.",
+    "es": "Un enlace puede llevar a un sitio web, a un correo electrónico o a un punto del documento.",
+    "fr": "Un lien peut mener à un site web, à une adresse e-mail ou à un endroit du document.",
+    "de": "Ein Link kann auf eine Website, eine E-Mail-Adresse oder eine Stelle im Dokument verweisen.",
+    "pt": "Um link pode levar a um site, a um e-mail ou a um ponto do documento."
   },
   "Un elenco puntato rende evidenti i passaggi, ma troppi elenchi di fila spezzano il ritmo della lettura.": {
     "en": "A bulleted list makes the steps obvious, but too many lists in a row break the rhythm of the reading.",

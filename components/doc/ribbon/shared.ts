@@ -180,6 +180,29 @@ export const EMOJI = [
 ]
 
 /**
+ * Mette (o toglie) un collegamento sul testo del cursore.
+ *
+ * L'indirizzo si completa come nel browser («cogniva.app» → «https://…») e
+ * vale solo se porta davvero da qualche parte: un «javascript:…» arrivato da
+ * un incolla o scritto per prova non diventa un collegamento. Restituisce
+ * false quando l'indirizzo non va bene, così chi chiama può dirlo.
+ */
+export function applyLink(editor: Editor, raw: string) {
+  const href = raw.trim()
+  if (!href) {
+    return editor.chain().focus().extendMarkRange("link").unsetLink().run()
+  }
+  // senza schema è un sito: «/pagina» e «#segnalibro» restano come sono
+  const full = /^[a-z][\w+.-]*:|^\/|^#/i.test(href) ? href : `https://${href}`
+  return editor
+    .chain()
+    .focus()
+    .extendMarkRange("link")
+    .setLink({ href: full })
+    .run()
+}
+
+/**
  * Catena per inserire un blocco (tabella, immagine, grafico): se il cursore è
  * in un titolo, l'inserimento scivola all'inizio del blocco successivo invece
  * di spezzare il titolo a metà.

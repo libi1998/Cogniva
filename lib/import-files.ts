@@ -2,7 +2,7 @@
 
 import type { Route } from "next"
 import { toast } from "sonner"
-import { importWorkspace, useStore } from "./store"
+import { flushWorkspace, importWorkspace, useStore } from "./store"
 import { hrefFor } from "./i18n/client"
 import type { WFile } from "./types"
 
@@ -54,6 +54,10 @@ export async function importFiles(
       })
     }
   }
+  // i file appena importati si scrivono subito: il salvataggio normale aspetta
+  // un quarto di secondo, e chi chiudeva la scheda appena letto il messaggio
+  // se li ritrovava spariti
+  void flushWorkspace()
   if (count === 1 && opened) open(fileHref(opened))
 }
 

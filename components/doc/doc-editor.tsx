@@ -76,7 +76,7 @@ import { StylesPane } from "./styles-panel"
 import { applyDocStyle, dropDirectFormatting } from "./style-actions"
 import { atBody } from "./ribbon/shared"
 import { useCommandSource } from "@/components/shared/command-palette"
-import { createDocExtensions } from "./extensions"
+import { createDocExtensions, repairDocContent } from "./extensions"
 import { DocBubbleMenu } from "./bubble"
 import { DocContextMenu } from "./doc-context-menu"
 import {
@@ -1570,7 +1570,9 @@ export function DocEditor({ fileId }: { fileId: string }) {
 function latestContent(fileId: string) {
   const f = getWorkspace().files.find((x) => x.id === fileId)
   const content = f && f.kind === "doc" ? f.data.content : null
-  return withDocTitle(content, f?.title ?? "")
+  // un file salvato da un'altra versione (o scritto a mano) può avere pezzi
+  // che lo schema non conosce: si tiene tutto il resto
+  return withDocTitle(repairDocContent(content), f?.title ?? "")
 }
 
 /**

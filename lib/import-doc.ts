@@ -1,9 +1,9 @@
 "use client"
 
-import { getSchema, type JSONContent } from "@tiptap/core"
-import { DOMParser as ProseMirrorParser, type Schema } from "@tiptap/pm/model"
+import { type JSONContent } from "@tiptap/core"
+import { DOMParser as ProseMirrorParser } from "@tiptap/pm/model"
 import { nanoid } from "nanoid"
-import { createDocExtensions } from "@/components/doc/extensions"
+import { docSchema } from "@/components/doc/extensions"
 import { newDocTheme } from "./doc-design"
 import type { WFile } from "./types"
 
@@ -15,13 +15,6 @@ import { tr } from "@/lib/i18n/client"
  * documento importato si comporta esattamente come uno scritto a mano. Le
  * librerie di conversione si scaricano solo quando servono.
  */
-
-let schema: Schema | null = null
-
-function docSchema() {
-  schema ??= getSchema(createDocExtensions())
-  return schema
-}
 
 const baseName = (name: string) => name.replace(/\.[^.]+$/, "").trim()
 
@@ -46,6 +39,7 @@ function makeDoc(title: string, content: JSONContent): WFile {
 function htmlToDoc(html: string, fallbackTitle: string): WFile {
   const dom = new window.DOMParser().parseFromString(html, "text/html")
   const body = dom.body
+  sanitizeImportedDom(body)
   normalizeImportedDom(body)
 
   let title = fallbackTitle
@@ -72,6 +66,40 @@ function htmlToDoc(html: string, fallbackTitle: string): WFile {
     content.push({ type: "paragraph" })
   }
   return makeDoc(title, { type: "doc", content })
+}
+
+/** Elementi che non hanno un equivalente nel documento e non devono restare */
+const DROPPED =
+  "script,style,noscript,iframe,object,embed,link,meta,template,base,title,form,button,svg"
+
+/** Indirizzi che un documento importato può portarsi dietro */
+const SAFE_HREF = /^(?:https?:|mailto:|tel:|#)/i
+const SAFE_IMAGE =
+  /^(?:https?:\/\/|data:image\/(?:png|jpeg|jpg|gif|webp|avif|svg\+xml);|blob:)/i
+
+/**
+ * Ripulisce l'HTML che arriva da fuori (un file .html, il Markdown convertito,
+ * un .docx) prima di darlo allo schema dell'editor.
+ *
+ * Lo schema tiene già solo i nodi che conosce, ma il testo dentro a un
+ * `<style>` o a un `<script>` finirebbe nel documento come testo normale, e
+ * un `href` o un `src` possono puntare dove vogliono: qui restano solo gli
+ * indirizzi che un documento usa davvero.
+ */
+function sanitizeImportedDom(body: HTMLElement) {
+  body.querySelectorAll(DROPPED).forEach((el) => el.remove())
+  body.querySelectorAll("*").forEach((el) => {
+    for (const attr of Array.from(el.attributes)) {
+      // i gestori non verrebbero eseguiti (il documento è inerte) ma non
+      // devono nemmeno arrivare fino a un'esportazione
+      if (/^on/i.test(attr.name)) el.removeAttribute(attr.name)
+    }
+    const href = el.getAttribute("href")
+    if (href !== null && !SAFE_HREF.test(href.trim()))
+      el.removeAttribute("href")
+    const src = el.getAttribute("src")
+    if (src !== null && !SAFE_IMAGE.test(src.trim())) el.removeAttribute("src")
+  })
 }
 
 /**

@@ -585,10 +585,19 @@ const LEGACY_CELLS: Record<string, string> = {
   "Ricerca||fase di un progetto": "Ricerca",
 }
 
+/** Un numero che si può disegnare: un NaN sul canvas sparisce tutto */
+const finite = (value: unknown, fallback: number) => {
+  const n = Number(value)
+  return Number.isFinite(n) ? n : fallback
+}
+
 export function normalizeNode(
   n: Partial<BoardNode> & { id: string }
 ): BoardNode {
-  if (n.table?.cells.some((cell) => cell in LEGACY_CELLS)) {
+  if (
+    Array.isArray(n.table?.cells) &&
+    n.table.cells.some((cell) => cell in LEGACY_CELLS)
+  ) {
     n = {
       ...n,
       table: {
@@ -599,21 +608,23 @@ export function normalizeNode(
   }
   return {
     kind: "shape",
-    x: 0,
-    y: 0,
-    w: 180,
-    h: 84,
-    text: "",
     shape: "rounded",
     color: "white",
     radius: null,
-    fontSize: 15,
     bold: false,
     italic: false,
     align: "center",
     outline: true,
     shadow: true,
     ...n,
+    // geometria e testo si controllano dopo lo spread: un file salvato a mano
+    // (o l'incolla di un testo qualunque) non deve poter piantare la board
+    x: finite(n.x, 0),
+    y: finite(n.y, 0),
+    w: Math.max(1, finite(n.w, 180)),
+    h: Math.max(1, finite(n.h, 84)),
+    fontSize: Math.max(1, finite(n.fontSize, 15)),
+    text: typeof n.text === "string" ? n.text : "",
   } as BoardNode
 }
 

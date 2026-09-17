@@ -487,6 +487,7 @@ lib/
 ├── items.ts                # element types, wireframe components, frames, tables
 ├── icon-library.ts         # icons extracted from Lucide (generated)
 ├── palette.ts              # content colors, zinc neutrals
+├── css.ts                  # what a value from a file may become CSS
 ├── tiptap-extensions.ts    # title, indents, spacing, paragraph, breaks,
 │                           # table of contents, notes, tables, comments, pictures
 ├── track-changes.ts        # tracked insertions and deletions
@@ -527,7 +528,15 @@ The Content Security Policy allows only the phonemizer as an external script, an
   files, the open ribbon tab, the author name and recent fonts are copied into Cogniva;
   elements copied from a Whimsy board can still be pasted.
 - On startup saved files are normalized (new fields, icons), so files from earlier
-  versions keep opening.
+  versions keep opening. A document written by a newer version can contain pieces this
+  one doesn't know: they're dropped when it opens and everything else stays, instead of
+  the whole document opening blank.
+- **What comes from a file is never trusted.** An imported `.docx`, `.html` or `.json`
+  passes through `lib/css.ts` before any of its values becomes CSS, so it cannot write
+  rules of its own or ask a remote address for an image; `<script>`, `<style>` and
+  `<iframe>` are dropped on import instead of landing in the text, and `href` and `src`
+  keep only the addresses a document can use. The same goes for elements pasted from the
+  clipboard and for the colors that end up in an exported SVG.
 - Every file has an icon picked from Lucide: change it from the button next to the title.
   The file name is also the browser tab title.
 - Chromium marks canvases that draw an SVG containing `<foreignObject>` as "tainted",

@@ -2,6 +2,8 @@
 
 import * as React from "react"
 
+import { tr } from "@/lib/i18n/client"
+
 export function CustomColor({
   value,
   onChange,
@@ -22,6 +24,7 @@ export function CustomColor({
         <span className="absolute inset-0" style={{ background: value }} />
         <input
           type="color"
+          aria-label={tr("Scegli un colore")}
           value={/^#[0-9a-f]{6}$/i.test(value) ? value : "#ffffff"}
           onChange={(e) => onChange(e.target.value)}
           className="absolute inset-0 cursor-pointer opacity-0"
@@ -34,6 +37,7 @@ export function CustomColor({
           const v = e.target.value.trim()
           if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(v)) onChange(v)
         }}
+        aria-label={tr("Colore esadecimale")}
         spellCheck={false}
         className="w-full min-w-0 bg-transparent font-mono text-[11px] uppercase outline-none"
       />

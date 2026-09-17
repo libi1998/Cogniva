@@ -444,8 +444,12 @@ export function BoardInspector({
   // ridisegnava il pannello a ogni fotogramma di un trascinamento
   const store = getWorkspace()
   const theme = data.theme
-  const nodes = data.nodes.filter((n) => selection.nodes.includes(n.id))
-  const edges = data.edges.filter((e) => selection.edges.includes(e.id))
+  // insiemi, non `includes`: con cento elementi selezionati su una board
+  // grande il pannello faceva un confronto per ogni coppia
+  const pickedNodes = new Set(selection.nodes)
+  const pickedEdges = new Set(selection.edges)
+  const nodes = data.nodes.filter((n) => pickedNodes.has(n.id))
+  const edges = data.edges.filter((e) => pickedEdges.has(e.id))
 
   const setTheme = store.setBoardTheme
   const snap = () => store.snapshot(fileId)

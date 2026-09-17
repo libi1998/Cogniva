@@ -1,6 +1,7 @@
 "use client"
 
-import type { AnyExtension } from "@tiptap/core"
+import { getSchema, type AnyExtension, type JSONContent } from "@tiptap/core"
+import type { Schema } from "@tiptap/pm/model"
 import { StarterKit } from "@tiptap/starter-kit"
 import { CharacterCount, Placeholder } from "@tiptap/extensions"
 import { TaskItem, TaskList } from "@tiptap/extension-list"
@@ -144,4 +145,87 @@ export function createDocExtensions(): AnyExtension[] {
         node.type.name === "heading" && hasAnchor ? tr("Titolo…") : "",
     }),
   ]
+}
+
+let schema: Schema | null = null
+
+/** Lo schema del documento, uno solo per pagina: costruirlo non è gratis */
+export function docSchema(): Schema {
+  schema ??= getSchema(createDocExtensions())
+  return schema
+}
+
+/**
+ * Ripara il contenuto di un documento salvato.
+ *
+ * Un file può venire da una versione futura dell'app o da uno spazio di
+ * lavoro scritto a mano: basta un nodo che lo schema non conosce perché
+ * Tiptap consideri illeggibile tutto il documento e apra una pagina bianca —
+ * e la prima battuta scriverebbe quella pagina bianca sopra al testo vero.
+ * Qui i nodi sconosciuti si buttano tenendo quello che contengono, e i
+ * blocchi che restano illeggibili cadono uno a uno invece di portarsi via
+ * anche gli altri.
+ */
+export function repairDocContent(content: unknown): unknown {
+  if (!content || typeof content !== "object") return content
+  const doc = content as JSONContent
+  if (!Array.isArray(doc.content)) return content
+  const s = docSchema()
+  // il caso normale è un documento sano: si evita di ricopiarlo tutto
+  let touched = false
+  const known = (node: JSONContent): JSONContent[] => {
+    const children = Array.isArray(node.content)
+      ? node.content.flatMap(known)
+      : undefined
+    if (node.type && !s.nodes[node.type]) {
+      touched = true
+      if (!children?.length) return []
+      // il testo che c'era dentro non si butta: diventa un paragrafo
+      const inline = children.every(
+        (c) => !c.type || s.nodes[c.type]?.isInline !== false
+      )
+      return inline ? [{ type: "paragraph", content: children }] : children
+    }
+    const marks = Array.isArray(node.marks)
+      ? node.marks.filter((m) => m.type && s.marks[m.type])
+      : undefined
+    if (marks && marks.length !== node.marks?.length) touched = true
+    if (!touched) return [node]
+    return [
+      {
+        ...node,
+        ...(children ? { content: children } : {}),
+        ...(marks ? { marks } : {}),
+      },
+    ]
+  }
+  const blocks = doc.content.flatMap(known)
+  // un documento sano (titolo in cima, nessun nodo sconosciuto) non si tocca:
+  // niente copie e niente controlli a ogni apertura
+  if (!touched && blocks[0]?.type === "docTitle") return content
+  const readable = (nodes: JSONContent[]) => {
+    try {
+      s.nodeFromJSON({ ...doc, content: nodes }).check()
+      return true
+    } catch {
+      return false
+    }
+  }
+  if (readable(blocks)) return { ...doc, content: blocks }
+  // il documento comincia dal titolo: se se n'è andato, si rimette vuoto (lo
+  // riempie il nome del file) invece di buttare tutto il resto
+  const titled: JSONContent[] =
+    blocks[0]?.type === "docTitle" ? blocks : [{ type: "docTitle" }, ...blocks]
+  if (titled !== blocks && readable(titled)) return { ...doc, content: titled }
+  // un blocco alla volta: si tiene tutto quello che si riesce a leggere
+  const kept: JSONContent[] = titled === blocks ? [] : [titled[0]]
+  for (const block of blocks) {
+    if (readable([...kept, block])) kept.push(block)
+    else console.warn("Blocco del documento illeggibile, ignorato", block.type)
+  }
+  // se non se n'è salvato nessuno meglio lasciar decidere a Tiptap: questa
+  // funzione può solo migliorare le cose, non peggiorarle
+  return kept.some((b) => b.type !== "docTitle")
+    ? { ...doc, content: kept }
+    : content
 }

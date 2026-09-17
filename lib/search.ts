@@ -41,10 +41,11 @@ export function searchText(file: WFile): string {
   } else {
     for (const node of file.data.nodes) {
       if (size.n > LIMIT) break
-      if (node.text) out.push(node.text)
+      const text = node.text ?? ""
+      if (text) out.push(text)
       if (node.table) out.push(...node.table.cells)
       if (node.chart) out.push(node.chart.title, ...node.chart.categories)
-      size.n += node.text.length
+      size.n += text.length
     }
     for (const edge of file.data.edges) if (edge.label) out.push(edge.label)
   }

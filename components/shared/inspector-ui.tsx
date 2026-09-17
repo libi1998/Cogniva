@@ -193,6 +193,9 @@ export function SliderRow({
         </span>
       </div>
       <Slider
+        // l'etichetta qui sopra è solo scritta: senza aria-label il cursore
+        // arrivava ai lettori di schermo senza nome
+        aria-label={label}
         value={[value]}
         min={min}
         max={max}

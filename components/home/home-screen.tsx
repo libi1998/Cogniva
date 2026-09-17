@@ -118,6 +118,19 @@ const NAV: {
   },
 ]
 
+/** Il confronto fra i titoli, costruito una volta per lingua */
+let collator: { locale: string; value: Intl.Collator } | null = null
+function titleCollator() {
+  const locale = currentLocale()
+  if (collator?.locale !== locale) {
+    collator = {
+      locale,
+      value: new Intl.Collator(locale, { numeric: true, sensitivity: "base" }),
+    }
+  }
+  return collator.value
+}
+
 function exportAll() {
   const blob = new Blob([exportWorkspace()], { type: "application/json" })
   download(blob, `cogniva-${new Date().toISOString().slice(0, 10)}.json`)
@@ -152,6 +165,9 @@ export function HomeScreen() {
   const trash = files.filter((f) => f.deletedAt)
   const query = normalizeSearch(q.trim())
 
+  // un ordinamento per nome confronta n·log(n) volte: con la lingua passata a
+  // ogni confronto il browser costruisce ogni volta le regole della lingua
+  const byName = titleCollator()
   const visible = (filter === "trash" ? trash : live)
     .filter((f) =>
       filter === "all" || filter === "trash"
@@ -163,7 +179,7 @@ export function HomeScreen() {
     .filter((f) => !query || searchText(f).includes(query))
     .sort((a, b) =>
       sort === "name"
-        ? a.title.localeCompare(b.title, currentLocale())
+        ? byName.compare(a.title, b.title)
         : sort === "created"
           ? b.createdAt - a.createdAt
           : b.updatedAt - a.updatedAt

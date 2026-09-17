@@ -107,7 +107,7 @@ import {
   RibbonRows,
   useCloseRibbonMenu,
 } from "./ribbon-ui"
-import { EMOJI, SYMBOLS, atBody, type RibbonCtx } from "./shared"
+import { EMOJI, SYMBOLS, applyLink, atBody, type RibbonCtx } from "./shared"
 import { BUILTIN_EQUATIONS, mathHtml } from "../math-node"
 import { parseVideo } from "../video-node"
 import {
@@ -190,16 +190,15 @@ function LinkPopover({ ctx }: { ctx: RibbonCtx }) {
   >([])
 
   const apply = () => {
-    const href = url.trim()
-    if (!href) editor.chain().focus().extendMarkRange("link").unsetLink().run()
-    else {
-      const full = /^[a-z]+:|^\/|^#/i.test(href) ? href : `https://${href}`
-      editor
-        .chain()
-        .focus()
-        .extendMarkRange("link")
-        .setLink({ href: full })
-        .run()
+    // indirizzi come «javascript:…» non diventano collegamenti: prima il
+    // riquadro si chiudeva e non succedeva niente, senza dire perché
+    if (!applyLink(editor, url)) {
+      toast.error(t("Indirizzo non valido"), {
+        description: t(
+          "Un collegamento può portare a un sito, a un'e-mail o a un punto del documento."
+        ),
+      })
+      return
     }
     setOpen(false)
   }

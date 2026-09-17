@@ -547,7 +547,11 @@ function MarginsMenu({
       </RibbonMenu>
       <Popover open={custom} onOpenChange={setCustom}>
         <PopoverTrigger
-          render={<span aria-hidden className="size-0 self-end" />}
+          // solo il punto a cui agganciare il riquadro: si apre dalla voce
+          // del menu qui sopra, quindi resta fuori dal giro dei tasti
+          render={
+            <span aria-hidden tabIndex={-1} className="size-0 self-end" />
+          }
           nativeButton={false}
         />
         <PopoverContent

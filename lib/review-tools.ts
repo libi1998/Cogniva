@@ -1,6 +1,6 @@
 import type { JSONContent } from "@tiptap/core"
 import type { Node as PMNode } from "@tiptap/pm/model"
-import { isDark } from "./palette"
+import { contrastRatio, isDark } from "./palette"
 
 import { tr } from "@/lib/i18n/client"
 /**
@@ -65,32 +65,6 @@ export type A11yIssue = {
   pos: number | null
   /** immagini: si può scrivere il testo alternativo direttamente */
   fix?: "alt"
-}
-
-function luminance(hex: string) {
-  const h = hex.replace("#", "")
-  const full =
-    h.length === 3
-      ? h
-          .split("")
-          .map((c) => c + c)
-          .join("")
-      : h.slice(0, 6)
-  const n = parseInt(full, 16)
-  const channel = (v: number) => {
-    const c = v / 255
-    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
-  }
-  return (
-    0.2126 * channel((n >> 16) & 255) +
-    0.7152 * channel((n >> 8) & 255) +
-    0.0722 * channel(n & 255)
-  )
-}
-
-export function contrastRatio(a: string, b: string) {
-  const [x, y] = [luminance(a), luminance(b)].sort((p, q) => q - p)
-  return (x + 0.05) / (y + 0.05)
 }
 
 const GENERIC_LINKS =

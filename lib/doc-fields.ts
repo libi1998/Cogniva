@@ -3,6 +3,7 @@ import type { Editor } from "@tiptap/core"
 import type { Node as PMNode } from "@tiptap/pm/model"
 import { TextSelection, type EditorState } from "@tiptap/pm/state"
 import { getAuthor } from "./author"
+import { cssValue, cssColor } from "./css"
 import { formatPageNumber } from "./header-footer"
 import { getPagination, pageAt } from "./pagination"
 import { docTitleText } from "./tiptap-extensions"
@@ -845,12 +846,14 @@ export const TextBox = Node.create({
         default: null,
         parseHTML: (el) => el.getAttribute("data-fill"),
         renderHTML: (a) => {
-          if (!a.fill) return {}
-          const fill = String(a.fill).replace(/[;{}<>"\\]/g, "")
-          return {
-            "data-fill": fill,
-            style: `background:${fill === "accent-soft" ? "var(--doc-accent-soft)" : fill}`,
+          if (a.fill === "accent-soft") {
+            return {
+              "data-fill": "accent-soft",
+              style: "background:var(--doc-accent-soft)",
+            }
           }
+          const fill = cssColor(a.fill)
+          return fill ? { "data-fill": fill, style: `background:${fill}` } : {}
         },
       },
       border: {
@@ -937,9 +940,10 @@ export const DropCap = Extension.create({
             renderHTML: (a) => {
               if (!a.dropCap) return {}
               const lines = Math.max(2, Math.min(6, Number(a.dropLines) || 3))
+              const font = cssValue(a.dropFont)
               return {
                 "data-dropcap": a.dropCap,
-                style: `--drop-lines:${lines}${a.dropFont ? `;--drop-font:${String(a.dropFont).replace(/[;{}<>"\\]/g, "")}` : ""}`,
+                style: `--drop-lines:${lines}${font ? `;--drop-font:${font}` : ""}`,
               }
             },
           },

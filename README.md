@@ -231,6 +231,7 @@ Then open 👉 **http://localhost:3000** — a sample board, wireframe and docum
 - 💾 **Your files live in IndexedDB**, inside your browser: no server ever sees them
 - 🚫 **No third-party code** runs in the page: every add-in is written in Cogniva
 - 🛡️ **Strict Content Security Policy**, with a single external script allowed (the voice phonemizer, locked with SRI)
+- 🧼 **Files you open are treated as untrusted**: an imported `.docx`, `.html` or `.json` cannot add style rules of its own, call out to a remote address or keep a `javascript:` link
 - 🔐 **Models, voices and dictionaries** come from pinned addresses and are verified with SHA-256
 - 🌐 Wikipedia and Free images **tell you when they use the internet** and start disabled
 

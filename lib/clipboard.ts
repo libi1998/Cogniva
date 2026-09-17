@@ -1,4 +1,5 @@
 import { STORAGE } from "./storage"
+import { normalizeNode } from "./types"
 import type { BoardEdge, BoardNode, BoardTheme } from "./types"
 
 const CLIP_MARK = "cogniva/items:v1:"
@@ -21,10 +22,18 @@ let memory: ClipPayload | null = null
 
 export function boundsOf(nodes: BoardNode[]) {
   if (!nodes.length) return { x: 0, y: 0, w: 0, h: 0 }
-  const minX = Math.min(...nodes.map((n) => n.x))
-  const minY = Math.min(...nodes.map((n) => n.y))
-  const maxX = Math.max(...nodes.map((n) => n.x + n.w))
-  const maxY = Math.max(...nodes.map((n) => n.y + n.h))
+  // un giro solo, senza `Math.min(...)`: quattro array in meno e nessun limite
+  // di argomenti su una board con migliaia di elementi
+  let minX = Infinity
+  let minY = Infinity
+  let maxX = -Infinity
+  let maxY = -Infinity
+  for (const n of nodes) {
+    if (n.x < minX) minX = n.x
+    if (n.y < minY) minY = n.y
+    if (n.x + n.w > maxX) maxX = n.x + n.w
+    if (n.y + n.h > maxY) maxY = n.y + n.h
+  }
   return { x: minX, y: minY, w: maxX - minX, h: maxY - minY }
 }
 
@@ -32,13 +41,48 @@ function serializeClip(p: ClipPayload) {
   return CLIP_MARK + JSON.stringify(p)
 }
 
+/**
+ * Il testo degli appunti può essere qualunque cosa: si accetta solo quello che
+ * ha davvero la forma di un blocco di elementi copiati, altrimenti un incolla
+ * fatto da un'altra app romperebbe la board.
+ */
 export function parseClip(text: string): ClipPayload | null {
   if (!text) return null
   const mark = text.includes(CLIP_MARK) ? CLIP_MARK : LEGACY_MARK
   const i = text.indexOf(mark)
   if (i < 0) return null
   try {
-    return JSON.parse(text.slice(i + mark.length)) as ClipPayload
+    const raw: unknown = JSON.parse(text.slice(i + mark.length))
+    if (!raw || typeof raw !== "object") return null
+    const clip = raw as Partial<ClipPayload>
+    if (!Array.isArray(clip.nodes)) return null
+    const nodes = clip.nodes
+      .filter((n) => n && typeof n.id === "string")
+      .map((n) => normalizeNode(n))
+    const edges = Array.isArray(clip.edges)
+      ? clip.edges.filter(
+          (e) =>
+            e &&
+            typeof e.id === "string" &&
+            typeof e.from === "string" &&
+            typeof e.to === "string"
+        )
+      : []
+    const bounds =
+      clip.bounds && typeof clip.bounds === "object"
+        ? clip.bounds
+        : boundsOf(nodes)
+    return {
+      ...clip,
+      nodes,
+      edges,
+      bounds: {
+        x: Number(bounds.x) || 0,
+        y: Number(bounds.y) || 0,
+        w: Number(bounds.w) || 0,
+        h: Number(bounds.h) || 0,
+      },
+    }
   } catch {
     return null
   }

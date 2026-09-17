@@ -29,6 +29,43 @@ import { useT } from "@/lib/i18n/client"
 
 type Row = { level: number; text: string; pos: number; page: string }
 
+/**
+ * Confronto fra due elenchi calcolati dal documento.
+ *
+ * Questi selettori girano a ogni modifica, quindi anche a ogni tasto premuto:
+ * confrontarli serializzandoli in JSON voleva dire costruire due stringhe
+ * lunghe quanto tutto il sommario a ogni battuta. Qui si confrontano i campi,
+ * che sono sempre stringhe o numeri.
+ */
+function sameRows<T extends Record<string, unknown>>(
+  a: T[],
+  b: T[] | null
+): boolean {
+  if (a === b) return true
+  if (!b || a.length !== b.length) return false
+  for (let i = 0; i < a.length; i++) {
+    const x = a[i]
+    const y = b[i]
+    for (const key of Object.keys(x)) {
+      const xv = x[key]
+      const yv = y[key]
+      if (xv === yv) continue
+      if (Array.isArray(xv) && Array.isArray(yv)) {
+        if (
+          !sameRows(
+            xv as Record<string, unknown>[],
+            yv as Record<string, unknown>[]
+          )
+        )
+          return false
+        continue
+      }
+      return false
+    }
+  }
+  return true
+}
+
 /** Il numero di pagina di una posizione, se il documento ha più pagine */
 function pageLabel(editor: Editor, pos: number) {
   const state = editor.state
@@ -99,7 +136,7 @@ function TocView({ editor, node, selected }: NodeViewProps) {
         })
         return out
       },
-      equalityFn: (a, b) => JSON.stringify(a) === JSON.stringify(b),
+      equalityFn: sameRows,
     }) ?? []
 
   return (
@@ -144,7 +181,7 @@ function FigureIndexView({ editor, node, selected }: NodeViewProps) {
           pos: entry.pos,
           page: pageLabel(e, entry.pos),
         })),
-      equalityFn: (a, b) => JSON.stringify(a) === JSON.stringify(b),
+      equalityFn: sameRows,
     }) ?? []
   const title =
     label === t("Tabella")
@@ -211,7 +248,7 @@ function DocIndexView({ editor, node, selected }: NodeViewProps) {
               .join(", "),
           })),
         })),
-      equalityFn: (a, b) => JSON.stringify(a) === JSON.stringify(b),
+      equalityFn: sameRows,
     }) ?? []
 
   // l'indice analitico si divide per iniziale, quello delle autorità per tipo
@@ -221,7 +258,9 @@ function DocIndexView({ editor, node, selected }: NodeViewProps) {
       kind === "authority"
         ? item.category || t("Altre fonti")
         : item.entry.charAt(0).toLocaleUpperCase("it")
-    groups.set(key, [...(groups.get(key) ?? []), item])
+    const group = groups.get(key)
+    if (group) group.push(item)
+    else groups.set(key, [item])
   }
 
   return (

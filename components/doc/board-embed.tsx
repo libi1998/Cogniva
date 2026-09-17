@@ -13,7 +13,7 @@ import { ExternalLink, Minus, Plus, Trash2 } from "lucide-react"
 import { BoardPreview } from "@/components/board/board-preview"
 import { useStore } from "@/lib/store"
 import { parseClip } from "@/lib/clipboard"
-import { defaultBoardTheme, type BoardData } from "@/lib/types"
+import { defaultBoardTheme, normalizeBoard, type BoardData } from "@/lib/types"
 import { AUTO_CANVAS, resolveColor } from "@/lib/use-theme"
 import { useDocDark } from "./render-theme"
 import { cn } from "@/lib/utils"
@@ -38,25 +38,28 @@ function BoardEmbedView({
 
   const data: BoardData | null = React.useMemo(() => {
     if (file && file.kind === "board") return file.data
-    if (snapshot) {
-      const clip =
-        parseClip(snapshot) ??
-        (() => {
-          try {
-            return JSON.parse(snapshot)
-          } catch {
-            return null
-          }
-        })()
-      if (clip?.nodes) {
+    if (!snapshot) return null
+    // l'anteprima è dentro al documento: può arrivare da un file importato,
+    // quindi passa dagli stessi controlli di una board aperta
+    const clip = parseClip(snapshot)
+    const raw = (() => {
+      if (clip) {
         return {
           nodes: clip.nodes,
-          edges: clip.edges ?? [],
+          edges: clip.edges,
           theme: clip.theme ?? defaultBoardTheme,
         } as BoardData
       }
-    }
-    return null
+      try {
+        return JSON.parse(snapshot) as BoardData
+      } catch {
+        return null
+      }
+    })()
+    if (!raw) return null
+    const board = normalizeBoard(raw)
+    // un'anteprima rovinata non diventa un riquadro vuoto: si dice che non c'è
+    return board.nodes.length ? board : null
   }, [file, snapshot])
 
   const background = data
@@ -136,6 +139,7 @@ function BoardEmbedView({
           onChange={(e) => updateAttributes({ caption: e.target.value })}
           onKeyDown={(e) => e.stopPropagation()}
           placeholder={t("Didascalia…")}
+          aria-label={t("Didascalia della board")}
           className={cn(
             "mt-1.5 w-full bg-transparent text-center text-[0.82em] outline-none",
             "placeholder:opacity-40"

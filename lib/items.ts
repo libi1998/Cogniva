@@ -862,8 +862,8 @@ function layerOf(n: BoardNode) {
 }
 
 export function sortedForRender(nodes: BoardNode[]) {
-  return nodes
-    .map((n, i) => ({ n, i }))
-    .sort((a, b) => layerOf(a.n) - layerOf(b.n) || a.i - b.i)
-    .map((x) => x.n)
+  // `sort` mantiene l'ordine fra elementi dello stesso livello (è garantito
+  // dal linguaggio): non serve portarsi dietro l'indice di partenza, e con
+  // mille elementi si risparmiano mille oggetti e due array
+  return [...nodes].sort((a, b) => layerOf(a) - layerOf(b))
 }

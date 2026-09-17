@@ -8,6 +8,7 @@ import {
   BoardPreview,
   boardPreviewBounds,
 } from "@/components/board/board-preview"
+import { cssColor, escapeAttr } from "./css"
 import { collectFontCss } from "./export"
 import { fontMap } from "./fonts"
 import { formatPx } from "./page"
@@ -60,6 +61,9 @@ export async function renderBoardSvg(
   const b = boardBounds(data, padding)
   const width = Math.max(1, Math.round(b.w))
   const height = Math.max(1, Math.round(b.h))
+  // lo sfondo finisce in un attributo del file esportato: passa dal filtro
+  // dei colori, come nelle altre esportazioni (lib/css.ts)
+  const paper = cssColor(background) ?? "#ffffff"
 
   const holder = document.createElement("div")
   holder.style.cssText =
@@ -73,7 +77,7 @@ export async function renderBoardSvg(
       root.render(
         <BoardPreview
           data={data}
-          background={background}
+          background={paper}
           padding={padding}
           bounds={b}
           style={{ width, height }}
@@ -85,7 +89,7 @@ export async function renderBoardSvg(
     svg.setAttribute("xmlns", "http://www.w3.org/2000/svg")
     svg.setAttribute("width", String(width))
     svg.setAttribute("height", String(height))
-    svg.setAttribute("style", `background:${background}`)
+    svg.setAttribute("style", `background:${paper}`)
     svg.removeAttribute("class")
     markup = new XMLSerializer().serializeToString(svg)
   } finally {
@@ -100,7 +104,7 @@ export async function renderBoardSvg(
   const style = fontCss ? `<style>${fontCss}</style>` : ""
   markup = markup.replace(
     />/,
-    `><rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" fill="${background}"/>`
+    `><rect x="${b.x}" y="${b.y}" width="${b.w}" height="${b.h}" fill="${escapeAttr(paper)}"/>`
   )
   if (style) markup = markup.replace(/>/, `>${style}`)
 

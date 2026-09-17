@@ -22,6 +22,7 @@ import {
   TableView,
 } from "@tiptap/extension-table"
 import { Image } from "@tiptap/extension-image"
+import { cssColor, cssLength, cssValue } from "./css"
 
 import { tr as translate } from "@/lib/i18n/client"
 declare module "@tiptap/core" {
@@ -95,6 +96,13 @@ declare module "@tiptap/core" {
 export type CaseMode = "upper" | "lower" | "title" | "toggle" | "sentence"
 export type ParagraphBorder = "none" | "bottom" | "top" | "left" | "box"
 type TableBorderStyle = "solid" | "dashed" | "dotted" | "double" | "none"
+const BORDER_LINE_STYLES: TableBorderStyle[] = [
+  "solid",
+  "dashed",
+  "dotted",
+  "double",
+  "none",
+]
 type TableStyle = {
   borderWidth: number
   borderColor: string | null
@@ -117,8 +125,10 @@ export const FontSize = Extension.create({
           fontSize: {
             default: null,
             parseHTML: (el) => el.style.fontSize || null,
-            renderHTML: (attrs) =>
-              attrs.fontSize ? { style: `font-size:${attrs.fontSize}` } : {},
+            renderHTML: (attrs) => {
+              const size = cssLength(attrs.fontSize)
+              return size ? { style: `font-size:${size}` } : {}
+            },
           },
         },
       },
@@ -164,10 +174,10 @@ export const LineHeight = Extension.create({
           lineHeight: {
             default: null,
             parseHTML: (el) => el.style.lineHeight || null,
-            renderHTML: (attrs) =>
-              attrs.lineHeight
-                ? { style: `line-height:${attrs.lineHeight}` }
-                : {},
+            renderHTML: (attrs) => {
+              const value = cssLength(attrs.lineHeight)
+              return value ? { style: `line-height:${value}` } : {}
+            },
           },
         },
       },
@@ -204,18 +214,18 @@ export const Spacing = Extension.create({
           spaceBefore: {
             default: null,
             parseHTML: (el) => el.style.marginTop || null,
-            renderHTML: (attrs) =>
-              attrs.spaceBefore
-                ? { style: `margin-top:${attrs.spaceBefore}` }
-                : {},
+            renderHTML: (attrs) => {
+              const value = cssLength(attrs.spaceBefore)
+              return value ? { style: `margin-top:${value}` } : {}
+            },
           },
           spaceAfter: {
             default: null,
             parseHTML: (el) => el.style.marginBottom || null,
-            renderHTML: (attrs) =>
-              attrs.spaceAfter
-                ? { style: `margin-bottom:${attrs.spaceAfter}` }
-                : {},
+            renderHTML: (attrs) => {
+              const value = cssLength(attrs.spaceAfter)
+              return value ? { style: `margin-bottom:${value}` } : {}
+            },
           },
         },
       },
@@ -274,24 +284,26 @@ export const Indent = Extension.create({
           indent: {
             default: 0,
             parseHTML: (el) => parseInt(el.style.marginLeft || "0", 10) || 0,
-            renderHTML: (attrs) =>
-              attrs.indent ? { style: `margin-left:${attrs.indent}px` } : {},
+            renderHTML: (attrs) => {
+              const value = Number(attrs.indent)
+              return value ? { style: `margin-left:${value}px` } : {}
+            },
           },
           firstLine: {
             default: 0,
             parseHTML: (el) => parseInt(el.style.textIndent || "0", 10) || 0,
-            renderHTML: (attrs) =>
-              attrs.firstLine
-                ? { style: `text-indent:${attrs.firstLine}px` }
-                : {},
+            renderHTML: (attrs) => {
+              const value = Number(attrs.firstLine)
+              return value ? { style: `text-indent:${value}px` } : {}
+            },
           },
           indentRight: {
             default: 0,
             parseHTML: (el) => parseInt(el.style.marginRight || "0", 10) || 0,
-            renderHTML: (attrs) =>
-              attrs.indentRight
-                ? { style: `margin-right:${attrs.indentRight}px` }
-                : {},
+            renderHTML: (attrs) => {
+              const value = Number(attrs.indentRight)
+              return value ? { style: `margin-right:${value}px` } : {}
+            },
           },
         },
       },
@@ -714,21 +726,20 @@ const cellAttributes = {
   verticalAlign: {
     default: null as string | null,
     parseHTML: (el: HTMLElement) => el.style.verticalAlign || null,
-    renderHTML: (attrs: Record<string, unknown>) =>
-      attrs.verticalAlign
-        ? { style: `vertical-align:${attrs.verticalAlign}` }
-        : {},
+    renderHTML: (attrs: Record<string, unknown>) => {
+      const value = cssValue(attrs.verticalAlign)
+      return value ? { style: `vertical-align:${value}` } : {}
+    },
   },
   backgroundColor: {
     default: null as string | null,
     parseHTML: (el: HTMLElement) => el.getAttribute("data-bg") || null,
-    renderHTML: (attrs: Record<string, unknown>) =>
-      attrs.backgroundColor
-        ? {
-            "data-bg": attrs.backgroundColor as string,
-            style: `background-color:${attrs.backgroundColor}`,
-          }
-        : {},
+    renderHTML: (attrs: Record<string, unknown>) => {
+      const color = cssColor(attrs.backgroundColor)
+      return color
+        ? { "data-bg": color, style: `background-color:${color}` }
+        : {}
+    },
   },
 }
 
@@ -810,21 +821,24 @@ export const StyledTable = Table.extend({
       borderColor: {
         default: null,
         parseHTML: (el) => el.getAttribute("data-border-color"),
-        renderHTML: (attrs) =>
-          attrs.borderColor
-            ? {
-                "data-border-color": attrs.borderColor,
-                style: `--tb-c:${attrs.borderColor}`,
-              }
-            : {},
+        renderHTML: (attrs) => {
+          const color = cssColor(attrs.borderColor)
+          return color
+            ? { "data-border-color": color, style: `--tb-c:${color}` }
+            : {}
+        },
       },
       borderStyle: {
         default: "solid",
         parseHTML: (el) => el.getAttribute("data-border-style") ?? "solid",
-        renderHTML: (attrs) => ({
-          "data-border-style": attrs.borderStyle,
-          style: `--tb-s:${attrs.borderStyle ?? "solid"}`,
-        }),
+        renderHTML: (attrs) => {
+          const style = BORDER_LINE_STYLES.includes(
+            String(attrs.borderStyle) as TableBorderStyle
+          )
+            ? String(attrs.borderStyle)
+            : "solid"
+          return { "data-border-style": style, style: `--tb-s:${style}` }
+        },
       },
       banded: {
         default: false,
@@ -1044,13 +1058,15 @@ export const ParagraphStyle = Extension.create({
           shading: {
             default: null,
             parseHTML: (el) => el.getAttribute("data-shading"),
-            renderHTML: (attrs) =>
-              attrs.shading
+            renderHTML: (attrs) => {
+              const color = cssColor(attrs.shading)
+              return color
                 ? {
-                    "data-shading": attrs.shading,
-                    style: `background-color:${attrs.shading}`,
+                    "data-shading": color,
+                    style: `background-color:${color}`,
                   }
-                : {},
+                : {}
+            },
           },
           border: {
             default: "none",
@@ -1096,10 +1112,10 @@ export const LetterSpacing = Extension.create({
           letterSpacing: {
             default: null,
             parseHTML: (el) => el.style.letterSpacing || null,
-            renderHTML: (attrs) =>
-              attrs.letterSpacing
-                ? { style: `letter-spacing:${attrs.letterSpacing}` }
-                : {},
+            renderHTML: (attrs) => {
+              const value = cssLength(attrs.letterSpacing)
+              return value ? { style: `letter-spacing:${value}` } : {}
+            },
           },
         },
       },
@@ -1486,9 +1502,18 @@ export const StyledImage = Image.extend({
       ...this.parent?.(),
       width: {
         default: "100%",
-        parseHTML: (el) => el.style.width || el.getAttribute("width") || "100%",
-        renderHTML: (attrs) =>
-          attrs.width ? { style: `width:${attrs.width}` } : {},
+        parseHTML: (el) => {
+          // l'attributo `width` dell'HTML è in pixel senza unità: senza
+          // aggiungerla la regola non vale niente e l'immagine usciva grande
+          // quanto l'originale
+          const raw = el.getAttribute("width")
+          const attr = raw && /^\d+$/.test(raw.trim()) ? `${raw.trim()}px` : raw
+          return cssLength(el.style.width || attr) ?? "100%"
+        },
+        renderHTML: (attrs) => {
+          const width = cssLength(attrs.width)
+          return width ? { style: `width:${width}` } : {}
+        },
       },
       wrap: {
         default: "inline" as ImageWrap,

@@ -413,14 +413,34 @@ export const BACKGROUNDS: { label: string; value: string; dark?: boolean }[] = [
   },
 ]
 
-function hexToRgb(hex: string): [number, number, number] {
-  let h = hex.replace("#", "").trim()
-  if (h.length === 3)
+/**
+ * I colori dell'app sono esadecimali, ma nel tema di un documento salvato (o
+ * importato) può essercene uno scritto in un altro modo: senza riconoscerlo,
+ * «rgb(255,255,255)» diventava nero e il testo finiva bianco su carta bianca.
+ */
+function hexToRgb(color: string): [number, number, number] {
+  const value = color.trim()
+  const numbers = value.match(
+    /^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)/i
+  )
+  if (numbers) {
+    return [
+      Math.min(255, Math.round(Number(numbers[1]))),
+      Math.min(255, Math.round(Number(numbers[2]))),
+      Math.min(255, Math.round(Number(numbers[3]))),
+    ]
+  }
+  let h = value.replace("#", "")
+  if (h.length === 3 || h.length === 4)
     h = h
+      .slice(0, 3)
       .split("")
       .map((c) => c + c)
       .join("")
-  const n = parseInt(h.slice(0, 6) || "000000", 16)
+  // un colore che non si sa leggere (un nome, un oklch) si considera chiaro:
+  // il testo scuro su fondo ignoto resta leggibile più spesso del contrario
+  if (!/^[0-9a-f]{6}/i.test(h)) return [255, 255, 255]
+  const n = parseInt(h.slice(0, 6), 16)
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255]
 }
 
@@ -429,13 +449,22 @@ export function rgba(hex: string, alpha: number) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`
 }
 
-/** Luminanza relativa: serve a capire se lo sfondo è scuro */
-export function isDark(hex: string) {
-  const [r, g, b] = hexToRgb(hex)
-  const srgb = [r, g, b].map((c) => {
+/** Luminanza relativa di un colore (WCAG): 0 nero, 1 bianco */
+export function luminance(color: string) {
+  const srgb = hexToRgb(color).map((c) => {
     const v = c / 255
     return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
   })
-  const l = 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2]
-  return l < 0.35
+  return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2]
+}
+
+/** true quando un fondo è scuro: sopra ci vuole il testo chiaro */
+export function isDark(color: string) {
+  return luminance(color) < 0.35
+}
+
+/** Il rapporto di contrasto fra due colori, come lo chiede la WCAG */
+export function contrastRatio(a: string, b: string) {
+  const [x, y] = [luminance(a), luminance(b)].sort((p, q) => q - p)
+  return (x + 0.05) / (y + 0.05)
 }

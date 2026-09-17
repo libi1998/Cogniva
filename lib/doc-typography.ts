@@ -1,6 +1,7 @@
 import { Extension } from "@tiptap/core"
 import { Fragment, type Node as PMNode } from "@tiptap/pm/model"
 import { TextSelection, type EditorState } from "@tiptap/pm/state"
+import { cssValue } from "./css"
 
 import { tr as translate, currentLocale } from "@/lib/i18n/client"
 /**
@@ -55,11 +56,8 @@ export const TEXT_EFFECT_KEYS: (keyof TextEffectAttrs)[] = [
   "stylistic",
 ]
 
-/** Un valore CSS sicuro dentro `style` (niente `;` che apra un'altra regola) */
-const clean = (value: unknown) =>
-  typeof value === "string" && value.trim()
-    ? value.replace(/[;{}<>"\\]/g, "").trim()
-    : null
+/** Un valore CSS sicuro dentro `style` (vedi lib/css.ts) */
+const clean = cssValue
 
 export const TEXT_EFFECT_PRESETS: {
   id: string

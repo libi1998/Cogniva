@@ -31,6 +31,12 @@ const csp = [
   "base-uri 'self'",
   "form-action 'self'",
   "frame-ancestors 'none'",
+  // niente plugin, niente <embed>: l'app non ne usa
+  "manifest-src 'self'",
+  // un'immagine inserita con un indirizzo http:// viaggerebbe in chiaro:
+  // il browser la richiede in https. In sviluppo il sito è in chiaro, quindi
+  // la regola vale solo in produzione
+  ...(isDev ? [] : ["upgrade-insecure-requests"]),
 ].join("; ")
 
 const securityHeaders = [
@@ -39,11 +45,30 @@ const securityHeaders = [
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "X-Frame-Options", value: "DENY" },
   { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+  // nessun altro sito può tirarsi dentro le risorse dell'app
+  { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
+  // ogni pagina in un processo suo, anche fra sottodomini
+  { key: "Origin-Agent-Cluster", value: "?1" },
   {
-    // il microfono serve alla dettatura, tutto il resto no
+    // il microfono serve alla dettatura e la condivisione dello schermo alla
+    // schermata da inserire nei documenti; tutto il resto no
     key: "Permissions-Policy",
-    value:
-      "camera=(), geolocation=(), payment=(), usb=(), browsing-topics=(), microphone=(self)",
+    value: [
+      "camera=()",
+      "geolocation=()",
+      "payment=()",
+      "usb=()",
+      "serial=()",
+      "hid=()",
+      "midi=()",
+      "idle-detection=()",
+      "local-fonts=()",
+      "xr-spatial-tracking=()",
+      "browsing-topics=()",
+      "interest-cohort=()",
+      "microphone=(self)",
+      "display-capture=(self)",
+    ].join(", "),
   },
   {
     key: "Strict-Transport-Security",

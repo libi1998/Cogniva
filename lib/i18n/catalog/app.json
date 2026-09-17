@@ -1399,6 +1399,13 @@
     "de": "Farbe",
     "pt": "Cor"
   },
+  "Colore esadecimale": {
+    "en": "Hex color",
+    "es": "Color hexadecimal",
+    "fr": "Couleur hexadécimale",
+    "de": "Hex-Farbe",
+    "pt": "Cor hexadecimal"
+  },
   "Colori": {
     "en": "Colors",
     "es": "Colores",
@@ -1860,6 +1867,13 @@
     "fr": "Légende",
     "de": "Beschriftung",
     "pt": "Legenda"
+  },
+  "Didascalia della board": {
+    "en": "Board caption",
+    "es": "Leyenda de la pizarra",
+    "fr": "Légende du tableau",
+    "de": "Bildunterschrift des Boards",
+    "pt": "Legenda da board"
   },
   "Didascalia…": {
     "en": "Caption…",
@@ -4779,6 +4793,13 @@
     "fr": "Déverrouiller",
     "de": "Entsperren",
     "pt": "Desbloquear"
+  },
+  "Scegli un colore": {
+    "en": "Pick a color",
+    "es": "Elige un color",
+    "fr": "Choisir une couleur",
+    "de": "Farbe wählen",
+    "pt": "Escolha uma cor"
   },
   "Scegli un modello glTF (.glb o .gltf).": {
     "en": "Choose a glTF model (.glb or .gltf).",

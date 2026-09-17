@@ -16,8 +16,10 @@ import {
   Strikethrough,
   Underline,
 } from "lucide-react"
+import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { guardClicks, typingOutside } from "./focus-guard"
+import { applyLink } from "./ribbon/shared"
 import type { DocState } from "./use-doc-state"
 
 import { useT } from "@/lib/i18n/client"
@@ -147,15 +149,16 @@ export function DocBubbleMenu({
               prev ?? "https://"
             )
             if (url === null) return
-            if (url === "")
-              editor.chain().focus().extendMarkRange("link").unsetLink().run()
-            else
-              editor
-                .chain()
-                .focus()
-                .extendMarkRange("link")
-                .setLink({ href: url })
-                .run()
+            // lo stesso controllo della scheda Inserisci: qui un indirizzo
+            // senza «https://» diventava un collegamento che non porta da
+            // nessuna parte
+            if (!applyLink(editor, url)) {
+              toast.error(t("Indirizzo non valido"), {
+                description: t(
+                  "Un collegamento può portare a un sito, a un'e-mail o a un punto del documento."
+                ),
+              })
+            }
           }}
         >
           <Link2 className="size-3.5" />

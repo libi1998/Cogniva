@@ -1,3 +1,4 @@
+import { cssColor as safeColor } from "./css"
 import { fontMap, fontStack } from "./fonts"
 import type { DocTheme } from "./types"
 
@@ -23,6 +24,7 @@ export type StyleCaps = "none" | "small" | "all"
 export type StyleBorder =
   "none" | "bottom" | "top" | "left" | "box" | "topBottom"
 export type StyleAlign = "left" | "center" | "right" | "justify"
+const ALIGNMENTS: StyleAlign[] = ["left", "center", "right", "justify"]
 
 /** Le proprietà di uno stile, già risolte. Misure in punti come in Word */
 export type StyleProps = {
@@ -647,7 +649,9 @@ export function cssColor(value: string) {
   if (value === "accent") return "var(--doc-accent)"
   if (value === "muted") return "var(--doc-muted)"
   if (value === "accent-soft") return "var(--doc-accent-soft)"
-  return value
+  // gli stili possono arrivare da uno spazio di lavoro scritto altrove: un
+  // colore che non è un colore non deve poter scrivere altre regole
+  return safeColor(value) ?? ""
 }
 
 /** Un valore dentro `[attr="…"]` */
@@ -681,12 +685,12 @@ function typography(theme: DocTheme, p: StyleProps) {
     `font-size:${px(p.size)};`,
     `font-weight:${p.bold ? 700 : 400};`,
     `font-style:${p.italic ? "italic" : "normal"};`,
-    `line-height:${p.lineHeight};`,
+    `line-height:${Number(p.lineHeight) || 1.5};`,
     `letter-spacing:${p.letterSpacing ? px(p.letterSpacing) : "normal"};`,
     `text-decoration-line:${p.underline ? "underline" : "none"};`,
     `text-transform:${p.caps === "all" ? "uppercase" : "none"};`,
     `font-variant-caps:${p.caps === "small" ? "small-caps" : "normal"};`,
-    `text-align:${p.align};`,
+    `text-align:${ALIGNMENTS.includes(p.align) ? p.align : "left"};`,
     p.color ? `color:${cssColor(p.color)};` : "",
   ].join("")
 }

@@ -1,6 +1,7 @@
 "use client"
 
 import { tr } from "@/lib/i18n/client"
+import { cssColor, escapeAttr } from "@/lib/css"
 import { removeEmptyPseudos } from "@/lib/export-studio/raster"
 /**
  * Esportazione in SVG / PNG / PDF.
@@ -291,19 +292,26 @@ export function elementToSvg(
   walk(el, clone)
   prepare?.(clone)
 
+  // il colore della carta arriva dal tema del documento, che può venire da un
+  // file importato: dentro all'SVG finisce in un attributo, e un valore
+  // storto potrebbe aggiungerne altri al file esportato
+  const background = cssColor(opts.background) ?? "#ffffff"
+  const width = Math.max(1, Math.round(opts.width))
+  const height = Math.max(1, Math.round(opts.height))
+
   clone.setAttribute("xmlns", XHTML)
   clone.style.width = `${opts.width}px`
   clone.style.height = `${opts.height}px`
   clone.style.overflow = "hidden"
   clone.style.position = "relative"
   clone.style.margin = "0"
-  clone.style.background = opts.background
+  clone.style.background = background
   clone.style.transform = "none"
 
   const html = new XMLSerializer().serializeToString(clone)
   const style = opts.fontCss ? `<style>${escapeXml(opts.fontCss)}</style>` : ""
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${opts.width}" height="${opts.height}" viewBox="0 0 ${opts.width} ${opts.height}">${style}<rect width="100%" height="100%" fill="${opts.background}"/><foreignObject x="0" y="0" width="${opts.width}" height="${opts.height}">${html}</foreignObject></svg>`
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">${style}<rect width="100%" height="100%" fill="${escapeAttr(background)}"/><foreignObject x="0" y="0" width="${width}" height="${height}">${html}</foreignObject></svg>`
 }
 
 function escapeXml(s: string) {
