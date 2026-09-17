@@ -1070,13 +1070,6 @@
     "de": "Obere Rahmenlinie",
     "pt": "Borda superior"
   },
-  "Bozza": {
-    "en": "Draft",
-    "es": "Borrador",
-    "fr": "Brouillon",
-    "de": "Entwurf",
-    "pt": "Rascunho"
-  },
   "Busta": {
     "en": "Envelope",
     "es": "Sobre",
@@ -1216,6 +1209,13 @@
     "fr": "Zone insérée : ouvrez-la pour dessiner",
     "de": "Zeichenfläche eingefügt: öffne sie zum Zeichnen",
     "pt": "Tela inserida: abra para desenhar"
+  },
+  "Canvas non disponibile": {
+    "en": "Canvas not available",
+    "es": "Lienzo no disponible",
+    "fr": "Zone de dessin non disponible",
+    "de": "Zeichenfläche nicht verfügbar",
+    "pt": "Tela não disponível"
   },
   "Capolettera": {
     "en": "Drop cap",
@@ -2827,13 +2827,6 @@
     "de": "Bezeichnung ausschließen",
     "pt": "Excluir o rótulo"
   },
-  "Esporta · {format}": {
-    "en": "Export · {format}",
-    "es": "Exportar · {format}",
-    "fr": "Exporter · {format}",
-    "de": "Exportieren · {format}",
-    "pt": "Exportar · {format}"
-  },
   "Esporta in Markdown (.md)": {
     "en": "Export to Markdown (.md)",
     "es": "Exportar a Markdown (.md)",
@@ -2855,12 +2848,19 @@
     "de": "Aus Cogniva exportiert",
     "pt": "Exportado do Cogniva"
   },
-  "Esportato in {label}": {
-    "en": "Exported to {label}",
-    "es": "Exportado a {label}",
-    "fr": "Exporté en {label}",
-    "de": "Als {label} exportiert",
-    "pt": "Exportado para {label}"
+  "Esportato in {format}": {
+    "en": "Exported to {format}",
+    "es": "Exportado a {format}",
+    "fr": "Exporté en {format}",
+    "de": "Als {format} exportiert",
+    "pt": "Exportado para {format}"
+  },
+  "Esporto in {format}…": {
+    "en": "Exporting to {format}…",
+    "es": "Exportando a {format}…",
+    "fr": "Exportation en {format}…",
+    "de": "Wird als {format} exportiert…",
+    "pt": "Exportando para {format}…"
   },
   "Esporto in {label}…": {
     "en": "Exporting to {label}…",
@@ -5144,13 +5144,6 @@
     "de": "Max Mustermann\nHauptstraße 1\n10115 Berlin",
     "pt": "João Silva\nRua das Flores 1\n01001-000 São Paulo (SP)"
   },
-  "Markdown (.md)": {
-    "en": "Markdown (.md)",
-    "es": "Markdown (.md)",
-    "fr": "Markdown (.md)",
-    "de": "Markdown (.md)",
-    "pt": "Markdown (.md)"
-  },
   "Markup": {
     "en": "Markup",
     "es": "Marcas",
@@ -5409,13 +5402,6 @@
     "fr": "Modifier…",
     "de": "Ändern…",
     "pt": "Modificar…"
-  },
-  "modificabile, con note e commenti": {
-    "en": "editable, with notes and comments",
-    "es": "editable, con notas y comentarios",
-    "fr": "modifiable, avec notes et commentaires",
-    "de": "bearbeitbar, mit Notizen und Kommentaren",
-    "pt": "editável, com notas e comentários"
   },
   "Modifiche": {
     "en": "Changes",
@@ -6298,13 +6284,6 @@
     "fr": "Page vierge",
     "de": "Leere Seite",
     "pt": "Página em branco"
-  },
-  "Pagine": {
-    "en": "Pages",
-    "es": "Páginas",
-    "fr": "Pages",
-    "de": "Seiten",
-    "pt": "Páginas"
   },
   "Pagine citate": {
     "en": "Pages cited",
@@ -8315,13 +8294,6 @@
     "de": "Dokumente drucken…",
     "pt": "Imprimir documentos…"
   },
-  "Stampa…": {
-    "en": "Print…",
-    "es": "Imprimir…",
-    "fr": "Imprimer…",
-    "de": "Drucken…",
-    "pt": "Imprimir…"
-  },
   "Stile {number}": {
     "en": "Style {number}",
     "es": "Estilo {number}",
@@ -9476,13 +9448,6 @@
     "fr": "Wikipédia ne répond pas",
     "de": "Wikipedia antwortet nicht",
     "pt": "A Wikipédia não responde"
-  },
-  "Word (.docx)": {
-    "en": "Word (.docx)",
-    "es": "Word (.docx)",
-    "fr": "Word (.docx)",
-    "de": "Word (.docx)",
-    "pt": "Word (.docx)"
   },
   "WordArt": {
     "en": "Text art",

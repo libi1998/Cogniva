@@ -287,11 +287,9 @@ export const useStore = create<State>((set, get) => {
       const base = {
         id,
         kind,
-        title:
-          title ??
-          (kind === "board"
-            ? tr("Board senza titolo")
-            : tr("Doc senza titolo")),
+        // un documento nuovo è vuoto, anche nel titolo: il nome lo prende da
+        // quello che si scrive nella prima riga
+        title: title ?? (kind === "board" ? tr("Board senza titolo") : ""),
         icon: kind === "board" ? "shapes" : "file-text",
         createdAt: now,
         updatedAt: now,

@@ -69,6 +69,13 @@
     "de": "{count} Elemente",
     "pt": "{count} elementos"
   },
+  "{count} pagine": {
+    "en": "{count} pages",
+    "es": "{count} páginas",
+    "fr": "{count} pages",
+    "de": "{count} Seiten",
+    "pt": "{count} páginas"
+  },
   "{font} (Corpo)": {
     "en": "{font} (Body)",
     "es": "{font} (Cuerpo)",
@@ -90,12 +97,40 @@
     "de": "{name} · {width}×{height} mm",
     "pt": "{name} · {width}×{height} mm"
   },
+  "{page} · esclusa": {
+    "en": "{page} · excluded",
+    "es": "{page} · excluida",
+    "fr": "{page} · exclue",
+    "de": "{page} · ausgeschlossen",
+    "pt": "{page} · excluída"
+  },
+  "{pages} · {paper} · {dpi} dpi": {
+    "en": "{pages} · {paper} · {dpi} dpi",
+    "es": "{pages} · {paper} · {dpi} ppp",
+    "fr": "{pages} · {paper} · {dpi} ppp",
+    "de": "{pages} · {paper} · {dpi} dpi",
+    "pt": "{pages} · {paper} · {dpi} dpi"
+  },
   "{title} (copia)": {
     "en": "{title} (copy)",
     "es": "{title} (copia)",
     "fr": "{title} (copie)",
     "de": "{title} (Kopie)",
     "pt": "{title} (cópia)"
+  },
+  "{width}×{height} px · {dpi} dpi": {
+    "en": "{width}×{height} px · {dpi} dpi",
+    "es": "{width}×{height} px · {dpi} ppp",
+    "fr": "{width}×{height} px · {dpi} ppp",
+    "de": "{width}×{height} px · {dpi} dpi",
+    "pt": "{width}×{height} px · {dpi} dpi"
+  },
+  "1 pagina": {
+    "en": "1 page",
+    "es": "1 página",
+    "fr": "1 page",
+    "de": "1 Seite",
+    "pt": "1 página"
   },
   "110 × 220 mm · lettera A4 piegata in tre": {
     "en": "110 × 220 mm · A4 letter folded in three",
@@ -124,6 +159,13 @@
     "fr": "Vers",
     "de": "Nach",
     "pt": "Para"
+  },
+  "A colori": {
+    "en": "Color",
+    "es": "En color",
+    "fr": "Couleur",
+    "de": "Farbe",
+    "pt": "Colorido"
   },
   "A destra, il testo le scorre accanto": {
     "en": "On the right, the text flows beside it",
@@ -314,6 +356,13 @@
     "de": "Versalziffern tabellarisch",
     "pt": "Alinhados tabulares"
   },
+  "Alta": {
+    "en": "High",
+    "es": "Alta",
+    "fr": "Haute",
+    "de": "Hoch",
+    "pt": "Alta"
+  },
   "Alternative contestuali": {
     "en": "Contextual alternates",
     "es": "Alternativas contextuales",
@@ -397,6 +446,13 @@
     "fr": "Aperçu",
     "de": "Vorschau",
     "pt": "Prévia"
+  },
+  "Anteprima indicativa: il file .docx resta modificabile e si impagina nel programma che lo apre.": {
+    "en": "Approximate preview: the .docx file stays editable and is laid out by the program that opens it.",
+    "es": "Vista previa orientativa: el archivo .docx sigue siendo editable y se maqueta en el programa que lo abre.",
+    "fr": "Aperçu indicatif : le fichier .docx reste modifiable et se met en page dans le logiciel qui l'ouvre.",
+    "de": "Ungefähre Vorschau: Die .docx-Datei bleibt bearbeitbar und wird von dem Programm umbrochen, das sie öffnet.",
+    "pt": "Prévia aproximada: o arquivo .docx continua editável e é diagramado pelo programa que o abre."
   },
   "Anteprima non disponibile": {
     "en": "Preview not available",
@@ -776,6 +832,13 @@
     "de": "Weiß",
     "pt": "Branco"
   },
+  "Bianco e nero": {
+    "en": "Black and white",
+    "es": "Blanco y negro",
+    "fr": "Noir et blanc",
+    "de": "Schwarzweiß",
+    "pt": "Preto e branco"
+  },
   "Bibliografia": {
     "en": "Bibliography",
     "es": "Bibliografía",
@@ -859,6 +922,13 @@
     "fr": "Bouton icône",
     "de": "Symbolschaltfläche",
     "pt": "Botão de ícone"
+  },
+  "Bozza": {
+    "en": "Draft",
+    "es": "Borrador",
+    "fr": "Brouillon",
+    "de": "Entwurf",
+    "pt": "Rascunho"
   },
   "BOZZA": {
     "en": "DRAFT",
@@ -957,13 +1027,6 @@
     "fr": "Champ de fusion",
     "de": "Seriendruckfeld",
     "pt": "Campo de mesclagem"
-  },
-  "Canvas non disponibile": {
-    "en": "Canvas not available",
-    "es": "Lienzo no disponible",
-    "fr": "Zone de dessin non disponible",
-    "de": "Zeichenfläche nicht verfügbar",
-    "pt": "Tela não disponível"
   },
   "CAP": {
     "en": "ZIP code",
@@ -1546,6 +1609,13 @@
     "de": "Kopieren, ausschneiden, einfügen",
     "pt": "Copiar, recortar, colar"
   },
+  "Corrente ({page})": {
+    "en": "Current ({page})",
+    "es": "Actual ({page})",
+    "fr": "Actuelle ({page})",
+    "de": "Aktuelle ({page})",
+    "pt": "Atual ({page})"
+  },
   "crea": {
     "en": "create",
     "es": "crear",
@@ -1868,13 +1938,6 @@
     "de": "Trennlinie",
     "pt": "Divisor"
   },
-  "Doc senza titolo": {
-    "en": "Untitled doc",
-    "es": "Doc sin título",
-    "fr": "Doc sans titre",
-    "de": "Doc ohne Titel",
-    "pt": "Doc sem título"
-  },
   "Documenti": {
     "en": "Documents",
     "es": "Documentos",
@@ -2092,6 +2155,13 @@
     "de": "Fehler! Lesezeichen nicht definiert.",
     "pt": "Erro! Marcador não definido."
   },
+  "Es. 1-3, 5": {
+    "en": "E.g. 1-3, 5",
+    "es": "P. ej. 1-3, 5",
+    "fr": "Par ex. 1-3, 5",
+    "de": "Z. B. 1-3, 5",
+    "pt": "Ex.: 1-3, 5"
+  },
   "ESEMPIO": {
     "en": "SAMPLE",
     "es": "EJEMPLO",
@@ -2120,12 +2190,12 @@
     "de": "Exportieren",
     "pt": "Exportar"
   },
-  "Esporta board": {
-    "en": "Export board",
-    "es": "Exportar tablero",
-    "fr": "Exporter le tableau",
-    "de": "Board exportieren",
-    "pt": "Exportar quadro"
+  "Esporta {format}": {
+    "en": "Export {format}",
+    "es": "Exportar {format}",
+    "fr": "Exporter en {format}",
+    "de": "Als {format} exportieren",
+    "pt": "Exportar {format}"
   },
   "Esporta in PDF": {
     "en": "Export to PDF",
@@ -2162,12 +2232,12 @@
     "de": "Den ganzen Arbeitsbereich exportieren (.json)",
     "pt": "Exportar toda a área de trabalho (.json)"
   },
-  "Esportato in {format}": {
-    "en": "Exported to {format}",
-    "es": "Exportado a {format}",
-    "fr": "Exporté en {format}",
-    "de": "Als {format} exportiert",
-    "pt": "Exportado para {format}"
+  "Esportato in {label}": {
+    "en": "Exported to {label}",
+    "es": "Exportado a {label}",
+    "fr": "Exporté en {label}",
+    "de": "Als {label} exportiert",
+    "pt": "Exportado para {label}"
   },
   "Esportazione non riuscita": {
     "en": "Export failed",
@@ -2175,13 +2245,6 @@
     "fr": "L'exportation a échoué",
     "de": "Export fehlgeschlagen",
     "pt": "Não foi possível exportar"
-  },
-  "Esporto in {format}…": {
-    "en": "Exporting to {format}…",
-    "es": "Exportando a {format}…",
-    "fr": "Exportation en {format}…",
-    "de": "Wird als {format} exportiert…",
-    "pt": "Exportando para {format}…"
   },
   "Essenziale": {
     "en": "Essential",
@@ -2329,6 +2392,13 @@
     "fr": "Format",
     "de": "Format",
     "pt": "Formato"
+  },
+  "Formato della carta": {
+    "en": "Paper size",
+    "es": "Tamaño del papel",
+    "fr": "Format du papier",
+    "de": "Papierformat",
+    "pt": "Tamanho do papel"
   },
   "Formato non supportato": {
     "en": "Format not supported",
@@ -2722,20 +2792,6 @@
     "de": "„{name}“ wird importiert…",
     "pt": "Importando “{name}”…"
   },
-  "Impossibile preparare la stampa": {
-    "en": "The print cannot be prepared",
-    "es": "No se puede preparar la impresión",
-    "fr": "Impossible de préparer l'impression",
-    "de": "Der Druck lässt sich nicht vorbereiten",
-    "pt": "Não é possível preparar a impressão"
-  },
-  "Impossibile rasterizzare la board": {
-    "en": "The board cannot be rasterized",
-    "es": "No se puede rasterizar el tablero",
-    "fr": "Impossible de rastériser le tableau",
-    "de": "Das Board lässt sich nicht rastern",
-    "pt": "Não é possível rasterizar o quadro"
-  },
   "In corso": {
     "en": "In progress",
     "es": "En curso",
@@ -2770,6 +2826,13 @@
     "fr": "Gravure",
     "de": "Graviert",
     "pt": "Gravado"
+  },
+  "Includi i commenti": {
+    "en": "Include comments",
+    "es": "Incluir los comentarios",
+    "fr": "Inclure les commentaires",
+    "de": "Kommentare einschließen",
+    "pt": "Incluir os comentários"
   },
   "Incolla": {
     "en": "Paste",
@@ -2911,6 +2974,20 @@
     "de": "Schalter",
     "pt": "Interruptor"
   },
+  "Intervallo": {
+    "en": "Range",
+    "es": "Intervalo",
+    "fr": "Plage",
+    "de": "Bereich",
+    "pt": "Intervalo"
+  },
+  "Intervallo non valido: il documento ha {count} pagine.": {
+    "en": "Invalid range: the document has {count} pages.",
+    "es": "Intervalo no válido: el documento tiene {count} páginas.",
+    "fr": "Plage non valide : le document compte {count} pages.",
+    "de": "Ungültiger Bereich: Das Dokument hat {count} Seiten.",
+    "pt": "Intervalo inválido: o documento tem {count} páginas."
+  },
   "Intestazione": {
     "en": "Header",
     "es": "Encabezado",
@@ -2988,6 +3065,13 @@
     "de": "Vielleicht stimmt die Adresse nicht. Alle deine Dateien sind weiterhin in der Liste.",
     "pt": "Pode ser que o endereço esteja errado. Todos os seus arquivos continuam na lista."
   },
+  "L'SVG contiene tutto il documento in un'unica immagine vettoriale.": {
+    "en": "The SVG contains the whole document in a single vector image.",
+    "es": "El SVG contiene todo el documento en una única imagen vectorial.",
+    "fr": "Le SVG contient tout le document dans une seule image vectorielle.",
+    "de": "Die SVG-Datei enthält das ganze Dokument in einem einzigen Vektorbild.",
+    "pt": "O SVG contém o documento inteiro em uma única imagem vetorial."
+  },
   "Landing page": {
     "en": "Landing page",
     "es": "Página de destino",
@@ -3008,6 +3092,13 @@
     "fr": "Les modifications déjà faites sont enregistrées dans ce navigateur. Réessayez ou revenez à la liste des fichiers.",
     "de": "Deine bisherigen Änderungen sind in diesem Browser gespeichert. Versuche es erneut oder geh zurück zur Dateiliste.",
     "pt": "As alterações feitas até agora estão salvas neste navegador. Tente de novo ou volte para a lista de arquivos."
+  },
+  "Le pagine una sotto l'altra, invece di un .zip": {
+    "en": "Pages stacked one below the other, instead of a .zip",
+    "es": "Las páginas una debajo de otra, en lugar de un .zip",
+    "fr": "Les pages les unes sous les autres, au lieu d'un .zip",
+    "de": "Die Seiten untereinander statt als .zip",
+    "pt": "As páginas uma abaixo da outra, em vez de um .zip"
   },
   "Legenda": {
     "en": "Legend",
@@ -3275,6 +3366,13 @@
     "de": "Text bearbeiten",
     "pt": "Editar o texto"
   },
+  "Modificabile, con note e commenti": {
+    "en": "Editable, with notes and comments",
+    "es": "Editable, con notas y comentarios",
+    "fr": "Modifiable, avec notes et commentaires",
+    "de": "Bearbeitbar, mit Notizen und Kommentaren",
+    "pt": "Editável, com notas e comentários"
+  },
   "Modificati di recente": {
     "en": "Recently edited",
     "es": "Modificados recientemente",
@@ -3330,13 +3428,6 @@
     "fr": "Il n'y a pas de tableau dans le presse-papiers",
     "de": "In der Zwischenablage ist keine Tabelle",
     "pt": "Não há uma tabela na área de transferência"
-  },
-  "Nella finestra di stampa scegli «Salva come PDF».": {
-    "en": "In the print dialog choose “Save as PDF”.",
-    "es": "En la ventana de impresión elige «Guardar como PDF».",
-    "fr": "Dans la fenêtre d'impression, choisissez « Enregistrer au format PDF ».",
-    "de": "Wähle im Druckfenster „Als PDF sichern“.",
-    "pt": "Na janela de impressão escolha “Salvar como PDF”."
   },
   "Neon": {
     "en": "Neon",
@@ -3625,6 +3716,13 @@
     "de": "Nacht",
     "pt": "Noite"
   },
+  "Numeri o intervalli separati da virgole.": {
+    "en": "Numbers or ranges separated by commas.",
+    "es": "Números o intervalos separados por comas.",
+    "fr": "Numéros ou plages séparés par des virgules.",
+    "de": "Zahlen oder Bereiche, durch Kommas getrennt.",
+    "pt": "Números ou intervalos separados por vírgulas."
+  },
   "Numero di pagina": {
     "en": "Page number",
     "es": "Número de página",
@@ -3779,6 +3877,13 @@
     "de": "Option",
     "pt": "Opção"
   },
+  "Opzioni": {
+    "en": "Options",
+    "es": "Opciones",
+    "fr": "Options",
+    "de": "Optionen",
+    "pt": "Opções"
+  },
   "Ora": {
     "en": "Time",
     "es": "Hora",
@@ -3849,6 +3954,13 @@
     "de": "Seite",
     "pt": "Página"
   },
+  "Pagina {page}": {
+    "en": "Page {page}",
+    "es": "Página {page}",
+    "fr": "Page {page}",
+    "de": "Seite {page}",
+    "pt": "Página {page}"
+  },
   "Pagina {page} di {total}": {
     "en": "Page {page} of {total}",
     "es": "Página {page} de {total}",
@@ -3876,6 +3988,27 @@
     "fr": "Pagination",
     "de": "Seitennummerierung",
     "pt": "Paginação"
+  },
+  "Pagine": {
+    "en": "Pages",
+    "es": "Páginas",
+    "fr": "Pages",
+    "de": "Seiten",
+    "pt": "Páginas"
+  },
+  "Pagine da esportare": {
+    "en": "Pages to export",
+    "es": "Páginas para exportar",
+    "fr": "Pages à exporter",
+    "de": "Zu exportierende Seiten",
+    "pt": "Páginas para exportar"
+  },
+  "Pagine pronte da condividere": {
+    "en": "Pages ready to share",
+    "es": "Páginas listas para compartir",
+    "fr": "Pages prêtes à partager",
+    "de": "Seiten, bereit zum Teilen",
+    "pt": "Páginas prontas para compartilhar"
   },
   "Palette dei comandi": {
     "en": "Command palette",
@@ -3911,13 +4044,6 @@
     "fr": "Parenthèses",
     "de": "Klammern",
     "pt": "Parênteses"
-  },
-  "PDF pronto": {
-    "en": "PDF ready",
-    "es": "PDF listo",
-    "fr": "PDF prêt",
-    "de": "PDF fertig",
-    "pt": "PDF pronto"
   },
   "Pedice": {
     "en": "Subscript",
@@ -4129,12 +4255,12 @@
     "de": "Vorbereitung",
     "pt": "Preparação"
   },
-  "Preparo il PDF…": {
-    "en": "Preparing the PDF…",
-    "es": "Preparando el PDF…",
-    "fr": "Préparation du PDF…",
-    "de": "PDF wird vorbereitet…",
-    "pt": "Preparando o PDF…"
+  "Preparo l'anteprima…": {
+    "en": "Preparing the preview…",
+    "es": "Preparando la vista previa…",
+    "fr": "Préparation de l'aperçu…",
+    "de": "Vorschau wird vorbereitet…",
+    "pt": "Preparando a prévia…"
   },
   "Prima 0 · Dopo 0 · Interlinea 1": {
     "en": "Before 0 · After 0 · Line spacing 1",
@@ -4199,6 +4325,13 @@
     "de": "Erinnerung",
     "pt": "Lembrete"
   },
+  "Pronta da condividere": {
+    "en": "Ready to share",
+    "es": "Lista para compartir",
+    "fr": "Prête à partager",
+    "de": "Bereit zum Teilen",
+    "pt": "Pronta para compartilhar"
+  },
   "Provincia": {
     "en": "State or region",
     "es": "Provincia",
@@ -4261,6 +4394,13 @@
     "fr": "Un problème est survenu · Cogniva",
     "de": "Etwas ist schiefgelaufen · Cogniva",
     "pt": "Algo deu errado · Cogniva"
+  },
+  "Qualità": {
+    "en": "Quality",
+    "es": "Calidad",
+    "fr": "Qualité",
+    "de": "Qualität",
+    "pt": "Qualidade"
   },
   "Questa board non c'è": {
     "en": "This board is not here",
@@ -4689,13 +4829,6 @@
     "de": "Schreib hier den Text des Feldes.",
     "pt": "Escreva aqui o texto da caixa."
   },
-  "Scrivi, oppure incolla degli elementi da una board…": {
-    "en": "Write, or paste elements from a board…",
-    "es": "Escribe o pega elementos de un tablero…",
-    "fr": "Écrivez, ou collez des éléments d'un tableau…",
-    "de": "Schreib etwas oder füge Elemente aus einem Board ein…",
-    "pt": "Escreva ou cole elementos de um quadro…"
-  },
   "Scrivi…": {
     "en": "Type…",
     "es": "Escribe…",
@@ -4885,6 +5018,27 @@
     "de": "ja",
     "pt": "sim"
   },
+  "Si cambia in Layout › Dimensioni.": {
+    "en": "Change it in Layout › Size.",
+    "es": "Se cambia en Diseño › Tamaño.",
+    "fr": "Se modifie dans Mise en page › Dimensions.",
+    "de": "Änderbar unter Layout › Größe.",
+    "pt": "Muda-se em Layout › Tamanho."
+  },
+  "Si impagina nel programma che lo apre": {
+    "en": "Laid out by the program that opens it",
+    "es": "Se maqueta en el programa que lo abre",
+    "fr": "Mis en page par le logiciel qui l'ouvre",
+    "de": "Wird vom öffnenden Programm umbrochen",
+    "pt": "Diagramado pelo programa que o abre"
+  },
+  "Si può cercare e copiare nel PDF": {
+    "en": "It can be searched and copied in the PDF",
+    "es": "Se puede buscar y copiar en el PDF",
+    "fr": "Il peut être recherché et copié dans le PDF",
+    "de": "Im PDF durchsuchbar und kopierbar",
+    "pt": "Pode ser pesquisado e copiado no PDF"
+  },
   "Sidebar": {
     "en": "Sidebar",
     "es": "Barra lateral",
@@ -4975,6 +5129,13 @@
     "fr": "Texte à gauche seulement",
     "de": "Nur Text links",
     "pt": "Só texto à esquerda"
+  },
+  "Solo testo e struttura": {
+    "en": "Text and structure only",
+    "es": "Solo texto y estructura",
+    "fr": "Texte et structure seulement",
+    "de": "Nur Text und Struktur",
+    "pt": "Apenas texto e estrutura"
   },
   "Sommario": {
     "en": "Table of contents",
@@ -5094,6 +5255,13 @@
     "fr": "Mettre à la corbeille",
     "de": "In den Papierkorb legen",
     "pt": "Mover para a lixeira"
+  },
+  "Stampa…": {
+    "en": "Print…",
+    "es": "Imprimir…",
+    "fr": "Imprimer…",
+    "de": "Drucken…",
+    "pt": "Imprimir…"
   },
   "Standard": {
     "en": "Standard",
@@ -5339,6 +5507,13 @@
     "fr": "Texte presque au contact",
     "de": "Text fast anliegend",
     "pt": "Texto quase encostando"
+  },
+  "Testo selezionabile": {
+    "en": "Selectable text",
+    "es": "Texto seleccionable",
+    "fr": "Texte sélectionnable",
+    "de": "Auswählbarer Text",
+    "pt": "Texto selecionável"
   },
   "Testo…": {
     "en": "Text…",
@@ -5648,6 +5823,20 @@
     "de": "Ein Beispieldokument. Probier die Leiste oben aus oder markiere Text für das Kontextmenü. Die {styles} im Tab Start änderst du per Rechtsklick.",
     "pt": "Um documento de exemplo. Experimente a barra de ferramentas do topo, ou selecione um texto para o menu de contexto. Os {styles} da aba Início são modificados com um clique direito."
   },
+  "Un'immagine per pagina": {
+    "en": "One image per page",
+    "es": "Una imagen por página",
+    "fr": "Une image par page",
+    "de": "Ein Bild pro Seite",
+    "pt": "Uma imagem por página"
+  },
+  "Un'unica immagine": {
+    "en": "A single image",
+    "es": "Una única imagen",
+    "fr": "Une seule image",
+    "de": "Ein einziges Bild",
+    "pt": "Uma única imagem"
+  },
   "Una nota a lato: un approfondimento, una definizione, un dato.": {
     "en": "A note on the side: a detail, a definition, a figure.",
     "es": "Una nota al lado: un detalle, una definición, un dato.",
@@ -5781,12 +5970,19 @@
     "de": "Vektor",
     "pt": "Vetor"
   },
-  "vettoriale, dalla stampa": {
-    "en": "vector, from the print dialog",
-    "es": "vectorial, desde la impresión",
-    "fr": "vectoriel, via l'impression",
-    "de": "vektorbasiert, über den Druck",
-    "pt": "vetorial, pela impressão"
+  "Vettoriale": {
+    "en": "Vector",
+    "es": "Vectorial",
+    "fr": "Vectoriel",
+    "de": "Vektor",
+    "pt": "Vetorial"
+  },
+  "Vettoriale, tutto il documento": {
+    "en": "Vector, the whole document",
+    "es": "Vectorial, todo el documento",
+    "fr": "Vectoriel, tout le document",
+    "de": "Vektor, das ganze Dokument",
+    "pt": "Vetorial, o documento inteiro"
   },
   "Video": {
     "en": "Video",

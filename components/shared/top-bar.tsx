@@ -17,7 +17,7 @@ import { useDocumentTitle } from "@/lib/use-document-title"
 import { useStore } from "@/lib/store"
 import { cn } from "@/lib/utils"
 
-import { useT, hrefFor } from "@/lib/i18n/client"
+import { useT, useHref } from "@/lib/i18n/client"
 /**
  * La cornice della barra in alto, senza dati: la usano sia la barra vera sia
  * lo scheletro che si vede prima che lo spazio di lavoro sia caricato, così
@@ -31,6 +31,7 @@ export function TopBarFrame({
   className?: string
 }) {
   const t = useT()
+  const href = useHref()
   return (
     <header
       className={cn(
@@ -39,7 +40,7 @@ export function TopBarFrame({
       )}
     >
       <Link
-        href={hrefFor("/") as Route}
+        href={href("/") as Route}
         className="flex size-8 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted hover:text-foreground"
         title={t("Tutti i file")}
         aria-label={t("Tutti i file")}
@@ -122,6 +123,7 @@ export function TopBar({
       <input
         aria-label={t("Nome del file")}
         value={file.title}
+        placeholder={t("Senza titolo")}
         onChange={(e) => rename(fileId, e.target.value)}
         spellCheck={false}
         enterKeyHint="done"

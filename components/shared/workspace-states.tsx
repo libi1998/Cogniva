@@ -11,7 +11,7 @@ import { useDocumentTitle } from "@/lib/use-document-title"
 import type { FileKind } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
-import { useT, hrefFor } from "@/lib/i18n/client"
+import { useT, hrefFor, useHref } from "@/lib/i18n/client"
 /*
  * Gli stati di un file prima che sia pronto. Lo spazio di lavoro vive nel
  * browser: il server (e il prerender) disegnano questi scheletri, che hanno
@@ -91,6 +91,7 @@ export function BoardSkeleton() {
 /** Un file che non c'è: link vecchio, file eliminato o di un altro browser */
 export function FileMissing({ kind }: { kind: FileKind }) {
   const t = useT()
+  const href = useHref()
   const router = useRouter()
   useDocumentTitle(t("File non trovato · Cogniva"))
   const create = () => {
@@ -118,7 +119,7 @@ export function FileMissing({ kind }: { kind: FileKind }) {
       </div>
       <div className="flex flex-wrap justify-center gap-2">
         <Link
-          href={hrefFor("/") as Route}
+          href={href("/") as Route}
           className={cn(buttonVariants({ size: "default" }))}
         >
           {t("Torna ai file")}

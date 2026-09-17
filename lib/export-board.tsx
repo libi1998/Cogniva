@@ -8,16 +8,9 @@ import {
   BoardPreview,
   boardPreviewBounds,
 } from "@/components/board/board-preview"
-import {
-  collectFontCss,
-  download,
-  printSvg,
-  safeName,
-  safeScale,
-  svgToBlob,
-} from "./export"
+import { collectFontCss } from "./export"
 import { fontMap } from "./fonts"
-import { formatMm, formatPx, pxToMm } from "./page"
+import { formatPx } from "./page"
 import type { BoardData } from "./types"
 
 import { tr } from "@/lib/i18n/client"
@@ -59,7 +52,7 @@ function inlineCssVars(markup: string) {
  * e vettoriale, e può essere rasterizzato senza che il canvas venga marcato come
  * "tainted" da Chromium.
  */
-async function renderBoardSvg(
+export async function renderBoardSvg(
   data: BoardData,
   background: string,
   padding: number
@@ -112,84 +105,4 @@ async function renderBoardSvg(
   if (style) markup = markup.replace(/>/, `>${style}`)
 
   return { svg: markup, width, height }
-}
-
-export async function exportBoard({
-  data,
-  title,
-  format,
-  background,
-  scale = 3,
-  padding = 64,
-}: {
-  data: BoardData
-  title: string
-  format: ExportFormat
-  background: string
-  scale?: number
-  padding?: number
-}) {
-  const { svg, width, height } = await renderBoardSvg(data, background, padding)
-  const name = safeName(title)
-
-  if (format === "svg") {
-    download(svgToBlob(svg), `${name}.svg`)
-    return
-  }
-
-  if (format === "pdf") {
-    // niente rasterizzazione: si passa dal motore di stampa del browser, che
-    // produce un PDF vettoriale con il testo selezionabile
-    const mm =
-      formatMm(data.theme.page.format, data.theme.page.orientation) ??
-      ([pxToMm(width), pxToMm(height)] as [number, number])
-    await printSvg(svg, mm, title)
-    return
-  }
-
-  const png = await rasterize(
-    svg,
-    width,
-    height,
-    safeScale(width, height, scale)
-  )
-  download(png, `${name}.png`)
-}
-
-async function rasterize(
-  svg: string,
-  width: number,
-  height: number,
-  scale: number
-): Promise<Blob> {
-  const url = URL.createObjectURL(svgToBlob(svg))
-  try {
-    const img = new Image()
-    await new Promise<void>((resolve, reject) => {
-      img.onload = () => resolve()
-      img.onerror = () =>
-        reject(new Error(tr("Impossibile rasterizzare la board")))
-      img.src = url
-    })
-    // i font incorporati devono essere pronti prima di disegnare
-    if (document.fonts?.ready) await document.fonts.ready
-    const canvas = document.createElement("canvas")
-    canvas.width = Math.round(width * scale)
-    canvas.height = Math.round(height * scale)
-    const ctx = canvas.getContext("2d")
-    if (!ctx) throw new Error(tr("Canvas non disponibile"))
-    ctx.scale(scale, scale)
-    ctx.drawImage(img, 0, 0, width, height)
-    return await new Promise<Blob>((resolve, reject) =>
-      canvas.toBlob(
-        (blob) =>
-          blob
-            ? resolve(blob)
-            : reject(new Error(tr("Conversione PNG fallita"))),
-        "image/png"
-      )
-    )
-  } finally {
-    URL.revokeObjectURL(url)
-  }
 }

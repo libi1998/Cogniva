@@ -138,14 +138,10 @@ export function createDocExtensions(): AnyExtension[] {
     DocChart,
     Placeholder.configure({
       showOnlyCurrent: false,
-      placeholder: ({ editor, node, hasAnchor }) => {
-        if (node.type.name === "docTitle") return tr("Senza titolo")
-        if (node.type.name === "heading") return hasAnchor ? tr("Titolo…") : ""
-        // il corpo suggerisce solo dove si sta scrivendo o se è tutto vuoto
-        return hasAnchor || editor.state.doc.childCount <= 2
-          ? tr("Scrivi, oppure incolla degli elementi da una board…")
-          : ""
-      },
+      // un documento nuovo è una pagina bianca: nessun suggerimento nel
+      // titolo né nel corpo, solo sul titolo di sezione dove si sta scrivendo
+      placeholder: ({ node, hasAnchor }) =>
+        node.type.name === "heading" && hasAnchor ? tr("Titolo…") : "",
     }),
   ]
 }

@@ -577,9 +577,26 @@ export const defaultDocTheme: DocTheme = {
 /* ------------------------------ Normalizzazione -------------------------- */
 
 /** Riempie i campi introdotti dopo la prima versione dei dati salvati */
+/**
+ * La board d'esempio della versione 1.0.1 salvava in italiano una cella con il
+ * contesto per i traduttori ancora attaccato: si ripulisce all'apertura.
+ */
+const LEGACY_CELLS: Record<string, string> = {
+  "Ricerca||fase di un progetto": "Ricerca",
+}
+
 export function normalizeNode(
   n: Partial<BoardNode> & { id: string }
 ): BoardNode {
+  if (n.table?.cells.some((cell) => cell in LEGACY_CELLS)) {
+    n = {
+      ...n,
+      table: {
+        ...n.table,
+        cells: n.table.cells.map((cell) => LEGACY_CELLS[cell] ?? cell),
+      },
+    }
+  }
   return {
     kind: "shape",
     x: 0,

@@ -13,7 +13,7 @@ const common = {
   locale: "it-IT",
 }
 const crossBrowser =
-  /(translate|read-aloud|thesaurus|model-3d|add-ins)\.spec\.ts/
+  /(translate|read-aloud|thesaurus|model-3d|add-ins|export-studio)\.spec\.ts/
 
 export default defineConfig({
   testDir: "./e2e",

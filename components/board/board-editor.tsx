@@ -23,7 +23,6 @@ import {
   Undo2,
   X,
 } from "lucide-react"
-import { toast } from "sonner"
 import {
   BoardCanvas,
   MAX_ZOOM,
@@ -52,12 +51,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { getWorkspace, useStore } from "@/lib/store"
-import { exportBoard, type ExportFormat } from "@/lib/export-board"
+import {
+  ExportStudio,
+  type StudioFormat,
+} from "@/components/shared/export-studio"
 import { AUTO_CANVAS, resolveColor, useIsDark } from "@/lib/use-theme"
 import { formatPx } from "@/lib/page"
 import { useCollapsingPanel, useNarrow } from "@/lib/use-media"
 import type { SwatchKey } from "@/lib/palette"
-import type { BoardData, BoardMode } from "@/lib/types"
+import type { BoardMode } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
 import { useT, tr } from "@/lib/i18n/client"
@@ -99,46 +101,6 @@ const MODES: {
   },
 ]
 
-/**
- * Esporta fuori dal componente: il React Compiler non gestisce ancora
- * `try … finally`, e un blocco così dentro al componente gli faceva saltare
- * l'ottimizzazione di tutto l'editor.
- */
-async function runExport(
-  format: ExportFormat,
-  data: BoardData,
-  title: string,
-  background: string
-) {
-  const id = toast.loading(
-    format === "pdf"
-      ? tr("Preparo il PDF…")
-      : tr("Esporto in {format}…", { format: format.toUpperCase() })
-  )
-  try {
-    // lascia respirare l'interfaccia (via timeout: rAF non scatta a scheda nascosta)
-    await new Promise((r) => setTimeout(r, 60))
-    await exportBoard({ data, title, format, background })
-    if (format === "pdf") {
-      toast.success(tr("PDF pronto"), {
-        id,
-        description: tr("Nella finestra di stampa scegli «Salva come PDF»."),
-      })
-    } else {
-      toast.success(
-        tr("Esportato in {format}", { format: format.toUpperCase() }),
-        { id }
-      )
-    }
-  } catch (err) {
-    console.error(err)
-    toast.error(tr("Esportazione non riuscita"), {
-      id,
-      description: err instanceof Error ? err.message : undefined,
-    })
-  }
-}
-
 export function BoardEditor({ fileId }: { fileId: string }) {
   const t = useT()
   const file = useStore((s) => s.files.find((f) => f.id === fileId))
@@ -156,7 +118,6 @@ export function BoardEditor({ fileId }: { fileId: string }) {
   const narrow = useNarrow(1180)
   const compact = useNarrow(639)
   const [panel, setPanel] = useCollapsingPanel(useNarrow(900))
-  const [busy, setBusy] = React.useState(false)
   const [vp, setVp] = React.useState<Viewport>(
     () =>
       (file && file.kind === "board" && file.data.viewport) || {
@@ -175,18 +136,11 @@ export function BoardEditor({ fileId }: { fileId: string }) {
     return () => clearTimeout(t)
   }, [vp, fileId])
 
-  const doExport = async (format: ExportFormat) => {
-    const current = getWorkspace().files.find((f) => f.id === fileId)
-    if (!current || current.kind !== "board") return
+  // la sezione Esporta fotografa la board senza selezione
+  const [studio, setStudio] = React.useState<StudioFormat | null>(null)
+  const openStudio = (format: StudioFormat) => {
     setSelection({ nodes: [], edges: [] })
-    setBusy(true)
-    await runExport(
-      format,
-      current.data,
-      current.title,
-      resolveColor(current.data.theme.background, dark, AUTO_CANVAS)
-    )
-    setBusy(false)
+    setStudio(format)
   }
 
   const viewportSize = () => {
@@ -346,21 +300,21 @@ export function BoardEditor({ fileId }: { fileId: string }) {
         group: exportGroup,
         label: t("Esporta in PNG"),
         icon: <FileImage />,
-        run: () => void doExport("png"),
+        run: () => openStudio("png"),
       },
       {
         id: "board.export.svg",
         group: exportGroup,
         label: t("Esporta in SVG"),
         icon: <FileImage />,
-        run: () => void doExport("svg"),
+        run: () => openStudio("svg"),
       },
       {
         id: "board.export.pdf",
         group: exportGroup,
         label: t("Esporta in PDF"),
         icon: <FileText />,
-        run: () => void doExport("pdf"),
+        run: () => openStudio("pdf"),
       },
     ]
   })
@@ -384,6 +338,18 @@ export function BoardEditor({ fileId }: { fileId: string }) {
 
   return (
     <div className="flex h-dvh flex-col bg-muted">
+      {studio && data && file ? (
+        <ExportStudio
+          initialFormat={studio}
+          onClose={() => setStudio(null)}
+          source={{
+            kind: "board",
+            title: file.title,
+            data,
+            background: resolveColor(data.theme.background, dark, AUTO_CANVAS),
+          }}
+        />
+      ) : null}
       <TopBar
         fileId={fileId}
         right={
@@ -468,40 +434,16 @@ export function BoardEditor({ fileId }: { fileId: string }) {
               <TooltipContent>{t("Ripristina ⇧⌘Z")}</TooltipContent>
             </Tooltip>
 
-            <DropdownMenu>
-              <DropdownMenuTrigger
-                render={
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="size-8"
-                    aria-label={t("Esporta")}
-                    disabled={busy}
-                  />
-                }
-              >
-                <Download className="size-4" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-44">
-                <DropdownMenuLabel>{t("Esporta board")}</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => doExport("png")}>
-                  <FileImage className="size-4" /> PNG
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => doExport("svg")}>
-                  <FileImage className="size-4" /> SVG
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => doExport("pdf")}>
-                  <FileText className="size-4" />
-                  <div className="flex flex-col">
-                    <span>PDF</span>
-                    <span className="text-[11px] text-muted-foreground">
-                      {t("vettoriale, dalla stampa")}
-                    </span>
-                  </div>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8"
+              title={t("Esporta")}
+              aria-label={t("Esporta")}
+              onClick={() => openStudio("pdf")}
+            >
+              <Download className="size-4" />
+            </Button>
 
             <ThemeToggle className="hidden sm:flex" />
 

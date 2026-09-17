@@ -63,10 +63,9 @@ export function currentLocale(): Locale {
 export const tr: TFunction = (source, values) => {
   const locale = currentLocale()
   const translated =
-    locale === SOURCE_LOCALE
-      ? source
-      : (registry.get(locale)?.[source] ?? source)
-  return interpolate(translated, values)
+    locale === SOURCE_LOCALE ? undefined : registry.get(locale)?.[source]
+  // in italiano (o senza traduzione) il contesto dopo «||» non si vede
+  return interpolate(translated ?? stripContext(source), values)
 }
 
 /** «it-IT», «en-US»…: per date, numeri e nuovi documenti */

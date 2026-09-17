@@ -30,7 +30,7 @@ export function pageSizeExact(theme: DocTheme) {
   return { w: w * MM_TO_PX, h: h * MM_TO_PX }
 }
 
-export type DocExportFormat = "png" | "svg" | "pdf" | "print"
+export type DocExportFormat = "png" | "svg" | "print"
 
 /**
  * I caratteri da incorporare nell'SVG: quello del documento, quelli scelti a
@@ -54,7 +54,11 @@ function usedFamilies(sheet: HTMLElement, theme: DocTheme) {
 }
 
 /** Prepara la copia del foglio: niente ombre né guide, campi resi come testo */
-function prepareSheet(node: HTMLElement, height: number, source: HTMLElement) {
+export function prepareSheet(
+  node: HTMLElement,
+  height: number,
+  source: HTMLElement
+) {
   // gli stili si leggono dall'elemento vivo: su un clone staccato dal documento
   // getComputedStyle non restituisce nulla
   const liveInputs = Array.from(source.querySelectorAll("input"))
@@ -147,6 +151,7 @@ function prepareSheet(node: HTMLElement, height: number, source: HTMLElement) {
 
 export async function exportDoc({
   title,
+  filename,
   theme,
   format,
   paper,
@@ -154,6 +159,8 @@ export async function exportDoc({
   scale = 2.5,
 }: {
   title: string
+  /** nome scelto nella sezione Esporta, senza estensione */
+  filename?: string
   theme: DocTheme
   format: DocExportFormat
   paper: string
@@ -165,8 +172,8 @@ export async function exportDoc({
   sheet: HTMLElement | null
   scale?: number
 }) {
-  if (format === "pdf" || format === "print") {
-    // il PDF passa dal motore di stampa: testo reale, vettoriale, multipagina
+  if (format === "print") {
+    // la stampa vera, su carta: il PDF invece si costruisce nella sezione Esporta
     window.print()
     return
   }
@@ -178,7 +185,7 @@ export async function exportDoc({
   // client no: con la vista al 150% l'esportazione usciva una volta e mezza
   const width = el.offsetWidth
   const height = Math.round(el.scrollHeight)
-  const name = safeName(title)
+  const name = filename || safeName(title)
 
   if (format === "svg") {
     const fontCss = await collectFontCss(usedFamilies(el, theme))

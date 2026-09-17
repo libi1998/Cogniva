@@ -154,6 +154,9 @@ Nothing is sent to external services: models are downloaded once and then work o
 
 Just **drag a file** onto the window to open it. 🪄
 
+Exporting opens a **preview of every page** with its settings — pages, paper, quality, colors,
+selectable text — and builds the PDF right in the app, no print dialog. 🖨️
+
 ### 🌍 Languages
 
 The whole interface is available in **Italian 🇮🇹, English 🇬🇧, Spanish 🇪🇸, French 🇫🇷, German

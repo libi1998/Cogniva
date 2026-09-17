@@ -59,28 +59,30 @@ import type { FileKind, WFile } from "@/lib/types"
 import { useDocumentTitle } from "@/lib/use-document-title"
 import { cn } from "@/lib/utils"
 
-import { useT, tr, hrefFor, timeAgo, currentLocale } from "@/lib/i18n/client"
+import {
+  useT,
+  useHref,
+  tr,
+  hrefFor,
+  timeAgo,
+  currentLocale,
+} from "@/lib/i18n/client"
+import { N_ } from "@/lib/i18n/config"
 type Filter = "all" | "board" | "doc" | "starred" | "trash"
 type Sort = "updated" | "created" | "name"
 
 const SORTS: { value: Sort; label: string }[] = [
   {
     value: "updated",
-    get label() {
-      return tr("Modificati di recente")
-    },
+    label: N_("Modificati di recente"),
   },
   {
     value: "created",
-    get label() {
-      return tr("Creati di recente")
-    },
+    label: N_("Creati di recente"),
   },
   {
     value: "name",
-    get label() {
-      return tr("Nome")
-    },
+    label: N_("Nome"),
   },
 ]
 
@@ -92,42 +94,26 @@ const NAV: {
 }[] = [
   {
     key: "all",
-    get label() {
-      return tr("Tutti i file")
-    },
-    get short() {
-      return tr("Tutti")
-    },
+    label: N_("Tutti i file"),
+    short: N_("Tutti"),
     icon: <LayoutGrid className="size-4" />,
   },
   {
     key: "board",
-    get label() {
-      return tr("Board")
-    },
-    get short() {
-      return tr("Board")
-    },
+    label: N_("Board"),
+    short: N_("Board"),
     icon: <Shapes className="size-4" />,
   },
   {
     key: "doc",
-    get label() {
-      return tr("Documenti")
-    },
-    get short() {
-      return tr("Documenti")
-    },
+    label: N_("Documenti"),
+    short: N_("Documenti"),
     icon: <FileText className="size-4" />,
   },
   {
     key: "starred",
-    get label() {
-      return tr("Preferiti")
-    },
-    get short() {
-      return tr("Preferiti")
-    },
+    label: N_("Preferiti"),
+    short: N_("Preferiti"),
     icon: <Star className="size-4" />,
   },
 ]
@@ -144,6 +130,7 @@ function exportAll() {
 
 export function HomeScreen() {
   const t = useT()
+  const href = useHref()
   const router = useRouter()
   const hydrated = useStore((s) => s.hydrated)
   const files = useStore((s) => s.files)
@@ -227,7 +214,7 @@ export function HomeScreen() {
       >
         <ArrowDownWideNarrow className="size-4" />
         <span className="hidden lg:inline">
-          {SORTS.find((s) => s.value === sort)?.label}
+          {t(SORTS.find((s) => s.value === sort)?.label ?? "")}
         </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-52">
@@ -238,7 +225,7 @@ export function HomeScreen() {
             onClick={() => setSort(s.value)}
             className={cn(sort === s.value && "font-semibold")}
           >
-            {s.label}
+            {t(s.label)}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
@@ -266,7 +253,7 @@ export function HomeScreen() {
     >
       <aside className="hidden w-[236px] shrink-0 flex-col border-r border-border bg-card p-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-[max(0.75rem,env(safe-area-inset-bottom))] pl-[max(0.75rem,env(safe-area-inset-left))] md:flex">
         <Link
-          href={hrefFor("/") as Route}
+          href={href("/") as Route}
           className="mb-5 flex items-center gap-2 px-2 pt-2"
         >
           <LogoMark />
@@ -297,7 +284,7 @@ export function HomeScreen() {
               key={n.key}
               active={filter === n.key}
               icon={n.icon}
-              label={n.label}
+              label={t(n.label)}
               count={counts[n.key]}
               onClick={() => setFilter(n.key)}
             />
@@ -361,7 +348,7 @@ export function HomeScreen() {
         <header className="shrink-0 border-b border-border bg-card pt-[env(safe-area-inset-top)] safe-x md:px-5">
           <div className="flex h-14 items-center gap-2 sm:gap-3">
             <Link
-              href={hrefFor("/") as Route}
+              href={href("/") as Route}
               className="flex shrink-0 items-center gap-2 md:hidden"
               aria-label="Cogniva"
             >
@@ -428,7 +415,7 @@ export function HomeScreen() {
               aria-label={t("Filtri")}
               className="-mx-[max(0.5rem,env(safe-area-inset-left))] flex [scrollbar-width:none] gap-1.5 overflow-x-auto px-[max(0.5rem,env(safe-area-inset-left))] sm:-mx-3 sm:px-3"
             >
-              {[...NAV, { key: "trash" as const, short: tr("Cestino") }].map(
+              {[...NAV, { key: "trash" as const, short: N_("Cestino") }].map(
                 (n) => (
                   <button
                     key={n.key}
@@ -442,7 +429,7 @@ export function HomeScreen() {
                         : "border-border bg-background text-muted-foreground hover:text-foreground"
                     )}
                   >
-                    {n.short}
+                    {t(n.short)}
                     {counts[n.key] !== null ? (
                       <span className="tabular-nums opacity-60">
                         {counts[n.key]}

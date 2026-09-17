@@ -2,11 +2,13 @@ import { execFileSync } from "node:child_process"
 import { expect, test, type Page } from "@playwright/test"
 import { caretAfter, enableTracking, openDemo, openTab } from "./editor"
 
-/** Esporta in Word dal menu e restituisce il percorso del file scaricato */
+/** Esporta in .docx dalla sezione Esporta e restituisce il percorso del file */
 async function exportDocx(page: Page, dir: string) {
-  await page.getByRole("button", { name: "Esporta" }).click()
+  await page.getByRole("button", { name: "Esporta", exact: true }).click()
+  const dialog = page.getByRole("dialog")
+  await dialog.getByRole("button", { name: /^\.docx/ }).click()
   const download = page.waitForEvent("download")
-  await page.getByRole("menuitem", { name: /Word \(\.docx\)/ }).click()
+  await dialog.getByRole("button", { name: "Esporta .docx" }).click()
   const file = `${dir}/documento.docx`
   await (await download).saveAs(file)
   return file

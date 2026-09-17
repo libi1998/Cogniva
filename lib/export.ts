@@ -1,6 +1,7 @@
 "use client"
 
 import { tr } from "@/lib/i18n/client"
+import { removeEmptyPseudos } from "@/lib/export-studio/raster"
 /**
  * Esportazione in SVG / PNG / PDF.
  *
@@ -358,6 +359,7 @@ export async function elementToPngBlob(
     useCORS: true,
     logging: false,
     onclone: (doc: Document) => {
+      removeEmptyPseudos(doc)
       if (!opts.onClone || !el.id) return
       const node = doc.getElementById(el.id) as HTMLElement | null
       if (node) opts.onClone(doc, node)
@@ -371,63 +373,6 @@ export async function elementToPngBlob(
     )
   )
   return { blob, width: canvas.width, height: canvas.height }
-}
-
-function escapeHtml(s: string) {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-}
-
-/**
- * Stampa un SVG autonomo passando dal motore del browser.
- *
- * È l'unico modo per ottenere un PDF davvero vettoriale — testo selezionabile e
- * font corretti — senza incorporare a mano i font: jsPDF sa gestire solo TTF
- * statici, mentre qui i font sono woff2 variabili.
- */
-export async function printSvg(
-  svg: string,
-  mm: [number, number],
-  title: string
-) {
-  const frame = document.createElement("iframe")
-  frame.setAttribute("aria-hidden", "true")
-  frame.style.cssText =
-    "position:fixed;right:0;bottom:0;width:1px;height:1px;border:0;opacity:0;"
-  document.body.appendChild(frame)
-
-  const doc = frame.contentDocument
-  if (!doc) {
-    frame.remove()
-    throw new Error(tr("Impossibile preparare la stampa"))
-  }
-
-  doc.open()
-  doc.write(
-    `<!doctype html><html><head><meta charset="utf-8"><title>${escapeHtml(title)}</title>` +
-      `<style>@page{size:${mm[0]}mm ${mm[1]}mm;margin:0}` +
-      `html,body{margin:0;padding:0}` +
-      `svg{display:block;width:${mm[0]}mm;height:${mm[1]}mm}</style>` +
-      `</head><body>${svg}</body></html>`
-  )
-  doc.close()
-
-  await new Promise<void>((resolve) => {
-    if (doc.readyState === "complete") resolve()
-    else frame.addEventListener("load", () => resolve(), { once: true })
-  })
-  try {
-    await (doc as Document & { fonts?: FontFaceSet }).fonts?.ready
-  } catch {
-    /* i font sono già incorporati nell'SVG */
-  }
-  await new Promise((r) => setTimeout(r, 200))
-
-  const win = frame.contentWindow
-  const cleanup = () => setTimeout(() => frame.remove(), 800)
-  win?.addEventListener("afterprint", cleanup, { once: true })
-  setTimeout(cleanup, 120000)
-  win?.focus()
-  win?.print()
 }
 
 export function download(blob: Blob, filename: string) {

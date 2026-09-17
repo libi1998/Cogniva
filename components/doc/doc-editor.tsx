@@ -92,14 +92,6 @@ import { TopBar } from "@/components/shared/top-bar"
 import { ThemeToggle } from "@/components/shared/theme-toggle"
 import { Button } from "@/components/ui/button"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
   docTitleText,
   isFreeWrap,
   setNextStyleResolver,
@@ -107,6 +99,11 @@ import {
 } from "@/lib/tiptap-extensions"
 import { resolveStyle, stylesCss } from "@/lib/doc-styles"
 import { fieldsOf, setFieldSettings } from "@/lib/doc-fields"
+import {
+  ExportStudio,
+  type StudioFormat,
+} from "@/components/shared/export-studio"
+import { takeDocSnapshot, visiblePage } from "./export-snapshot"
 import { setMergeSettings } from "@/lib/doc-merge"
 import { setTrackSettings } from "@/lib/track-changes"
 import { useAuthor } from "@/lib/author"
@@ -193,6 +190,16 @@ export function DocEditor({ fileId }: { fileId: string }) {
   const [sheetHeight, setSheetHeight] = React.useState(0)
   // stampa ed esportazioni disegnano il foglio automatico in chiaro
   const [forceLight, setForceLight] = React.useState(false)
+  // la sezione Esporta fotografa il foglio come in stampa, anche da «Layout Web»
+  const [printLayout, setPrintLayout] = React.useState(false)
+  const setPrintMode = React.useCallback((on: boolean) => {
+    setForceLight(on)
+    setPrintLayout(on)
+  }, [])
+  const [studio, setStudio] = React.useState<{
+    format: StudioFormat
+    page: number
+  } | null>(null)
   const dark = appDark && !forceLight
   const plainPaste = React.useRef(false)
   const scrollRef = React.useRef<HTMLDivElement>(null)
@@ -519,7 +526,9 @@ export function DocEditor({ fileId }: { fileId: string }) {
   // «Layout Web», «Struttura», «Bozza» e le modalità di lettura mostrano il
   // testo senza pagine: il tema salvato (stampa ed esportazioni) non cambia
   const view = theme?.view ?? "print"
-  const flowing = view !== "print" || mode === "reading" || mode === "immersive"
+  const flowing =
+    !printLayout &&
+    (view !== "print" || mode === "reading" || mode === "immersive")
   const screenTheme: DocTheme | null =
     theme && flowing
       ? {
@@ -652,11 +661,25 @@ export function DocEditor({ fileId }: { fileId: string }) {
       .run()
   }
 
-  const doExport = (format: DocExportFormat) => {
+  const openStudio = (format: StudioFormat) => {
+    if (!theme || title === null) return
+    if (mode !== "normal") setMode("normal")
+    setStudio({
+      format,
+      page: visiblePage(
+        sheetRef.current,
+        scrollRef.current,
+        paginated ? pagination.pages : 1
+      ),
+    })
+  }
+
+  const doExport = (format: DocExportFormat, filename?: string) => {
     if (!theme || title === null) return
     return runDocExport({
       format,
       title,
+      filename,
       theme,
       sheet: sheetRef.current,
       setBusy,
@@ -664,7 +687,10 @@ export function DocEditor({ fileId }: { fileId: string }) {
     })
   }
 
-  const exportFile = (format: "docx" | "md") => {
+  const exportFile = (
+    format: "docx" | "md",
+    options: { filename?: string; comments?: boolean } = {}
+  ) => {
     if (!editor || !theme || title === null) return
     return runFileExport({
       format,
@@ -674,6 +700,7 @@ export function DocEditor({ fileId }: { fileId: string }) {
       theme,
       setBusy,
       setForceLight,
+      ...options,
     })
   }
 
@@ -856,7 +883,7 @@ export function DocEditor({ fileId }: { fileId: string }) {
         group: exportGroup,
         label: t("Esporta in PDF"),
         icon: <FileText />,
-        run: () => void doExport("pdf"),
+        run: () => openStudio("pdf"),
       },
       {
         id: "doc.export.docx",
@@ -864,28 +891,28 @@ export function DocEditor({ fileId }: { fileId: string }) {
         label: t("Esporta in Word (.docx)"),
         icon: <FileType2 />,
         keywords: [t("word"), t("office")],
-        run: () => void exportFile("docx"),
+        run: () => openStudio("docx"),
       },
       {
         id: "doc.export.md",
         group: exportGroup,
         label: t("Esporta in Markdown (.md)"),
         icon: <FileCode2 />,
-        run: () => void exportFile("md"),
+        run: () => openStudio("md"),
       },
       {
         id: "doc.export.png",
         group: exportGroup,
         label: t("Esporta in PNG"),
         icon: <FileImage />,
-        run: () => void doExport("png"),
+        run: () => openStudio("png"),
       },
       {
         id: "doc.export.svg",
         group: exportGroup,
         label: t("Esporta in SVG"),
         icon: <FileImage />,
-        run: () => void doExport("svg"),
+        run: () => openStudio("svg"),
       },
       {
         id: "doc.print",
@@ -1082,67 +1109,53 @@ export function DocEditor({ fileId }: { fileId: string }) {
 
       <CommentHighlights ctl={comments} />
 
+      {studio && editor && title !== null ? (
+        <ExportStudio
+          initialFormat={studio.format}
+          onClose={() => setStudio(null)}
+          source={{
+            kind: "doc",
+            title,
+            language: theme.language || region,
+            currentPage: studio.page,
+            paperFormat: PAGE_FORMATS[theme.format].mm ? theme.format : null,
+            orientation: theme.orientation,
+            hasComments: comments.list.length > 0,
+            snapshot: () =>
+              takeDocSnapshot({
+                sheet: sheetRef.current,
+                theme,
+                setPrintMode,
+              }),
+            markdown: () => markdownOf(editor, fileId, theme),
+            exportDocx: async (filename, withComments) => {
+              await exportFile("docx", { filename, comments: withComments })
+            },
+            exportSvg: async (filename) => {
+              await doExport("svg", filename)
+            },
+            print: () => void doExport("print"),
+          }}
+        />
+      ) : null}
+
       {mode === "normal" ? (
         <>
           <TopBar
             fileId={fileId}
             right={
               <>
-                <DropdownMenu>
-                  <DropdownMenuTrigger
-                    render={
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="size-8"
-                        title={t("Esporta")}
-                        disabled={busy}
-                      />
-                    }
-                  >
-                    <Download className="size-4" />
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-52">
-                    <DropdownMenuLabel>
-                      {t("Esporta · {format}", {
-                        format: PAGE_FORMATS[theme.format].label,
-                      })}
-                    </DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => doExport("pdf")}>
-                      <FileText className="size-4" />
-                      <div className="flex flex-col">
-                        <span>PDF</span>
-                        <span className="text-[11px] text-muted-foreground">
-                          {t("vettoriale, dalla stampa")}
-                        </span>
-                      </div>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => doExport("png")}>
-                      <FileImage className="size-4" /> PNG
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => doExport("svg")}>
-                      <FileImage className="size-4" /> SVG
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => exportFile("docx")}>
-                      <FileType2 className="size-4" />
-                      <div className="flex flex-col">
-                        <span>{t("Word (.docx)")}</span>
-                        <span className="text-[11px] text-muted-foreground">
-                          {t("modificabile, con note e commenti")}
-                        </span>
-                      </div>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => exportFile("md")}>
-                      <FileCode2 className="size-4" /> {t("Markdown (.md)")}
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => doExport("print")}>
-                      <Printer className="size-4" /> {t("Stampa…")}
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-8"
+                  title={t("Esporta")}
+                  aria-label={t("Esporta")}
+                  disabled={busy}
+                  onClick={() => openStudio("pdf")}
+                >
+                  <Download className="size-4" />
+                </Button>
 
                 <ThemeToggle className="hidden sm:flex" />
 
@@ -1588,6 +1601,7 @@ function replaceContentQuietly(editor: Editor, json: unknown) {
 async function runDocExport({
   format,
   title,
+  filename,
   theme,
   sheet,
   setBusy,
@@ -1595,6 +1609,7 @@ async function runDocExport({
 }: {
   format: DocExportFormat
   title: string
+  filename?: string
   theme: DocTheme
   sheet: HTMLElement | null
   setBusy: (busy: boolean) => void
@@ -1602,7 +1617,7 @@ async function runDocExport({
 }) {
   setBusy(true)
   const id =
-    format === "print" || format === "pdf"
+    format === "print"
       ? undefined
       : toast.loading(
           tr("Esporto in {format}…", { format: format.toUpperCase() })
@@ -1613,16 +1628,13 @@ async function runDocExport({
     await new Promise((r) => setTimeout(r, 60))
     await exportDoc({
       title,
+      filename,
       theme,
       format,
       sheet,
       paper: resolveColor(theme.paper, false, AUTO_PAPER),
     })
-    if (format === "pdf") {
-      toast.success(tr("PDF pronto"), {
-        description: tr("Nella finestra di stampa scegli «Salva come PDF»."),
-      })
-    } else if (id) {
+    if (id) {
       toast.success(
         tr("Esportato in {format}", { format: format.toUpperCase() }),
         { id }
@@ -1649,6 +1661,8 @@ async function runFileExport({
   theme,
   setBusy,
   setForceLight,
+  filename,
+  comments = true,
 }: {
   format: "docx" | "md"
   editor: Editor
@@ -1657,8 +1671,10 @@ async function runFileExport({
   theme: DocTheme
   setBusy: (busy: boolean) => void
   setForceLight: (light: boolean) => void
+  filename?: string
+  comments?: boolean
 }) {
-  const label = format === "docx" ? "Word" : "Markdown"
+  const label = format === "docx" ? ".docx" : "Markdown"
   const id = toast.loading(tr("Esporto in {label}…", { label }))
   setBusy(true)
   // grafici e formule si fotografano chiari, come in stampa
@@ -1667,25 +1683,19 @@ async function runFileExport({
     await new Promise((r) => setTimeout(r, 60))
     const file = getWorkspace().files.find((f) => f.id === fileId)
     const data = file?.kind === "doc" ? file.data : null
-    const name = safeName(title)
+    const name = filename || safeName(title)
     if (format === "docx") {
       const { buildDocx } = await import("@/lib/export-docx")
       const blob = await buildDocx({
         editor,
         title,
         theme,
-        comments: data?.comments ?? [],
+        comments: comments ? (data?.comments ?? []) : [],
         sources: data?.sources ?? [],
       })
       download(blob, `${name}.docx`)
     } else {
-      const { docToMarkdown } = await import("@/lib/export-markdown")
-      const text = docToMarkdown(
-        editor.state.doc,
-        data?.sources ?? [],
-        theme.citationStyle,
-        fieldsOf(editor)
-      )
+      const text = await markdownOf(editor, fileId, theme)
       download(
         new Blob([text], { type: "text/markdown;charset=utf-8" }),
         `${name}.md`
@@ -1702,6 +1712,19 @@ async function runFileExport({
     setForceLight(false)
     setBusy(false)
   }
+}
+
+/** Il documento in Markdown, come lo scarica la sezione Esporta */
+async function markdownOf(editor: Editor, fileId: string, theme: DocTheme) {
+  const file = getWorkspace().files.find((f) => f.id === fileId)
+  const data = file?.kind === "doc" ? file.data : null
+  const { docToMarkdown } = await import("@/lib/export-markdown")
+  return docToMarkdown(
+    editor.state.doc,
+    data?.sources ?? [],
+    theme.citationStyle,
+    fieldsOf(editor)
+  )
 }
 
 function readImage(file: File, done: (src: string) => void) {

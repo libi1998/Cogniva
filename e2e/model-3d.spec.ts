@@ -137,9 +137,11 @@ test("carica un file .glb e lo esporta in Word con l'anteprima", async ({
     /^data:model\/gltf-binary;base64,/
   )
 
+  await page.getByRole("button", { name: "Esporta", exact: true }).click()
+  const dialog = page.getByRole("dialog")
+  await dialog.getByRole("button", { name: /^\.docx/ }).click()
   const download = page.waitForEvent("download")
-  await page.getByRole("button", { name: "Esporta" }).click()
-  await page.getByRole("menuitem", { name: /Word \(\.docx\)/ }).click()
+  await dialog.getByRole("button", { name: "Esporta .docx" }).click()
   const file = join(dir, "doc.docx")
   await (await download).saveAs(file)
   const media = execFileSync("unzip", ["-l", file]).toString()

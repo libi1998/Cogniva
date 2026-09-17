@@ -383,13 +383,32 @@ any color picked by hand stays fixed.
 
 ## Export
 
-|              | Board                                 | Document                  |
-| ------------ | ------------------------------------- | ------------------------- |
-| **PDF**      | ✔ **vector**, selectable text         | ✔ **vector**, multi-page  |
-| **DOCX**     | —                                     | ✔ editable `.docx`        |
-| **Markdown** | —                                     | ✔ `.md` (GitHub Flavored) |
-| **SVG**      | ✔ pure vector (~40 KB, embedded font) | ✔ (used fonts embedded)   |
-| **PNG**      | ✔ 3× from the vector                  | ✔ 2.5×                    |
+The download button at the top right (or **Export** in the command palette) opens the
+**Export** view: on the left a preview of every page exactly as it will come out, on the
+right the settings. Nothing goes through the browser's print dialog.
+
+| Setting             | What it does                                                                                       |
+| ------------------- | -------------------------------------------------------------------------------------------------- |
+| **Format**          | PDF, PNG, SVG, `.docx` or Markdown (boards: PDF, PNG and SVG)                                      |
+| **Pages**           | all, the page you were looking at, or a range such as `1-3, 5`; excluded pages fade in the preview |
+| **Paper**           | for documents without a paper size: A4, A5, A3, Letter, Legal or Tabloid, portrait or landscape    |
+| **Quality**         | draft (96 dpi), standard (192 dpi) or high (300 dpi, lossless)                                     |
+| **Colors**          | color or black and white                                                                           |
+| **Selectable text** | the PDF keeps an invisible text layer, so it can be searched and copied                            |
+| **One image**       | PNG with several pages: one tall image instead of a `.zip` with a file per page                    |
+| **Comments**        | `.docx`: include or leave out the comments                                                         |
+| **File name**       | editable, with the right extension shown                                                           |
+
+|              | Board                                 | Document                                       |
+| ------------ | ------------------------------------- | ---------------------------------------------- |
+| **PDF**      | ✔ one page, board size                | ✔ multi-page, selectable and searchable text   |
+| **DOCX**     | —                                     | ✔ editable `.docx`                             |
+| **Markdown** | —                                     | ✔ `.md` (GitHub Flavored)                      |
+| **SVG**      | ✔ pure vector (~40 KB, embedded font) | ✔ whole document (used fonts embedded)         |
+| **PNG**      | ✔ up to 300 dpi                       | ✔ one per page (`.zip`) or a single tall image |
+
+**Print…** is still there, in the Export view and with `⌘P`, for sending the document to a
+real printer.
 
 ### DOCX
 
@@ -420,12 +439,13 @@ vector editor and rasterizes at high resolution. The PNG scale is reduced automa
 the canvas would exceed Chromium's limits.
 
 The **automatic** sheet is always printed and exported **light**, even with the app in
-dark mode, and printing keeps backgrounds — colored cells, highlights, page color —
-without having to enable "Background graphics".
+dark mode, and exports keep backgrounds — colored cells, highlights, page color.
 
-The **PDF goes through the browser's print engine**: it's the only way to get a truly
-vector PDF, with the right fonts and selectable text. Choosing _PDF_ opens the print dialog
-already set to the paper size: just pick "Save as PDF".
+The **PDF is built inside the app** (`lib/export-studio/`). Each page is drawn in an isolated
+frame that carries only the app's styles, so it looks exactly like the document, and an
+invisible text layer placed word by word keeps the text selectable and searchable. A
+document with a paper size keeps its pages; one without is laid out on the chosen paper,
+breaking between paragraphs like a printer would.
 
 ## Project structure
 
@@ -458,7 +478,8 @@ lib/
 ├── import-files.ts         # import from picked or dropped files
 ├── export-docx.ts          # document → DOCX
 ├── export-markdown.ts      # document → Markdown
-├── export*.ts              # PNG / SVG / PDF
+├── export*.ts              # PNG / SVG / DOCX / Markdown
+├── export-studio/          # Export view: page rendering, PDF writer, .zip
 ├── search.ts               # search inside file contents
 ├── use-theme.ts            # light/dark/system theme (applied before first paint)
 ├── geometry.ts             # anchors, connector routing, arrowheads
