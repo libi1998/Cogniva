@@ -9,6 +9,7 @@
 Diagrams, wireframes and professional documents: **no account**, **no server**, even **offline**.
 
 [![Latest release](https://img.shields.io/github/v/release/libi1998/Cogniva?style=flat-square&color=4F46E5&label=release)](https://github.com/libi1998/Cogniva/releases/latest)
+[![CI](https://img.shields.io/github/actions/workflow/status/libi1998/Cogniva/ci.yml?branch=main&style=flat-square&label=CI)](https://github.com/libi1998/Cogniva/actions/workflows/ci.yml)
 [![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-19-149ECA?style=flat-square&logo=react&logoColor=white)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
@@ -305,6 +306,10 @@ Ideas, bug reports and improvements are all welcome! 💜
 2. 🌱 Create a branch: `git checkout -b my-idea`
 3. ✅ Make sure everything passes: `pnpm check` and `pnpm test:e2e`
 4. 📬 Open a pull request describing what you changed
+
+Every pull request runs the same three commands on GitHub Actions
+([`ci.yml`](.github/workflows/ci.yml)): `pnpm check`, `pnpm build` and
+`pnpm test:e2e` in Chromium and WebKit.
 
 Found a bug? 🐛 Open an **issue** with the steps to reproduce it.
 

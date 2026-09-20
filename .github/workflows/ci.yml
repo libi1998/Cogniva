@@ -1,0 +1,78 @@
+# Le stesse verifiche che si eseguono a mano prima di aprire una pull request
+# (vedi «Contribuire» nel README): `pnpm check`, `pnpm build` e `pnpm test:e2e`.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# una serie di commit ravvicinati non tiene occupati i runner: conta l'ultimo
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  check:
+    name: Tipi, lint, formato, traduzioni e build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      # senza versione: la prende da «packageManager» in package.json
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # tipi (con i tipi delle route generati da Next), lint, formato e
+      # traduzioni: la stessa cosa che gira sul portatile
+      - run: pnpm check
+
+      - run: pnpm build
+
+  e2e:
+    name: Prove nel browser
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # il progetto «chrome» usa il canale Chrome installato sul computer; qui
+      # si usa il Chromium di Playwright, che c'è sempre e non cambia da solo
+      - run: pnpm exec playwright install --with-deps chromium webkit
+
+      # Alcune prove (thesaurus, voci neurali, traduzione sul dispositivo)
+      # scaricano i modelli da jsdelivr e huggingface la prima volta: qui
+      # serve la rete verso l'esterno.
+      - run: pnpm test:e2e
+        env:
+          E2E_CHANNEL: chromium
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+          if-no-files-found: ignore
