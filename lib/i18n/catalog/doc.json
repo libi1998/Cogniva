@@ -7489,6 +7489,13 @@
     "de": "Weiterlesen",
     "pt": "Retomar a leitura"
   },
+  "ripristina": {
+    "en": "restore",
+    "es": "restaurar",
+    "fr": "restaurer",
+    "de": "wiederherstellen",
+    "pt": "restaurar"
+  },
   "Ripristina il set di stili predefinito": {
     "en": "Restore the default style set",
     "es": "Restaurar el conjunto de estilos predeterminado",
@@ -7719,6 +7726,13 @@
     "fr": "Enregistrer une version",
     "de": "Version speichern",
     "pt": "Salvar uma versão"
+  },
+  "salvataggio": {
+    "en": "save",
+    "es": "guardado",
+    "fr": "enregistrement",
+    "de": "Sicherung",
+    "pt": "salvamento"
   },
   "Salvataggio automatico": {
     "en": "Automatic save",
@@ -9637,6 +9651,13 @@
     "fr": "Vérifier l'accessibilité",
     "de": "Barrierefreiheit prüfen",
     "pt": "Verificar acessibilidade"
+  },
+  "versione": {
+    "en": "version",
+    "es": "versión",
+    "fr": "version",
+    "de": "Version",
+    "pt": "versão"
   },
   "Versione ripristinata": {
     "en": "Version restored",

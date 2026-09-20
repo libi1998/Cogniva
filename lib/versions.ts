@@ -158,10 +158,12 @@ export async function saveVersion(v: {
   const tx = db.transaction(STORE, "readwrite")
   const store = tx.objectStore(STORE)
   store.put(version)
+  // la lettura arriva dopo la scrittura nella stessa transazione, quindi
+  // l'elenco contiene già la versione appena salvata
   const existing = store.index(BY_FILE).getAll(v.fileId)
   await done(tx)
 
-  const all = [...(existing.result as DocVersion[]), version].sort(
+  const all = (existing.result as DocVersion[]).sort(
     (a, b) => b.createdAt - a.createdAt
   )
   const extra = [
@@ -180,7 +182,10 @@ export async function renameVersion(id: string, label: string) {
   const request = store.get(id)
   request.onsuccess = () => {
     const found = request.result as DocVersion | undefined
-    if (found) store.put({ ...found, label, kind: "manual" as const })
+    if (!found) return
+    // dare un nome a una versione automatica la promuove: l'ha voluta
+    // qualcuno, quindi si tiene più a lungo. Togliere il nome la rimette com'era
+    store.put({ ...found, label, kind: label ? "manual" : found.kind })
   }
   await done(tx)
 }

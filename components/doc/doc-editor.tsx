@@ -13,6 +13,7 @@ import {
   FileText,
   FileType2,
   Grid3x3,
+  History,
   Image as ImageIcon,
   ListTree,
   MessageSquarePlus,
@@ -769,6 +770,14 @@ export function DocEditor({ fileId }: { fileId: string }) {
         icon: <BookMarked />,
         keywords: [t("bibliografia"), t("citazione")],
         run: () => setSourcesDialog({ id: null, cite: false }),
+      },
+      {
+        id: "doc.versions",
+        group,
+        label: t("Cronologia versioni"),
+        icon: <History />,
+        keywords: [t("versione"), t("ripristina"), t("salvataggio")],
+        run: () => openTaskPane({ kind: "versions" }),
       },
       {
         id: "doc.undo",

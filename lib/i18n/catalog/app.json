@@ -3646,6 +3646,13 @@
     "de": "Ist nicht leer",
     "pt": "Não está vazio"
   },
+  "Non riesco a disegnare questa board": {
+    "en": "This board cannot be drawn",
+    "es": "No se puede dibujar este tablero",
+    "fr": "Impossible de dessiner ce tableau",
+    "de": "Dieses Board lässt sich nicht zeichnen",
+    "pt": "Não é possível desenhar este quadro"
+  },
   "Non riesco a importare «{name}»": {
     "en": "“{name}” cannot be imported",
     "es": "No se puede importar «{name}»",

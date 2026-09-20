@@ -11,6 +11,7 @@ import {
   createRenderHost,
   paperCanvas,
 } from "./raster"
+import { tr } from "@/lib/i18n/client"
 
 /**
  * Una sessione di esportazione: prepara una volta il documento (o la board) e
@@ -364,7 +365,10 @@ export async function createBoardSession(opts: {
   const image = new Image()
   await new Promise<void>((resolve, reject) => {
     image.onload = () => resolve()
-    image.onerror = () => reject(new Error("board"))
+    // il messaggio finisce sotto gli occhi di chi esporta: «board» non
+    // spiegava niente
+    image.onerror = () =>
+      reject(new Error(tr("Non riesco a disegnare questa board")))
     image.src = url
   })
   if (document.fonts?.ready) await document.fonts.ready

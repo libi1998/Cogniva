@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test"
-import { openDemo, withEditor } from "./editor"
+import { inserted, openDemo, openTab, withEditor } from "./editor"
 
 /**
  * Correzione automatica mentre si scrive, come in Word. Il documento
@@ -87,6 +87,36 @@ test("spenta non tocca niente", async ({ page }) => {
   )
 })
 
+test("la finestra spegne una singola opzione e la ricorda", async ({
+  page,
+}) => {
+  await openTab(page, "Revisione")
+  await page
+    .getByRole("button", { name: "Correzione automatica", exact: true })
+    .click()
+  const dialog = page.getByRole("dialog")
+  await expect(dialog).toBeVisible()
+
+  const quotes = dialog.getByRole("switch").nth(1)
+  await expect(quotes).toHaveAttribute("aria-checked", "true")
+  await quotes.click()
+  await expect(quotes).toHaveAttribute("aria-checked", "false")
+  await dialog
+    .getByRole("button", { name: "Chiudi", exact: true })
+    .first()
+    .click()
+  await expect(dialog).toBeHidden()
+
+  // le virgolette restano dritte, il resto continua a funzionare
+  expect(await type(page, 'dice "ciao"... perche si.')).toBe(
+    'Dice "ciao"… perché si.'
+  )
+
+  // la scelta è di chi scrive: resta anche dopo aver ricaricato
+  await openDemo(page)
+  expect(await type(page, 'ancora "dritte"')).toBe('Ancora "dritte"')
+})
+
 test("il codice resta come si scrive", async ({ page }) => {
   await withEditor(
     page,
@@ -114,6 +144,55 @@ test("il codice resta come si scrive", async ({ page }) => {
       `
     )
   ).toBe('// if (a --> b) "x"...')
+})
+
+test("le parole di Object.prototype non sono sostituzioni", async ({
+  page,
+}) => {
+  // «constructor» e «toString» rispondono su qualunque oggetto: la tabella
+  // deve guardare solo le chiavi che ha davvero
+  expect(await type(page, "il constructor e il toString restano.")).toBe(
+    "Il constructor e il toString restano."
+  )
+})
+
+test("con il rilevamento le correzioni diventano revisioni", async ({
+  page,
+}) => {
+  await openTab(page, "Revisione")
+  const tracking = page.getByRole("button", { name: "Revisioni", exact: true })
+  await tracking.click()
+  await expect(tracking).toHaveAttribute("aria-pressed", "true")
+
+  expect(await type(page, "perche si...")).toContain("Perché si…")
+  // il testo corretto è comunque un inserimento, non una modifica silenziosa
+  expect(await inserted(page)).not.toEqual([])
+})
+
+test("Invio divide il paragrafo, non lo corregge", async ({ page }) => {
+  await withEditor(
+    page,
+    `
+    const end = editor.state.doc.content.size
+    editor.chain().insertContentAt(end, { type: "paragraph" }).focus("end").run()
+    `
+  )
+  await page.keyboard.type("perche", { delay: 12 })
+  await page.keyboard.press("Enter")
+  await page.keyboard.type("dopo", { delay: 12 })
+  // due paragrafi veri: Invio non deve finire dentro al testo
+  expect(
+    await withEditor<string>(
+      page,
+      `
+      const d = editor.state.doc
+      const n = d.childCount
+      return [d.child(n - 2), d.child(n - 1)]
+        .map((c) => c.type.name + ":" + c.textContent)
+        .join("|")
+      `
+    )
+  ).toBe("paragraph:perche|paragraph:dopo")
 })
 
 test("l'inglese mette gli ordinali in apice", async ({ page }) => {

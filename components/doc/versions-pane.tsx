@@ -24,6 +24,7 @@ import { getAuthor } from "@/lib/author"
 import { newDocTheme } from "@/lib/doc-design"
 import { fileHref } from "@/lib/import-files"
 import { compareDocuments } from "@/lib/review-tools"
+import { repairDocContent } from "./extensions"
 import { getWorkspace } from "@/lib/store"
 import type { WFile } from "@/lib/types"
 import { cn } from "@/lib/utils"
@@ -172,10 +173,14 @@ export function VersionsPane({
       const version = await getVersion(id)
       if (!version) throw new Error("missing")
       await snapshot(fileId, "auto")
-      editor.commands.setContent(version.content as JSONContent, {
-        emitUpdate: true,
-      })
-      getWorkspace().setDocContent(fileId, version.content)
+      // una versione può venire da una versione precedente dell'app: si ripara
+      // come si fa all'apertura di un file, altrimenti un nodo sconosciuto
+      // svuoterebbe il documento
+      editor.commands.setContent(
+        repairDocContent(version.content) as JSONContent,
+        { emitUpdate: true }
+      )
+      getWorkspace().setDocContent(fileId, editor.getJSON())
       refresh()
       setConfirm(null)
       toast.success(t("Versione ripristinata"), {

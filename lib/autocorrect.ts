@@ -428,8 +428,14 @@ export function setAutoCorrectSettings(
 
 /* -------------------------------- regole --------------------------------- */
 
-/** Caratteri che chiudono una parola e fanno scattare le correzioni */
-const WORD_END = "[\\s.,;:!?)\\]}»”’…\"']"
+/**
+ * Caratteri che chiudono una parola e fanno scattare le correzioni. L'a capo
+ * resta fuori di proposito: Tiptap prova le regole anche con Invio, e una che
+ * scatta si mangia il tasto — il paragrafo non si dividerebbe più e al suo
+ * posto finirebbe un a capo dentro al testo. Una parola che finisce con Invio
+ * e senza punteggiatura resta quindi com'è.
+ */
+const WORD_END = "[ \\t.,;:!?)\\]}»”’…\"']"
 
 /** Prima di una virgoletta che apre non c'è una lettera */
 const OPENS = "[\\s([{<‘“«„–—/ ]"
@@ -443,6 +449,20 @@ function afterAbbreviation(before: string, language: string) {
   const word = m[1].toLocaleLowerCase().replace(/\.$/, "")
   if (word.length <= 1) return true
   return abbreviations(language).includes(word)
+}
+
+/**
+ * La parola nella tabella, oppure null. La tabella arriva da quello che si è
+ * salvato nel browser, quindi si leggono solo le chiavi che ha davvero: senza
+ * questo controllo «constructor» o «toString» risponderebbero con qualcosa che
+ * viene da Object.prototype.
+ */
+function replacementFor(table: Record<string, string>, word: string) {
+  for (const key of [word, word.toLocaleLowerCase()]) {
+    const value = Object.hasOwn(table, key) ? table[key] : undefined
+    if (typeof value === "string" && value && value !== word) return value
+  }
+  return null
 }
 
 /** Il suffisso giusto per un numero ordinale inglese */
@@ -480,12 +500,12 @@ function wordRule(get: Get) {
         (match.index ?? 0) + (match[0].length - term.length - raw.length)
       )
       const original = word
-      let superscript: [number, number] | null = null
+      let superscript = false
 
       /* tabella «sostituisci → con» */
       if (s.replaceText) {
-        const hit = s.replacements[word] ?? s.replacements[word.toLowerCase()]
-        if (hit !== undefined && hit !== word) {
+        const hit = replacementFor(s.replacements, word)
+        if (hit) {
           // «Perche» scritto con la maiuscola resta con la maiuscola
           word =
             word[0] !== word[0].toLocaleLowerCase() &&
@@ -506,9 +526,7 @@ function wordRule(get: Get) {
         const lang = langOf(s.language)
         const m = /^(\d+)(st|nd|rd|th|o|a)$/.exec(word)
         if (m && lang === "en" && m[2].length === 2) {
-          if (m[2] === englishOrdinal(m[1])) {
-            superscript = [start + m[1].length, start + word.length]
-          }
+          superscript = m[2] === englishOrdinal(m[1])
         } else if (m && (lang === "it" || lang === "es" || lang === "pt")) {
           if (m[2] === "o") word = `${m[1]}º`
           else if (m[2] === "a") word = `${m[1]}ª`
@@ -594,7 +612,8 @@ export function autoCorrectRules(get: Get) {
     instantRule(
       get,
       (s) => s.dashes,
-      /(?:^|[^-])--\s$/,
+      // lo spazio, non un a capo: vedi WORD_END
+      /(?:^|[^-])--[ \t]$/,
       (m) => ({
         offset: m[0].length - 3,
         length: 2,
@@ -606,7 +625,7 @@ export function autoCorrectRules(get: Get) {
     instantRule(
       get,
       (s) => s.fractions,
-      /(?:^|\s)(\d\/\d)\s$/,
+      /(?:^|\s)(\d\/\d)[ \t]$/,
       (m) => {
         const glyph = FRACTIONS[m[1]]
         return glyph
