@@ -14,6 +14,7 @@ import {
   CircleCheck,
   FileDiff,
   Globe,
+  History,
   Languages,
   ListTodo,
   Lock,
@@ -28,6 +29,7 @@ import {
   X,
   FilePenLine,
   Eye,
+  Wand2,
 } from "lucide-react"
 import type { JSONContent } from "@tiptap/core"
 import { Fragment, Slice } from "@tiptap/pm/model"
@@ -74,6 +76,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { setAuthor, useAuthor } from "@/lib/author"
+import { useAutoCorrect } from "@/lib/autocorrect"
+import { AutoCorrectDialog } from "../autocorrect-dialog"
 import { wordAtSelection } from "@/lib/word-at"
 import { ReadAloudGroup } from "../read-aloud"
 import { RibbonButton, RibbonGroup, RibbonMenu, RibbonRows } from "./ribbon-ui"
@@ -1128,8 +1132,14 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
   const current = comments.list.find((c) => c.id === comments.active)
   const resolved = comments.list.filter((c) => c.resolved).length
   const [dialog, setDialog] = React.useState<
-    "a11y" | "translate-selection" | "translate-document" | "compare" | null
+    | "a11y"
+    | "translate-selection"
+    | "translate-document"
+    | "compare"
+    | "autocorrect"
+    | null
   >(null)
+  const autoCorrect = useAutoCorrect()
   const close = () => setDialog(null)
   const fileId = ctx.fileId
   const tracking = theme.trackChanges || theme.protection === "tracked"
@@ -1162,6 +1172,16 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
           active={theme.spellcheck}
           icon={<SpellCheck className="size-5" />}
           onClick={() => setTheme({ spellcheck: !theme.spellcheck })}
+        />
+        <RibbonButton
+          large
+          label={t("Correzione automatica")}
+          title={t(
+            "Virgolette, lineette, simboli, maiuscole e sostituzioni mentre scrivi"
+          )}
+          active={autoCorrect.enabled}
+          icon={<Wand2 className="size-5" />}
+          onClick={() => setDialog("autocorrect")}
         />
         <RibbonButton
           large
@@ -1416,6 +1436,20 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
           icon={<FileDiff className="size-5" />}
           onClick={() => setDialog("compare")}
         />
+        <RibbonButton
+          large
+          label={t("Cronologia||le versioni del documento")}
+          title={t(
+            "Le versioni salvate di questo documento, in questo browser"
+          )}
+          active={ctx.taskPane?.kind === "versions"}
+          icon={<History className="size-5" />}
+          onClick={() =>
+            ctx.taskPane?.kind === "versions"
+              ? ctx.closeTaskPane()
+              : ctx.openTaskPane({ kind: "versions" })
+          }
+        />
       </RibbonGroup>
 
       <RibbonGroup label={t("Proteggi")} safe>
@@ -1476,6 +1510,11 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
         onClose={close}
         ctx={ctx}
         fileId={fileId}
+      />
+      <AutoCorrectDialog
+        open={dialog === "autocorrect"}
+        onClose={close}
+        language={theme.language}
       />
     </>
   )

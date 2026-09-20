@@ -4759,6 +4759,13 @@
     "de": "Rosa",
     "pt": "Rosa"
   },
+  "s.d.||senza data": {
+    "en": "n.d.",
+    "es": "s.f.",
+    "fr": "s.d.",
+    "de": "o. J.",
+    "pt": "s.d."
+  },
   "salva": {
     "en": "save",
     "es": "guardar",

@@ -28,6 +28,7 @@ import {
   requestPersistence,
   saveFiles,
 } from "./persist"
+import { deleteVersionsOf } from "./versions"
 import { toast } from "sonner"
 
 import { tr } from "@/lib/i18n/client"
@@ -272,12 +273,17 @@ export const useStore = create<State>((set, get) => {
 
     deleteForever: (id) => {
       history.delete(id)
+      void deleteVersionsOf(id)
       set({ files: get().files.filter((f) => f.id !== id) })
     },
 
     emptyTrash: () => {
       const files = get().files
-      for (const f of files) if (f.deletedAt) history.delete(f.id)
+      for (const f of files) {
+        if (!f.deletedAt) continue
+        history.delete(f.id)
+        void deleteVersionsOf(f.id)
+      }
       set({ files: files.filter((f) => !f.deletedAt) })
     },
 

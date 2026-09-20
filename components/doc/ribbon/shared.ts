@@ -15,6 +15,7 @@ import { tr } from "@/lib/i18n/client"
 /** Il riquadro attività nella colonna di destra */
 export type TaskPane =
   | { kind: "thesaurus"; word: string; nonce: number }
+  | { kind: "versions" }
   | { kind: "addin"; id: string }
 
 export type RibbonCtx = {

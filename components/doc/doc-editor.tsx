@@ -39,7 +39,9 @@ import { Ribbon } from "./ribbon/ribbon"
 import { insertPlainText } from "./plain-paste"
 import { FindBar } from "./find-bar"
 import { ReadAloudBar } from "./read-aloud"
+import { ResumeReading } from "./resume-reading"
 import { TaskPaneHost } from "./task-pane"
+import { useAutoVersions } from "./versions-pane"
 import type { TaskPane } from "./ribbon/shared"
 import { wordAtSelection } from "@/lib/word-at"
 import { DocOutline } from "./outline"
@@ -106,6 +108,7 @@ import {
 import { takeDocSnapshot, visiblePage } from "./export-snapshot"
 import { setMergeSettings } from "@/lib/doc-merge"
 import { setTrackSettings } from "@/lib/track-changes"
+import { setAutoCorrectSettings, useAutoCorrect } from "@/lib/autocorrect"
 import { useAuthor } from "@/lib/author"
 import { PROOFING_LANGUAGES } from "@/lib/review-tools"
 import { fontStack } from "@/lib/fonts"
@@ -326,6 +329,9 @@ export function DocEditor({ fileId }: { fileId: string }) {
     if (editor) pruneComments(editor, fileId)
   }, [editor, fileId])
 
+  // «Cronologia versioni»: il documento si fotografa da solo ogni tanto
+  useAutoVersions(fileId)
+
   // controllo ortografico del browser, dalla scheda Revisione
   const spellcheck = theme?.spellcheck ?? true
   React.useEffect(() => {
@@ -358,6 +364,14 @@ export function DocEditor({ fileId }: { fileId: string }) {
     if (!editor || editor.isDestroyed) return
     setTrackSettings(editor, { enabled: tracking, author })
   }, [editor, tracking, author])
+  // correzione automatica: le opzioni sono di chi scrive, la lingua del
+  // documento (decide virgolette, ordinali e abbreviazioni)
+  const autoCorrect = useAutoCorrect()
+  const docLanguage = theme?.language || region
+  React.useEffect(() => {
+    if (!editor || editor.isDestroyed) return
+    setAutoCorrectSettings(editor, { ...autoCorrect, language: docLanguage })
+  }, [editor, autoCorrect, docLanguage])
   // sola lettura e «solo commenti»: il testo non si modifica
   const editable =
     protection !== "readonly" && protection !== "comments" && mode !== "reading"
@@ -1049,10 +1063,17 @@ export function DocEditor({ fileId }: { fileId: string }) {
   const inspector =
     taskPane && editor && !stylesPane ? (
       <TaskPaneHost
-        key={taskPane.kind === "thesaurus" ? taskPane.nonce : taskPane.id}
+        key={
+          taskPane.kind === "thesaurus"
+            ? taskPane.nonce
+            : taskPane.kind === "versions"
+              ? "versions"
+              : taskPane.id
+        }
         pane={taskPane}
         editor={editor}
         theme={theme}
+        fileId={fileId}
         onClose={() => setTaskPane(null)}
       />
     ) : stylesPane && editor ? (
@@ -1204,6 +1225,7 @@ export function DocEditor({ fileId }: { fileId: string }) {
         <FindBar editor={editor} mode={find} onClose={() => setFind(null)} />
       ) : null}
       <ReadAloudBar />
+      <ResumeReading editor={editor} fileId={fileId} />
 
       <div className="relative flex min-h-0 flex-1">
         {outline && mode === "normal" ? (

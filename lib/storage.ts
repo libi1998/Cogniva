@@ -16,6 +16,10 @@ export const STORAGE = {
   docDefaults: "cogniva.doc.defaults",
   /** i componenti aggiuntivi attivati */
   addins: "cogniva.doc.addins",
+  /** «Correzione automatica»: opzioni e tabella delle sostituzioni */
+  autocorrect: "cogniva.doc.autocorrect",
+  /** «Riprendi la lettura»: dove si era arrivati in ogni documento */
+  resume: "cogniva.doc.resume",
 } as const
 
 const LEGACY: Partial<Record<string, string>> = {

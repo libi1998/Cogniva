@@ -11,6 +11,7 @@ import { ADDIN_ICONS, ADDIN_TINTS } from "./addins/addin-icons"
 import { createAddinApi, type AddinApi } from "./addins/api"
 import type { TaskPane } from "./ribbon/shared"
 import { ThesaurusPane } from "./thesaurus-pane"
+import { VersionsPane } from "./versions-pane"
 
 import { useT, currentRegion } from "@/lib/i18n/client"
 // ogni componente aggiuntivo si scarica solo quando si apre
@@ -53,15 +54,20 @@ export function TaskPaneHost({
   pane,
   editor,
   theme,
+  fileId,
   onClose,
 }: {
   pane: TaskPane
   editor: Editor
   theme: DocTheme | null | undefined
+  fileId: string
   onClose: () => void
 }) {
   const t = useT()
   const language = theme?.language || currentRegion()
+  if (pane.kind === "versions") {
+    return <VersionsPane fileId={fileId} editor={editor} onClose={onClose} />
+  }
   if (pane.kind === "thesaurus") {
     return (
       <ThesaurusPane

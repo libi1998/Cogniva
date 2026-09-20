@@ -80,6 +80,12 @@ Diagrams, wireframes and professional documents: **no account**, **no server**, 
 - 📃 **Real pages** with margins, headers, footers, columns and line numbers
 - 🎙️ **Dictation**: just speak and the text appears, punctuation included
 - 🔍 **Find and replace**, word count and spell check
+- ✨ **AutoCorrect** while you type: smart quotes, dashes, `(c)` → ©, `1/2` → ½, capital
+  letters at the start of a sentence and your own replacement table
+- 🕘 **Version history**: the document saves itself every few minutes, and you can restore
+  or compare any earlier version — all inside your browser
+- 🔖 **Pick up where you left off**: reopening a document offers to take you back to the
+  page you had reached
 
 </details>
 
@@ -107,6 +113,7 @@ Diagrams, wireframes and professional documents: **no account**, **no server**, 
 <summary><b>🔍 Review</b></summary>
 
 - 🖍️ **Track changes** with accept and reject, 💬 threaded comments, 🆚 document comparison
+- 🕘 **Version history** with restore and compare, ✨ **AutoCorrect** options and table
 - 📚 **Thesaurus** (`⇧F7`) in 6 languages
 - 🔊 **Read aloud** with word-by-word highlighting and neural voices
 - 🌍 **Translate** the selection or the whole document

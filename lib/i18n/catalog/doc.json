@@ -6,6 +6,27 @@
     "de": "· erledigt",
     "pt": "· resolvido"
   },
+  "«--» diventa – e «---» diventa —": {
+    "en": "“--” becomes – and “---” becomes —",
+    "es": "«--» se convierte en – y «---» en —",
+    "fr": "«--» devient – et «---» devient —",
+    "de": "„--“ wird zu – und „---“ zu —",
+    "pt": "“--” vira – e “---” vira —"
+  },
+  "«...» diventa …": {
+    "en": "“...” becomes …",
+    "es": "«...» se convierte en …",
+    "fr": "«...» devient …",
+    "de": "„...“ wird zu …",
+    "pt": "“...” vira …"
+  },
+  "«(c)» diventa ©, «-->» diventa →, «:)» diventa 🙂": {
+    "en": "“(c)” becomes ©, “-->” becomes → and “:)” becomes 🙂",
+    "es": "«(c)» se convierte en ©, «-->» en → y «:)» en 🙂",
+    "fr": "«(c)» devient ©, «-->» devient → et «:)» devient 🙂",
+    "de": "„(c)“ wird zu ©, „-->“ zu → und „:)“ zu 🙂",
+    "pt": "“(c)” vira ©, “-->” vira → e “:)” vira 🙂"
+  },
   "«{field}» vuoto per {count} destinatari": {
     "en": "“{field}” empty for {count} recipients",
     "es": "«{field}» vacío para {count} destinatarios",
@@ -20,12 +41,40 @@
     "de": "„{selected}“ überall markiert",
     "pt": "“{selected}” marcada em todo lugar"
   },
+  "«{straight}» diventa {open}…{close}": {
+    "en": "“{straight}” becomes {open}…{close}",
+    "es": "«{straight}» se convierte en {open}…{close}",
+    "fr": "«{straight}» devient {open}…{close}",
+    "de": "„{straight}“ wird zu {open}…{close}",
+    "pt": "“{straight}” vira {open}…{close}"
+  },
   "«{text}» non dice dove porta: descrivi la destinazione.": {
     "en": "“{text}” does not say where it goes: describe the destination.",
     "es": "«{text}» no dice adónde lleva: describe el destino.",
     "fr": "« {text} » ne dit pas où il mène : décrivez la destination.",
     "de": "„{text}“ sagt nicht, wohin es führt: Beschreib das Ziel.",
     "pt": "“{text}” não diz aonde leva: descreva o destino."
+  },
+  "«1/2» diventa ½": {
+    "en": "“1/2” becomes ½",
+    "es": "«1/2» se convierte en ½",
+    "fr": "«1/2» devient ½",
+    "de": "„1/2“ wird zu ½",
+    "pt": "“1/2” vira ½"
+  },
+  "«1o» diventa 1º; in inglese «1st» va in apice": {
+    "en": "“1o” becomes 1º; in English “1st” goes superscript",
+    "es": "«1o» se convierte en 1º; en inglés «1st» va en superíndice",
+    "fr": "«1o» devient 1º ; en anglais «1st» passe en exposant",
+    "de": "„1o“ wird zu 1º; im Englischen wird „1st“ hochgestellt",
+    "pt": "“1o” vira 1º; em inglês “1st” fica sobrescrito"
+  },
+  "«NOme» diventa «Nome»": {
+    "en": "“NAme” becomes “Name”",
+    "es": "«NOmbre» se convierte en «Nombre»",
+    "fr": "«NOm» devient «Nom»",
+    "de": "„NAme“ wird zu „Name“",
+    "pt": "“NOme” vira “Nome”"
   },
   "(diagonale)": {
     "en": "(diagonal)",
@@ -216,6 +265,13 @@
     "de": "{title} — Seriendruck",
     "pt": "{title} — mesclagem"
   },
+  "{title} — versione del {date}": {
+    "en": "{title} — version of {date}",
+    "es": "{title} — versión del {date}",
+    "fr": "{title} — version du {date}",
+    "de": "{title} — Version vom {date}",
+    "pt": "{title} — versão de {date}"
+  },
   "{title}: altre opzioni": {
     "en": "{title}: more options",
     "es": "{title}: más opciones",
@@ -299,6 +355,13 @@
     "fr": "À droite",
     "de": "Rechts",
     "pt": "À direita"
+  },
+  "A mano||versione salvata da chi scrive": {
+    "en": "By hand",
+    "es": "A mano",
+    "fr": "À la main",
+    "de": "Von Hand",
+    "pt": "À mão"
   },
   "a sinistra": {
     "en": "left",
@@ -705,6 +768,13 @@
     "fr": "Aucun signet pour l'instant.",
     "de": "Noch keine Lesezeichen.",
     "pt": "Ainda não há marcadores."
+  },
+  "Ancora nessuna versione di questo documento.": {
+    "en": "No versions of this document yet.",
+    "es": "Todavía no hay versiones de este documento.",
+    "fr": "Aucune version de ce document pour l'instant.",
+    "de": "Noch keine Versionen dieses Dokuments.",
+    "pt": "Ainda não há versões deste documento."
   },
   "Ancora nessuna voce neurale per questa lingua.": {
     "en": "No neural voice for this language yet.",
@@ -1504,6 +1574,13 @@
     "de": "Thesaurus schließen",
     "pt": "Fechar o dicionário de sinônimos"
   },
+  "Chiudi la cronologia": {
+    "en": "Close the history",
+    "es": "Cerrar el historial",
+    "fr": "Fermer l'historique",
+    "de": "Verlauf schließen",
+    "pt": "Fechar o histórico"
+  },
   "Chiudi Struttura": {
     "en": "Close Outline",
     "es": "Cerrar Estructura",
@@ -1791,6 +1868,13 @@
     "de": "Leiste einklappen",
     "pt": "Recolher a barra"
   },
+  "Con": {
+    "en": "With",
+    "es": "Con",
+    "fr": "Par",
+    "de": "Durch",
+    "pt": "Por"
+  },
   "Con il dito si disegna invece di scorrere la pagina": {
     "en": "With your finger you draw instead of scrolling the page",
     "es": "Con el dedo se dibuja en vez de desplazar la página",
@@ -1832,6 +1916,13 @@
     "fr": "Comparer avec",
     "de": "Vergleichen mit",
     "pt": "Comparar com"
+  },
+  "Confronta con il documento di adesso": {
+    "en": "Compare with the document as it is now",
+    "es": "Comparar con el documento actual",
+    "fr": "Comparer avec le document actuel",
+    "de": "Mit dem aktuellen Dokument vergleichen",
+    "pt": "Comparar com o documento atual"
   },
   "Confronta documenti": {
     "en": "Compare documents",
@@ -1973,6 +2064,27 @@
     "de": "Fließtext",
     "pt": "Corpo"
   },
+  "Correggi le prime due maiuscole": {
+    "en": "Fix two initial capitals",
+    "es": "Corregir las dos iniciales mayúsculas",
+    "fr": "Corriger les deux majuscules initiales",
+    "de": "Zwei Großbuchstaben am Wortanfang korrigieren",
+    "pt": "Corrigir as duas iniciais maiúsculas"
+  },
+  "Correggi mentre scrivo": {
+    "en": "Correct as I type",
+    "es": "Corregir mientras escribo",
+    "fr": "Corriger pendant la frappe",
+    "de": "Während der Eingabe korrigieren",
+    "pt": "Corrigir enquanto escrevo"
+  },
+  "Correzione automatica": {
+    "en": "AutoCorrect",
+    "es": "Autocorrección",
+    "fr": "Correction automatique",
+    "de": "AutoKorrektur",
+    "pt": "Correção automática"
+  },
   "Correzione errori": {
     "en": "Error correction",
     "es": "Corrección de errores",
@@ -2064,6 +2176,20 @@
     "de": "Zeitstrahl",
     "pt": "Linha do tempo"
   },
+  "Cronologia versioni": {
+    "en": "Version history",
+    "es": "Historial de versiones",
+    "fr": "Historique des versions",
+    "de": "Versionsverlauf",
+    "pt": "Histórico de versões"
+  },
+  "Cronologia||le versioni del documento": {
+    "en": "History",
+    "es": "Historial",
+    "fr": "Historique",
+    "de": "Verlauf",
+    "pt": "Histórico"
+  },
   "Cuore": {
     "en": "Heart",
     "es": "Corazón",
@@ -2119,6 +2245,13 @@
     "fr": "Depuis une adresse web…",
     "de": "Von einer Webadresse…",
     "pt": "De um endereço web…"
+  },
+  "Dai un nome alla versione": {
+    "en": "Name this version",
+    "es": "Ponerle nombre a la versión",
+    "fr": "Nommer cette version",
+    "de": "Version benennen",
+    "pt": "Dar um nome à versão"
   },
   "Dal margine": {
     "en": "From the margin",
@@ -2456,6 +2589,13 @@
     "de": "Nach {after} pt · Zeilenabstand {lineHeight}",
     "pt": "Depois {after} pt · Entrelinha {lineHeight}"
   },
+  "Dopo un'abbreviazione nota la frase non ricomincia": {
+    "en": "After a known abbreviation the sentence does not start over",
+    "es": "Tras una abreviatura conocida la frase no vuelve a empezar",
+    "fr": "Après une abréviation connue, la phrase ne recommence pas",
+    "de": "Nach einer bekannten Abkürzung beginnt kein neuer Satz",
+    "pt": "Depois de uma abreviatura conhecida a frase não recomeça"
+  },
   "Dopo: {value} pt": {
     "en": "After: {value} pt",
     "es": "Después: {value} pt",
@@ -2624,6 +2764,13 @@
     "de": "Nummerierte Liste",
     "pt": "Lista numerada"
   },
+  "Elenco predefinito": {
+    "en": "Default list",
+    "es": "Lista predeterminada",
+    "fr": "Liste par défaut",
+    "de": "Standardliste",
+    "pt": "Lista padrão"
+  },
   "Elenco puntato": {
     "en": "Bulleted list",
     "es": "Lista con viñetas",
@@ -2700,6 +2847,13 @@
     "fr": "Supprimer la note",
     "de": "Notiz löschen",
     "pt": "Excluir nota"
+  },
+  "Elimina questa versione": {
+    "en": "Delete this version",
+    "es": "Eliminar esta versión",
+    "fr": "Supprimer cette version",
+    "de": "Diese Version löschen",
+    "pt": "Excluir esta versão"
   },
   "Elimina questo commento": {
     "en": "Delete this comment",
@@ -4801,6 +4955,13 @@
     "de": "Die Änderungsverfolgung hält fest, wer was geändert hat – so entscheidet man mit Blick auf die Änderungen.",
     "pt": "O controle de alterações registra quem mudou o quê, então as decisões são tomadas olhando as modificações."
   },
+  "Le versioni salvate di questo documento, in questo browser": {
+    "en": "The saved versions of this document, in this browser",
+    "es": "Las versiones guardadas de este documento, en este navegador",
+    "fr": "Les versions enregistrées de ce document, dans ce navigateur",
+    "de": "Die gespeicherten Versionen dieses Dokuments, in diesem Browser",
+    "pt": "As versões salvas deste documento, neste navegador"
+  },
   "Legature": {
     "en": "Ligatures",
     "es": "Ligaduras",
@@ -4948,6 +5109,13 @@
     "de": "Gezeichnete Linien, Dreiecke, Rechtecke und Kreise werden zu exakten Formen",
     "pt": "Linhas, triângulos, retângulos e círculos desenhados viram formas precisas"
   },
+  "Lineette": {
+    "en": "Dashes",
+    "es": "Rayas",
+    "fr": "Tirets",
+    "de": "Gedankenstriche",
+    "pt": "Travessões"
+  },
   "Lingua del thesaurus": {
     "en": "Thesaurus language",
     "es": "Idioma del diccionario de sinónimos",
@@ -5059,6 +5227,13 @@
     "fr": "Lieu et date ____________________",
     "de": "Ort und Datum ____________________",
     "pt": "Local e data ____________________"
+  },
+  "Maiuscola a inizio frase": {
+    "en": "Capitalize the first letter of sentences",
+    "es": "Mayúscula al principio de la frase",
+    "fr": "Majuscule en début de phrase",
+    "de": "Satzanfang großschreiben",
+    "pt": "Maiúscula no início da frase"
   },
   "Maiuscole": {
     "en": "Uppercase",
@@ -5774,6 +5949,13 @@
     "de": "Keine Drehung",
     "pt": "Sem rotação"
   },
+  "Nessuna sostituzione": {
+    "en": "No replacements",
+    "es": "Ninguna sustitución",
+    "fr": "Aucun remplacement",
+    "de": "Keine Ersetzungen",
+    "pt": "Nenhuma substituição"
+  },
   "Nessuna stampa unione in corso": {
     "en": "No mail merge in progress",
     "es": "No hay ninguna combinación de correspondencia en curso",
@@ -5830,6 +6012,13 @@
     "de": "Netzwerkname (SSID)",
     "pt": "Nome da rede (SSID)"
   },
+  "Nome della versione": {
+    "en": "Version name",
+    "es": "Nombre de la versión",
+    "fr": "Nom de la version",
+    "de": "Name der Version",
+    "pt": "Nome da versão"
+  },
   "Nome e cognome": {
     "en": "Full name",
     "es": "Nombre y apellidos",
@@ -5879,6 +6068,13 @@
     "de": "Nicht im Inhaltsverzeichnis anzeigen",
     "pt": "Não mostrar no sumário"
   },
+  "Non riesco a confrontare le versioni": {
+    "en": "The versions cannot be compared",
+    "es": "No se pueden comparar las versiones",
+    "fr": "Impossible de comparer les versions",
+    "de": "Die Versionen lassen sich nicht vergleichen",
+    "pt": "Não é possível comparar as versões"
+  },
   "Non riesco a leggere il file": {
     "en": "The file cannot be read",
     "es": "No se puede leer el archivo",
@@ -5892,6 +6088,20 @@
     "fr": "Impossible de lire cette image",
     "de": "Dieses Bild lässt sich nicht lesen",
     "pt": "Não é possível ler esta imagem"
+  },
+  "Non riesco a ripristinare la versione": {
+    "en": "The version cannot be restored",
+    "es": "No se puede restaurar la versión",
+    "fr": "Impossible de restaurer la version",
+    "de": "Die Version lässt sich nicht wiederherstellen",
+    "pt": "Não é possível restaurar a versão"
+  },
+  "Non riesco a salvare la versione": {
+    "en": "The version cannot be saved",
+    "es": "No se puede guardar la versión",
+    "fr": "Impossible d'enregistrer la version",
+    "de": "Die Version lässt sich nicht speichern",
+    "pt": "Não é possível salvar a versão"
   },
   "Non riesco a salvare le impostazioni predefinite": {
     "en": "The default settings cannot be saved",
@@ -6208,6 +6418,13 @@
     "de": "Sortieren: Absätze, Listenpunkte oder Tabellenzeilen",
     "pt": "Ordenar: parágrafos, itens de lista ou linhas de tabela"
   },
+  "Ordinali": {
+    "en": "Ordinals",
+    "es": "Ordinales",
+    "fr": "Ordinaux",
+    "de": "Ordnungszahlen",
+    "pt": "Ordinais"
+  },
   "Ordine": {
     "en": "Order",
     "es": "Orden",
@@ -6270,6 +6487,13 @@
     "fr": "page {page}",
     "de": "Seite {page}",
     "pt": "página {page}"
+  },
+  "Pagina {page} · {when}": {
+    "en": "Page {page} · {when}",
+    "es": "Página {page} · {when}",
+    "fr": "Page {page} · {when}",
+    "de": "Seite {page} · {when}",
+    "pt": "Página {page} · {when}"
   },
   "Pagina dell'immagine ({provider})": {
     "en": "Image page ({provider})",
@@ -6705,6 +6929,13 @@
     "de": "Satzzeichen",
     "pt": "Pontuação"
   },
+  "Puntini di sospensione": {
+    "en": "Ellipsis",
+    "es": "Puntos suspensivos",
+    "fr": "Points de suspension",
+    "de": "Auslassungspunkte",
+    "pt": "Reticências"
+  },
   "Puntini e numeri di pagina": {
     "en": "Dots and page numbers",
     "es": "Puntos y números de página",
@@ -6725,6 +6956,20 @@
     "fr": "Quatre quadrants",
     "de": "Vier Quadranten",
     "pt": "Quatro quadrantes"
+  },
+  "Quella di prima è finita nella cronologia.": {
+    "en": "The previous one went into the history.",
+    "es": "La anterior ha pasado al historial.",
+    "fr": "La précédente est passée dans l'historique.",
+    "de": "Die vorherige ist im Verlauf gelandet.",
+    "pt": "A anterior foi para o histórico."
+  },
+  "Quello che l'app sistema da sola mentre scrivi. Vale per tutti i documenti.": {
+    "en": "What the app fixes on its own while you type. It applies to every document.",
+    "es": "Lo que la app arregla sola mientras escribes. Vale para todos los documentos.",
+    "fr": "Ce que l'application corrige toute seule pendant que vous écrivez. Valable pour tous les documents.",
+    "de": "Was die App beim Schreiben von selbst korrigiert. Gilt für alle Dokumente.",
+    "pt": "O que o app corrige sozinho enquanto você escreve. Vale para todos os documentos."
   },
   "Quello che rende il documento difficile da leggere per chi usa un lettore di schermo o vede poco.": {
     "en": "What makes the document hard to read for people using a screen reader or with low vision.",
@@ -7237,6 +7482,13 @@
     "de": "Fortsetzen",
     "pt": "Retomar"
   },
+  "Riprendi la lettura": {
+    "en": "Pick up where you left off",
+    "es": "Seguir donde lo dejaste",
+    "fr": "Reprendre la lecture",
+    "de": "Weiterlesen",
+    "pt": "Retomar a leitura"
+  },
   "Ripristina il set di stili predefinito": {
     "en": "Restore the default style set",
     "es": "Restaurar el conjunto de estilos predeterminado",
@@ -7264,6 +7516,20 @@
     "fr": "Rétablir la valeur par défaut",
     "de": "Standard wiederherstellen",
     "pt": "Restaurar o padrão"
+  },
+  "Ripristina questa versione": {
+    "en": "Restore this version",
+    "es": "Restaurar esta versión",
+    "fr": "Restaurer cette version",
+    "de": "Diese Version wiederherstellen",
+    "pt": "Restaurar esta versão"
+  },
+  "Ripristina||riporta il documento a una versione": {
+    "en": "Restore",
+    "es": "Restaurar",
+    "fr": "Restaurer",
+    "de": "Wiederherstellen",
+    "pt": "Restaurar"
   },
   "Riproduci": {
     "en": "Play",
@@ -7446,6 +7712,20 @@
     "fr": "Salutation",
     "de": "Begrüßung",
     "pt": "Saudação"
+  },
+  "Salva una versione": {
+    "en": "Save a version",
+    "es": "Guardar una versión",
+    "fr": "Enregistrer une version",
+    "de": "Version speichern",
+    "pt": "Salvar uma versão"
+  },
+  "Salvataggio automatico": {
+    "en": "Automatic save",
+    "es": "Guardado automático",
+    "fr": "Enregistrement automatique",
+    "de": "Automatische Sicherung",
+    "pt": "Salvamento automático"
   },
   "Scarica {name} ({bytes} MB)": {
     "en": "Download {name} ({bytes} MB)",
@@ -7979,6 +8259,13 @@
     "de": "Symbole",
     "pt": "Símbolos"
   },
+  "Simboli e faccine": {
+    "en": "Symbols and emoji",
+    "es": "Símbolos y emoticonos",
+    "fr": "Symboles et émoticônes",
+    "de": "Symbole und Emojis",
+    "pt": "Símbolos e emojis"
+  },
   "Simboli usati di recente": {
     "en": "Recently used symbols",
     "es": "Símbolos usados recientemente",
@@ -8133,6 +8420,13 @@
     "de": "Über dem ausgewählten Element",
     "pt": "Acima do elemento selecionado"
   },
+  "Sostituire il documento?": {
+    "en": "Replace the document?",
+    "es": "¿Sustituir el documento?",
+    "fr": "Remplacer le document ?",
+    "de": "Dokument ersetzen?",
+    "pt": "Substituir o documento?"
+  },
   "Sostituisci": {
     "en": "Replace",
     "es": "Reemplazar",
@@ -8146,6 +8440,13 @@
     "fr": "Remplacer par",
     "de": "Ersetzen durch",
     "pt": "Substituir por"
+  },
+  "Sostituisci il testo": {
+    "en": "Replace text",
+    "es": "Sustituir el texto",
+    "fr": "Remplacer le texte",
+    "de": "Text ersetzen",
+    "pt": "Substituir o texto"
   },
   "Sotto l'elemento selezionato": {
     "en": "Below the selected item",
@@ -8258,6 +8559,13 @@
     "fr": "Espace avant : {value} pt",
     "de": "Abstand vor: {value} pt",
     "pt": "Espaço antes: {value} pt"
+  },
+  "Spegnendola il testo resta esattamente come lo batti": {
+    "en": "Turn it off and the text stays exactly as you type it",
+    "es": "Si la apagas, el texto queda exactamente como lo escribes",
+    "fr": "Désactivée, le texte reste exactement tel que vous le tapez",
+    "de": "Ausgeschaltet bleibt der Text genau so, wie du ihn tippst",
+    "pt": "Se você desligar, o texto fica exatamente como você digita"
   },
   "Spessore linee": {
     "en": "Line thickness",
@@ -8763,6 +9071,13 @@
     "de": "Entfernen",
     "pt": "Remover"
   },
+  "Togli «{word}»": {
+    "en": "Remove “{word}”",
+    "es": "Quitar «{word}»",
+    "fr": "Supprimer « {word} »",
+    "de": "„{word}“ entfernen",
+    "pt": "Remover “{word}”"
+  },
   "Togli la casella (il testo resta)": {
     "en": "Remove the box (the text stays)",
     "es": "Quitar el cuadro (el texto se queda)",
@@ -9204,6 +9519,13 @@
     "de": "Eine Tabelle lohnt sich, wenn Daten über Zeilen und Spalten verglichen werden; für eine einzelne Zahl reicht ein Satz.",
     "pt": "Uma tabela funciona quando os dados se comparam por linhas e colunas; para um único número basta uma frase."
   },
+  "Una versione si salva da sola ogni cinque minuti, se hai scritto qualcosa.": {
+    "en": "A version saves itself every five minutes, if you have written something.",
+    "es": "Una versión se guarda sola cada cinco minutos, si has escrito algo.",
+    "fr": "Une version s'enregistre toute seule toutes les cinq minutes, si vous avez écrit quelque chose.",
+    "de": "Alle fünf Minuten wird automatisch eine Version gespeichert, wenn du etwas geschrieben hast.",
+    "pt": "Uma versão é salva sozinha a cada cinco minutos, se você tiver escrito alguma coisa."
+  },
   "Unisci": {
     "en": "Merge",
     "es": "Combinar",
@@ -9316,6 +9638,27 @@
     "de": "Barrierefreiheit prüfen",
     "pt": "Verificar acessibilidade"
   },
+  "Versione ripristinata": {
+    "en": "Version restored",
+    "es": "Versión restaurada",
+    "fr": "Version restaurée",
+    "de": "Version wiederhergestellt",
+    "pt": "Versão restaurada"
+  },
+  "Versione salvata": {
+    "en": "Version saved",
+    "es": "Versión guardada",
+    "fr": "Version enregistrée",
+    "de": "Version gespeichert",
+    "pt": "Versão salva"
+  },
+  "Versione salvata a mano": {
+    "en": "Version saved by hand",
+    "es": "Versión guardada a mano",
+    "fr": "Version enregistrée à la main",
+    "de": "Von Hand gespeicherte Version",
+    "pt": "Versão salva à mão"
+  },
   "verticale": {
     "en": "portrait",
     "es": "vertical",
@@ -9343,6 +9686,20 @@
     "fr": "Vidéo sélectionnée",
     "de": "Video ausgewählt",
     "pt": "Vídeo selecionado"
+  },
+  "Virgolette tipografiche": {
+    "en": "Smart quotes",
+    "es": "Comillas tipográficas",
+    "fr": "Guillemets typographiques",
+    "de": "Typografische Anführungszeichen",
+    "pt": "Aspas tipográficas"
+  },
+  "Virgolette, lineette, simboli, maiuscole e sostituzioni mentre scrivi": {
+    "en": "Quotes, dashes, symbols, capitals and replacements as you type",
+    "es": "Comillas, rayas, símbolos, mayúsculas y sustituciones mientras escribes",
+    "fr": "Guillemets, tirets, symboles, majuscules et remplacements pendant la frappe",
+    "de": "Anführungszeichen, Gedankenstriche, Symbole, Großschreibung und Ersetzungen beim Tippen",
+    "pt": "Aspas, travessões, símbolos, maiúsculas e substituições enquanto você escreve"
   },
   "Visualizza": {
     "en": "View",

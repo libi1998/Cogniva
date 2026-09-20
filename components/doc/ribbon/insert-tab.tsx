@@ -415,6 +415,7 @@ async function captureScreen(): Promise<string | null> {
     return null
   }
   let stream: MediaStream | null = null
+  const asked = performance.now()
   try {
     stream = await navigator.mediaDevices.getDisplayMedia({
       video: true,
@@ -433,10 +434,19 @@ async function captureScreen(): Promise<string | null> {
     canvas.getContext("2d")?.drawImage(video, 0, 0, canvas.width, canvas.height)
     return canvas.toDataURL("image/jpeg", 0.9)
   } catch (error) {
-    // chi annulla la scelta della finestra non ha fatto niente di sbagliato
-    if (!(error instanceof DOMException && error.name === "NotAllowedError")) {
-      toast.error(tr("Schermata non riuscita"))
-    }
+    const denied =
+      error instanceof DOMException && error.name === "NotAllowedError"
+    // «NotAllowedError» arriva sia da chi annulla la scelta della finestra sia
+    // da un browser (o un criterio aziendale) che la cattura non la permette
+    // proprio. Chi annulla ha visto il selettore, quindi ci ha messo un
+    // momento: una risposta immediata vuol dire che il selettore non è mai
+    // comparso, e allora va detto invece di non fare niente.
+    if (denied && performance.now() - asked > 250) return null
+    toast.error(
+      denied
+        ? tr("Il browser non permette di catturare lo schermo")
+        : tr("Schermata non riuscita")
+    )
     return null
   } finally {
     stream?.getTracks().forEach((track) => track.stop())

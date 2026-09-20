@@ -11,6 +11,7 @@ import { Color, FontFamily, TextStyle } from "@tiptap/extension-text-style"
 import { Subscript } from "@tiptap/extension-subscript"
 import { Superscript } from "@tiptap/extension-superscript"
 import { TableRow } from "@tiptap/extension-table"
+import { AutoCorrect } from "@/lib/autocorrect"
 import { FindReplace } from "@/lib/find-replace"
 import { ReadAloudHighlight } from "@/lib/read-aloud/highlight"
 import { Pagination } from "@/lib/pagination"
@@ -126,6 +127,7 @@ export function createDocExtensions(): AnyExtension[] {
     TrackChanges,
     DocFootnote,
     TextCase,
+    AutoCorrect,
     FindReplace,
     ReadAloudHighlight,
     Pagination,

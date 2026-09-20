@@ -12,6 +12,17 @@ const common = {
   viewport: { width: 1400, height: 900 },
   locale: "it-IT",
 }
+/**
+ * Ambienti chiusi (container CI, sandbox) tengono i browser in una cartella
+ * loro: `E2E_EXECUTABLE_PATH` indica l'eseguibile già presente invece di
+ * scaricarlo, e `E2E_NO_SANDBOX` serve quando i test girano da root.
+ */
+const launchOptions = {
+  ...(process.env.E2E_EXECUTABLE_PATH
+    ? { executablePath: process.env.E2E_EXECUTABLE_PATH }
+    : {}),
+  ...(process.env.E2E_NO_SANDBOX ? { args: ["--no-sandbox"] } : {}),
+}
 const crossBrowser =
   /(translate|read-aloud|thesaurus|model-3d|add-ins|export-studio)\.spec\.ts/
 
@@ -30,7 +41,10 @@ export default defineConfig({
       use: {
         ...devices["Desktop Chrome"],
         ...common,
-        channel: process.env.E2E_CHANNEL ?? "chrome",
+        ...(process.env.E2E_EXECUTABLE_PATH
+          ? {}
+          : { channel: process.env.E2E_CHANNEL ?? "chrome" }),
+        launchOptions,
         permissions: ["clipboard-read", "clipboard-write"],
       },
     },

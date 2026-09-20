@@ -106,7 +106,8 @@ const initials = (first: string) =>
     .map((n) => `${n[0].toUpperCase()}.`)
     .join(" ")
 
-const year = (s: DocSource) => s.year.trim() || "s.d."
+/** «s.d.», «n.d.»: la sigla di «senza data» cambia con la lingua */
+const year = (s: DocSource) => s.year.trim() || tr("s.d.||senza data")
 
 function joinNames(names: string[], and: string) {
   if (names.length <= 1) return names.join("")

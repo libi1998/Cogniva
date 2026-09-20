@@ -184,7 +184,7 @@ type); the selected tab is remembered, and double-clicking a tab collapses the r
 | **Design**     | themes, style sets, colors, fonts, paragraph spacing, set as default · **watermark**, page color, page borders                                                                                                                                                 |
 | **References** | table of contents · **citations and bibliography** (APA, MLA, Chicago, ISO 690) · **footnotes** and endnotes · captions, table of figures, cross-reference                                                                                                     |
 | **Mailings**   | envelopes and labels · **mail merge**: recipients, address block, greeting line, fields and rules · preview results · finish and merge                                                                                                                         |
-| **Review**     | spelling, **Thesaurus**, word count · **read aloud** · accessibility checker · **translate**, language · **comments** · **track changes** with accept/reject · compare · restrict editing · ink                                                                |
+| **Review**     | spelling, **AutoCorrect**, **Thesaurus**, word count · **read aloud** · accessibility checker · **translate**, language · **comments** · **track changes** with accept/reject · compare, **version history** · restrict editing · ink                          |
 | **View**       | read mode, print layout, web layout, outline, draft · focus and immersive reader · ruler, gridlines, navigation pane · zoom, one page, multiple pages · new window, full screen                                                                                |
 
 Every command lives in exactly one place: file settings are in the tabs, and the panel on
@@ -349,6 +349,48 @@ with `pnpm fonts`.
 highlights all of them with the active one in orange, and has toggles for **match case**
 and **whole words only**. `↵` and `⇧↵` step through them, and you can replace one at a time
 or all at once.
+
+### AutoCorrect
+
+**Review › AutoCorrect** fixes what you type while you type it, like Word's _AutoCorrect
+Options_:
+
+| Option                     | What it does                                                                                       |
+| -------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Smart quotes**           | `"` and `'` become typographic quotes in the shape the document's language uses: `“ ”` almost everywhere, `« »` with a non-breaking space in French, `„ “` in German |
+| **Dashes**                 | `--` followed by a space becomes an en dash, `---` becomes an em dash                              |
+| **Ellipsis**               | `...` becomes `…`                                                                                  |
+| **Symbols and emoji**      | `(c)` `(r)` `(tm)` `(e)`, the arrows `-->` `<--` `<->` `==>` `<==` `<=>` and `:)` `:(` `;)` `:D`    |
+| **Fractions**              | `1/2` `1/3` `2/3` `1/4` `3/4`, only once the number is finished, so `1/2/2026` stays a date        |
+| **Ordinals**               | `1o` → `1º` and `1a` → `1ª` in Italian, Spanish and Portuguese; in English `1st` goes superscript  |
+| **Capital at sentence start** | with an exceptions list per language, so `ecc.`, `e.g.` or `z.B.` don't start a new sentence    |
+| **Two initial capitals**   | `NAme` becomes `Name`                                                                              |
+| **Replace text**           | the `replace → with` table, editable, seeded with the most common typos and missing accents for the language |
+
+The options belong to whoever is writing and apply to every document (they live in the
+browser); the language that decides quotes, ordinals and abbreviations is the document's
+own (**Review › Language**). Code blocks and `inline code` are never touched, and the
+master switch turns everything off at once.
+
+### Version history
+
+**Review › History** opens a pane with the saved versions of the document. One is taken
+automatically every five minutes while you write, and **Save a version** takes one on
+demand with a name. Each entry shows when it was taken, who by and how many words it had,
+and can be **restored** (what was there before goes into the history first, so nothing is
+lost), **compared** with the document as it is now — a new document with the differences
+as tracked changes — renamed or deleted.
+
+Everything stays in this browser, in a database of its own (`cogniva-versions`), and a
+document's history is deleted with the document. The last 20 automatic and 40 named
+versions per document are kept.
+
+### Pick up where you left off
+
+Reopening a document you left halfway through shows a bookmark at the bottom right with
+the page and how long ago it was: one click and you're back where you were. It only shows
+up if you had actually got somewhere (past the first page, or well into a document without
+pages) and you had been away for a few minutes.
 
 ### Status bar
 
