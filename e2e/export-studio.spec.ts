@@ -1,7 +1,7 @@
 import { inflateSync } from "node:zlib"
 import { readFile } from "node:fs/promises"
 import { expect, test, type Page } from "@playwright/test"
-import { openDemo, withEditor } from "./editor"
+import { openDemo, ribbonButton, withEditor } from "./editor"
 
 /**
  * Sezione Esporta: anteprima delle pagine e file costruiti nell'app, senza la
@@ -187,7 +187,7 @@ test("pagine lunghe: interruzioni fra i paragrafi, testo nella pagina giusta, ni
   )
   // con un formato di carta le pagine le fa l'editor, e i fogli hanno l'ombra a video
   await page.getByRole("tab", { name: "Layout", exact: true }).click()
-  await page.getByRole("button", { name: "Dimensioni" }).click()
+  await (await ribbonButton(page, "Dimensioni")).click()
   await page.getByRole("menuitem", { name: /^A4/ }).click()
 
   const dialog = await openStudio(page)

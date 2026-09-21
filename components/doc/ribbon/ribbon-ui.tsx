@@ -1,12 +1,17 @@
 "use client"
 
 import * as React from "react"
-import { ChevronDown } from "lucide-react"
+import { ChevronDown, PanelsTopLeft } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
 import { useT } from "@/lib/i18n/client"
@@ -16,33 +21,156 @@ import { useT } from "@/lib/i18n/client"
  * ridisegno della barra.
  */
 
+/**
+ * I gruppi che non stanno nella finestra: come in Word si riducono a un solo
+ * pulsante che apre il gruppo intero. Il contesto lo decide `RibbonFit`,
+ * che misura la barra.
+ */
+const CollapsedGroups = React.createContext<ReadonlySet<string>>(new Set())
+
+export function RibbonFitProvider({
+  collapsed,
+  children,
+}: {
+  collapsed: ReadonlySet<string>
+  children: React.ReactNode
+}) {
+  return (
+    <CollapsedGroups.Provider value={collapsed}>
+      {children}
+    </CollapsedGroups.Provider>
+  )
+}
+
 /** Gruppo con l'etichetta in basso, come «Carattere» o «Paragrafo» in Word */
 export function RibbonGroup({
   label,
+  icon,
   children,
   className,
   safe,
 }: {
   label: string
+  /** icona del pulsante quando il gruppo si riduce */
+  icon?: React.ReactNode
   children: React.ReactNode
   className?: string
   /** i comandi del gruppo non toccano la selezione del testo */
   safe?: boolean
 }) {
+  const collapsed = React.useContext(CollapsedGroups).has(label)
+  const body = (
+    <div className={cn("flex min-h-0 flex-1 items-center gap-0.5", className)}>
+      {children}
+    </div>
+  )
+
+  if (collapsed) {
+    return (
+      <CollapsedGroup label={label} icon={icon} safe={safe}>
+        {body}
+      </CollapsedGroup>
+    )
+  }
+
   return (
     <div
+      data-ribbon-group=""
+      data-group-label={label}
       data-safe={safe ? "" : undefined}
       role="group"
       aria-label={label}
       className="flex shrink-0 flex-col border-r border-border/70 px-2 last:border-r-0"
     >
-      <div
-        className={cn("flex min-h-0 flex-1 items-center gap-0.5", className)}
-      >
-        {children}
-      </div>
+      {body}
       <div className="pt-0.5 text-center text-[10px] leading-4 text-muted-foreground select-none">
         {label}
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Un gruppo ridotto a un pulsante: il riquadro che si apre contiene il gruppo
+ * per intero. Dato un comando il riquadro si chiude, come in Word; restano
+ * aperti i comandi che aprono un menu e i campi con le frecce.
+ */
+function CollapsedGroup({
+  label,
+  icon,
+  safe,
+  children,
+}: {
+  label: string
+  icon?: React.ReactNode
+  safe?: boolean
+  children: React.ReactNode
+}) {
+  const [open, setOpen] = React.useState(false)
+
+  // i menu dei comandi si aprono fuori dal riquadro: scelta una voce si
+  // chiude anche il gruppo, come in Word
+  React.useEffect(() => {
+    if (!open) return
+    const onClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement | null
+      if (target?.closest('[role="menuitem"]')) setOpen(false)
+    }
+    document.addEventListener("click", onClick, true)
+    return () => document.removeEventListener("click", onClick, true)
+  }, [open])
+
+  return (
+    <div
+      data-ribbon-group=""
+      data-group-label={label}
+      data-collapsed=""
+      data-safe={safe ? "" : undefined}
+      role="group"
+      aria-label={label}
+      className="flex shrink-0 flex-col border-r border-border/70 px-1 last:border-r-0"
+    >
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger
+          render={
+            <RibbonButton
+              large
+              chevron
+              label={label}
+              title={label}
+              active={open}
+              icon={icon ?? <PanelsTopLeft className="size-5" />}
+            />
+          }
+        />
+        <PopoverContent
+          align="start"
+          sideOffset={2}
+          className="w-auto max-w-[min(96vw,900px)] overflow-x-auto p-1.5"
+          finalFocus={false}
+        >
+          <div
+            className="flex h-[74px] items-stretch"
+            onClick={(event) => {
+              const button = (event.target as HTMLElement).closest("button")
+              // i menu si aprono dentro il riquadro; le frecce dei campi
+              // numerici stanno in una <label> e si ripremono più volte
+              if (
+                !button ||
+                button.getAttribute("aria-haspopup") ||
+                button.closest("label")
+              ) {
+                return
+              }
+              setOpen(false)
+            }}
+          >
+            {children}
+          </div>
+        </PopoverContent>
+      </Popover>
+      <div className="pt-0.5 text-center text-[10px] leading-4 text-transparent select-none">
+        ·
       </div>
     </div>
   )

@@ -12,6 +12,7 @@ import { InsertTab } from "./insert-tab"
 import { LayoutTab } from "./layout-tab"
 import { MailingsTab } from "./mailings-tab"
 import { ReferencesTab } from "./references-tab"
+import { RibbonFitProvider } from "./ribbon-ui"
 import { ReviewTab } from "./review-tab"
 import type { RibbonCtx } from "./shared"
 import { ViewTab } from "./view-tab"
@@ -144,14 +145,112 @@ export function Ribbon({ ctx }: { ctx: RibbonCtx | null }) {
       </div>
 
       {!state.collapsed ? (
-        <div
-          role="tabpanel"
-          aria-label={t(active.label)}
-          className="ribbon-body flex h-[88px] items-stretch overflow-x-auto overflow-y-hidden px-1 pt-1.5 pb-1"
-        >
+        <RibbonBody key={active.key} label={t(active.label)}>
           {ctx ? <Body ctx={ctx} /> : null}
-        </div>
+        </RibbonBody>
       ) : null}
+    </div>
+  )
+}
+
+/** larghezza del pulsante di un gruppo ridotto, icona ed etichetta comprese */
+const COLLAPSED_WIDTH = 74
+
+/**
+ * La riga dei gruppi, che si adatta alla finestra come in Word: finché ci
+ * stanno restano aperti; quando lo spazio finisce si riducono a un pulsante,
+ * a partire dall'ultimo. Niente comandi nascosti fuori dal bordo.
+ */
+function RibbonBody({
+  label,
+  children,
+}: {
+  label: string
+  children: React.ReactNode
+}) {
+  const ref = React.useRef<HTMLDivElement>(null)
+  // la larghezza naturale di ogni gruppo, misurata quando è aperto
+  const widths = React.useRef(new Map<string, number>())
+  const [collapsed, setCollapsed] = React.useState<ReadonlySet<string>>(
+    () => new Set()
+  )
+
+  React.useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return
+
+    const measure = () => {
+      const groups = [
+        ...el.querySelectorAll<HTMLElement>("[data-ribbon-group]"),
+      ]
+      if (!groups.length) return
+      const labels: string[] = []
+      for (const group of groups) {
+        const name = group.dataset.groupLabel ?? ""
+        labels.push(name)
+        // un gruppo aperto dice quanto spazio gli serve; uno ridotto usa
+        // la misura presa l'ultima volta che era aperto
+        if (group.dataset.collapsed === undefined && group.offsetWidth > 0) {
+          widths.current.set(name, group.offsetWidth)
+        }
+      }
+      // due pixel di margine: gli arrotondamenti del browser non devono
+      // far comparire la barra di scorrimento
+      const available = el.clientWidth - 2
+      const natural = labels.map(
+        (name) => widths.current.get(name) ?? COLLAPSED_WIDTH
+      )
+      let total = natural.reduce((sum, w) => sum + w, 0)
+      const shut = new Set<number>()
+      // si chiudono gli ultimi gruppi, come in Word. Prima quelli che ci
+      // guadagnano davvero: un gruppo di uno o due pulsanti diventerebbe un
+      // pulsante che apre quasi lo stesso pulsante, e costa un clic in più
+      const rounds = [COLLAPSED_WIDTH + 80, 0]
+      for (const minimum of rounds) {
+        for (let i = labels.length - 1; i >= 0 && total > available; i -= 1) {
+          if (shut.has(i) || natural[i] < minimum) continue
+          shut.add(i)
+          total -= natural[i] - COLLAPSED_WIDTH
+        }
+      }
+      // chiudere l'ultimo gruppo può aver liberato più spazio del necessario:
+      // quelli che adesso ci rientrano si riaprono, a partire da sinistra
+      for (let i = 0; i < labels.length; i += 1) {
+        if (!shut.has(i)) continue
+        const cost = natural[i] - COLLAPSED_WIDTH
+        if (total + cost > available) continue
+        shut.delete(i)
+        total += cost
+      }
+
+      const next = labels.filter((_, i) => shut.has(i))
+      setCollapsed((prev) =>
+        prev.size === next.length && next.every((name) => prev.has(name))
+          ? prev
+          : new Set(next)
+      )
+    }
+
+    measure()
+    const observer = new ResizeObserver(measure)
+    observer.observe(el)
+    // i caratteri web cambiano la larghezza delle etichette: si rimisura
+    // quando sono pronti
+    void document.fonts?.ready.then(measure).catch(() => {})
+    return () => observer.disconnect()
+    // si misura all'apertura della scheda e quando cambia la finestra: la
+    // barra non deve rimescolarsi mentre si scrive, solo perché un comando
+    // si accende o un'etichetta si allunga
+  }, [])
+
+  return (
+    <div
+      ref={ref}
+      role="tabpanel"
+      aria-label={label}
+      className="ribbon-body flex h-[88px] items-stretch overflow-x-auto overflow-y-hidden px-1 pt-1.5 pb-1"
+    >
+      <RibbonFitProvider collapsed={collapsed}>{children}</RibbonFitProvider>
     </div>
   )
 }

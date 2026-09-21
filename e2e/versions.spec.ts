@@ -1,5 +1,11 @@
 import { expect, test } from "@playwright/test"
-import { caretAfter, openDemo, openTab, withEditor } from "./editor"
+import {
+  caretAfter,
+  openDemo,
+  openTab,
+  ribbonButton,
+  withEditor,
+} from "./editor"
 
 /**
  * «Cronologia versioni»: si salva una versione, si cambia il testo e la si
@@ -12,7 +18,7 @@ const firstParagraph = (page: import("@playwright/test").Page) =>
 test("salva una versione, poi la ripristina", async ({ page }) => {
   await openDemo(page)
   await openTab(page, "Revisione")
-  await page.getByRole("button", { name: "Cronologia", exact: true }).click()
+  await (await ribbonButton(page, "Cronologia")).click()
 
   const pane = page.getByLabel("Cronologia versioni")
   await expect(pane).toBeVisible()
@@ -40,14 +46,14 @@ test("salva una versione, poi la ripristina", async ({ page }) => {
 test("le versioni restano dopo aver ricaricato la pagina", async ({ page }) => {
   await openDemo(page)
   await openTab(page, "Revisione")
-  await page.getByRole("button", { name: "Cronologia", exact: true }).click()
+  await (await ribbonButton(page, "Cronologia")).click()
   const pane = page.getByLabel("Cronologia versioni")
   await pane.getByRole("button", { name: "Salva una versione" }).click()
   await expect(pane.getByText("Versione salvata a mano")).toBeVisible()
 
   await openDemo(page)
   await openTab(page, "Revisione")
-  await page.getByRole("button", { name: "Cronologia", exact: true }).click()
+  await (await ribbonButton(page, "Cronologia")).click()
   await expect(
     page.getByLabel("Cronologia versioni").getByText("Versione salvata a mano")
   ).toBeVisible()

@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/command"
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -464,7 +465,7 @@ function ShortcutsDialog({
   const t = useT()
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[86dvh] overflow-y-auto sm:max-w-3xl">
+      <DialogContent className="sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>{t("Scorciatoie da tastiera")}</DialogTitle>
           <DialogDescription>
@@ -473,7 +474,7 @@ function ShortcutsDialog({
             )}
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-6 md:grid-cols-3">
+        <DialogBody className="grid gap-6 md:grid-cols-3">
           {shortcuts().map((section) => (
             <section key={section.title} className="space-y-2">
               <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
@@ -496,7 +497,7 @@ function ShortcutsDialog({
               </dl>
             </section>
           ))}
-        </div>
+        </DialogBody>
       </DialogContent>
     </Dialog>
   )

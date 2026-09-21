@@ -30,6 +30,9 @@ import {
   FilePenLine,
   Eye,
   Wand2,
+  MessageSquare,
+  GitCompare,
+  PenLine,
 } from "lucide-react"
 import type { JSONContent } from "@tiptap/core"
 import { Fragment, Slice } from "@tiptap/pm/model"
@@ -43,6 +46,7 @@ import {
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -204,8 +208,8 @@ function AccessibilityDialog({
   const t = useT()
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent className="gap-0 p-0 sm:max-w-[520px]">
-        <DialogHeader className="border-b border-border px-5 py-4">
+      <DialogContent className="sm:max-w-[520px]">
+        <DialogHeader>
           <DialogTitle>{t("Verifica accessibilità")}</DialogTitle>
           <DialogDescription>
             {t(
@@ -242,8 +246,8 @@ function AccessibilityList({
   }
 
   return (
-    <div>
-      <div className="max-h-[60dvh] space-y-2 overflow-y-auto px-5 py-4">
+    <>
+      <DialogBody className="space-y-2">
         {issues.length ? (
           issues.map((issue) => (
             <div
@@ -329,8 +333,8 @@ function AccessibilityList({
             {t("Nessun problema di accessibilità trovato.")}
           </p>
         )}
-      </div>
-      <DialogFooter className="border-t border-border px-5 py-3">
+      </DialogBody>
+      <DialogFooter>
         <Button type="button" variant="outline" onClick={refresh}>
           {t("Ricontrolla")}
         </Button>
@@ -338,7 +342,7 @@ function AccessibilityList({
           {t("Chiudi")}
         </Button>
       </DialogFooter>
-    </div>
+    </>
   )
 }
 
@@ -358,8 +362,8 @@ function TranslateDialog({
   const t = useT()
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent className="gap-0 p-0 sm:max-w-[460px]">
-        <DialogHeader className="border-b border-border px-5 py-4">
+      <DialogContent className="sm:max-w-[460px]">
+        <DialogHeader>
           <DialogTitle>
             {scope === "selection"
               ? t("Traduci selezione")
@@ -601,8 +605,8 @@ function TranslateForm({
         : 0
 
   return (
-    <div>
-      <div className="space-y-3 px-5 py-4 text-sm">
+    <>
+      <DialogBody className="space-y-3 text-sm">
         <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-3">
           <label className="block min-w-0 space-y-1">
             <span className="text-xs text-muted-foreground">{t("Da")}</span>
@@ -775,8 +779,8 @@ function TranslateForm({
             </div>
           </div>
         ) : null}
-      </div>
-      <DialogFooter className="border-t border-border px-5 py-3">
+      </DialogBody>
+      <DialogFooter>
         {busy ? (
           <Button type="button" variant="ghost" onClick={cancel}>
             {t("Annulla")}
@@ -829,7 +833,7 @@ function TranslateForm({
           </Button>
         )}
       </DialogFooter>
-    </div>
+    </>
   )
 }
 
@@ -861,8 +865,8 @@ function CompareDialog({
 
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent className="gap-0 p-0 sm:max-w-[460px]">
-        <DialogHeader className="border-b border-border px-5 py-4">
+      <DialogContent className="sm:max-w-[460px]">
+        <DialogHeader>
           <DialogTitle>{t("Confronta documenti")}</DialogTitle>
           <DialogDescription>
             {t(
@@ -870,7 +874,7 @@ function CompareDialog({
             )}
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-3 px-5 py-4 text-sm">
+        <DialogBody className="space-y-3 text-sm">
           <label className="block space-y-1">
             <span className="text-xs text-muted-foreground">
               {t("Confronta con")}
@@ -900,8 +904,8 @@ function CompareDialog({
                 : t("L'altro è l'originale, questo la revisione")}
             </label>
           ))}
-        </div>
-        <DialogFooter className="border-t border-border px-5 py-3">
+        </DialogBody>
+        <DialogFooter>
           <Button type="button" variant="ghost" onClick={onClose}>
             {t("Annulla")}
           </Button>
@@ -1164,7 +1168,11 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
 
   return (
     <>
-      <RibbonGroup label={t("Strumenti di correzione")} safe>
+      <RibbonGroup
+        label={t("Strumenti di correzione")}
+        icon={<SpellCheck className="size-5" />}
+        safe
+      >
         <RibbonButton
           large
           label={t("Ortografia")}
@@ -1204,7 +1212,11 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
 
       <ReadAloudGroup editor={ctx.editor} language={ctx.theme.language} />
 
-      <RibbonGroup label={t("Accessibilità")} safe>
+      <RibbonGroup
+        label={t("Accessibilità")}
+        icon={<Accessibility className="size-5" />}
+        safe
+      >
         <RibbonButton
           large
           label={t("Verifica accessibilità")}
@@ -1213,7 +1225,11 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
         />
       </RibbonGroup>
 
-      <RibbonGroup label={t("Lingua")} safe>
+      <RibbonGroup
+        label={t("Lingua")}
+        icon={<Languages className="size-5" />}
+        safe
+      >
         <RibbonMenu
           className="w-56"
           trigger={
@@ -1256,7 +1272,10 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonMenu>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Commenti")}>
+      <RibbonGroup
+        label={t("Commenti")}
+        icon={<MessageSquare className="size-5" />}
+      >
         <RibbonButton
           large
           label={t("Nuovo commento")}
@@ -1340,7 +1359,10 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Rilevamento")}>
+      <RibbonGroup
+        label={t("Rilevamento")}
+        icon={<FileDiff className="size-5" />}
+      >
         <RibbonButton
           large
           data-safe=""
@@ -1389,7 +1411,7 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Modifiche")}>
+      <RibbonGroup label={t("Modifiche")} icon={<Check className="size-5" />}>
         <ChangeMenu
           kind="accept"
           icon={<Check className="size-5" />}
@@ -1426,7 +1448,11 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Confronta")} safe>
+      <RibbonGroup
+        label={t("Confronta")}
+        icon={<GitCompare className="size-5" />}
+        safe
+      >
         <RibbonButton
           large
           label={t("Confronta")}
@@ -1452,7 +1478,11 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
         />
       </RibbonGroup>
 
-      <RibbonGroup label={t("Proteggi")} safe>
+      <RibbonGroup
+        label={t("Proteggi")}
+        icon={<Lock className="size-5" />}
+        safe
+      >
         <RibbonMenu
           className="w-64"
           trigger={
@@ -1482,7 +1512,11 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonMenu>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Input penna")} safe>
+      <RibbonGroup
+        label={t("Input penna")}
+        icon={<PenLine className="size-5" />}
+        safe
+      >
         <RibbonButton
           large
           label={

@@ -8,6 +8,7 @@ import { CustomColor } from "@/components/shared/custom-color"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -77,7 +78,7 @@ export function WatermarkDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent className="gap-0 p-0 sm:max-w-[520px]">
+      <DialogContent className="sm:max-w-[520px]">
         {open ? (
           <WatermarkForm theme={theme} setTheme={setTheme} onClose={onClose} />
         ) : null}
@@ -125,13 +126,13 @@ function WatermarkForm({
 
   return (
     <form
+      className="contents"
       onSubmit={(e) => {
         e.preventDefault()
         apply(true)
       }}
-      className="flex min-h-0 flex-col"
     >
-      <DialogHeader className="border-b border-border px-5 py-4">
+      <DialogHeader>
         <DialogTitle>{t("Filigrana personalizzata")}</DialogTitle>
         <DialogDescription>
           {t(
@@ -140,7 +141,7 @@ function WatermarkForm({
         </DialogDescription>
       </DialogHeader>
 
-      <div className="grid gap-4 px-5 py-4 sm:grid-cols-[1fr_150px]">
+      <DialogBody className="grid gap-4 sm:grid-cols-[1fr_150px]">
         <div className="space-y-3">
           <div
             role="radiogroup"
@@ -323,9 +324,9 @@ function WatermarkForm({
         </div>
 
         <WatermarkPreview theme={theme} watermark={result} />
-      </div>
+      </DialogBody>
 
-      <DialogFooter className="border-t border-border px-5 py-3">
+      <DialogFooter>
         <Button type="button" variant="ghost" onClick={onClose}>
           {t("Annulla")}
         </Button>

@@ -81,7 +81,7 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
 
   return (
     <>
-      <RibbonGroup label={t("Sommario")}>
+      <RibbonGroup label={t("Sommario")} icon={<ListTree className="size-5" />}>
         <RibbonMenu
           className="w-64"
           trigger={
@@ -204,7 +204,10 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Citazioni e bibliografia")}>
+      <RibbonGroup
+        label={t("Citazioni e bibliografia")}
+        icon={<Quote className="size-5" />}
+      >
         <RibbonMenu
           className="w-72"
           trigger={
@@ -297,7 +300,7 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Note")}>
+      <RibbonGroup label={t("Note")} icon={<NotebookPen className="size-5" />}>
         <RibbonButton
           large
           label={t("Inserisci nota a piè di pagina")}
@@ -353,7 +356,10 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
           />
         </RibbonRows>
       </RibbonGroup>
-      <RibbonGroup label={t("Didascalie")}>
+      <RibbonGroup
+        label={t("Didascalie")}
+        icon={<Captions className="size-5" />}
+      >
         <RibbonButton
           large
           label={t("Inserisci didascalia")}
@@ -414,7 +420,17 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
       {indexKinds.map(([kind, label]) => {
         const count = positionsOf(ctx, "docIndex").length
         return (
-          <RibbonGroup key={kind} label={label}>
+          <RibbonGroup
+            key={kind}
+            label={label}
+            icon={
+              kind === "authority" ? (
+                <Gavel className="size-5" />
+              ) : (
+                <BookMarked className="size-5" />
+              )
+            }
+          >
             <RibbonButton
               large
               label={

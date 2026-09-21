@@ -348,7 +348,10 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
 
   return (
     <>
-      <RibbonGroup label={t("Annulla||annulla l'ultima modifica")}>
+      <RibbonGroup
+        label={t("Annulla||annulla l'ultima modifica")}
+        icon={<Undo2 className="size-5" />}
+      >
         <RibbonRows>
           <RibbonButton
             title={t("Annulla ⌘Z")}
@@ -365,7 +368,10 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Appunti")}>
+      <RibbonGroup
+        label={t("Appunti")}
+        icon={<ClipboardPaste className="size-5" />}
+      >
         <span className="flex flex-col items-center">
           <RibbonButton
             large
@@ -435,7 +441,10 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Carattere")}>
+      <RibbonGroup
+        label={t("Carattere")}
+        icon={<CaseSensitive className="size-5" />}
+      >
         <RibbonRows>
           <RibbonRow>
             <FontCombo
@@ -840,7 +849,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Paragrafo")}>
+      <RibbonGroup label={t("Paragrafo")} icon={<Pilcrow className="size-5" />}>
         <RibbonRows>
           <RibbonRow>
             <SplitMenu
@@ -1155,7 +1164,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Stili")}>
+      <RibbonGroup label={t("Stili")} icon={<Palette className="size-5" />}>
         <StyleGallery
           tools={styleTools}
           onOpenPane={() => ctx.setStylesPane(true)}
@@ -1171,7 +1180,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
         />
       </RibbonGroup>
 
-      <RibbonGroup label={t("Modifica")}>
+      <RibbonGroup label={t("Modifica")} icon={<Search className="size-5" />}>
         <RibbonRows>
           <RibbonButton
             compact
@@ -1214,7 +1223,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Voce")}>
+      <RibbonGroup label={t("Voce")} icon={<Mic className="size-5" />}>
         <RibbonButton
           large
           label={dictation.listening ? t("In ascolto…") : t("Dettatura")}

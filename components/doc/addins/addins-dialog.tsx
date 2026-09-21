@@ -5,6 +5,7 @@ import { Check, Globe, Search, ShieldCheck, WifiOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -53,8 +54,8 @@ export function AddinsDialog({
 
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent className="gap-0 p-0 sm:max-w-[680px]">
-        <DialogHeader className="border-b border-border px-5 py-4">
+      <DialogContent className="sm:max-w-[680px]">
+        <DialogHeader>
           <DialogTitle>{t("Componenti aggiuntivi")}</DialogTitle>
           <DialogDescription>
             {t(
@@ -101,7 +102,7 @@ export function AddinsDialog({
             ))}
           </div>
         </div>
-        <div className="grid max-h-[min(60dvh,520px)] grid-cols-1 gap-2 overflow-y-auto p-4 sm:grid-cols-2">
+        <DialogBody className="grid min-h-[200px] grid-cols-1 gap-2 p-4 sm:grid-cols-2">
           {list.map((addin) => {
             const active = enabled.includes(addin.id)
             return (
@@ -187,7 +188,7 @@ export function AddinsDialog({
               {t("Nessun componente aggiuntivo trovato.")}
             </p>
           ) : null}
-        </div>
+        </DialogBody>
       </DialogContent>
     </Dialog>
   )

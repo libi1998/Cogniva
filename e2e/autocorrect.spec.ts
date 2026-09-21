@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test"
-import { inserted, openDemo, openTab, withEditor } from "./editor"
+import { inserted, openDemo, openTab, ribbonButton, withEditor } from "./editor"
 
 /**
  * Correzione automatica mentre si scrive, come in Word. Il documento
@@ -91,9 +91,7 @@ test("la finestra spegne una singola opzione e la ricorda", async ({
   page,
 }) => {
   await openTab(page, "Revisione")
-  await page
-    .getByRole("button", { name: "Correzione automatica", exact: true })
-    .click()
+  await (await ribbonButton(page, "Correzione automatica")).click()
   const dialog = page.getByRole("dialog")
   await expect(dialog).toBeVisible()
 
@@ -160,7 +158,7 @@ test("con il rilevamento le correzioni diventano revisioni", async ({
   page,
 }) => {
   await openTab(page, "Revisione")
-  const tracking = page.getByRole("button", { name: "Revisioni", exact: true })
+  const tracking = await ribbonButton(page, "Revisioni")
   await tracking.click()
   await expect(tracking).toHaveAttribute("aria-pressed", "true")
 

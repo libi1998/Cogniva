@@ -16,6 +16,7 @@ import {
   SquarePen,
   Trash2,
   Undo2,
+  Frame,
 } from "lucide-react"
 import { toast } from "sonner"
 import {
@@ -151,7 +152,11 @@ export function DrawTab({ ctx }: { ctx: RibbonCtx }) {
 
   return (
     <>
-      <RibbonGroup label={t("Strumenti di disegno")} safe>
+      <RibbonGroup
+        label={t("Strumenti di disegno")}
+        icon={<PenTool className="size-5" />}
+        safe
+      >
         <RibbonButton
           large
           label={t("Seleziona")}
@@ -251,7 +256,11 @@ export function DrawTab({ ctx }: { ctx: RibbonCtx }) {
         </div>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Converti")} safe>
+      <RibbonGroup
+        label={t("Converti")}
+        icon={<Shapes className="size-5" />}
+        safe
+      >
         <RibbonButton
           large
           label={t("Da input penna a forma")}
@@ -267,7 +276,11 @@ export function DrawTab({ ctx }: { ctx: RibbonCtx }) {
         />
       </RibbonGroup>
 
-      <RibbonGroup label={t("Modifica")} safe>
+      <RibbonGroup
+        label={t("Modifica")}
+        icon={<Eraser className="size-5" />}
+        safe
+      >
         <RibbonRows>
           <RibbonButton
             compact
@@ -307,7 +320,7 @@ export function DrawTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Inserisci")}>
+      <RibbonGroup label={t("Inserisci")} icon={<Frame className="size-5" />}>
         <RibbonButton
           large
           label={t("Canvas di disegno")}
@@ -324,7 +337,11 @@ export function DrawTab({ ctx }: { ctx: RibbonCtx }) {
         />
       </RibbonGroup>
 
-      <RibbonGroup label={t("Riproduci")} safe>
+      <RibbonGroup
+        label={t("Riproduci")}
+        icon={<Play className="size-5" />}
+        safe
+      >
         <RibbonButton
           large
           label={t("Riproduzione input penna")}

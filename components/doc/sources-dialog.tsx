@@ -134,8 +134,8 @@ export function SourcesDialog({
         if (!v) setPicked(null)
       }}
     >
-      <DialogContent className="max-h-[88dvh] overflow-hidden p-0 sm:max-w-3xl">
-        <DialogHeader className="border-b border-border px-5 pt-4 pb-3">
+      <DialogContent className="sm:max-w-3xl">
+        <DialogHeader>
           <DialogTitle>{t("Gestisci fonti")}</DialogTitle>
           <DialogDescription>
             {t(
@@ -144,7 +144,7 @@ export function SourcesDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid min-h-0 grid-cols-1 sm:grid-cols-[230px_1fr]">
+        <div className="grid min-h-0 flex-1 grid-cols-1 sm:grid-cols-[230px_1fr]">
           <div className="flex min-h-0 flex-col border-b border-border sm:border-r sm:border-b-0">
             <div className="max-h-[46dvh] min-h-[120px] flex-1 overflow-y-auto p-2">
               {sources.length ? (

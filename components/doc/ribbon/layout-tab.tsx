@@ -185,7 +185,11 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
 
   return (
     <>
-      <RibbonGroup label={t("Imposta pagina")} safe>
+      <RibbonGroup
+        label={t("Imposta pagina")}
+        icon={<Scaling className="size-5" />}
+        safe
+      >
         <MarginsMenu theme={theme} setTheme={setTheme} />
 
         <RibbonMenu
@@ -294,7 +298,11 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonMenu>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Interruzioni")} safe>
+      <RibbonGroup
+        label={t("Interruzioni")}
+        icon={<SquareSplitVertical className="size-5" />}
+        safe
+      >
         <RibbonMenu
           className="w-60"
           trigger={
@@ -402,7 +410,10 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonMenu>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Paragrafo")}>
+      <RibbonGroup
+        label={t("Paragrafo")}
+        icon={<LayoutList className="size-5" />}
+      >
         <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
           <span className="text-[11px] font-medium text-muted-foreground">
             {t("Rientro")}
@@ -615,7 +626,7 @@ function ArrangeGroup({ ctx }: { ctx: RibbonCtx }) {
   const disabledTitle = t("Seleziona un'immagine o una forma")
 
   return (
-    <RibbonGroup label={t("Disponi")}>
+    <RibbonGroup label={t("Disponi")} icon={<Grid3x3 className="size-5" />}>
       <RibbonMenu
         className="w-auto"
         trigger={

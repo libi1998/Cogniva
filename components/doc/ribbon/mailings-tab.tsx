@@ -26,6 +26,8 @@ import {
   Tags,
   UserRoundPen,
   Users,
+  FileInput,
+  MailCheck,
 } from "lucide-react"
 import { toast } from "sonner"
 import {
@@ -343,7 +345,7 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
 
   return (
     <>
-      <RibbonGroup label={t("Crea")}>
+      <RibbonGroup label={t("Crea")} icon={<Mail className="size-5" />}>
         <RibbonButton
           large
           label={t("Buste")}
@@ -358,7 +360,11 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
         />
       </RibbonGroup>
 
-      <RibbonGroup label={t("Inizia stampa unione")} safe>
+      <RibbonGroup
+        label={t("Inizia stampa unione")}
+        icon={<MailPlus className="size-5" />}
+        safe
+      >
         <RibbonMenu
           className="w-64"
           trigger={
@@ -421,7 +427,10 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
         />
       </RibbonGroup>
 
-      <RibbonGroup label={t("Composizione e inserimento campi")}>
+      <RibbonGroup
+        label={t("Composizione e inserimento campi")}
+        icon={<FileInput className="size-5" />}
+      >
         <RibbonButton
           large
           data-safe=""
@@ -496,7 +505,11 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Anteprima risultati")} safe>
+      <RibbonGroup
+        label={t("Anteprima risultati")}
+        icon={<Eye className="size-5" />}
+        safe
+      >
         <RibbonButton
           large
           label={t("Anteprima risultati")}
@@ -594,7 +607,10 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Completa")}>
+      <RibbonGroup
+        label={t("Completa")}
+        icon={<MailCheck className="size-5" />}
+      >
         <RibbonMenu
           className="w-60"
           trigger={

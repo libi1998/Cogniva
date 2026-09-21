@@ -1,5 +1,11 @@
 import { expect, test, type Page } from "@playwright/test"
-import { caretAfter, openDemo, openTab, withEditor } from "./editor"
+import {
+  caretAfter,
+  openDemo,
+  openTab,
+  ribbonButton,
+  withEditor,
+} from "./editor"
 
 /**
  * Leggi ad alta voce: voce neurale sul dispositivo (scaricata davvero) e voce
@@ -36,7 +42,7 @@ test.describe("voce neurale", () => {
     await page.keyboard.press("Escape")
 
     await caretAfter(page, 1, "")
-    await page.getByRole("button", { name: "Leggi ad alta voce" }).click()
+    await (await ribbonButton(page, "Leggi ad alta voce")).click()
     await expect(bar(page)).toBeVisible()
     await expect.poll(() => word(page), { timeout: 60_000 }).not.toBe("")
     const first = await word(page)
@@ -152,7 +158,7 @@ test.describe("voce del sistema", () => {
 
   test("pausa e ripresa ripartono dalla parola in corso", async ({ page }) => {
     await caretAfter(page, 1, "")
-    await page.getByRole("button", { name: "Leggi ad alta voce" }).click()
+    await (await ribbonButton(page, "Leggi ad alta voce")).click()
     await expect.poll(() => word(page), { intervals: [50] }).toBe("esempio")
     await bar(page).getByRole("button", { name: "Pausa" }).click()
     const paused = await word(page)
@@ -178,7 +184,7 @@ test.describe("voce del sistema", () => {
 
   test("legge frase per frase e cambia velocità al volo", async ({ page }) => {
     await caretAfter(page, 1, "")
-    await page.getByRole("button", { name: "Leggi ad alta voce" }).click()
+    await (await ribbonButton(page, "Leggi ad alta voce")).click()
     await expect
       .poll(() => word(page), { intervals: [50], timeout: 8000 })
       .toBe("Prova")
@@ -211,7 +217,7 @@ test.describe("voce del sistema", () => {
       editor.chain().focus().setTextSelection({ from: start, to: start + "Prova la barra".length }).run()
       `
     )
-    await page.getByRole("button", { name: "Leggi ad alta voce" }).click()
+    await (await ribbonButton(page, "Leggi ad alta voce")).click()
     await expect(bar(page)).toBeHidden({ timeout: 10_000 })
     const spoken = await page.evaluate(
       () => (window as unknown as { __spoken: string[] }).__spoken

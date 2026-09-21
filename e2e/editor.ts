@@ -99,9 +99,42 @@ export async function openTab(page: Page, name: string) {
   await page.getByRole("tab", { name, exact: true }).click()
 }
 
+/**
+ * Un comando della barra. Quando la finestra è stretta il suo gruppo può
+ * essersi ridotto a un pulsante, come in Word: in quel caso si apre il gruppo
+ * e si prende il comando da lì.
+ */
+export async function ribbonButton(
+  page: Page,
+  name: string | RegExp,
+  { exact = true }: { exact?: boolean } = {}
+) {
+  // un gruppo lasciato aperto da un comando precedente confonderebbe la ricerca
+  await page.keyboard.press("Escape")
+  const panel = page.locator('[role="tabpanel"]')
+  const direct = panel.getByRole("button", { name, exact }).first()
+  if (await direct.isVisible().catch(() => false)) return direct
+
+  const groups = panel.locator("[data-collapsed] button")
+  for (let i = 0; i < (await groups.count()); i += 1) {
+    await groups.nth(i).click()
+    // solo il riquadro aperto: quello che si sta chiudendo resta nel DOM
+    // per l'animazione, e il comando lì dentro sparirebbe sotto le mani
+    const inside = page
+      .locator('[data-slot="popover-content"][data-open]')
+      .getByRole("button", { name, exact })
+      .first()
+    if (await inside.isVisible().catch(() => false)) return inside
+    await page.keyboard.press("Escape")
+  }
+  // nessun gruppo ridotto lo contiene: si restituisce comunque il comando
+  // diretto, così l'attesa di Playwright dà un errore leggibile
+  return direct
+}
+
 export async function enableTracking(page: Page) {
   await openTab(page, "Revisione")
-  const button = page.getByRole("button", { name: "Revisioni", exact: true })
+  const button = await ribbonButton(page, "Revisioni")
   await button.click()
   await expect(button).toHaveAttribute("aria-pressed", "true")
 }

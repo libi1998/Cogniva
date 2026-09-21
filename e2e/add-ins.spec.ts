@@ -1,5 +1,11 @@
 import { expect, test, type Page } from "@playwright/test"
-import { caretAfter, openDemo, openTab, withEditor } from "./editor"
+import {
+  caretAfter,
+  openDemo,
+  openTab,
+  ribbonButton,
+  withEditor,
+} from "./editor"
 
 /**
  * Componenti aggiuntivi: raccolta, riquadro attività e ogni strumento. I
@@ -25,7 +31,7 @@ const docText = (page: Page) =>
 
 async function openAddin(page: Page, name: string) {
   await openTab(page, "Home")
-  await page.getByRole("button", { name: "Componenti aggiuntivi" }).click()
+  await (await ribbonButton(page, "Componenti aggiuntivi")).click()
   await page.getByRole("menuitem", { name: new RegExp(`^${name}`) }).click()
   await expect(page.getByLabel(name, { exact: true })).toBeVisible()
 }
@@ -139,7 +145,7 @@ test("raccolta: si aggiunge Wikipedia e inserisce il riassunto con la fonte", as
       })
   )
   await openTab(page, "Home")
-  await page.getByRole("button", { name: "Componenti aggiuntivi" }).click()
+  await (await ribbonButton(page, "Componenti aggiuntivi")).click()
   await page
     .getByRole("menuitem", { name: "Altri componenti aggiuntivi…" })
     .click()
@@ -170,7 +176,7 @@ test("raccolta: si aggiunge Wikipedia e inserisce il riassunto con la fonte", as
   expect(links).toContain("https://it.wikipedia.org/wiki/Leonardo_da_Vinci")
 
   // la scelta resta: il menu ora elenca Wikipedia
-  await page.getByRole("button", { name: "Componenti aggiuntivi" }).click()
+  await (await ribbonButton(page, "Componenti aggiuntivi")).click()
   await expect(page.getByRole("menuitem", { name: /^Wikipedia/ })).toBeVisible()
 })
 
@@ -202,7 +208,7 @@ test("Immagini libere: inserisce l'immagine con autore e licenza", async ({
     route.fulfill({ body: PNG, contentType: "image/png" })
   )
   await openTab(page, "Home")
-  await page.getByRole("button", { name: "Componenti aggiuntivi" }).click()
+  await (await ribbonButton(page, "Componenti aggiuntivi")).click()
   await page
     .getByRole("menuitem", { name: "Altri componenti aggiuntivi…" })
     .click()

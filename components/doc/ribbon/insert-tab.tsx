@@ -716,7 +716,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
 
   return (
     <>
-      <RibbonGroup label={t("Pagine")}>
+      <RibbonGroup label={t("Pagine")} icon={<FilePlus2 className="size-5" />}>
         <RibbonMenu
           className="w-[300px]"
           trigger={
@@ -783,7 +783,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Tabelle")}>
+      <RibbonGroup label={t("Tabelle")} icon={<Table2 className="size-5" />}>
         <RibbonMenu
           className="w-auto"
           trigger={
@@ -924,7 +924,10 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonMenu>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Illustrazioni")}>
+      <RibbonGroup
+        label={t("Illustrazioni")}
+        icon={<ImageIcon className="size-5" />}
+      >
         <RibbonMenu
           className="w-60"
           trigger={
@@ -1085,11 +1088,17 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonMenu>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Elementi multimediali")}>
+      <RibbonGroup
+        label={t("Elementi multimediali")}
+        icon={<Video className="size-5" />}
+      >
         <VideoPopover ctx={ctx} />
       </RibbonGroup>
 
-      <RibbonGroup label={t("Collegamenti")}>
+      <RibbonGroup
+        label={t("Collegamenti")}
+        icon={<Link2 className="size-5" />}
+      >
         <LinkPopover ctx={ctx} />
         <RibbonRows>
           <RibbonButton
@@ -1109,7 +1118,10 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Commenti")}>
+      <RibbonGroup
+        label={t("Commenti")}
+        icon={<MessageSquarePlus className="size-5" />}
+      >
         <RibbonButton
           large
           label={t("Commento")}
@@ -1119,7 +1131,11 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
         />
       </RibbonGroup>
 
-      <RibbonGroup label={t("Intestazione e piè di pagina")} safe>
+      <RibbonGroup
+        label={t("Intestazione e piè di pagina")}
+        icon={<PanelTop className="size-5" />}
+        safe
+      >
         <BandMenu
           label={t("Intestazione")}
           icon={<PanelTop className="size-5" />}
@@ -1199,7 +1215,10 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonMenu>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Testo")}>
+      <RibbonGroup
+        label={t("Testo")}
+        icon={<SquareDashedText className="size-5" />}
+      >
         <RibbonMenu
           className="w-64"
           trigger={
@@ -1426,7 +1445,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
         />
       </RibbonGroup>
 
-      <RibbonGroup label={t("Simboli")}>
+      <RibbonGroup label={t("Simboli")} icon={<Omega className="size-5" />}>
         <RibbonMenu
           className="w-[320px]"
           trigger={

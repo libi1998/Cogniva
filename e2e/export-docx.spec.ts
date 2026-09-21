@@ -1,6 +1,12 @@
 import { execFileSync } from "node:child_process"
 import { expect, test, type Page } from "@playwright/test"
-import { caretAfter, enableTracking, openDemo, openTab } from "./editor"
+import {
+  caretAfter,
+  enableTracking,
+  openDemo,
+  openTab,
+  ribbonButton,
+} from "./editor"
 
 /** Esporta in .docx dalla sezione Esporta e restituisce il percorso del file */
 async function exportDocx(page: Page, dir: string) {
@@ -25,7 +31,7 @@ test("la filigrana finisce in Word dietro al testo, su ogni pagina", async ({
 }, info) => {
   await openDemo(page)
   await openTab(page, "Progettazione")
-  await page.getByRole("button", { name: "Filigrana" }).click()
+  await (await ribbonButton(page, "Filigrana")).click()
   await page
     .getByRole("button", { name: /^BOZZA/ })
     .first()

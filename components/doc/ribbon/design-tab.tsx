@@ -22,6 +22,7 @@ import {
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -219,7 +220,11 @@ export function DesignTab({ ctx }: { ctx: RibbonCtx }) {
 
   return (
     <>
-      <RibbonGroup label={t("Formattazione documento")} safe>
+      <RibbonGroup
+        label={t("Formattazione documento")}
+        icon={<Palette className="size-5" />}
+        safe
+      >
         <ThemesMenu theme={theme} setTheme={setTheme} />
         <StyleSetGallery theme={theme} setTheme={setTheme} />
 
@@ -346,7 +351,11 @@ export function DesignTab({ ctx }: { ctx: RibbonCtx }) {
         />
       </RibbonGroup>
 
-      <RibbonGroup label={t("Sfondo pagina")} safe>
+      <RibbonGroup
+        label={t("Sfondo pagina")}
+        icon={<PaintBucket className="size-5" />}
+        safe
+      >
         <RibbonMenu
           className="w-[300px]"
           trigger={
@@ -1016,7 +1025,7 @@ function FontsDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent className="gap-0 p-0 sm:max-w-[460px]">
+      <DialogContent className="sm:max-w-[460px]">
         {open ? (
           <FontsForm theme={theme} setTheme={setTheme} onClose={onClose} />
         ) : null}
@@ -1039,19 +1048,20 @@ function FontsForm({
   const [body, setBody] = React.useState(theme.font)
   return (
     <form
+      className="contents"
       onSubmit={(e) => {
         e.preventDefault()
         setTheme({ font: body, headingFont: heading === body ? null : heading })
         onClose()
       }}
     >
-      <DialogHeader className="border-b border-border px-5 py-4">
+      <DialogHeader>
         <DialogTitle>{t("Personalizza tipi di carattere")}</DialogTitle>
         <DialogDescription>
           {t("Gli stili che usano «Titoli» e «Corpo» cambiano insieme.")}
         </DialogDescription>
       </DialogHeader>
-      <div className="grid gap-4 px-5 py-4 sm:grid-cols-2">
+      <DialogBody className="grid gap-4 sm:grid-cols-2">
         <label className="block space-y-1">
           <span className="text-xs text-muted-foreground">
             {t("Carattere titoli")}
@@ -1080,8 +1090,8 @@ function FontsForm({
             )}
           </p>
         </div>
-      </div>
-      <DialogFooter className="border-t border-border px-5 py-3">
+      </DialogBody>
+      <DialogFooter>
         <Button type="button" variant="ghost" onClick={onClose}>
           {t("Annulla")}
         </Button>

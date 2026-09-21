@@ -7,6 +7,7 @@ import {
   focused,
   inserted,
   openDemo,
+  ribbonButton,
   selectText,
   withEditor,
 } from "./editor"
@@ -178,7 +179,7 @@ test("Annulla toglie la revisione", async ({ page }) => {
 test("accetta tutto e rifiuta tutto dalla barra", async ({ page }) => {
   await selectText(page, 1, "esempio")
   await page.keyboard.type("prova")
-  await page.getByRole("button", { name: "Altre opzioni: accetta" }).click()
+  await (await ribbonButton(page, "Altre opzioni: accetta")).click()
   await page
     .getByRole("menuitem", { name: "Accetta tutte le modifiche", exact: true })
     .click()
@@ -190,7 +191,7 @@ test("accetta tutto e rifiuta tutto dalla barra", async ({ page }) => {
 
   await selectText(page, 1, "prova")
   await page.keyboard.type("test")
-  await page.getByRole("button", { name: "Altre opzioni: rifiuta" }).click()
+  await (await ribbonButton(page, "Altre opzioni: rifiuta")).click()
   await page
     .getByRole("menuitem", { name: "Rifiuta tutte le modifiche", exact: true })
     .click()
@@ -203,7 +204,7 @@ test("accetta tutto e rifiuta tutto dalla barra", async ({ page }) => {
 test("senza rilevamento Backspace e Canc cancellano normalmente", async ({
   page,
 }) => {
-  await page.getByRole("button", { name: "Revisioni", exact: true }).click()
+  await (await ribbonButton(page, "Revisioni")).click()
   await caretAfter(page, 1, "Un documento")
   await page.keyboard.press("Backspace")
   await page.keyboard.press("Delete")

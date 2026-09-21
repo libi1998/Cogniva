@@ -340,8 +340,8 @@ function ChartDataDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90dvh] overflow-hidden p-0 sm:max-w-4xl">
-        <DialogHeader className="border-b border-border px-5 pt-4 pb-3">
+      <DialogContent className="sm:max-w-4xl">
+        <DialogHeader>
           <DialogTitle>{t("Dati del grafico")}</DialogTitle>
           <DialogDescription>
             {t(
@@ -349,7 +349,7 @@ function ChartDataDialog({
             )}
           </DialogDescription>
         </DialogHeader>
-        <div className="grid min-h-0 gap-0 md:grid-cols-[1fr_320px]">
+        <div className="grid min-h-0 flex-1 gap-0 md:grid-cols-[1fr_320px]">
           <div
             className="max-h-[62dvh] overflow-auto p-4"
             onPaste={(e) => {

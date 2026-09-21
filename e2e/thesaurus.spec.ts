@@ -1,5 +1,12 @@
 import { expect, test } from "@playwright/test"
-import { caretAfter, openDemo, openTab, selectText, withEditor } from "./editor"
+import {
+  caretAfter,
+  openDemo,
+  openTab,
+  ribbonButton,
+  selectText,
+  withEditor,
+} from "./editor"
 
 /**
  * Thesaurus: il dizionario dei sinonimi di LibreOffice si scarica alla prima
@@ -17,7 +24,7 @@ test("cerca i sinonimi della parola selezionata e ne inserisce uno", async ({
   await openDemo(page)
   await selectText(page, 1, "documento")
   await openTab(page, "Revisione")
-  await page.getByRole("button", { name: "Thesaurus", exact: true }).click()
+  await (await ribbonButton(page, "Thesaurus")).click()
 
   const pane = page.getByLabel("Thesaurus", { exact: true })
   await expect(pane.getByLabel("Cerca sinonimi")).toHaveValue("documento")

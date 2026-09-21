@@ -7,6 +7,7 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -66,11 +67,8 @@ function Shell({
 }) {
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent
-        className="gap-0 p-0"
-        style={{ maxWidth: `min(${width}px, calc(100% - 2rem))` }}
-      >
-        <DialogHeader className="border-b border-border px-5 py-4">
+      <DialogContent style={{ maxWidth: `min(${width}px, calc(100% - 2rem))` }}>
+        <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description ? (
             <DialogDescription>{description}</DialogDescription>
@@ -91,7 +89,7 @@ function Footer({
 }) {
   const t = useT()
   return (
-    <DialogFooter className="border-t border-border px-5 py-3">
+    <DialogFooter>
       <Button type="button" variant="ghost" onClick={onClose}>
         {t("Annulla")}
       </Button>
@@ -158,6 +156,7 @@ function BookmarkForm({
 
   return (
     <form
+      className="contents"
       onSubmit={(e) => {
         e.preventDefault()
         if (!valid) return
@@ -171,7 +170,7 @@ function BookmarkForm({
         onClose()
       }}
     >
-      <div className="space-y-3 px-5 py-4">
+      <DialogBody className="space-y-3">
         <label className="block space-y-1">
           <span className="text-xs text-muted-foreground">
             {t("Nome segnalibro")}
@@ -257,7 +256,7 @@ function BookmarkForm({
             </p>
           )}
         </div>
-      </div>
+      </DialogBody>
       <Footer onClose={onClose}>
         <Button type="submit" disabled={!valid}>
           {t("Aggiungi")}
@@ -391,8 +390,14 @@ function CrossRefForm({
   }
 
   return (
-    <div>
-      <div className="grid gap-3 px-5 py-4 sm:grid-cols-2">
+    <form
+      className="contents"
+      onSubmit={(e) => {
+        e.preventDefault()
+        insert(current)
+      }}
+    >
+      <DialogBody className="grid gap-3 sm:grid-cols-2">
         <label className="block space-y-1">
           <span className="text-xs text-muted-foreground">
             {t("Tipo di riferimento")}
@@ -474,17 +479,13 @@ function CrossRefForm({
             )}
           </div>
         </div>
-      </div>
+      </DialogBody>
       <Footer onClose={onClose}>
-        <Button
-          type="button"
-          disabled={!current}
-          onClick={() => insert(current)}
-        >
+        <Button type="submit" disabled={!current}>
           {t("Inserisci")}
         </Button>
       </Footer>
-    </div>
+    </form>
   )
 }
 
@@ -527,8 +528,14 @@ function DateTimeForm({
     onClose()
   }
   return (
-    <div>
-      <div className="space-y-3 px-5 py-4">
+    <form
+      className="contents"
+      onSubmit={(e) => {
+        e.preventDefault()
+        insert()
+      }}
+    >
+      <DialogBody className="space-y-3">
         <div className="max-h-64 overflow-y-auto rounded-md border border-border">
           {DATE_FORMATS.map((f) => (
             <button
@@ -553,13 +560,11 @@ function DateTimeForm({
           />
           {t("Aggiorna automaticamente")}
         </label>
-      </div>
+      </DialogBody>
       <Footer onClose={onClose}>
-        <Button type="button" onClick={insert}>
-          {t("Inserisci")}
-        </Button>
+        <Button type="submit">{t("Inserisci")}</Button>
       </Footer>
-    </div>
+    </form>
   )
 }
 
@@ -608,9 +613,23 @@ function FieldForm({
   const [kind, setKind] = React.useState<FieldKind>("page")
   const [format, setFormat] = React.useState("")
   const dates = DATE_FORMATS.filter((f) => f.kind === kind)
+  const insert = () => {
+    editor
+      .chain()
+      .focus()
+      .insertField({ kind, format: format || dates[0]?.id || "" })
+      .run()
+    onClose()
+  }
   return (
-    <div>
-      <div className="grid gap-3 px-5 py-4 sm:grid-cols-[180px_1fr]">
+    <form
+      className="contents"
+      onSubmit={(e) => {
+        e.preventDefault()
+        insert()
+      }}
+    >
+      <DialogBody className="grid gap-3 sm:grid-cols-[180px_1fr]">
         <div className="rounded-md border border-border">
           {SIMPLE_FIELDS.map((k) => (
             <button
@@ -666,23 +685,11 @@ function FieldForm({
                         )}
           </p>
         </div>
-      </div>
+      </DialogBody>
       <Footer onClose={onClose}>
-        <Button
-          type="button"
-          onClick={() => {
-            editor
-              .chain()
-              .focus()
-              .insertField({ kind, format: format || dates[0]?.id || "" })
-              .run()
-            onClose()
-          }}
-        >
-          {t("Inserisci")}
-        </Button>
+        <Button type="submit">{t("Inserisci")}</Button>
       </Footer>
-    </div>
+    </form>
   )
 }
 
@@ -722,13 +729,14 @@ function SignatureForm({
   })
   return (
     <form
+      className="contents"
       onSubmit={(e) => {
         e.preventDefault()
         editor.chain().focus().insertContent(signatureContent(info)).run()
         onClose()
       }}
     >
-      <div className="space-y-2.5 px-5 py-4">
+      <DialogBody className="space-y-2.5">
         {(
           [
             ["name", t("Firmatario suggerito"), t("Nome e cognome")],
@@ -762,7 +770,7 @@ function SignatureForm({
           />
           {t("Aggiungi la riga per luogo e data")}
         </label>
-      </div>
+      </DialogBody>
       <Footer onClose={onClose}>
         <Button type="submit">{t("Inserisci")}</Button>
       </Footer>
@@ -920,8 +928,14 @@ function SymbolForm({
   )
 
   return (
-    <div>
-      <div className="space-y-3 px-5 py-4">
+    <form
+      className="contents"
+      onSubmit={(e) => {
+        e.preventDefault()
+        insert(current)
+      }}
+    >
+      <DialogBody className="space-y-3">
         <div className="flex flex-wrap gap-1">
           {SYMBOL_GROUPS.map((g) => (
             <button
@@ -978,17 +992,13 @@ function SymbolForm({
             />
           </label>
         </div>
-      </div>
+      </DialogBody>
       <Footer onClose={onClose}>
-        <Button
-          type="button"
-          disabled={!current}
-          onClick={() => insert(current)}
-        >
+        <Button type="submit" disabled={!current}>
           {t("Inserisci")}
         </Button>
       </Footer>
-    </div>
+    </form>
   )
 }
 
@@ -1052,8 +1062,16 @@ function IconsForm({
     ]),
   ]
   return (
-    <div>
-      <div className="space-y-3 px-5 py-4">
+    <form
+      className="contents"
+      onSubmit={(e) => {
+        e.preventDefault()
+        if (!picked.length) return
+        onInsert(picked, color)
+        onClose()
+      }}
+    >
+      <DialogBody className="space-y-3">
         <div className="flex items-center gap-2 rounded-md border border-input px-2.5">
           <Search className="size-3.5 text-muted-foreground" />
           <input
@@ -1132,21 +1150,14 @@ function IconsForm({
             <CustomColor value={color} onChange={setColor} />
           </div>
         </div>
-      </div>
+      </DialogBody>
       <Footer onClose={onClose}>
-        <Button
-          type="button"
-          disabled={!picked.length}
-          onClick={() => {
-            onInsert(picked, color)
-            onClose()
-          }}
-        >
+        <Button type="submit" disabled={!picked.length}>
           {t("Inserisci")}
           {picked.length ? ` (${picked.length})` : ""}
         </Button>
       </Footer>
-    </div>
+    </form>
   )
 }
 
@@ -1249,8 +1260,15 @@ function SmartArtForm({
   const shown = SMARTART_TEMPLATES.filter((t) => !group || t.group === group)
   const current = SMARTART_TEMPLATES.find((t) => t.id === picked)
   return (
-    <div>
-      <div className="grid gap-3 px-5 py-4 sm:grid-cols-[130px_1fr]">
+    <form
+      className="contents"
+      onSubmit={(e) => {
+        e.preventDefault()
+        onPick(picked)
+        onClose()
+      }}
+    >
+      <DialogBody className="grid gap-3 sm:grid-cols-[130px_1fr]">
         <div className="flex gap-1 overflow-x-auto sm:flex-col">
           {[null, ...groups].map((g) => (
             <button
@@ -1298,19 +1316,11 @@ function SmartArtForm({
             </p>
           ) : null}
         </div>
-      </div>
+      </DialogBody>
       <Footer onClose={onClose}>
-        <Button
-          type="button"
-          onClick={() => {
-            onPick(picked)
-            onClose()
-          }}
-        >
-          OK
-        </Button>
+        <Button type="submit">OK</Button>
       </Footer>
-    </div>
+    </form>
   )
 }
 
@@ -1354,8 +1364,19 @@ function DropCapForm({
     theme.headingFont ?? theme.font
   )
   return (
-    <div>
-      <div className="space-y-3 px-5 py-4">
+    <form
+      className="contents"
+      onSubmit={(e) => {
+        e.preventDefault()
+        editor
+          .chain()
+          .focus()
+          .setDropCap(mode, lines, mode ? fontStack(font) : null)
+          .run()
+        onClose()
+      }}
+    >
+      <DialogBody className="space-y-3">
         <div className="grid grid-cols-3 gap-2">
           {(
             [
@@ -1418,23 +1439,11 @@ function DropCapForm({
             className="h-8 w-20 rounded-md border border-input bg-transparent px-2 text-right tabular-nums"
           />
         </label>
-      </div>
+      </DialogBody>
       <Footer onClose={onClose}>
-        <Button
-          type="button"
-          onClick={() => {
-            editor
-              .chain()
-              .focus()
-              .setDropCap(mode, lines, mode ? fontStack(font) : null)
-              .run()
-            onClose()
-          }}
-        >
-          OK
-        </Button>
+        <Button type="submit">OK</Button>
       </Footer>
-    </div>
+    </form>
   )
 }
 
@@ -1514,6 +1523,7 @@ function HeaderFooterForm({
 
   return (
     <form
+      className="contents"
       onSubmit={(e) => {
         e.preventDefault()
         setTheme({
@@ -1526,7 +1536,7 @@ function HeaderFooterForm({
         onClose()
       }}
     >
-      <div className="space-y-3 px-5 py-4">
+      <DialogBody className="space-y-3">
         <div className="flex gap-1 rounded-lg bg-muted p-0.5">
           {(["header", "footer"] as const).map((value) => (
             <button
@@ -1648,7 +1658,7 @@ function HeaderFooterForm({
             />
           </label>
         </div>
-      </div>
+      </DialogBody>
       <Footer onClose={onClose}>
         <Button
           type="button"

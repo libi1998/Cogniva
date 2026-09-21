@@ -17,6 +17,7 @@ import { CustomColor } from "@/components/shared/custom-color"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -237,7 +238,7 @@ export function StyleDialog({
 }) {
   return (
     <Dialog open={request !== null} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="gap-0 p-0 sm:max-w-[640px]">
+      <DialogContent className="sm:max-w-[640px]">
         {request ? (
           <StyleForm
             key={
@@ -355,9 +356,9 @@ function StyleForm({
         e.preventDefault()
         save()
       }}
-      className="flex max-h-[inherit] min-h-0 flex-col"
+      className="contents"
     >
-      <DialogHeader className="border-b border-border px-5 py-4">
+      <DialogHeader>
         <DialogTitle>
           {request.mode === "new" ? t("Crea stile") : t("Modifica stile")}
         </DialogTitle>
@@ -366,7 +367,7 @@ function StyleForm({
         </DialogDescription>
       </DialogHeader>
 
-      <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-4">
+      <DialogBody className="space-y-5">
         <section className="space-y-2.5">
           <h4 className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
             {t("Proprietà")}
@@ -652,9 +653,9 @@ function StyleForm({
             {describe(preview, p, style.basedOn)}
           </p>
         </section>
-      </div>
+      </DialogBody>
 
-      <DialogFooter className="mx-0 mb-0 flex-row flex-wrap items-center gap-2 rounded-b-xl px-5 py-3 sm:justify-between">
+      <DialogFooter className="flex-row flex-wrap items-center gap-2 sm:justify-between">
         <div className="flex flex-wrap gap-2">
           {canReset ? (
             <Button

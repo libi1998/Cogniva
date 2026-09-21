@@ -1,5 +1,11 @@
 import { expect, test } from "@playwright/test"
-import { openDemo, openTab, selectText, withEditor } from "./editor"
+import {
+  openDemo,
+  openTab,
+  ribbonButton,
+  selectText,
+  withEditor,
+} from "./editor"
 
 /**
  * Traduzione con il modello OPUS-MT sul dispositivo: deve funzionare in ogni
@@ -19,7 +25,7 @@ test("traduce la selezione con il modello sul dispositivo e la sostituisce", asy
   await openDemo(page)
   await selectText(page, 1, "Un documento di esempio")
   await openTab(page, "Revisione")
-  await page.getByRole("button", { name: "Traduci", exact: true }).click()
+  await (await ribbonButton(page, "Traduci")).click()
   await page.getByRole("menuitem", { name: "Traduci selezione" }).click()
 
   const dialog = page.getByRole("dialog")
@@ -53,7 +59,7 @@ test("traduce il documento in un nuovo documento con la stessa struttura", async
   })
   await openDemo(page)
   await openTab(page, "Revisione")
-  await page.getByRole("button", { name: "Traduci", exact: true }).click()
+  await (await ribbonButton(page, "Traduci")).click()
   await page.getByRole("menuitem", { name: "Traduci documento" }).click()
   const dialog = page.getByRole("dialog")
   await dialog.getByRole("radio", { name: "Modello Cogniva" }).click()

@@ -34,6 +34,7 @@ import { ThemeToggle } from "@/components/shared/theme-toggle"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -526,15 +527,17 @@ export function HomeScreen() {
               setRenaming(null)
             }}
           >
-            <Input
-              autoFocus
-              aria-label={t("Nuovo nome")}
-              value={renaming?.value ?? ""}
-              enterKeyHint="done"
-              onChange={(e) =>
-                setRenaming((r) => (r ? { ...r, value: e.target.value } : r))
-              }
-            />
+            <DialogBody>
+              <Input
+                autoFocus
+                aria-label={t("Nuovo nome")}
+                value={renaming?.value ?? ""}
+                enterKeyHint="done"
+                onChange={(e) =>
+                  setRenaming((r) => (r ? { ...r, value: e.target.value } : r))
+                }
+              />
+            </DialogBody>
             <DialogFooter>
               <Button
                 type="button"

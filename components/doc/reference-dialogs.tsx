@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -68,8 +69,8 @@ export function CaptionDialog({
   const t = useT()
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent className="gap-0 p-0 sm:max-w-[440px]">
-        <DialogHeader className="border-b border-border px-5 py-4">
+      <DialogContent className="sm:max-w-[440px]">
+        <DialogHeader>
           <DialogTitle>{t("Didascalia")}</DialogTitle>
           <DialogDescription>
             {t(
@@ -116,6 +117,7 @@ function CaptionForm({
 
   return (
     <form
+      className="contents"
       onSubmit={(e) => {
         e.preventDefault()
         const content = captionContent(options, captionId())
@@ -124,7 +126,7 @@ function CaptionForm({
         onClose()
       }}
     >
-      <div className="space-y-3 px-5 py-4">
+      <DialogBody className="space-y-3">
         <div className="rounded-md border border-border bg-muted/40 px-3 py-2 text-sm">
           {options.excludeLabel ? "" : `${options.label} `}
           <b>1</b>
@@ -235,8 +237,8 @@ function CaptionForm({
             </Button>
           </div>
         )}
-      </div>
-      <DialogFooter className="border-t border-border px-5 py-3">
+      </DialogBody>
+      <DialogFooter>
         <Button type="button" variant="ghost" onClick={onClose}>
           {t("Annulla")}
         </Button>
@@ -262,8 +264,8 @@ export function MarkEntryDialog({
   const t = useT()
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent className="gap-0 p-0 sm:max-w-[440px]">
-        <DialogHeader className="border-b border-border px-5 py-4">
+      <DialogContent className="sm:max-w-[440px]">
+        <DialogHeader>
           <DialogTitle>
             {kind === "authority"
               ? t("Segna citazione")
@@ -327,8 +329,14 @@ function MarkEntryForm({
   }
 
   return (
-    <div>
-      <div className="space-y-3 px-5 py-4">
+    <form
+      className="contents"
+      onSubmit={(e) => {
+        e.preventDefault()
+        mark(false)
+      }}
+    >
+      <DialogBody className="space-y-3">
         <label className="block space-y-1">
           <span className="text-xs text-muted-foreground">
             {kind === "authority" ? t("Citazione breve") : t("Voce principale")}
@@ -377,8 +385,8 @@ function MarkEntryForm({
             )}
           </p>
         ) : null}
-      </div>
-      <DialogFooter className="border-t border-border px-5 py-3">
+      </DialogBody>
+      <DialogFooter>
         <Button type="button" variant="ghost" onClick={onClose}>
           {t("Chiudi")}
         </Button>
@@ -390,14 +398,10 @@ function MarkEntryForm({
         >
           {t("Segna tutto")}
         </Button>
-        <Button
-          type="button"
-          disabled={!selected || !entry.trim()}
-          onClick={() => mark(false)}
-        >
+        <Button type="submit" disabled={!selected || !entry.trim()}>
           {t("Segna")}
         </Button>
       </DialogFooter>
-    </div>
+    </form>
   )
 }

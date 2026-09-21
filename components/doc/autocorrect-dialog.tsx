@@ -5,6 +5,7 @@ import { Plus, RotateCcw, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -41,7 +42,7 @@ export function AutoCorrectDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent className="gap-0 p-0 sm:max-w-[560px]">
+      <DialogContent className="sm:max-w-[560px]">
         {open ? <Form language={language} onClose={onClose} /> : null}
       </DialogContent>
     </Dialog>
@@ -135,7 +136,7 @@ function Form({
 
   return (
     <>
-      <DialogHeader className="border-b border-border px-5 py-4">
+      <DialogHeader>
         <DialogTitle>{t("Correzione automatica")}</DialogTitle>
         <DialogDescription>
           {t(
@@ -144,7 +145,7 @@ function Form({
         </DialogDescription>
       </DialogHeader>
 
-      <div className="max-h-[60vh] overflow-y-auto px-5 py-4 text-sm">
+      <DialogBody className="text-sm">
         <label className="flex items-center justify-between gap-4 rounded-lg border border-border px-3 py-2.5">
           <span>
             <span className="font-medium">{t("Correggi mentre scrivo")}</span>
@@ -270,9 +271,9 @@ function Form({
             )}
           </ul>
         </div>
-      </div>
+      </DialogBody>
 
-      <DialogFooter className="justify-between border-t border-border px-5 py-3 sm:justify-between">
+      <DialogFooter className="justify-between sm:justify-between">
         <Button
           type="button"
           variant="ghost"

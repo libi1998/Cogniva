@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -27,7 +28,7 @@ export function SortDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent className="gap-0 p-0 sm:max-w-[420px]">
+      <DialogContent className="sm:max-w-[420px]">
         {open ? <SortForm editor={editor} onClose={onClose} /> : null}
       </DialogContent>
     </Dialog>
@@ -90,6 +91,7 @@ function SortForm({
 
   return (
     <form
+      className="contents"
       onSubmit={(e) => {
         e.preventDefault()
         const done = editor.chain().focus().sortBlocks(options).run()
@@ -97,11 +99,11 @@ function SortForm({
         onClose()
       }}
     >
-      <DialogHeader className="border-b border-border px-5 py-4">
+      <DialogHeader>
         <DialogTitle>{t("Ordina testo")}</DialogTitle>
         <DialogDescription>{what}</DialogDescription>
       </DialogHeader>
-      <div className="space-y-3 px-5 py-4 text-sm">
+      <DialogBody className="space-y-3 text-sm">
         {target.kind === "table" ? (
           <label className="flex items-center justify-between gap-3">
             <span className="text-muted-foreground">{t("Ordina per")}</span>
@@ -161,8 +163,8 @@ function SortForm({
             {t("La prima riga è l'intestazione")}
           </label>
         ) : null}
-      </div>
-      <DialogFooter className="border-t border-border px-5 py-3">
+      </DialogBody>
+      <DialogFooter>
         <Button type="button" variant="ghost" onClick={onClose}>
           {t("Annulla")}
         </Button>

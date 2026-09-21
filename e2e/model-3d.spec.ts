@@ -3,7 +3,13 @@ import { execFileSync } from "node:child_process"
 import { mkdtempSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-import { caretAfter, openDemo, openTab, withEditor } from "./editor"
+import {
+  caretAfter,
+  openDemo,
+  openTab,
+  ribbonButton,
+  withEditor,
+} from "./editor"
 
 /**
  * Modelli 3D: forme pronte e file glTF, rotazione col trascinamento,
@@ -75,7 +81,7 @@ test("inserisce una forma 3D, la ruota e usa le visualizzazioni", async ({
   await openDemo(page)
   await caretAfter(page, 1, "clic destro.")
   await openTab(page, "Inserisci")
-  await page.getByRole("button", { name: "Modelli 3D" }).click()
+  await (await ribbonButton(page, "Modelli 3D")).click()
   await page.getByRole("button", { name: "Cubo", exact: true }).click()
 
   const frame = page.locator("#doc-sheet .doc-model3d-frame")

@@ -24,6 +24,9 @@ import {
   SquarePen,
   TextSelect,
   X,
+  LayoutTemplate,
+  Eye,
+  ZoomIn,
 } from "lucide-react"
 import { useShallow } from "zustand/react/shallow"
 import {
@@ -122,7 +125,11 @@ export function ViewTab({ ctx }: { ctx: RibbonCtx }) {
 
   return (
     <>
-      <RibbonGroup label={t("Visualizzazioni")} safe>
+      <RibbonGroup
+        label={t("Visualizzazioni")}
+        icon={<LayoutTemplate className="size-5" />}
+        safe
+      >
         <RibbonButton
           large
           label={t("Modalità lettura")}
@@ -145,7 +152,11 @@ export function ViewTab({ ctx }: { ctx: RibbonCtx }) {
         ))}
       </RibbonGroup>
 
-      <RibbonGroup label={t("Immersive")} safe>
+      <RibbonGroup
+        label={t("Immersive")}
+        icon={<BookOpen className="size-5" />}
+        safe
+      >
         <RibbonButton
           large
           label={t("Modalità focus")}
@@ -165,7 +176,10 @@ export function ViewTab({ ctx }: { ctx: RibbonCtx }) {
       </RibbonGroup>
 
       {view === "outline" ? (
-        <RibbonGroup label={t("Struttura")}>
+        <RibbonGroup
+          label={t("Struttura")}
+          icon={<ListTree className="size-5" />}
+        >
           <RibbonRows>
             <div className="flex items-center gap-0.5">
               <RibbonButton
@@ -245,7 +259,7 @@ export function ViewTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonGroup>
       ) : null}
 
-      <RibbonGroup label={t("Mostra")} safe>
+      <RibbonGroup label={t("Mostra")} icon={<Eye className="size-5" />} safe>
         <RibbonButton
           large
           label={t("Righello")}
@@ -280,7 +294,7 @@ export function ViewTab({ ctx }: { ctx: RibbonCtx }) {
         />
       </RibbonGroup>
 
-      <RibbonGroup label={t("Zoom")} safe>
+      <RibbonGroup label={t("Zoom")} icon={<ZoomIn className="size-5" />} safe>
         <RibbonMenu
           className="w-40"
           trigger={
@@ -344,7 +358,11 @@ export function ViewTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Finestra")} safe>
+      <RibbonGroup
+        label={t("Finestra")}
+        icon={<AppWindow className="size-5" />}
+        safe
+      >
         <RibbonButton
           large
           label={t("Nuova finestra")}

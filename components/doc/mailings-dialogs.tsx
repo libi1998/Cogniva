@@ -7,6 +7,7 @@ import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -52,11 +53,8 @@ function Shell({
 }) {
   return (
     <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
-      <DialogContent
-        className="gap-0 p-0"
-        style={{ maxWidth: `min(${width}px, calc(100% - 2rem))` }}
-      >
-        <DialogHeader className="border-b border-border px-5 py-4">
+      <DialogContent style={{ maxWidth: `min(${width}px, calc(100% - 2rem))` }}>
+        <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description ? (
             <DialogDescription>{description}</DialogDescription>
@@ -77,7 +75,7 @@ function Footer({
 }) {
   const t = useT()
   return (
-    <DialogFooter className="border-t border-border px-5 py-3">
+    <DialogFooter>
       <Button type="button" variant="ghost" onClick={onClose}>
         {t("Annulla")}
       </Button>
@@ -173,8 +171,8 @@ function RecipientsForm({
     })
 
   return (
-    <div>
-      <div className="space-y-3 px-5 py-4">
+    <>
+      <DialogBody className="space-y-3">
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex h-8 min-w-48 flex-1 items-center gap-2 rounded-md border border-input px-2">
             <Search className="size-3.5 text-muted-foreground" />
@@ -369,7 +367,7 @@ function RecipientsForm({
             })}
           </span>
         </form>
-      </div>
+      </DialogBody>
       <Footer onClose={onClose}>
         <Button
           type="button"
@@ -393,7 +391,7 @@ function RecipientsForm({
           OK
         </Button>
       </Footer>
-    </div>
+    </>
   )
 }
 
@@ -450,8 +448,8 @@ function AddressBlockForm({
   )
 
   return (
-    <div>
-      <div className="space-y-3 px-5 py-4 text-sm">
+    <>
+      <DialogBody className="space-y-3 text-sm">
         <label className="flex items-center gap-2">
           <input
             type="checkbox"
@@ -488,7 +486,7 @@ function AddressBlockForm({
             {t("Prima scegli i destinatari: i campi vengono dall'elenco.")}
           </p>
         ) : null}
-      </div>
+      </DialogBody>
       <Footer onClose={onClose}>
         <Button
           type="button"
@@ -518,7 +516,7 @@ function AddressBlockForm({
           {t("Inserisci")}
         </Button>
       </Footer>
-    </div>
+    </>
   )
 }
 
@@ -589,8 +587,8 @@ function GreetingForm({
     findField(fields, key)
   ).filter((f): f is string => Boolean(f))
   return (
-    <div>
-      <div className="grid gap-3 px-5 py-4 text-sm sm:grid-cols-3">
+    <>
+      <DialogBody className="grid gap-3 text-sm sm:grid-cols-3">
         <label className="block space-y-1">
           <span className="text-xs text-muted-foreground">{t("Saluto")}</span>
           <select
@@ -647,7 +645,7 @@ function GreetingForm({
           {salutation} {parts.map((f) => sample[f] ?? `«${f}»`).join(" ")}
           {punctuation}
         </p>
-      </div>
+      </DialogBody>
       <Footer onClose={onClose}>
         <Button
           type="button"
@@ -682,7 +680,7 @@ function GreetingForm({
           {t("Inserisci")}
         </Button>
       </Footer>
-    </div>
+    </>
   )
 }
 
@@ -756,8 +754,8 @@ function RuleForm({
   const [otherwise, setOtherwise] = React.useState("")
   const needsValue = rule.op !== "empty" && rule.op !== "filled"
   return (
-    <div>
-      <div className="grid gap-3 px-5 py-4 text-sm sm:grid-cols-3">
+    <>
+      <DialogBody className="grid gap-3 text-sm sm:grid-cols-3">
         <label className="block space-y-1">
           <span className="text-xs text-muted-foreground">
             {t("Nome campo")}
@@ -867,7 +865,7 @@ function RuleForm({
             {t("Prima scegli i destinatari.")}
           </p>
         ) : null}
-      </div>
+      </DialogBody>
       <Footer onClose={onClose}>
         <Button
           type="button"
@@ -900,7 +898,7 @@ function RuleForm({
           OK
         </Button>
       </Footer>
-    </div>
+    </>
   )
 }
 
@@ -957,8 +955,16 @@ function EnvelopeForm({
     sender: author,
   })
   return (
-    <div>
-      <div className="grid gap-3 px-5 py-4 text-sm sm:grid-cols-2">
+    <form
+      className="contents"
+      onSubmit={(e) => {
+        e.preventDefault()
+        if (!request.recipient.trim()) return
+        onCreate(request)
+        onClose()
+      }}
+    >
+      <DialogBody className="grid gap-3 text-sm sm:grid-cols-2">
         <label className="block space-y-1 sm:col-span-2">
           <span className="text-xs text-muted-foreground">
             {t("Indirizzo destinatario")}
@@ -1001,20 +1007,13 @@ function EnvelopeForm({
             </label>
           ))}
         </div>
-      </div>
+      </DialogBody>
       <Footer onClose={onClose}>
-        <Button
-          type="button"
-          disabled={!request.recipient.trim()}
-          onClick={() => {
-            onCreate(request)
-            onClose()
-          }}
-        >
+        <Button type="submit" disabled={!request.recipient.trim()}>
           {t("Crea busta")}
         </Button>
       </Footer>
-    </div>
+    </form>
   )
 }
 
@@ -1068,9 +1067,20 @@ function LabelsForm({
     fromRecipients: recipients > 0,
   })
   const p = request.product
+  const valid = request.fromRecipients
+    ? recipients > 0
+    : Boolean(request.text.trim())
   return (
-    <div>
-      <div className="grid gap-3 px-5 py-4 text-sm sm:grid-cols-2">
+    <form
+      className="contents"
+      onSubmit={(e) => {
+        e.preventDefault()
+        if (!valid) return
+        onCreate(request)
+        onClose()
+      }}
+    >
+      <DialogBody className="grid gap-3 text-sm sm:grid-cols-2">
         <div className="space-y-2 sm:col-span-2">
           <label className="flex items-center gap-2">
             <input
@@ -1140,20 +1150,13 @@ function LabelsForm({
             {String(p.h).replace(".", ",")} mm
           </p>
         </div>
-      </div>
+      </DialogBody>
       <Footer onClose={onClose}>
-        <Button
-          type="button"
-          disabled={request.fromRecipients ? !recipients : !request.text.trim()}
-          onClick={() => {
-            onCreate(request)
-            onClose()
-          }}
-        >
+        <Button type="submit" disabled={!valid}>
           {t("Nuovo documento")}
         </Button>
       </Footer>
-    </div>
+    </form>
   )
 }
 
@@ -1204,8 +1207,8 @@ function EmailForm({
   const [subject, setSubject] = React.useState("")
   const rows = merge ? mergedRows(merge) : []
   return (
-    <div>
-      <div className="space-y-3 px-5 py-4 text-sm">
+    <>
+      <DialogBody className="space-y-3 text-sm">
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block space-y-1">
             <span className="text-xs text-muted-foreground">{t("A")}</span>
@@ -1269,12 +1272,12 @@ function EmailForm({
             </p>
           )}
         </div>
-      </div>
-      <DialogFooter className="border-t border-border px-5 py-3">
+      </DialogBody>
+      <DialogFooter>
         <Button type="button" onClick={onClose}>
           {t("Chiudi")}
         </Button>
       </DialogFooter>
-    </div>
+    </>
   )
 }
