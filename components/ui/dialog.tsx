@@ -41,6 +41,26 @@ function DialogOverlay({
 }
 
 /**
+ * Dove torna il fuoco quando una finestra si chiude. Senza questo torna da
+ * dov'era partito: ma i comandi di una barra non prendono il fuoco apposta,
+ * per non perdere la selezione, e «da dov'era» è il corpo della pagina. Chi
+ * ha un posto giusto — il testo di un documento — lo dice da qui, una volta
+ * per tutte le sue finestre.
+ */
+const FinalFocus =
+  React.createContext<React.RefObject<HTMLElement | null> | null>(null)
+
+function DialogFinalFocus({
+  target,
+  children,
+}: {
+  target: React.RefObject<HTMLElement | null>
+  children: React.ReactNode
+}) {
+  return <FinalFocus.Provider value={target}>{children}</FinalFocus.Provider>
+}
+
+/**
  * Finestra come quelle di Word: intestazione e pulsanti sempre a vista, e in
  * mezzo l'unica parte che può scorrere. La finestra non scorre mai per conto
  * suo — niente barra intorno agli angoli arrotondati — e non ha spaziatura
@@ -51,16 +71,19 @@ function DialogContent({
   className,
   children,
   showCloseButton = true,
+  finalFocus,
   ...props
 }: DialogPrimitive.Popup.Props & {
   showCloseButton?: boolean
 }) {
   const t = useT()
+  const fallback = React.useContext(FinalFocus)
   return (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Popup
         data-slot="dialog-content"
+        finalFocus={finalFocus ?? fallback ?? undefined}
         className={cn(
           "fixed top-1/2 left-1/2 z-50 flex max-h-[calc(100dvh-3rem)] w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-xl bg-popover text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
           className
@@ -178,6 +201,7 @@ function DialogDescription({
 export {
   Dialog,
   DialogBody,
+  DialogFinalFocus,
   DialogClose,
   DialogContent,
   DialogDescription,
