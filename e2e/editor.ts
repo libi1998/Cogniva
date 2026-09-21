@@ -134,7 +134,12 @@ export async function ribbonButton(
 
 export async function enableTracking(page: Page) {
   await openTab(page, "Revisione")
-  const button = await ribbonButton(page, "Revisioni")
-  await button.click()
-  await expect(button).toHaveAttribute("aria-pressed", "true")
+  await (await ribbonButton(page, "Revisioni")).click()
+  // dato il comando, un gruppo ridotto si richiude: per leggerne lo stato lo
+  // si ricerca, e poi si lascia la barra com'era
+  await expect(await ribbonButton(page, "Revisioni")).toHaveAttribute(
+    "aria-pressed",
+    "true"
+  )
+  await page.keyboard.press("Escape")
 }

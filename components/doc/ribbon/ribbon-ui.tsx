@@ -146,6 +146,9 @@ function CollapsedGroup({
         <PopoverContent
           align="start"
           sideOffset={2}
+          // il riquadro vive in un portale, fuori dal gruppo: senza questo
+          // i comandi «sicuri» perderebbero il loro contrassegno
+          data-safe={safe ? "" : undefined}
           className="w-auto max-w-[min(96vw,900px)] overflow-x-auto p-1.5"
           finalFocus={false}
         >

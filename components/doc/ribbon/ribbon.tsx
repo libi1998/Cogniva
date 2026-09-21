@@ -169,11 +169,14 @@ function RibbonBody({
   children: React.ReactNode
 }) {
   const ref = React.useRef<HTMLDivElement>(null)
-  // la larghezza naturale di ogni gruppo, misurata quando è aperto
+  // la larghezza di ogni gruppo, aperto e ridotto, presa dal vero: le
+  // etichette lunghe fanno un pulsante più largo, e la somma deve tornare
   const widths = React.useRef(new Map<string, number>())
+  const small = React.useRef(new Map<string, number>())
   const [collapsed, setCollapsed] = React.useState<ReadonlySet<string>>(
     () => new Set()
   )
+  const measureRef = React.useRef<() => void>(undefined)
 
   React.useLayoutEffect(() => {
     const el = ref.current
@@ -188,11 +191,10 @@ function RibbonBody({
       for (const group of groups) {
         const name = group.dataset.groupLabel ?? ""
         labels.push(name)
-        // un gruppo aperto dice quanto spazio gli serve; uno ridotto usa
-        // la misura presa l'ultima volta che era aperto
-        if (group.dataset.collapsed === undefined && group.offsetWidth > 0) {
-          widths.current.set(name, group.offsetWidth)
-        }
+        if (group.offsetWidth <= 0) continue
+        const store =
+          group.dataset.collapsed === undefined ? widths.current : small.current
+        store.set(name, group.offsetWidth)
       }
       // due pixel di margine: gli arrotondamenti del browser non devono
       // far comparire la barra di scorrimento
@@ -200,25 +202,28 @@ function RibbonBody({
       const natural = labels.map(
         (name) => widths.current.get(name) ?? COLLAPSED_WIDTH
       )
-      let total = natural.reduce((sum, w) => sum + w, 0)
-      const shut = new Set<number>()
-      // si chiudono gli ultimi gruppi, come in Word. Prima quelli che ci
-      // guadagnano davvero: un gruppo di uno o due pulsanti diventerebbe un
-      // pulsante che apre quasi lo stesso pulsante, e costa un clic in più
-      const rounds = [COLLAPSED_WIDTH + 80, 0]
-      for (const minimum of rounds) {
-        for (let i = labels.length - 1; i >= 0 && total > available; i -= 1) {
-          if (shut.has(i) || natural[i] < minimum) continue
-          shut.add(i)
-          total -= natural[i] - COLLAPSED_WIDTH
-        }
-      }
-      // chiudere l'ultimo gruppo può aver liberato più spazio del necessario:
-      // quelli che adesso ci rientrano si riaprono, a partire da sinistra
-      for (let i = 0; i < labels.length; i += 1) {
-        if (!shut.has(i)) continue
-        const cost = natural[i] - COLLAPSED_WIDTH
-        if (total + cost > available) continue
+      // un gruppo già stretto non guadagna niente a chiudersi
+      const shrunk = labels.map((name, i) =>
+        Math.min(natural[i], small.current.get(name) ?? COLLAPSED_WIDTH)
+      )
+      const widthWith = (open: number) =>
+        natural.slice(0, open).reduce((sum, w) => sum + w, 0) +
+        shrunk.slice(open).reduce((sum, w) => sum + w, 0)
+
+      // come in Word si chiudono gli ultimi gruppi: i primi della scheda
+      // sono quelli che si usano di più e restano aperti il più a lungo
+      let open = labels.length
+      while (open > 0 && widthWith(open) > available) open -= 1
+      const shut = new Set(
+        Array.from({ length: labels.length - open }, (_, i) => open + i)
+      )
+
+      // chiudere fino a lì può aver liberato più spazio del necessario: i
+      // gruppi che adesso ci rientrano si riaprono, a partire da sinistra
+      let total = widthWith(open)
+      for (const i of [...shut]) {
+        const cost = natural[i] - shrunk[i]
+        if (cost > 0 && total + cost > available) continue
         shut.delete(i)
         total += cost
       }
@@ -231,6 +236,7 @@ function RibbonBody({
       )
     }
 
+    measureRef.current = measure
     measure()
     const observer = new ResizeObserver(measure)
     observer.observe(el)
@@ -242,6 +248,12 @@ function RibbonBody({
     // barra non deve rimescolarsi mentre si scrive, solo perché un comando
     // si accende o un'etichetta si allunga
   }, [])
+
+  // il primo conto usa una larghezza di comodo per i gruppi ridotti; appena
+  // sono sullo schermo si sa quanto occupano davvero e il conto si rifà
+  React.useLayoutEffect(() => {
+    measureRef.current?.()
+  }, [collapsed])
 
   return (
     <div

@@ -158,9 +158,12 @@ test("con il rilevamento le correzioni diventano revisioni", async ({
   page,
 }) => {
   await openTab(page, "Revisione")
-  const tracking = await ribbonButton(page, "Revisioni")
-  await tracking.click()
-  await expect(tracking).toHaveAttribute("aria-pressed", "true")
+  await (await ribbonButton(page, "Revisioni")).click()
+  await expect(await ribbonButton(page, "Revisioni")).toHaveAttribute(
+    "aria-pressed",
+    "true"
+  )
+  await page.keyboard.press("Escape")
 
   expect(await type(page, "perche si...")).toContain("Perché si…")
   // il testo corretto è comunque un inserimento, non una modifica silenziosa

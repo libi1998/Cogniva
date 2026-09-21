@@ -39,10 +39,20 @@ import { RibbonButton, RibbonGroup, RibbonMenu, RibbonRows } from "./ribbon-ui"
 import { atBody, type RibbonCtx } from "./shared"
 
 import { useT } from "@/lib/i18n/client"
-function positionsOf(ctx: RibbonCtx, type: string) {
+function positionsOf(
+  ctx: RibbonCtx,
+  type: string,
+  attrs?: Record<string, unknown>
+) {
   const out: number[] = []
   ctx.editor.state.doc.descendants((n, pos) => {
-    if (n.type.name === type) out.push(pos)
+    if (
+      n.type.name === type &&
+      (!attrs ||
+        Object.entries(attrs).every(([key, value]) => n.attrs[key] === value))
+    ) {
+      out.push(pos)
+    }
     return true
   })
   return out
@@ -418,7 +428,9 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
       </RibbonGroup>
 
       {indexKinds.map(([kind, label]) => {
-        const count = positionsOf(ctx, "docIndex").length
+        // ogni indice si aggiorna per conto suo: «Aggiorna indice» resta
+        // spento finché quel tipo di indice non è nel documento
+        const count = positionsOf(ctx, "docIndex", { kind }).length
         return (
           <RibbonGroup
             key={kind}

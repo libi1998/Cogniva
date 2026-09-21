@@ -673,6 +673,9 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
       })
       .scrollIntoView()
       .run()
+    // come in Word: il frontespizio resta pulito, senza intestazione, piè di
+    // pagina e numero
+    if (!theme.differentFirstPage) setTheme({ differentFirstPage: true })
   }
 
   const insertImage = (src: string, alt: string, width: string) =>
