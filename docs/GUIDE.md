@@ -175,6 +175,12 @@ top bar rewrites the title on the page.
 Nine tabs. Only the open tab is rendered (the ribbon stays light while you
 type); the selected tab is remembered, and double-clicking a tab collapses the ribbon.
 
+The ribbon measures itself against the window, the way Word does. When the groups no
+longer fit, the ones at the end shrink to a single button that opens the whole group —
+the first groups of a tab are the ones you reach for most, so they stay open longest —
+and they open back up as soon as the window has room again. Nothing ever ends up off
+the edge of the screen.
+
 | Tab            | Groups                                                                                                                                                                                                                                                         |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Home**       | **Undo** · **Clipboard** · **Font** (typeable name and size, colors, highlight, change case) · **Paragraph** (lists, indents, alignment, line spacing, borders and shading) · editable **Styles** · **Editing** · **Voice** (dictation) · **Add-ins**          |
@@ -182,7 +188,7 @@ type); the selected tab is remembered, and double-clicking a tab collapses the r
 | **Draw**       | pens, highlighter and eraser · ink to shape · drawing canvas · ink replay                                                                                                                                                                                      |
 | **Layout**     | margins, orientation, size, columns · breaks, **line numbers**, hyphenation · indents and spacing · arrange: position, wrap text, bring forward/send backward, align, rotate, selection pane                                                                   |
 | **Design**     | themes, style sets, colors, fonts, paragraph spacing, set as default · **watermark**, page color, page borders                                                                                                                                                 |
-| **References** | table of contents · **citations and bibliography** (APA, MLA, Chicago, ISO 690) · **footnotes** and endnotes · captions, table of figures, cross-reference                                                                                                     |
+| **References** | table of contents · **citations and bibliography** (APA, MLA, Chicago, ISO 690) · **footnotes** and endnotes · captions, table of figures, cross-reference · **index** and table of authorities                                                                 |
 | **Mailings**   | envelopes and labels · **mail merge**: recipients, address block, greeting line, fields and rules · preview results · finish and merge                                                                                                                         |
 | **Review**     | spelling, **AutoCorrect**, **Thesaurus**, word count · **read aloud** · accessibility checker · **translate**, language · **comments** · **track changes** with accept/reject · compare, **version history** · restrict editing · ink                          |
 | **View**       | read mode, print layout, web layout, outline, draft · focus and immersive reader · ruler, gridlines, navigation pane · zoom, one page, multiple pages · new window, full screen                                                                                |
