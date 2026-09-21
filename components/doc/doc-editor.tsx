@@ -56,7 +56,7 @@ import {
   useComments,
   type CommentsController,
 } from "./comments"
-import { DialogFinalFocus } from "@/components/ui/dialog"
+import { FinalFocusProvider } from "@/components/ui/final-focus"
 import { DocInspector } from "./doc-inspector"
 import { InkLayer, useInk } from "./ink-layer"
 import {
@@ -1118,7 +1118,7 @@ export function DocEditor({ fileId }: { fileId: string }) {
   return (
     // chiusa una finestra il cursore torna nel testo, non sul corpo della
     // pagina: si riprende a scrivere senza dover cliccare, come in Word
-    <DialogFinalFocus target={editorDom}>
+    <FinalFocusProvider target={editorDom}>
       <div className="flex h-dvh flex-col bg-muted">
         <style
           // le regole di stampa valgono solo mentre il documento è visibile: una
@@ -1608,7 +1608,7 @@ export function DocEditor({ fileId }: { fileId: string }) {
           }
         />
       </div>
-    </DialogFinalFocus>
+    </FinalFocusProvider>
   )
 }
 

@@ -12,6 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { useFinalFocus } from "@/components/ui/final-focus"
 import { cn } from "@/lib/utils"
 
 import { useT } from "@/lib/i18n/client"
@@ -106,6 +107,7 @@ function CollapsedGroup({
   safe?: boolean
   children: React.ReactNode
 }) {
+  const backToText = useFinalFocus()
   const [open, setOpen] = React.useState(false)
 
   // i menu dei comandi si aprono fuori dal riquadro: scelta una voce si
@@ -150,7 +152,8 @@ function CollapsedGroup({
           // i comandi «sicuri» perderebbero il loro contrassegno
           data-safe={safe ? "" : undefined}
           className="w-auto max-w-[min(96vw,900px)] overflow-x-auto p-1.5"
-          finalFocus={false}
+          // il fuoco torna nel testo, non sul pulsante del gruppo
+          finalFocus={backToText ?? false}
         >
           <div
             className="flex h-[74px] items-stretch"
@@ -303,6 +306,7 @@ export function RibbonMenu({
   className?: string
   onClose?: () => void
 }) {
+  const backToText = useFinalFocus()
   const [open, setOpen] = React.useState(false)
   return (
     <DropdownMenu
@@ -317,7 +321,7 @@ export function RibbonMenu({
         align={align}
         className={cn("w-56", className)}
         // il fuoco torna nel testo, non sul pulsante della barra
-        finalFocus={false}
+        finalFocus={backToText ?? false}
       >
         <CloseMenuContext.Provider value={() => setOpen(false)}>
           {children}
