@@ -43,8 +43,14 @@ export function searchText(file: WFile): string {
       if (size.n > LIMIT) break
       const text = node.text ?? ""
       if (text) out.push(text)
-      if (node.table) out.push(...node.table.cells)
-      if (node.chart) out.push(node.chart.title, ...node.chart.categories)
+      // tabelle e grafici arrivano anche da file importati: un campo mancante
+      // non deve far fallire la ricerca di tutta la home
+      if (Array.isArray(node.table?.cells)) out.push(...node.table.cells)
+      if (node.chart) {
+        out.push(node.chart.title ?? "")
+        if (Array.isArray(node.chart.categories))
+          out.push(...node.chart.categories)
+      }
       size.n += text.length
     }
     for (const edge of file.data.edges) if (edge.label) out.push(edge.label)

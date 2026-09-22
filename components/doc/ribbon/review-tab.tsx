@@ -71,7 +71,12 @@ import {
 } from "@/lib/review-tools"
 import { getWorkspace, useStore } from "@/lib/store"
 import { listChanges, type ChangeInfo } from "@/lib/track-changes"
-import type { DocMarkup, DocProtection, WFile } from "@/lib/types"
+import {
+  displayTitle,
+  type DocMarkup,
+  type DocProtection,
+  type WFile,
+} from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { Input } from "@/components/ui/input"
 import {
@@ -887,7 +892,7 @@ function CompareDialog({
               <option value="">{t("Scegli un documento…")}</option>
               {docs.map((d) => (
                 <option key={d.id} value={d.id}>
-                  {d.title}
+                  {displayTitle(d)}
                 </option>
               ))}
             </select>

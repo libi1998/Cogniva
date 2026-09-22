@@ -1,6 +1,6 @@
 import type { FontKey } from "./fonts"
 import type { SwatchKey } from "./palette"
-import type { ChartSpec } from "./chart"
+import { parseChartAttr, type ChartSpec } from "./chart"
 import type { DocStyleDef } from "./doc-styles"
 
 import { tr } from "@/lib/i18n/client"
@@ -506,6 +506,14 @@ export type WFile =
   | ({ kind: "board" } & FileMeta & { data: BoardData })
   | ({ kind: "doc" } & FileMeta & { data: DocData })
 
+/**
+ * Il nome da mostrare: un documento nuovo ha il titolo vuoto finché non si
+ * scrive la prima riga, e negli elenchi (palette, «Cambia finestra»,
+ * «Confronta») compariva come una voce bianca.
+ */
+export const displayTitle = (f: Pick<FileMeta, "title">) =>
+  f.title.trim() || tr("Senza titolo")
+
 /* ------------------------------ Defaults -------------------------------- */
 
 export const AUTO_BG = "auto"
@@ -591,6 +599,36 @@ const finite = (value: unknown, fallback: number) => {
   return Number.isFinite(n) ? n : fallback
 }
 
+/**
+ * Una tabella che si può disegnare: righe e colonne intere, una cella per
+ * posto e una misura per riga e per colonna. Un file rovinato (o scritto a
+ * mano) con un campo mancante faceva fallire il disegno di tutta la board.
+ */
+function normalizeTable(raw: unknown): TableData | undefined {
+  if (!raw || typeof raw !== "object") return undefined
+  const t = raw as Partial<TableData>
+  const count = (value: unknown) =>
+    Math.min(200, Math.max(1, Math.round(finite(value, 1))))
+  const cols = count(t.cols)
+  const rows = count(t.rows)
+  const sizes = (list: unknown, length: number, fallback: number) =>
+    Array.from({ length }, (_, i) =>
+      Math.max(1, finite(Array.isArray(list) ? list[i] : undefined, fallback))
+    )
+  return {
+    cols,
+    rows,
+    cells: Array.from({ length: cols * rows }, (_, i) => {
+      const cell = Array.isArray(t.cells) ? t.cells[i] : undefined
+      return typeof cell === "string" ? cell : cell == null ? "" : String(cell)
+    }),
+    colW: sizes(t.colW, cols, 140),
+    rowH: sizes(t.rowH, rows, 40),
+    header: t.header !== false,
+    striped: Boolean(t.striped),
+  }
+}
+
 export function normalizeNode(
   n: Partial<BoardNode> & { id: string }
 ): BoardNode {
@@ -625,6 +663,10 @@ export function normalizeNode(
     h: Math.max(1, finite(n.h, 84)),
     fontSize: Math.max(1, finite(n.fontSize, 15)),
     text: typeof n.text === "string" ? n.text : "",
+    // tabelle e grafici si disegnano campo per campo: un campo mancante
+    // faceva fallire il disegno di tutta la board
+    ...(n.kind === "table" ? { table: normalizeTable(n.table) } : {}),
+    ...(n.kind === "chart" ? { chart: parseChartAttr(n.chart) } : {}),
   } as BoardNode
 }
 
@@ -694,11 +736,17 @@ export function normalizeDoc(d: DocData): DocData {
       styles:
         theme.styles && typeof theme.styles === "object" ? theme.styles : {},
       zoom: clampZoom(Number(theme.zoom) || 1),
+      // un lato mancante (file scritto a mano o rovinato) diventava NaN e il
+      // foglio perdeva l'impaginazione
       margins: {
-        top: clampMargin(margins.top),
-        right: clampMargin(margins.right),
-        bottom: clampMargin(margins.bottom),
-        left: clampMargin(margins.left),
+        top: clampMargin(finite(margins.top, defaultDocTheme.margins.top)),
+        right: clampMargin(
+          finite(margins.right, defaultDocTheme.margins.right)
+        ),
+        bottom: clampMargin(
+          finite(margins.bottom, defaultDocTheme.margins.bottom)
+        ),
+        left: clampMargin(finite(margins.left, defaultDocTheme.margins.left)),
       },
     },
   }

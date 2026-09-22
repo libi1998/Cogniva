@@ -26,7 +26,7 @@ import { fileHref } from "@/lib/import-files"
 import { compareDocuments } from "@/lib/review-tools"
 import { repairDocContent } from "./extensions"
 import { getWorkspace } from "@/lib/store"
-import type { WFile } from "@/lib/types"
+import { displayTitle, type WFile } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import {
   countWords,
@@ -209,7 +209,7 @@ export function VersionsPane({
         file,
         content,
         t("{title} — versione del {date}", {
-          title: file.title,
+          title: displayTitle(file),
           date: new Date(version.createdAt).toLocaleString(region, {
             dateStyle: "short",
             timeStyle: "short",

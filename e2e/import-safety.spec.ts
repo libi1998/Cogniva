@@ -168,3 +168,60 @@ test("uno spazio di lavoro .json non può scrivere regole di stile", async ({
     .evaluateAll((els) => els.map((e) => e.textContent ?? "").join(" "))
   expect(sheets).not.toContain("tracker.example")
 })
+
+/** I blocchi del documento aperto, dopo il titolo: «tipo:testo» */
+const blocks = (page: Page) =>
+  withEditor<string[]>(
+    page,
+    `const out = []
+     editor.state.doc.forEach((n, _, i) => { if (i > 0) out.push(n.type.name + ":" + n.textContent) })
+     return out`
+  )
+
+test("un testo scritto su Windows mantiene i suoi paragrafi", async ({
+  page,
+}) => {
+  // a capo \r\n: le righe vuote fra i paragrafi non si riconoscevano e tutto
+  // finiva in un paragrafo solo
+  await importFile(page, {
+    name: "appunti.txt",
+    mimeType: "text/plain",
+    body: "Primo paragrafo\r\nsu due righe\r\n\r\nSecondo paragrafo\r\n",
+  })
+  await editorReady(page)
+  expect(await blocks(page)).toEqual([
+    "paragraph:Primo paragrafosu due righe",
+    "paragraph:Secondo paragrafo",
+  ])
+})
+
+test("i prezzi con il dollaro restano testo, le formule del Markdown no", async ({
+  page,
+}) => {
+  await importFile(page, {
+    name: "listino.html",
+    mimeType: "text/html",
+    body: "<h1>Listino</h1><p>Da $5-$10 al pezzo, oppure $20 e $30.</p>",
+  })
+  await editorReady(page)
+  expect(await blocks(page)).toEqual([
+    "paragraph:Da $5-$10 al pezzo, oppure $20 e $30.",
+  ])
+
+  await importFile(page, {
+    name: "note.md",
+    mimeType: "text/markdown",
+    body: "# Note\n\nArea $\\pi r^2$ per $5-$10 al metro.\n",
+  })
+  await editorReady(page)
+  const math = await withEditor<string[]>(
+    page,
+    `const out = []
+     editor.state.doc.descendants((n) => { if (n.type.name === "mathInline") out.push(n.attrs.latex) })
+     return out`
+  )
+  expect(math).toEqual(["\\pi r^2"])
+  expect(
+    await withEditor<string>(page, "return editor.state.doc.textContent")
+  ).toContain("per $5-$10 al metro.")
+})

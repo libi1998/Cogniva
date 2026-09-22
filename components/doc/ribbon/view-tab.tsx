@@ -36,7 +36,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { fileHref } from "@/lib/import-files"
 import { useStore } from "@/lib/store"
-import { PAGE_FORMATS, ZOOM_STEPS, type DocView } from "@/lib/types"
+import {
+  PAGE_FORMATS,
+  ZOOM_STEPS,
+  displayTitle,
+  type DocView,
+} from "@/lib/types"
 import { cn } from "@/lib/utils"
 import { applyDocStyle } from "../style-actions"
 import { RibbonButton, RibbonGroup, RibbonMenu, RibbonRows } from "./ribbon-ui"
@@ -390,7 +395,7 @@ export function ViewTab({ ctx }: { ctx: RibbonCtx }) {
               onClick={() => router.push(fileHref(d) as Route)}
               className={cn(d.id === ctx.fileId && "bg-accent")}
             >
-              <span className="truncate">{d.title}</span>
+              <span className="truncate">{displayTitle(d)}</span>
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />

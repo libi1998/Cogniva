@@ -56,7 +56,7 @@ import { download } from "@/lib/export"
 import { normalizeSearch, searchSnippet, searchText } from "@/lib/search"
 import { IMPORTABLE, fileHref, importFiles } from "@/lib/import-files"
 import { exportWorkspace, getWorkspace, useStore } from "@/lib/store"
-import type { FileKind, WFile } from "@/lib/types"
+import { displayTitle, type FileKind, type WFile } from "@/lib/types"
 import { useDocumentTitle } from "@/lib/use-document-title"
 import { cn } from "@/lib/utils"
 
@@ -197,12 +197,15 @@ export function HomeScreen() {
 
   const trashFile = (f: WFile) => {
     getWorkspace().trashFile(f.id)
-    toast.success(t("«{title}» spostato nel cestino", { title: f.title }), {
-      action: {
-        label: t("Annulla||annulla l'ultima modifica"),
-        onClick: () => getWorkspace().restoreFile(f.id),
-      },
-    })
+    toast.success(
+      t("«{title}» spostato nel cestino", { title: displayTitle(f) }),
+      {
+        action: {
+          label: t("Annulla||annulla l'ultima modifica"),
+          onClick: () => getWorkspace().restoreFile(f.id),
+        },
+      }
+    )
   }
 
   // i conteggi si mostrano solo a spazio di lavoro caricato: prima sarebbero
@@ -760,7 +763,7 @@ function FileCard({
         />
         <div className="min-w-0 flex-1">
           <p className="truncate text-[13px] font-semibold text-foreground sm:text-sm">
-            {f.title || t("Senza titolo")}
+            {displayTitle(f)}
           </p>
           <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
             {f.kind === "board" ? t("Board") : t("Documento")} ·{" "}
@@ -813,7 +816,9 @@ function FileCard({
             className="h-7 min-w-0 flex-1 gap-1 text-xs"
             onClick={() => {
               getWorkspace().restoreFile(f.id)
-              toast.success(t("«{title}» ripristinato", { title: f.title }))
+              toast.success(
+                t("«{title}» ripristinato", { title: displayTitle(f) })
+              )
             }}
           >
             <RotateCcw className="size-3.5" />
@@ -839,7 +844,7 @@ function FileCard({
             render={
               <button
                 type="button"
-                aria-label={t("Azioni per {title}", { title: f.title })}
+                aria-label={t("Azioni per {title}", { title: displayTitle(f) })}
                 // sui dispositivi senza hover il pulsante resta sempre a vista
                 className="absolute top-2 right-2 flex size-7 items-center justify-center rounded-lg bg-card/90 text-muted-foreground opacity-0 shadow-sm backdrop-blur transition group-hover:opacity-100 focus-visible:opacity-100 data-popup-open:opacity-100 pointer-coarse:size-8 pointer-coarse:opacity-100"
               />

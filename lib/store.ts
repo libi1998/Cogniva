@@ -17,7 +17,12 @@ import type {
   MergeData,
   WFile,
 } from "./types"
-import { defaultBoardTheme, normalizeBoard, normalizeDoc } from "./types"
+import {
+  defaultBoardTheme,
+  displayTitle,
+  normalizeBoard,
+  normalizeDoc,
+} from "./types"
 import { baseNode } from "./items"
 import { hasIcon } from "./icon-library"
 import { seedFiles } from "./seed"
@@ -323,7 +328,7 @@ export const useStore = create<State>((set, get) => {
       const copy = {
         ...structuredClone(f),
         id: newId,
-        title: tr("{title} (copia)", { title: f.title }),
+        title: tr("{title} (copia)", { title: displayTitle(f) }),
         createdAt: Date.now(),
         updatedAt: Date.now(),
       } as WFile

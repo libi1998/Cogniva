@@ -331,7 +331,9 @@ export function safeScale(width: number, height: number, desired: number) {
   const MAX_AREA = 2.4e8
   const bySide = Math.min(MAX_SIDE / width, MAX_SIDE / height)
   const byArea = Math.sqrt(MAX_AREA / (width * height))
-  return Math.max(1, Math.min(desired, bySide, byArea))
+  // anche sotto 1: con un minimo di 1 un documento di centinaia di pagine
+  // superava comunque il limite, e il PNG usciva vuoto
+  return Math.max(0.05, Math.min(desired, bySide, byArea))
 }
 
 export function svgToBlob(svg: string) {

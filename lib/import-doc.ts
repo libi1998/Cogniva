@@ -36,11 +36,15 @@ function makeDoc(title: string, content: JSONContent): WFile {
  * HTML → contenuto dell'editor. Il primo titolo di livello 1 diventa il
  * titolo del documento; se manca si usa il nome del file.
  */
-function htmlToDoc(html: string, fallbackTitle: string): WFile {
+function htmlToDoc(
+  html: string,
+  fallbackTitle: string,
+  { math = false }: { math?: boolean } = {}
+): WFile {
   const dom = new window.DOMParser().parseFromString(html, "text/html")
   const body = dom.body
   sanitizeImportedDom(body)
-  normalizeImportedDom(body)
+  normalizeImportedDom(body, { math })
 
   let title = fallbackTitle
   const first = body.firstElementChild
@@ -103,10 +107,22 @@ function sanitizeImportedDom(body: HTMLElement) {
 }
 
 /**
+ * Una formula nel testo, come la intende pandoc: dopo il dollaro d'apertura e
+ * prima di quello di chiusura niente spazio, e dopo la chiusura niente cifra.
+ * Così «costa $5 e $10» resta testo.
+ */
+const INLINE_MATH = /\$[^$\s](?:[^$]*[^$\s])?\$(?!\d)/
+const INLINE_MATH_SPLIT = /(\$[^$\s](?:[^$]*[^$\s])?\$(?!\d))/
+
+/**
  * Sistema l'HTML delle conversioni prima dello schema: note a piè di pagina
  * di Word, liste di controllo e formule del Markdown.
+ *
+ * Le formule con i dollari si cercano solo nel Markdown, dove sono una
+ * convenzione: in un documento Word, in una pagina HTML o in un testo «da $5
+ * a $10» è un prezzo, e diventava una formula.
  */
-function normalizeImportedDom(body: HTMLElement) {
+function normalizeImportedDom(body: HTMLElement, { math }: { math: boolean }) {
   // note di Word: mammoth le mette in fondo con dei collegamenti avanti e indietro
   for (const kind of ["footnote", "endnote"] as const) {
     body
@@ -142,6 +158,8 @@ function normalizeImportedDom(body: HTMLElement) {
     li.parentElement?.setAttribute("data-type", "taskList")
   })
 
+  if (!math) return
+
   // formule: $$…$$ su una riga sola, $…$ dentro al testo
   body.querySelectorAll("p").forEach((p) => {
     const text = p.textContent?.trim() ?? ""
@@ -157,14 +175,14 @@ function normalizeImportedDom(body: HTMLElement) {
   const texts: Text[] = []
   for (let n = walker.nextNode(); n; n = walker.nextNode()) {
     if (
-      /\$[^$\s][^$]*\$/.test(n.nodeValue ?? "") &&
+      INLINE_MATH.test(n.nodeValue ?? "") &&
       !n.parentElement?.closest("code, pre")
     ) {
       texts.push(n as Text)
     }
   }
   for (const node of texts) {
-    const parts = (node.nodeValue ?? "").split(/(\$[^$\s](?:[^$]*[^$\s])?\$)/)
+    const parts = (node.nodeValue ?? "").split(INLINE_MATH_SPLIT)
     const frag = document.createDocumentFragment()
     for (const part of parts) {
       if (/^\$[^$]+\$$/.test(part)) {
@@ -205,13 +223,21 @@ async function importDocx(file: File): Promise<{
   return { file: htmlToDoc(result.value, baseName(file.name)), warnings }
 }
 
+/**
+ * I file scritti su Windows vanno a capo con \r\n (e i vecchi Mac con \r): le
+ * righe vuote fra i paragrafi non si riconoscevano, e tutto il testo finiva in
+ * un paragrafo solo
+ */
+const normalizeNewlines = (text: string) => text.replace(/\r\n?/g, "\n")
+
 /** Markdown con tabelle, liste di controllo e formule */
 async function importMarkdown(file: File): Promise<WFile> {
   const { marked } = await import("marked")
-  const html = await marked.parse(markdownFootnotes(await file.text()), {
-    gfm: true,
-  })
-  return htmlToDoc(html, baseName(file.name))
+  const html = await marked.parse(
+    markdownFootnotes(normalizeNewlines(await file.text())),
+    { gfm: true }
+  )
+  return htmlToDoc(html, baseName(file.name), { math: true })
 }
 
 /**
@@ -239,7 +265,7 @@ function markdownFootnotes(source: string) {
 
 /** Testo semplice: un paragrafo per riga, le righe vuote separano i blocchi */
 async function importText(file: File): Promise<WFile> {
-  const text = await file.text()
+  const text = normalizeNewlines(await file.text())
   const html = text
     .split(/\n{2,}/)
     .map((block) => {

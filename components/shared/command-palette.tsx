@@ -41,6 +41,7 @@ import { download } from "@/lib/export"
 import { exportWorkspace, getWorkspace } from "@/lib/store"
 import { STORAGE, readStorage, writeStorage } from "@/lib/storage"
 import { setThemePreference } from "@/lib/use-theme"
+import { displayTitle } from "@/lib/types"
 
 import { hrefFor, switchLocale, tr, useLocale, useT } from "@/lib/i18n/client"
 import { LOCALE_NAMES, LOCALES } from "@/lib/i18n/config"
@@ -366,7 +367,7 @@ function PaletteBody({ onNavigate }: { onNavigate: (href: Route) => void }) {
             {snapshot.files.map((f) => (
               <CommandItem
                 key={f.id}
-                value={`${f.title}${ID_SEPARATOR}${f.id}`}
+                value={`${displayTitle(f)}${ID_SEPARATOR}${f.id}`}
                 keywords={[f.kind === "board" ? "board" : "documento"]}
                 onSelect={() => {
                   setOverlay(null)
@@ -374,7 +375,7 @@ function PaletteBody({ onNavigate }: { onNavigate: (href: Route) => void }) {
                 }}
               >
                 <Glyph name={f.icon} size={16} strokeWidth={1.9} />
-                <span className="truncate">{f.title}</span>
+                <span className="truncate">{displayTitle(f)}</span>
                 <CommandShortcut className="tracking-normal">
                   {f.kind === "board" ? t("Board") : t("Documento")}
                 </CommandShortcut>
