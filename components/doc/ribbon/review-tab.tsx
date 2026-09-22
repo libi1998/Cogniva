@@ -169,6 +169,7 @@ function AuthorName() {
       <PopoverTrigger
         render={
           <RibbonButton
+            compact
             label={author}
             title={t("Il nome con cui firmi commenti e risposte")}
             icon={<UserPen className="size-4" />}
@@ -1296,6 +1297,7 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
             className="w-64"
             trigger={
               <RibbonButton
+                compact
                 chevron
                 label={t("Elimina")}
                 disabled={comments.list.length === 0}
@@ -1321,6 +1323,7 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
             </DropdownMenuItem>
           </RibbonMenu>
           <RibbonButton
+            compact
             label={t("Precedente")}
             disabled={comments.list.length === 0}
             icon={<ChevronLeft className="size-4" />}
@@ -1328,6 +1331,7 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
             onClick={() => comments.step(-1)}
           />
           <RibbonButton
+            compact
             label={t("Successivo")}
             disabled={comments.list.length === 0}
             icon={<ChevronRight className="size-4" />}
@@ -1337,6 +1341,7 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
         <RibbonRows>
           <RibbonButton
+            compact
             label={current?.resolved ? t("Riapri") : t("Risolvi")}
             disabled={!current}
             icon={<CircleCheck className="size-4" />}
@@ -1346,6 +1351,7 @@ export function ReviewTab({ ctx }: { ctx: RibbonCtx }) {
             }
           />
           <RibbonButton
+            compact
             data-safe=""
             label={
               theme.comments ? t("Nascondi commenti") : t("Mostra commenti")

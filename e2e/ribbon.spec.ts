@@ -131,3 +131,31 @@ test("chiusa una finestra o un menu si riprende a scrivere", async ({
   await page.keyboard.press("Escape")
   expect(await type(page, "perche si...")).toBe("Perché si…")
 })
+
+test("ogni comando si clicca: nessuna riga sotto l'etichetta del gruppo", async ({
+  page,
+}) => {
+  // le colonne di tre comandi alti sporgevano dal gruppo: l'ultima riga
+  // (Bibliografia, Mostra note, i commenti, le frecce dei rientri) finiva
+  // sotto l'etichetta e il clic andava a lei
+  await page.setViewportSize({ width: 1920, height: 900 })
+  await openDemo(page)
+  for (const tab of TABS) {
+    await openTab(page, tab)
+    const covered = await page.locator('[role="tabpanel"]').evaluate((panel) =>
+      [...panel.querySelectorAll<HTMLElement>("button, input")]
+        .filter((el) => !(el as HTMLButtonElement).disabled)
+        .filter((el) => {
+          const r = el.getBoundingClientRect()
+          if (!r.width) return false
+          const top = document.elementFromPoint(
+            r.x + r.width / 2,
+            r.y + r.height / 2
+          )
+          return !top || !el.contains(top)
+        })
+        .map((el) => el.getAttribute("aria-label") ?? el.textContent)
+    )
+    expect(covered, tab).toEqual([])
+  }
+})

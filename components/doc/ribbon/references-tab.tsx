@@ -259,6 +259,7 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonMenu>
         <RibbonRows>
           <RibbonButton
+            compact
             data-safe=""
             label={t("Gestisci fonti")}
             icon={<Library className="size-4" />}
@@ -269,6 +270,7 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
             className="w-56"
             trigger={
               <RibbonButton
+                compact
                 data-safe=""
                 chevron
                 label={t("Stile: {style}", {
@@ -296,6 +298,7 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
             ))}
           </RibbonMenu>
           <RibbonButton
+            compact
             label={t("Bibliografia")}
             title={t(
               "Elenco delle fonti citate, ordinato e formattato nello stile scelto"
@@ -325,6 +328,7 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
         />
         <RibbonRows>
           <RibbonButton
+            compact
             label={t("Inserisci nota di chiusura")}
             title={t(
               "Nota raccolta in fondo al documento, numerata i, ii, iii (⌥⌘D)"
@@ -337,6 +341,7 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
             }}
           />
           <RibbonButton
+            compact
             label={t("Nota successiva")}
             disabled={notes.length === 0}
             icon={<StickyNote className="size-4" />}
@@ -353,6 +358,7 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
             }}
           />
           <RibbonButton
+            compact
             data-safe=""
             label={t("Mostra note")}
             disabled={notes.length === 0}

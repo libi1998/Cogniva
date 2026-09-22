@@ -400,6 +400,7 @@ export function Stepper({
   onChange,
   width = 64,
   labelWidth = 62,
+  compact,
 }: {
   icon?: React.ReactNode
   label: string
@@ -412,6 +413,8 @@ export function Stepper({
   onChange: (value: number) => void
   width?: number
   labelWidth?: number
+  /** riga bassa: due campi e un'intestazione stanno nell'altezza della barra */
+  compact?: boolean
 }) {
   const t = useT()
   const [draft, setDraft] = React.useState<string | null>(null)
@@ -427,13 +430,21 @@ export function Stepper({
   }
 
   return (
-    <label className="flex h-7 items-center gap-1.5 text-xs text-muted-foreground">
+    <label
+      className={cn(
+        "flex items-center gap-1.5 text-xs text-muted-foreground",
+        compact ? "h-[22px]" : "h-7"
+      )}
+    >
       {icon}
       <span className="shrink-0 truncate" style={{ width: labelWidth }}>
         {label}
       </span>
       <span
-        className="flex h-6 items-center overflow-hidden rounded-md border border-border bg-background focus-within:border-ring"
+        className={cn(
+          "flex items-center overflow-hidden rounded-md border border-border bg-background focus-within:border-ring",
+          compact ? "h-5" : "h-6"
+        )}
         style={{ width }}
       >
         <input

@@ -414,14 +414,17 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
         label={t("Paragrafo")}
         icon={<LayoutList className="size-5" />}
       >
+        {/* intestazioni e due righe di campi nell'altezza della barra: più
+            alti, la seconda riga finiva sotto l'etichetta del gruppo */}
         <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
-          <span className="text-[11px] font-medium text-muted-foreground">
+          <span className="text-[11px] leading-3 font-medium text-muted-foreground">
             {t("Rientro")}
           </span>
-          <span className="text-[11px] font-medium text-muted-foreground">
+          <span className="text-[11px] leading-3 font-medium text-muted-foreground">
             {t("Spaziatura")}
           </span>
           <Stepper
+            compact
             label={t("A sinistra")}
             value={st.indentLeft / CM}
             unit="cm"
@@ -437,6 +440,7 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
             }
           />
           <Stepper
+            compact
             label={t("Prima")}
             value={st.spaceBefore / PT}
             unit="pt"
@@ -453,6 +457,7 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
             }
           />
           <Stepper
+            compact
             label={t("A destra")}
             value={st.indentRight / CM}
             unit="cm"
@@ -468,6 +473,7 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
             }
           />
           <Stepper
+            compact
             label={t("Dopo")}
             value={st.spaceAfter / PT}
             unit="pt"
