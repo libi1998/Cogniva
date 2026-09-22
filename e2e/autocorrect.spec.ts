@@ -103,7 +103,9 @@ test("la finestra spegne una singola opzione e la ricorda", async ({
     .getByRole("button", { name: "Chiudi", exact: true })
     .first()
     .click()
-  await expect(dialog).toBeHidden()
+  // sparita del tutto, non solo nascosta: finché è lì il cursore è dentro
+  // la finestra, e la prima lettera battuta finirebbe in niente
+  await expect(dialog).toHaveCount(0)
 
   // le virgolette restano dritte, il resto continua a funzionare
   expect(await type(page, 'dice "ciao"... perche si.')).toBe(
