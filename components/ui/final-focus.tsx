@@ -28,3 +28,23 @@ export function FinalFocusProvider({
 export function useFinalFocus() {
   return React.useContext(FinalFocus) ?? undefined
 }
+
+/**
+ * Rimette il fuoco appena una finestra o un menu si chiude, senza aspettare
+ * che finisca di sparire: chi riprende subito a scrivere non perde la prima
+ * lettera. Guarda lo stato invece dell'evento di chiusura, così vale anche
+ * per i pulsanti che chiudono da sé — «Annulla», «Salva», «Chiudi».
+ *
+ * `finalFocus` resta comunque: è lui a dire a Base UI dove mettere il fuoco
+ * quando il riquadro se ne va davvero.
+ */
+export function useFocusBackWhenClosed(open: boolean | undefined) {
+  const target = useFinalFocus()
+  const wasOpen = React.useRef(false)
+  React.useEffect(() => {
+    if (wasOpen.current && !open) {
+      target?.current?.focus({ preventScroll: true })
+    }
+    wasOpen.current = Boolean(open)
+  }, [open, target])
+}

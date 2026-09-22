@@ -7,10 +7,15 @@ import { cn } from "cn"
 import { Button } from "@/components/ui/button"
 import { XIcon } from "lucide-react"
 
-import { useFinalFocus } from "@/components/ui/final-focus"
+import {
+  useFinalFocus,
+  useFocusBackWhenClosed,
+} from "@/components/ui/final-focus"
 
 import { useT } from "@/lib/i18n/client"
 function Dialog({ ...props }: DialogPrimitive.Root.Props) {
+  // chiusa la finestra il cursore torna subito nel testo
+  useFocusBackWhenClosed(props.open)
   return <DialogPrimitive.Root data-slot="dialog" {...props} />
 }
 

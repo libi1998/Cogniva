@@ -12,7 +12,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { useFinalFocus } from "@/components/ui/final-focus"
+import {
+  useFinalFocus,
+  useFocusBackWhenClosed,
+} from "@/components/ui/final-focus"
 import { cn } from "@/lib/utils"
 
 import { useT } from "@/lib/i18n/client"
@@ -109,6 +112,7 @@ function CollapsedGroup({
 }) {
   const backToText = useFinalFocus()
   const [open, setOpen] = React.useState(false)
+  useFocusBackWhenClosed(open)
 
   // i menu dei comandi si aprono fuori dal riquadro: scelta una voce si
   // chiude anche il gruppo, come in Word
@@ -308,6 +312,7 @@ export function RibbonMenu({
 }) {
   const backToText = useFinalFocus()
   const [open, setOpen] = React.useState(false)
+  useFocusBackWhenClosed(open)
   return (
     <DropdownMenu
       open={open}

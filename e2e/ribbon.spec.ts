@@ -122,11 +122,10 @@ test("chiusa una finestra o un menu si riprende a scrivere", async ({
   await page.keyboard.press("Escape")
   expect(await type(page, "perche si...")).toBe("Perché si…")
 
-  // una finestra
+  // una finestra: si scrive subito, senza aspettare che sparisca
   const dialog = page.locator('[data-slot="dialog-content"]')
   await (await ribbonButton(page, "Segnalibro")).click()
   await expect(dialog).toBeVisible()
   await page.keyboard.press("Escape")
-  await expect(dialog).toBeHidden()
   expect(await type(page, "perche si...")).toBe("Perché si…")
 })
