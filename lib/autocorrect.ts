@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { Extension, InputRule } from "@tiptap/core"
+import type { EditorState, Transaction } from "@tiptap/pm/state"
 import { STORAGE, readStorage, writeStorage } from "./storage"
 
 /**
@@ -476,6 +477,60 @@ function englishOrdinal(n: string) {
 type Get = () => AutoCorrectSettings
 
 /**
+ * Riscrive il testo fra `from` e `to` (quello già nel documento) con `text`, e
+ * aggiunge `typed`, il carattere appena battuto che nel documento non c'è
+ * ancora.
+ *
+ * Si cambia solo il pezzo che differisce, con la formattazione che aveva: una
+ * parola in grassetto corretta in «Perché» resta in grassetto. Prima si
+ * riscriveva tutto con la formattazione della battitura, e bastava aver spento
+ * il grassetto prima dello spazio perché la parola lo perdesse. Il carattere
+ * battuto prende invece la formattazione con cui si sta scrivendo, come
+ * farebbe senza correzione.
+ */
+function rewrite(
+  state: EditorState,
+  tr: Transaction,
+  from: number,
+  to: number,
+  text: string,
+  typed: string
+) {
+  // tutto si misura prima di cambiare: nelle regole di Tiptap `state.doc`
+  // segue la transazione
+  const doc = state.doc
+  const typing = state.storedMarks ?? doc.resolve(to).marks()
+  const before = doc.textBetween(from, to, undefined, "\ufffc")
+  let head = 0
+  while (
+    head < before.length &&
+    head < text.length &&
+    before[head] === text[head]
+  ) {
+    head += 1
+  }
+  let tail = 0
+  while (
+    tail < before.length - head &&
+    tail < text.length - head &&
+    before[before.length - 1 - tail] === text[text.length - 1 - tail]
+  ) {
+    tail += 1
+  }
+  const a = from + head
+  const b = to - tail
+  const middle = text.slice(head, text.length - tail)
+  const $a = doc.resolve(a)
+  // un pezzo vuoto (solo inserimento) prende i segni di chi scrive
+  const marks =
+    a === b ? typing : ($a.marksAcross(doc.resolve(b)) ?? $a.marks())
+
+  if (middle) tr.replaceWith(a, b, state.schema.text(middle, marks))
+  else if (a < b) tr.delete(a, b)
+  if (typed) tr.insert(tr.mapping.map(to), state.schema.text(typed, typing))
+}
+
+/**
  * Le correzioni che scattano quando la parola finisce (spazio, punteggiatura,
  * Invio). Stanno in una regola sola perché Tiptap ne applica una per battuta:
  * «perche» a inizio frase deve diventare «Perché», cioè tabella e maiuscola
@@ -548,7 +603,7 @@ function wordRule(get: Get) {
       const tr = state.tr
       // il carattere appena battuto non è ancora nel documento: una regola che
       // scatta lo deve riscrivere insieme alla correzione, altrimenti sparisce
-      tr.insertText(word + term, start, range.to)
+      rewrite(state, tr, start, range.to, word, term)
       if (superscript) {
         const mark = state.schema.marks.superscript
         const digits = word.length - 2
@@ -576,10 +631,19 @@ function instantRule(
       if (!s.enabled || !on(s)) return null
       const edit = pick(match, s)
       if (!edit) return null
-      // quello che segue il pezzo sostituito (di solito il carattere appena
-      // battuto, che nel documento non c'è ancora) va riscritto anche lui
-      const rest = match[0].slice(edit.offset + edit.length)
-      state.tr.insertText(edit.text + rest, range.from + edit.offset, range.to)
+      // i primi `inDoc` caratteri della corrispondenza sono già nel
+      // documento; gli altri sono quelli appena battuti, che vanno riscritti
+      // anche loro se la sostituzione non se li è presi
+      const inDoc = range.to - range.from
+      const cut = edit.offset + edit.length
+      rewrite(
+        state,
+        state.tr,
+        range.from + edit.offset,
+        range.to,
+        edit.text + match[0].slice(Math.min(cut, inDoc), inDoc),
+        match[0].slice(Math.max(cut, inDoc))
+      )
       return undefined
     },
   })

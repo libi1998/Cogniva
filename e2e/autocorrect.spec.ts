@@ -211,3 +211,39 @@ test("l'inglese mette gli ordinali in apice", async ({ page }) => {
   await type(page, "the 21st time.")
   expect(await lastHtml(page)).toContain("<sup>st</sup>")
 })
+
+/** I pezzi dell'ultimo paragrafo con i loro segni: «testo:bold,italic» */
+const lastRuns = (page: Page) =>
+  withEditor<string[]>(
+    page,
+    `const out = []
+     editor.state.doc.lastChild.forEach((t) => out.push(t.text + ":" + t.marks.map((m) => m.type.name).join(",")))
+     return out`
+  )
+
+test("la correzione tiene la formattazione della parola", async ({ page }) => {
+  await type(page, "")
+  // «grassetto» in grassetto, poi grassetto spento e uno spazio: la maiuscola
+  // della frase arriva con lo spazio e prima si portava via il grassetto
+  await page.keyboard.press("ControlOrMeta+b")
+  await page.keyboard.type("grassetto", { delay: 12 })
+  await page.keyboard.press("ControlOrMeta+b")
+  await page.keyboard.type(" e ", { delay: 12 })
+  await page.keyboard.press("ControlOrMeta+i")
+  await page.keyboard.type("perche", { delay: 12 })
+  await page.keyboard.press("ControlOrMeta+i")
+  await page.keyboard.type(" no", { delay: 12 })
+  expect(await lastRuns(page)).toEqual([
+    "Grassetto:bold",
+    " e :",
+    "perché:italic",
+    " no:",
+  ])
+})
+
+test("i puntini tengono la formattazione del testo", async ({ page }) => {
+  await type(page, "")
+  await page.keyboard.press("ControlOrMeta+b")
+  await page.keyboard.type("attesa...", { delay: 12 })
+  expect(await lastRuns(page)).toEqual(["Attesa…:bold"])
+})
