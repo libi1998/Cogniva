@@ -343,6 +343,21 @@ export function DocEditor({
     if (editor) pruneComments(editor, fileId)
   }, [editor, fileId])
 
+  // un documento appena creato è pronto per scrivere: il cursore aspetta
+  // nella riga del titolo, come in Word. Prima le prime battute dopo «Nuovo
+  // documento» andavano perse finché non si cliccava nel foglio. Una volta
+  // sola: tornando alla pagina il fuoco resta dove lo si lascia
+  const [brandNew] = React.useState(() => {
+    const f = getWorkspace().files.find((x) => x.id === fileId)
+    return f?.kind === "doc" && f.data.content == null
+  })
+  const focusedNew = React.useRef(false)
+  React.useEffect(() => {
+    if (!brandNew || focusedNew.current || !editor || editor.isDestroyed) return
+    focusedNew.current = true
+    editor.commands.focus("start")
+  }, [brandNew, editor])
+
   // «Cronologia versioni»: il documento si fotografa da solo ogni tanto
   useAutoVersions(fileId)
 
@@ -642,6 +657,20 @@ export function DocEditor({
       if (e.key === "f" || e.key === "F") {
         e.preventDefault()
         setFind("find")
+        return
+      }
+      // Ctrl+H apre Sostituisci, come in Word per Windows. Non sul Mac, dove
+      // ⌃H cancella il carattere prima del cursore; ⇧Ctrl+H è Evidenzia
+      if (
+        e.code === "KeyH" &&
+        e.ctrlKey &&
+        !e.metaKey &&
+        !e.altKey &&
+        !e.shiftKey &&
+        !/Mac|iP(hone|ad|od)/.test(navigator.platform)
+      ) {
+        e.preventDefault()
+        setFind("replace")
         return
       }
       if (e.key === "=" || e.key === "+") {
@@ -1346,6 +1375,11 @@ export function DocEditor({
                             `doc-markup-${theme.markup ?? "all"}`
                           )}
                           onContextMenu={(e) => {
+                            // le finestre degli oggetti (grafici, formule…)
+                            // vivono in un portale ma i loro eventi risalgono
+                            // fin qui: nei loro campi resta il menu del browser
+                            if (!e.currentTarget.contains(e.target as Node))
+                              return
                             e.preventDefault()
                             setMenu({ x: e.clientX, y: e.clientY })
                           }}
