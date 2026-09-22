@@ -15,6 +15,7 @@ import {
 } from "@tiptap/pm/state"
 import type { EditorState } from "@tiptap/pm/state"
 import type { Node as PMNode } from "@tiptap/pm/model"
+import { ReplaceStep } from "@tiptap/pm/transform"
 import {
   Table,
   TableCell,
@@ -519,6 +520,55 @@ export const PageBreak = Node.create({
         ({ commands }) =>
           commands.insertContent({ type: this.name }),
     }
+  },
+})
+
+/* ----------------------- selezione degli oggetti ------------------------ */
+
+/**
+ * Cambiare un attributo di un oggetto selezionato (il testo di una nota, la
+ * didascalia di un'immagine, il titolo di un grafico) lo riscrive per intero:
+ * per ProseMirror l'oggetto selezionato sparisce e la selezione diventa un
+ * cursore. Il pannello dell'oggetto si chiudeva alla prima battuta, e di una
+ * nota si riusciva a scrivere una lettera sola. Qui l'oggetto riscritto resta
+ * selezionato.
+ */
+export const KeepNodeSelection = Extension.create({
+  name: "keepNodeSelection",
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        key: new PluginKey("keepNodeSelection"),
+        appendTransaction(transactions, oldState, newState) {
+          const old = oldState.selection
+          if (!(old instanceof NodeSelection) || !old.node.isLeaf) return null
+          if (newState.selection instanceof NodeSelection) return null
+          let pos = old.from
+          let rewritten = false
+          for (const tr of transactions) {
+            // chi sposta la selezione di proposito ha l'ultima parola
+            if (tr.selectionSet) return null
+            tr.steps.forEach((step, i) => {
+              if (
+                step instanceof ReplaceStep &&
+                step.from === pos &&
+                step.to === pos + old.node.nodeSize &&
+                step.slice.content.childCount === 1 &&
+                step.slice.content.firstChild?.type === old.node.type
+              ) {
+                rewritten = true
+              }
+              pos = tr.mapping.maps[i].map(pos, -1)
+            })
+          }
+          if (!rewritten) return null
+          if (newState.doc.nodeAt(pos)?.type !== old.node.type) return null
+          return newState.tr.setSelection(
+            NodeSelection.create(newState.doc, pos)
+          )
+        },
+      }),
+    ]
   },
 })
 
