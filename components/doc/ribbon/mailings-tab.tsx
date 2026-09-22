@@ -188,7 +188,9 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
       toast.info(t("Scegli prima i destinatari"))
       return
     }
-    const title = t("{title} — unione", { title: ctx.title || "Documento" })
+    const title = t("{title} — unione", {
+      title: ctx.title || t("Documento"),
+    })
     let id: string
     if (merge.type === "labels") {
       id = createDoc(

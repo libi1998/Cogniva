@@ -275,11 +275,13 @@ export function mergedDocument(
   records.forEach(({ row }, i) => {
     if (i > 0) out.push({ type: "pageBreak" })
     for (const block of blocks) {
-      // il titolo del modello resta un titolo solo nel primo documento
+      // il titolo del modello diventa un Titolo 1 in ogni lettera: tutte
+      // uguali, e il documento unito tiene il suo nome («… — unione»)
+      // invece di prendere quello della prima riga
       const filled = fillContent(block, row)
       for (const node of filled) {
         out.push(
-          i > 0 && node.type === "docTitle"
+          node.type === "docTitle"
             ? { ...node, type: "heading", attrs: { level: 1 } }
             : node
         )

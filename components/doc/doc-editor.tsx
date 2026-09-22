@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { flushSync } from "react-dom"
+import type { JSONContent } from "@tiptap/core"
 import { EditorContent, useEditor, type Editor } from "@tiptap/react"
 import type { EditorProps } from "@tiptap/pm/view"
 import {
@@ -1650,7 +1651,28 @@ function latestContent(fileId: string) {
   const content = f && f.kind === "doc" ? f.data.content : null
   // un file salvato da un'altra versione (o scritto a mano) può avere pezzi
   // che lo schema non conosce: si tiene tutto il resto
-  return withDocTitle(repairDocContent(content), f?.title ?? "")
+  const doc = withDocTitle(repairDocContent(content), f?.title ?? "")
+  // Il nome del file comanda: rinominato dalla home il documento teneva il
+  // titolo vecchio nella prima riga, e alla prima battuta (o già
+  // all'apertura) il file tornava a chiamarsi come prima. Come quando si
+  // rinomina dalla barra in alto a documento aperto, il titolo si allinea
+  const name = f?.title ?? ""
+  const blocks = (doc as JSONContent).content ?? []
+  const first = blocks[0]
+  if (
+    name.trim() &&
+    first?.type === "docTitle" &&
+    (first.content ?? []).map((n) => n.text ?? "").join("") !== name
+  ) {
+    return {
+      ...doc,
+      content: [
+        { ...first, content: [{ type: "text", text: name }] },
+        ...blocks.slice(1),
+      ],
+    }
+  }
+  return doc
 }
 
 /**

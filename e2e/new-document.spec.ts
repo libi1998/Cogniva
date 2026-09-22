@@ -35,3 +35,36 @@ test("Ctrl+H apre Trova e sostituisci", async ({ page, browserName }) => {
   await page.keyboard.press("Control+h")
   await expect(page.getByPlaceholder("Sostituisci con")).toBeVisible()
 })
+
+test("rinominato dalla home, il documento tiene il nome nuovo", async ({
+  page,
+}) => {
+  await page.goto("/it")
+  const card = page.getByRole("link", { name: /Product brief/ })
+  await expect(card).toBeVisible()
+  await card.hover()
+  await page.getByRole("button", { name: "Azioni per Product brief" }).click()
+  await page.getByRole("menuitem", { name: "Rinomina" }).click()
+  await page.getByLabel("Nuovo nome").fill("Brief di lancio")
+  await page.getByRole("button", { name: "Salva" }).click()
+
+  // aprendolo il titolo nella prima riga si allinea al nome: prima il file
+  // tornava a chiamarsi «Product brief» all'apertura o alla prima battuta
+  await page.getByRole("link", { name: /Brief di lancio/ }).click()
+  await expect(page.locator("#doc-sheet .ProseMirror")).toBeVisible()
+  const name = page.getByRole("textbox", { name: "Nome del file" })
+  await expect(name).toHaveValue("Brief di lancio")
+  await expect(page.locator("#doc-sheet .ProseMirror > *").first()).toHaveText(
+    "Brief di lancio"
+  )
+
+  await withEditor(page, "editor.chain().focus('end').run()")
+  await page.waitForFunction(() =>
+    document
+      .querySelector("#doc-sheet .ProseMirror")
+      ?.contains(document.activeElement)
+  )
+  await page.keyboard.type(" ancora", { delay: 12 })
+  await page.waitForTimeout(600)
+  await expect(name).toHaveValue("Brief di lancio")
+})
