@@ -196,9 +196,15 @@ function RibbonBody({
           group.dataset.collapsed === undefined ? widths.current : small.current
         store.set(name, group.offsetWidth)
       }
-      // due pixel di margine: gli arrotondamenti del browser non devono
-      // far comparire la barra di scorrimento
-      const available = el.clientWidth - 2
+      // lo spazio vero è al netto della spaziatura della riga; due pixel di
+      // margine perché gli arrotondamenti del browser non facciano comparire
+      // la barra di scorrimento
+      const pad = getComputedStyle(el)
+      const available =
+        el.clientWidth -
+        parseFloat(pad.paddingLeft || "0") -
+        parseFloat(pad.paddingRight || "0") -
+        2
       const natural = labels.map(
         (name) => widths.current.get(name) ?? COLLAPSED_WIDTH
       )

@@ -56,7 +56,6 @@ import {
   useComments,
   type CommentsController,
 } from "./comments"
-import { FinalFocusProvider } from "@/components/ui/final-focus"
 import { DocInspector } from "./doc-inspector"
 import { InkLayer, useInk } from "./ink-layer"
 import {
@@ -156,7 +155,14 @@ const WIDTHS: Record<string, number> = {
 /** Margini a video sui telefoni, per i documenti senza formato di carta */
 const COMPACT_MARGINS: DocMargins = { top: 28, right: 20, bottom: 48, left: 20 }
 
-export function DocEditor({ fileId }: { fileId: string }) {
+export function DocEditor({
+  fileId,
+  textRef,
+}: {
+  fileId: string
+  /** dove torna il cursore chiudendo una finestra o un menu: il testo */
+  textRef?: React.RefObject<HTMLElement | null>
+}) {
   const region = useRegion()
   const t = useT()
   // selettori stretti: salvare il contenuto non deve ridisegnare barra e
@@ -326,10 +332,10 @@ export function DocEditor({ fileId }: { fileId: string }) {
     editorRef.current = editor
   })
 
-  // il foglio dove torna il cursore quando una finestra si chiude
-  const editorDom = React.useRef<HTMLElement | null>(null)
+  // il testo, per chi deve rimetterci il cursore: finestre, menu, riquadri
   React.useEffect(() => {
-    editorDom.current = editor && !editor.isDestroyed ? editor.view.dom : null
+    if (!textRef) return
+    textRef.current = editor && !editor.isDestroyed ? editor.view.dom : null
   })
 
   // commenti rimasti senza testo: si tolgono all'apertura
@@ -1116,22 +1122,19 @@ export function DocEditor({ fileId }: { fileId: string }) {
   const sidePanel = panel || stylesPane || taskPane !== null
 
   return (
-    // chiusa una finestra il cursore torna nel testo, non sul corpo della
-    // pagina: si riprende a scrivere senza dover cliccare, come in Word
-    <FinalFocusProvider target={editorDom}>
-      <div className="flex h-dvh flex-col bg-muted">
-        <style
-          // le regole di stampa valgono solo mentre il documento è visibile: una
-          // pagina nascosta (Cache Components la tiene montata) nasconderebbe
-          // in stampa tutto il resto, board comprese
-          ref={(el) => {
-            if (!el) return
-            el.media = "all"
-            return () => {
-              el.media = "not all"
-            }
-          }}
-        >{`${pageCss}
+    <div className="flex h-dvh flex-col bg-muted">
+      <style
+        // le regole di stampa valgono solo mentre il documento è visibile: una
+        // pagina nascosta (Cache Components la tiene montata) nasconderebbe
+        // in stampa tutto il resto, board comprese
+        ref={(el) => {
+          if (!el) return
+          el.media = "all"
+          return () => {
+            el.media = "not all"
+          }
+        }}
+      >{`${pageCss}
 @media print {
   #doc-sheet { box-shadow: none !important; border-radius: 0 !important; }
   #doc-sheet, #doc-sheet * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -1145,470 +1148,465 @@ export function DocEditor({ fileId }: { fileId: string }) {
   [data-guide] { display: none !important; }
 }`}</style>
 
-        <style>{stylesCss(theme, `[data-doc-styles="${fileId}"]`)}</style>
+      <style>{stylesCss(theme, `[data-doc-styles="${fileId}"]`)}</style>
 
-        <CommentHighlights ctl={comments} />
+      <CommentHighlights ctl={comments} />
 
-        {studio && editor && title !== null ? (
-          <ExportStudio
-            initialFormat={studio.format}
-            onClose={() => setStudio(null)}
-            source={{
-              kind: "doc",
-              title,
-              language: theme.language || region,
-              currentPage: studio.page,
-              paperFormat: PAGE_FORMATS[theme.format].mm ? theme.format : null,
-              orientation: theme.orientation,
-              hasComments: comments.list.length > 0,
-              snapshot: () =>
-                takeDocSnapshot({
-                  sheet: sheetRef.current,
-                  theme,
-                  setPrintMode,
-                }),
-              markdown: () => markdownOf(editor, fileId, theme),
-              exportDocx: async (filename, withComments) => {
-                await exportFile("docx", { filename, comments: withComments })
-              },
-              exportSvg: async (filename) => {
-                await doExport("svg", filename)
-              },
-              print: () => void doExport("print"),
-            }}
-          />
-        ) : null}
-
-        {mode === "normal" ? (
-          <>
-            <TopBar
-              fileId={fileId}
-              right={
-                <>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="size-8"
-                    title={t("Esporta")}
-                    aria-label={t("Esporta")}
-                    disabled={busy}
-                    onClick={() => openStudio("pdf")}
-                  >
-                    <Download className="size-4" />
-                  </Button>
-
-                  <ThemeToggle className="hidden sm:flex" />
-
-                  <Button
-                    variant={panel ? "secondary" : "ghost"}
-                    size="sm"
-                    className="h-8 gap-1.5 px-2 text-xs sm:px-2.5"
-                    aria-label={t("Pannello Stile")}
-                    aria-pressed={panel}
-                    onClick={() => setPanel(!panel)}
-                  >
-                    <PanelRight className="size-4" />
-                    <span className="hidden sm:inline">{t("Stile")}</span>
-                  </Button>
-                </>
-              }
-            />
-
-            <Ribbon ctx={ctx} />
-          </>
-        ) : (
-          <ModeBar
-            mode={mode}
-            onExit={() => setMode("normal")}
-            immersive={immersive}
-            setImmersive={setImmersive}
-          />
-        )}
-        {mode === "immersive" ? (
-          <LineFocus editor={editor} lines={immersive.lineFocus} />
-        ) : null}
-        <input
-          ref={fileInput}
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={(e) => {
-            const f = e.target.files?.[0]
-            e.target.value = ""
-            if (!f || !editor) return
-            readImage(f, (src) => atBody(editor).setImage({ src }).run())
+      {studio && editor && title !== null ? (
+        <ExportStudio
+          initialFormat={studio.format}
+          onClose={() => setStudio(null)}
+          source={{
+            kind: "doc",
+            title,
+            language: theme.language || region,
+            currentPage: studio.page,
+            paperFormat: PAGE_FORMATS[theme.format].mm ? theme.format : null,
+            orientation: theme.orientation,
+            hasComments: comments.list.length > 0,
+            snapshot: () =>
+              takeDocSnapshot({
+                sheet: sheetRef.current,
+                theme,
+                setPrintMode,
+              }),
+            markdown: () => markdownOf(editor, fileId, theme),
+            exportDocx: async (filename, withComments) => {
+              await exportFile("docx", { filename, comments: withComments })
+            },
+            exportSvg: async (filename) => {
+              await doExport("svg", filename)
+            },
+            print: () => void doExport("print"),
           }}
         />
+      ) : null}
 
-        {find ? (
-          <FindBar editor={editor} mode={find} onClose={() => setFind(null)} />
+      {mode === "normal" ? (
+        <>
+          <TopBar
+            fileId={fileId}
+            right={
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-8"
+                  title={t("Esporta")}
+                  aria-label={t("Esporta")}
+                  disabled={busy}
+                  onClick={() => openStudio("pdf")}
+                >
+                  <Download className="size-4" />
+                </Button>
+
+                <ThemeToggle className="hidden sm:flex" />
+
+                <Button
+                  variant={panel ? "secondary" : "ghost"}
+                  size="sm"
+                  className="h-8 gap-1.5 px-2 text-xs sm:px-2.5"
+                  aria-label={t("Pannello Stile")}
+                  aria-pressed={panel}
+                  onClick={() => setPanel(!panel)}
+                >
+                  <PanelRight className="size-4" />
+                  <span className="hidden sm:inline">{t("Stile")}</span>
+                </Button>
+              </>
+            }
+          />
+
+          <Ribbon ctx={ctx} />
+        </>
+      ) : (
+        <ModeBar
+          mode={mode}
+          onExit={() => setMode("normal")}
+          immersive={immersive}
+          setImmersive={setImmersive}
+        />
+      )}
+      {mode === "immersive" ? (
+        <LineFocus editor={editor} lines={immersive.lineFocus} />
+      ) : null}
+      <input
+        ref={fileInput}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const f = e.target.files?.[0]
+          e.target.value = ""
+          if (!f || !editor) return
+          readImage(f, (src) => atBody(editor).setImage({ src }).run())
+        }}
+      />
+
+      {find ? (
+        <FindBar editor={editor} mode={find} onClose={() => setFind(null)} />
+      ) : null}
+      <ReadAloudBar />
+      <ResumeReading editor={editor} fileId={fileId} />
+
+      <div className="relative flex min-h-0 flex-1">
+        {outline && mode === "normal" ? (
+          <aside
+            className={cn(
+              "w-[228px] shrink-0 border-r border-border bg-card",
+              // si ferma sopra la barra di stato: lo zoom deve restare a vista
+              narrow && "absolute top-0 bottom-7 left-0 z-20 shadow-xl"
+            )}
+          >
+            <DocOutline editor={editor} />
+          </aside>
         ) : null}
-        <ReadAloudBar />
-        <ResumeReading editor={editor} fileId={fileId} />
 
-        <div className="relative flex min-h-0 flex-1">
-          {outline && mode === "normal" ? (
-            <aside
-              className={cn(
-                "w-[228px] shrink-0 border-r border-border bg-card",
-                // si ferma sopra la barra di stato: lo zoom deve restare a vista
-                narrow && "absolute top-0 bottom-7 left-0 z-20 shadow-xl"
-              )}
-            >
-              <DocOutline editor={editor} />
-            </aside>
-          ) : null}
-
-          <div className="flex min-w-0 flex-1 flex-col" style={{ background }}>
+        <div className="flex min-w-0 flex-1 flex-col" style={{ background }}>
+          <div
+            ref={scrollRef}
+            className="min-h-0 flex-1 overflow-auto"
+            // il pannello galleggiante non deve coprire il bordo del foglio
+            style={{
+              paddingRight: narrow && !compact && panel ? 280 : undefined,
+            }}
+          >
             <div
-              ref={scrollRef}
-              className="min-h-0 flex-1 overflow-auto"
-              // il pannello galleggiante non deve coprire il bordo del foglio
-              style={{
-                paddingRight: narrow && !compact && panel ? 280 : undefined,
-              }}
+              id="doc-zoom"
+              className={cn(
+                "mx-auto",
+                compact ? "my-3 px-2" : "my-8 px-4",
+                // a larghezza fissa il blocco si stringe sul foglio e si
+                // centra; a larghezza piena prende tutto lo spazio
+                sheetWidth ? "w-fit" : "w-full"
+              )}
+              style={
+                {
+                  zoom: scale,
+                  // il righello vive fuori dal foglio: gli servono i suoi colori
+                  "--doc-accent": accent.solid,
+                  "--doc-muted": whim.base[500],
+                  "--doc-border": rgba(whim.base[500], 0.35),
+                  "--doc-ruler-on": paper,
+                  "--doc-ruler-off": rgba(whim.base[500], 0.22),
+                } as React.CSSProperties
+              }
             >
-              <div
-                id="doc-zoom"
-                className={cn(
-                  "mx-auto",
-                  compact ? "my-3 px-2" : "my-8 px-4",
-                  // a larghezza fissa il blocco si stringe sul foglio e si
-                  // centra; a larghezza piena prende tutto lo spazio
-                  sheetWidth ? "w-fit" : "w-full"
-                )}
-                style={
-                  {
-                    zoom: scale,
-                    // il righello vive fuori dal foglio: gli servono i suoi colori
-                    "--doc-accent": accent.solid,
-                    "--doc-muted": whim.base[500],
-                    "--doc-border": rgba(whim.base[500], 0.35),
-                    "--doc-ruler-on": paper,
-                    "--doc-ruler-off": rgba(whim.base[500], 0.22),
-                  } as React.CSSProperties
-                }
-              >
-                {showRuler ? (
-                  <div
-                    className="mb-2 flex gap-2"
-                    style={{ paddingLeft: RULER_SIZE + 8 }}
-                  >
-                    <Ruler
-                      axis="horizontal"
-                      length={rulerWidth}
-                      start={theme.margins.left}
-                      end={theme.margins.right}
-                      onMargin={setMargin}
-                    />
-                  </div>
-                ) : null}
+              {showRuler ? (
+                <div
+                  className="mb-2 flex gap-2"
+                  style={{ paddingLeft: RULER_SIZE + 8 }}
+                >
+                  <Ruler
+                    axis="horizontal"
+                    length={rulerWidth}
+                    start={theme.margins.left}
+                    end={theme.margins.right}
+                    onMargin={setMargin}
+                  />
+                </div>
+              ) : null}
 
-                <div className={cn("flex gap-2", compact && "flex-col gap-3")}>
-                  {showRuler ? (
-                    <Ruler
-                      axis="vertical"
-                      length={sheetHeight}
-                      start={theme.margins.top}
-                      end={theme.margins.bottom}
-                      onMargin={setMargin}
-                    />
-                  ) : null}
-                  <ForceLightContext.Provider value={forceLight}>
-                    <DocPageContext.Provider
-                      value={paginated && exact ? exact.h : 0}
-                    >
-                      <PaperDarkContext.Provider value={paperDark}>
-                        <DocContentWidthContext.Provider value={contentWidth}>
-                          <div
-                            id="doc-sheet"
-                            data-doc-styles={fileId}
-                            lang={theme.language || region}
-                            data-outline-level={
-                              view === "outline" && outlineLevel
-                                ? outlineLevel
-                                : undefined
-                            }
-                            ref={sheetRef}
-                            className={cn(
-                              "doc-sheet relative isolate",
-                              theme.marks && "doc-marks",
-                              !theme.comments && "doc-comments-hidden",
-                              paginated && "doc-paginated",
-                              theme.hyphenation && "doc-hyphens",
-                              view !== "print" && `doc-view-${view}`,
-                              mode === "immersive" &&
-                                immersive.spacing &&
-                                "doc-imm-spacing",
-                              `doc-markup-${theme.markup ?? "all"}`
-                            )}
-                            onContextMenu={(e) => {
-                              e.preventDefault()
-                              setMenu({ x: e.clientX, y: e.clientY })
-                            }}
-                            onMouseDownCapture={(e) => {
-                              if (e.altKey && editor) selectBehind(editor, e)
-                            }}
-                            style={
-                              {
-                                // con le pagine vere il foglio è trasparente: la carta
-                                // la disegnano i singoli fogli, e fra uno e l'altro si
-                                // vede la scrivania
-                                background: paginated ? "transparent" : paper,
-                                borderRadius: theme.cornerRadius,
-                                fontFamily: fontStack(theme.font),
-                                fontSize: theme.fontSize,
-                                color: paperDark ? "#ffffff" : whim.base[800],
-                                padding: `${layout.margins.top}px ${layout.margins.right}px ${layout.margins.bottom}px ${layout.margins.left}px`,
-                                columnCount:
-                                  theme.columns > 1 ? theme.columns : undefined,
-                                columnGap:
-                                  theme.columns > 1 ? "2.2em" : undefined,
-                                minHeight:
-                                  paginated && exact
-                                    ? `calc(${pagination.pages} * ${exact.h}px + ${pagination.pages - 1} * var(--page-gap))`
-                                    : page
-                                      ? page.h
-                                      : undefined,
-                                width: sheetWidth
-                                  ? sheetWidth
-                                  : rulerWidth || "100%",
-                                marginInline: "auto",
-                                // niente transizione: la stampa catturerebbe il foglio
-                                // a metà fra scuro e chiaro
-                                transition: forceLight ? "none" : undefined,
-                                boxShadow:
-                                  forceLight || paginated
-                                    ? "none"
-                                    : sheetShadow,
-                                "--page-gap": forceLight
-                                  ? "0px"
-                                  : `${PAGE_GAP}px`,
-                                "--page-h": exact ? `${exact.h}px` : undefined,
-                                "--pages": pagination.pages,
-                                "--doc-desk": background,
-                                "--doc-paper": paper,
-                                "--doc-content-w": `${contentWidth}px`,
-                                "--doc-accent": accent.solid,
-                                "--doc-accent-soft": paperDark
-                                  ? rgba(accent.solid, 0.24)
-                                  : accent.fill,
-                                "--doc-radius": `${theme.cornerRadius}px`,
-                                "--doc-muted": paperDark
-                                  ? rgba("#ffffff", 0.55)
-                                  : whim.base[600],
-                                "--doc-border": paperDark
-                                  ? rgba("#ffffff", 0.16)
-                                  : whim.base[200],
-                              } as React.CSSProperties
-                            }
-                          >
-                            {paginated && exact ? (
-                              <PageLayer
-                                editor={editor}
-                                theme={theme}
-                                title={title ?? ""}
-                                pageHeight={exact.h}
-                                pages={pagination.pages}
-                                paper={paper}
-                                shadow={forceLight ? "none" : sheetShadow}
-                              />
-                            ) : (
-                              <>
-                                {page ? (
-                                  <PageGuides pageHeight={page.h} />
-                                ) : null}
-                                <PageDecor
-                                  theme={layout}
-                                  title={title ?? ""}
-                                  pageHeight={page?.h ?? 0}
-                                  sheetHeight={sheetHeight}
-                                />
-                              </>
-                            )}
-                            {theme.grid ? <GridOverlay /> : null}
-                            <LineNumbers
+              <div className={cn("flex gap-2", compact && "flex-col gap-3")}>
+                {showRuler ? (
+                  <Ruler
+                    axis="vertical"
+                    length={sheetHeight}
+                    start={theme.margins.top}
+                    end={theme.margins.bottom}
+                    onMargin={setMargin}
+                  />
+                ) : null}
+                <ForceLightContext.Provider value={forceLight}>
+                  <DocPageContext.Provider
+                    value={paginated && exact ? exact.h : 0}
+                  >
+                    <PaperDarkContext.Provider value={paperDark}>
+                      <DocContentWidthContext.Provider value={contentWidth}>
+                        <div
+                          id="doc-sheet"
+                          data-doc-styles={fileId}
+                          lang={theme.language || region}
+                          data-outline-level={
+                            view === "outline" && outlineLevel
+                              ? outlineLevel
+                              : undefined
+                          }
+                          ref={sheetRef}
+                          className={cn(
+                            "doc-sheet relative isolate",
+                            theme.marks && "doc-marks",
+                            !theme.comments && "doc-comments-hidden",
+                            paginated && "doc-paginated",
+                            theme.hyphenation && "doc-hyphens",
+                            view !== "print" && `doc-view-${view}`,
+                            mode === "immersive" &&
+                              immersive.spacing &&
+                              "doc-imm-spacing",
+                            `doc-markup-${theme.markup ?? "all"}`
+                          )}
+                          onContextMenu={(e) => {
+                            e.preventDefault()
+                            setMenu({ x: e.clientX, y: e.clientY })
+                          }}
+                          onMouseDownCapture={(e) => {
+                            if (e.altKey && editor) selectBehind(editor, e)
+                          }}
+                          style={
+                            {
+                              // con le pagine vere il foglio è trasparente: la carta
+                              // la disegnano i singoli fogli, e fra uno e l'altro si
+                              // vede la scrivania
+                              background: paginated ? "transparent" : paper,
+                              borderRadius: theme.cornerRadius,
+                              fontFamily: fontStack(theme.font),
+                              fontSize: theme.fontSize,
+                              color: paperDark ? "#ffffff" : whim.base[800],
+                              padding: `${layout.margins.top}px ${layout.margins.right}px ${layout.margins.bottom}px ${layout.margins.left}px`,
+                              columnCount:
+                                theme.columns > 1 ? theme.columns : undefined,
+                              columnGap:
+                                theme.columns > 1 ? "2.2em" : undefined,
+                              minHeight:
+                                paginated && exact
+                                  ? `calc(${pagination.pages} * ${exact.h}px + ${pagination.pages - 1} * var(--page-gap))`
+                                  : page
+                                    ? page.h
+                                    : undefined,
+                              width: sheetWidth
+                                ? sheetWidth
+                                : rulerWidth || "100%",
+                              marginInline: "auto",
+                              // niente transizione: la stampa catturerebbe il foglio
+                              // a metà fra scuro e chiaro
+                              transition: forceLight ? "none" : undefined,
+                              boxShadow:
+                                forceLight || paginated ? "none" : sheetShadow,
+                              "--page-gap": forceLight
+                                ? "0px"
+                                : `${PAGE_GAP}px`,
+                              "--page-h": exact ? `${exact.h}px` : undefined,
+                              "--pages": pagination.pages,
+                              "--doc-desk": background,
+                              "--doc-paper": paper,
+                              "--doc-content-w": `${contentWidth}px`,
+                              "--doc-accent": accent.solid,
+                              "--doc-accent-soft": paperDark
+                                ? rgba(accent.solid, 0.24)
+                                : accent.fill,
+                              "--doc-radius": `${theme.cornerRadius}px`,
+                              "--doc-muted": paperDark
+                                ? rgba("#ffffff", 0.55)
+                                : whim.base[600],
+                              "--doc-border": paperDark
+                                ? rgba("#ffffff", 0.16)
+                                : whim.base[200],
+                            } as React.CSSProperties
+                          }
+                        >
+                          {paginated && exact ? (
+                            <PageLayer
                               editor={editor}
-                              mode={theme.lineNumbers}
-                              marginLeft={layout.margins.left}
+                              theme={theme}
+                              title={title ?? ""}
+                              pageHeight={exact.h}
+                              pages={pagination.pages}
+                              paper={paper}
+                              shadow={forceLight ? "none" : sheetShadow}
                             />
-                            <EditorContent editor={editor} />
-                            <InkLayer
-                              ink={ink}
-                              visible={theme.inkVisible ?? true}
-                              paperDark={paperDark}
-                            />
-                            {/* tippy sposta la barretta fuori da qui: senza un involucro
+                          ) : (
+                            <>
+                              {page ? <PageGuides pageHeight={page.h} /> : null}
+                              <PageDecor
+                                theme={layout}
+                                title={title ?? ""}
+                                pageHeight={page?.h ?? 0}
+                                sheetHeight={sheetHeight}
+                              />
+                            </>
+                          )}
+                          {theme.grid ? <GridOverlay /> : null}
+                          <LineNumbers
+                            editor={editor}
+                            mode={theme.lineNumbers}
+                            marginLeft={layout.margins.left}
+                          />
+                          <EditorContent editor={editor} />
+                          <InkLayer
+                            ink={ink}
+                            visible={theme.inkVisible ?? true}
+                            paperDark={paperDark}
+                          />
+                          {/* tippy sposta la barretta fuori da qui: senza un involucro
                       fisso, aggiungere un fratello prima di lei fa fallire
                       l'inserimento nel DOM e la pagina si pianta */}
-                            <div className="contents">
-                              <DocBubbleMenu
-                                editor={editor}
-                                st={st}
-                                onComment={() => newComment.current()}
-                              />
-                            </div>
+                          <div className="contents">
+                            <DocBubbleMenu
+                              editor={editor}
+                              st={st}
+                              onComment={() => newComment.current()}
+                            />
                           </div>
-                        </DocContentWidthContext.Provider>
-                      </PaperDarkContext.Provider>
-                    </DocPageContext.Provider>
-                  </ForceLightContext.Provider>
-                  {theme.comments ? (
-                    <CommentsColumn
-                      editor={editor}
-                      ctl={comments}
-                      sheet={sheetRef}
-                      stacked={compact}
-                    />
-                  ) : null}
-                </div>
+                        </div>
+                      </DocContentWidthContext.Provider>
+                    </PaperDarkContext.Provider>
+                  </DocPageContext.Provider>
+                </ForceLightContext.Provider>
+                {theme.comments ? (
+                  <CommentsColumn
+                    editor={editor}
+                    ctl={comments}
+                    sheet={sheetRef}
+                    stacked={compact}
+                  />
+                ) : null}
               </div>
-            </div>
-
-            <div
-              hidden={mode !== "normal"}
-              className="flex h-[calc(1.75rem+env(safe-area-inset-bottom))] shrink-0 items-center gap-3 overflow-hidden border-t border-border bg-card safe-x pb-[env(safe-area-inset-bottom)] text-[11px] whitespace-nowrap text-muted-foreground"
-            >
-              <PageIndicator
-                editor={editor}
-                sheet={sheetRef}
-                step={paginated && exact ? exact.h + PAGE_GAP : (page?.h ?? 0)}
-                total={
-                  paginated
-                    ? pagination.pages
-                    : page
-                      ? Math.max(1, Math.ceil(sheetHeight / page.h))
-                      : 1
-                }
-              />
-              <DocCounts editor={editor} />
-              {dictation.listening ? (
-                <span
-                  className="flex min-w-0 items-center gap-1.5 text-rose-500"
-                  title={
-                    dictation.local
-                      ? t("Riconoscimento sul dispositivo, senza internet")
-                      : t("Riconoscimento vocale del browser")
-                  }
-                >
-                  <span className="size-1.5 shrink-0 animate-pulse rounded-full bg-rose-500" />
-                  <span className="shrink-0">{t("In ascolto")}</span>
-                  {dictation.interim ? (
-                    <span className="truncate text-muted-foreground italic">
-                      «{dictation.interim}»
-                    </span>
-                  ) : null}
-                </span>
-              ) : null}
-              <span className="hidden whitespace-nowrap md:inline">
-                {PROOFING_LANGUAGES.find((l) => l.code === theme.language)
-                  ?.label ?? theme.language}
-              </span>
-              <span className="ml-auto hidden whitespace-nowrap lg:inline">
-                {page
-                  ? `${PAGE_FORMATS[theme.format].label} · ${
-                      theme.orientation === "landscape"
-                        ? t("orizzontale")
-                        : t("verticale")
-                    }`
-                  : t("Formato libero")}
-              </span>
-              <ZoomControl
-                zoom={zoom}
-                compact={compact}
-                onZoom={setZoom}
-                onFit={() => ctx?.fitWidth()}
-              />
             </div>
           </div>
 
-          {mode !== "normal" ? null : compact ? (
-            sidePanel ? (
-              <aside
-                aria-label={
-                  stylesPane
-                    ? t("Stili")
-                    : taskPane
-                      ? t("Riquadro attività")
-                      : t("Stile")
+          <div
+            hidden={mode !== "normal"}
+            className="flex h-[calc(1.75rem+env(safe-area-inset-bottom))] shrink-0 items-center gap-3 overflow-hidden border-t border-border bg-card safe-x pb-[env(safe-area-inset-bottom)] text-[11px] whitespace-nowrap text-muted-foreground"
+          >
+            <PageIndicator
+              editor={editor}
+              sheet={sheetRef}
+              step={paginated && exact ? exact.h + PAGE_GAP : (page?.h ?? 0)}
+              total={
+                paginated
+                  ? pagination.pages
+                  : page
+                    ? Math.max(1, Math.ceil(sheetHeight / page.h))
+                    : 1
+              }
+            />
+            <DocCounts editor={editor} />
+            {dictation.listening ? (
+              <span
+                className="flex min-w-0 items-center gap-1.5 text-rose-500"
+                title={
+                  dictation.local
+                    ? t("Riconoscimento sul dispositivo, senza internet")
+                    : t("Riconoscimento vocale del browser")
                 }
-                className="fixed inset-x-0 bottom-0 z-40 flex h-[min(70dvh,560px)] flex-col overflow-hidden rounded-t-2xl border-t border-border bg-card pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_40px_-12px_rgba(0,0,0,0.35)]"
               >
-                {stylesPane || taskPane ? null : (
-                  <div className="flex h-11 shrink-0 items-center justify-between border-b border-border px-3">
-                    <span className="text-sm font-semibold">{t("Stile")}</span>
-                    <button
-                      type="button"
-                      onClick={() => setPanel(false)}
-                      aria-label={t("Chiudi il pannello")}
-                      className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
-                    >
-                      <X className="size-4" />
-                    </button>
-                  </div>
-                )}
-                <div className="min-h-0 flex-1">{inspector}</div>
-              </aside>
-            ) : null
-          ) : (
-            <aside
-              className={cn(
-                "shrink-0 border-l border-border bg-card",
-                narrow
-                  ? sidePanel
-                    ? "absolute top-0 right-0 bottom-7 z-20 w-[280px] shadow-xl"
-                    : "hidden"
-                  : cn(
-                      "transition-[width] duration-200",
-                      sidePanel ? "w-[280px]" : "w-0 overflow-hidden"
-                    )
-              )}
-            >
-              {sidePanel ? inspector : null}
-            </aside>
-          )}
+                <span className="size-1.5 shrink-0 animate-pulse rounded-full bg-rose-500" />
+                <span className="shrink-0">{t("In ascolto")}</span>
+                {dictation.interim ? (
+                  <span className="truncate text-muted-foreground italic">
+                    «{dictation.interim}»
+                  </span>
+                ) : null}
+              </span>
+            ) : null}
+            <span className="hidden whitespace-nowrap md:inline">
+              {PROOFING_LANGUAGES.find((l) => l.code === theme.language)
+                ?.label ?? theme.language}
+            </span>
+            <span className="ml-auto hidden whitespace-nowrap lg:inline">
+              {page
+                ? `${PAGE_FORMATS[theme.format].label} · ${
+                    theme.orientation === "landscape"
+                      ? t("orizzontale")
+                      : t("verticale")
+                  }`
+                : t("Formato libero")}
+            </span>
+            <ZoomControl
+              zoom={zoom}
+              compact={compact}
+              onZoom={setZoom}
+              onFit={() => ctx?.fitWidth()}
+            />
+          </div>
         </div>
 
-        <StyleDialog
-          request={styleDialog}
-          onClose={() => setStyleDialog(null)}
-          editor={editor}
-          theme={theme}
-          setTheme={setTheme}
-          onCreated={(id, next) => {
-            if (!editor) return
-            applyDocStyle(editor, next, id)
-            // lo stile nuovo contiene già la formattazione della selezione
-            dropDirectFormatting(editor, next.styles?.[id] ?? {})
-          }}
-        />
-
-        <SourcesDialog
-          open={sourcesDialog !== null}
-          onOpenChange={(open) => !open && setSourcesDialog(null)}
-          fileId={fileId}
-          style={theme.citationStyle}
-          initialId={sourcesDialog?.id}
-          onCite={
-            sourcesDialog?.cite && editor
-              ? (id) => editor.chain().focus().insertCitation(id).run()
-              : undefined
-          }
-        />
-
-        <DocContextMenu
-          editor={editor}
-          point={menu}
-          onClose={() => setMenu(null)}
-          onInsertBoard={insertBoard}
-          onComment={() => newComment.current()}
-          language={theme?.language || region}
-          onThesaurus={(word) =>
-            openTaskPane({ kind: "thesaurus", word, nonce: Date.now() })
-          }
-        />
+        {mode !== "normal" ? null : compact ? (
+          sidePanel ? (
+            <aside
+              aria-label={
+                stylesPane
+                  ? t("Stili")
+                  : taskPane
+                    ? t("Riquadro attività")
+                    : t("Stile")
+              }
+              className="fixed inset-x-0 bottom-0 z-40 flex h-[min(70dvh,560px)] flex-col overflow-hidden rounded-t-2xl border-t border-border bg-card pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_40px_-12px_rgba(0,0,0,0.35)]"
+            >
+              {stylesPane || taskPane ? null : (
+                <div className="flex h-11 shrink-0 items-center justify-between border-b border-border px-3">
+                  <span className="text-sm font-semibold">{t("Stile")}</span>
+                  <button
+                    type="button"
+                    onClick={() => setPanel(false)}
+                    aria-label={t("Chiudi il pannello")}
+                    className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
+                  >
+                    <X className="size-4" />
+                  </button>
+                </div>
+              )}
+              <div className="min-h-0 flex-1">{inspector}</div>
+            </aside>
+          ) : null
+        ) : (
+          <aside
+            className={cn(
+              "shrink-0 border-l border-border bg-card",
+              narrow
+                ? sidePanel
+                  ? "absolute top-0 right-0 bottom-7 z-20 w-[280px] shadow-xl"
+                  : "hidden"
+                : cn(
+                    "transition-[width] duration-200",
+                    sidePanel ? "w-[280px]" : "w-0 overflow-hidden"
+                  )
+            )}
+          >
+            {sidePanel ? inspector : null}
+          </aside>
+        )}
       </div>
-    </FinalFocusProvider>
+
+      <StyleDialog
+        request={styleDialog}
+        onClose={() => setStyleDialog(null)}
+        editor={editor}
+        theme={theme}
+        setTheme={setTheme}
+        onCreated={(id, next) => {
+          if (!editor) return
+          applyDocStyle(editor, next, id)
+          // lo stile nuovo contiene già la formattazione della selezione
+          dropDirectFormatting(editor, next.styles?.[id] ?? {})
+        }}
+      />
+
+      <SourcesDialog
+        open={sourcesDialog !== null}
+        onOpenChange={(open) => !open && setSourcesDialog(null)}
+        fileId={fileId}
+        style={theme.citationStyle}
+        initialId={sourcesDialog?.id}
+        onCite={
+          sourcesDialog?.cite && editor
+            ? (id) => editor.chain().focus().insertCitation(id).run()
+            : undefined
+        }
+      />
+
+      <DocContextMenu
+        editor={editor}
+        point={menu}
+        onClose={() => setMenu(null)}
+        onInsertBoard={insertBoard}
+        onComment={() => newComment.current()}
+        language={theme?.language || region}
+        onThesaurus={(word) =>
+          openTaskPane({ kind: "thesaurus", word, nonce: Date.now() })
+        }
+      />
+    </div>
   )
 }
 

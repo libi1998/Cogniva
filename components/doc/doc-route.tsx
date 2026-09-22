@@ -4,6 +4,7 @@ import * as React from "react"
 import { DocEditor } from "@/components/doc/doc-editor"
 import { DocSkeleton } from "@/components/doc/doc-skeleton"
 import { FileMissing } from "@/components/shared/workspace-states"
+import { FinalFocusProvider } from "@/components/ui/final-focus"
 import { useStore } from "@/lib/store"
 
 type Params = Promise<{ id: string }>
@@ -30,5 +31,18 @@ function DocFromParams({ params }: { params: Params }) {
   if (!exists) return <FileMissing kind="doc" />
   // la chiave rimonta l'editor passando da un documento all'altro: il
   // contenuto iniziale e la cronologia di Tiptap sono per file
-  return <DocEditor key={id} fileId={id} />
+  return <DocWithFocus key={id} id={id} />
+}
+
+/**
+ * Il testo del documento è il posto dove torna il cursore quando si chiude
+ * una finestra, un menu o un riquadro: lo dice qui, una volta per tutti.
+ */
+function DocWithFocus({ id }: { id: string }) {
+  const sheet = React.useRef<HTMLElement | null>(null)
+  return (
+    <FinalFocusProvider target={sheet}>
+      <DocEditor fileId={id} textRef={sheet} />
+    </FinalFocusProvider>
+  )
 }
