@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test"
-import { openDemo, openTab, ribbonButton, withEditor } from "./editor"
+import { focused, openDemo, openTab, ribbonButton, withEditor } from "./editor"
 
 /**
  * La barra a schede e le sue finestre, come in Word.
@@ -37,6 +37,8 @@ async function type(page: Page, text: string) {
     editor.chain().insertContentAt(end, { type: "paragraph" }).focus("end").run()
     `
   )
+  // il comando `focus` di Tiptap mette il fuoco al fotogramma dopo
+  await focused(page)
   await page.keyboard.type(text, { delay: 12 })
   return withEditor<string>(
     page,

@@ -1,5 +1,12 @@
 import { expect, test, type Page } from "@playwright/test"
-import { inserted, openDemo, openTab, ribbonButton, withEditor } from "./editor"
+import {
+  focused,
+  inserted,
+  openDemo,
+  openTab,
+  ribbonButton,
+  withEditor,
+} from "./editor"
 
 /**
  * Correzione automatica mentre si scrive, come in Word. Il documento
@@ -16,6 +23,9 @@ async function type(page: Page, text: string) {
     editor.chain().insertContentAt(end, { type: "paragraph" }).focus("end").run()
     `
   )
+  // il comando `focus` di Tiptap mette il fuoco al fotogramma dopo: senza
+  // aspettarlo il primo tasto arriverebbe prima e andrebbe perso
+  await focused(page)
   await page.keyboard.type(text, { delay: 12 })
   return withEditor<string>(
     page,
