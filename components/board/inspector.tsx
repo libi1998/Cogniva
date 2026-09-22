@@ -58,8 +58,8 @@ import {
   tableAddRow,
   tableRemoveCol,
   tableRemoveRow,
-  tableSize,
   WIRE_SPECS,
+  withTable,
 } from "@/lib/items"
 import { Glyph } from "./glyph"
 import { IconPanel, ShapeGlyph } from "./panels"
@@ -650,14 +650,14 @@ export function BoardInspector({
                       className="size-7"
                       onClick={() => {
                         snap()
-                        const t = tableRemoveRow(
-                          first.table!,
-                          first.table!.rows - 1
+                        store.updateNode(
+                          fileId,
+                          first.id,
+                          withTable(
+                            first,
+                            tableRemoveRow(first.table!, first.table!.rows - 1)
+                          )
                         )
-                        store.updateNode(fileId, first.id, {
-                          table: t,
-                          h: tableSize(t).h,
-                        })
                       }}
                     >
                       <Minus className="size-3.5" />
@@ -671,11 +671,11 @@ export function BoardInspector({
                       className="size-7"
                       onClick={() => {
                         snap()
-                        const t = tableAddRow(first.table!)
-                        store.updateNode(fileId, first.id, {
-                          table: t,
-                          h: tableSize(t).h,
-                        })
+                        store.updateNode(
+                          fileId,
+                          first.id,
+                          withTable(first, tableAddRow(first.table!))
+                        )
                       }}
                     >
                       <Rows3 className="size-3.5" />
@@ -690,14 +690,14 @@ export function BoardInspector({
                       className="size-7"
                       onClick={() => {
                         snap()
-                        const t = tableRemoveCol(
-                          first.table!,
-                          first.table!.cols - 1
+                        store.updateNode(
+                          fileId,
+                          first.id,
+                          withTable(
+                            first,
+                            tableRemoveCol(first.table!, first.table!.cols - 1)
+                          )
                         )
-                        store.updateNode(fileId, first.id, {
-                          table: t,
-                          w: tableSize(t).w,
-                        })
                       }}
                     >
                       <Minus className="size-3.5" />
@@ -711,11 +711,11 @@ export function BoardInspector({
                       className="size-7"
                       onClick={() => {
                         snap()
-                        const t = tableAddCol(first.table!)
-                        store.updateNode(fileId, first.id, {
-                          table: t,
-                          w: tableSize(t).w,
-                        })
+                        store.updateNode(
+                          fileId,
+                          first.id,
+                          withTable(first, tableAddCol(first.table!))
+                        )
                       }}
                     >
                       <Columns3 className="size-3.5" />
@@ -872,13 +872,20 @@ export function BoardInspector({
                 className="h-7 flex-1 text-xs"
                 onClick={() => {
                   snap()
-                  const ids: string[] = []
+                  // come ⌘D: i connettori fra gli elementi duplicati vengono con loro
+                  const idMap = new Map<string, string>()
                   for (const n of nodes) {
-                    ids.push(
+                    idMap.set(
+                      n.id,
                       store.addNode(fileId, { ...n, x: n.x + 28, y: n.y + 28 })
                     )
                   }
-                  setSelection({ nodes: ids, edges: [] })
+                  for (const edge of data.edges) {
+                    const from = idMap.get(edge.from)
+                    const to = idMap.get(edge.to)
+                    if (from && to) store.addEdge(fileId, { ...edge, from, to })
+                  }
+                  setSelection({ nodes: [...idMap.values()], edges: [] })
                 }}
               >
                 <Copy className="size-3.5" /> {t("Duplica")}

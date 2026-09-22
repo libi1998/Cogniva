@@ -32,13 +32,15 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { getWorkspace } from "@/lib/store"
 import {
+  hasEditableText,
   makeItem,
   tableAddCol,
   tableAddRow,
   tableRemoveCol,
   tableRemoveRow,
+  withTable,
 } from "@/lib/items"
-import type { BoardData } from "@/lib/types"
+import type { BoardData, TableData } from "@/lib/types"
 import type { Selection } from "./board-canvas"
 
 import { useT } from "@/lib/i18n/client"
@@ -119,11 +121,12 @@ export function BoardContextMenu({
       store.reorder(fileId, targets, dir)
     })
 
-  const patchTable = (fn: (t: NonNullable<typeof node>["table"]) => unknown) =>
+  const patchTable = (fn: (t: TableData) => TableData) =>
     run(() => {
       if (!node?.table) return
       store.snapshot(fileId)
-      store.updateNode(fileId, node.id, { table: fn(node.table) as never })
+      // il riquadro cresce con righe e colonne, come dal pannello Stile
+      store.updateNode(fileId, node.id, withTable(node, fn(node.table)))
     })
 
   return (
@@ -208,7 +211,7 @@ export function BoardContextMenu({
 
         {node ? (
           <>
-            {node.kind !== "icon" && node.kind !== "draw" ? (
+            {hasEditableText(node) ? (
               <DropdownMenuItem onClick={run(() => onEditText(node.id))}>
                 <Pencil className="size-4" /> {t("Modifica testo")}
                 <DropdownMenuShortcut>⏎</DropdownMenuShortcut>
@@ -254,29 +257,25 @@ export function BoardContextMenu({
                   <Table2 className="size-4" /> {t("Tabella")}
                 </DropdownMenuSubTrigger>
                 <DropdownMenuSubContent>
-                  <DropdownMenuItem
-                    onClick={patchTable((t) => tableAddRow(t!))}
-                  >
+                  <DropdownMenuItem onClick={patchTable((t) => tableAddRow(t))}>
                     <Rows3 className="size-4" /> {t("Aggiungi riga")}
                   </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={patchTable((t) => tableAddCol(t!))}
-                  >
+                  <DropdownMenuItem onClick={patchTable((t) => tableAddCol(t))}>
                     <Columns3 className="size-4" /> {t("Aggiungi colonna")}
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={patchTable((t) => tableRemoveRow(t!, t!.rows - 1))}
+                    onClick={patchTable((t) => tableRemoveRow(t, t.rows - 1))}
                   >
                     {t("Rimuovi ultima riga")}
                   </DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={patchTable((t) => tableRemoveCol(t!, t!.cols - 1))}
+                    onClick={patchTable((t) => tableRemoveCol(t, t.cols - 1))}
                   >
                     {t("Rimuovi ultima colonna")}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
-                    onClick={patchTable((t) => ({ ...t!, header: !t!.header }))}
+                    onClick={patchTable((t) => ({ ...t, header: !t.header }))}
                   >
                     {node.table?.header
                       ? t("Togli intestazione")
@@ -284,8 +283,8 @@ export function BoardContextMenu({
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={patchTable((t) => ({
-                      ...t!,
-                      striped: !t!.striped,
+                      ...t,
+                      striped: !t.striped,
                     }))}
                   >
                     {node.table?.striped
@@ -341,11 +340,13 @@ export function BoardContextMenu({
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={run(() => {
+                // le punte non impostate seguono lo stile della board: si
+                // scambiano quelle che si vedono. Prima un connettore con le
+                // punte della board perdeva la freccia invece di girarla
+                const head = edge.head ?? data.theme.arrows.head
+                const tail = edge.tail ?? data.theme.arrows.tail
                 store.snapshot(fileId)
-                store.updateEdge(fileId, edge.id, {
-                  head: edge.head === "none" ? "arrow" : "none",
-                  tail: edge.tail === "none" ? "arrow" : "none",
-                })
+                store.updateEdge(fileId, edge.id, { head: tail, tail: head })
               })}
             >
               <ArrowUpDown className="size-4" /> {t("Inverti le punte")}

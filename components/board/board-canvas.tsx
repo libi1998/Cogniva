@@ -11,6 +11,7 @@ import { AUTO_CANVAS, resolveColor } from "@/lib/use-theme"
 import { formatLabel, formatPx } from "@/lib/page"
 import {
   contains,
+  hasEditableText,
   isContainer,
   makeItem,
   setTableCell,
@@ -53,6 +54,8 @@ const SNAP = 6
 /** un dito fermo così a lungo apre il menu, come il tasto destro */
 const LONG_PRESS_MS = 500
 const LONG_PRESS_SLOP = 8
+/** fin qui (in pixel dello schermo) un trascinamento è ancora un clic */
+const CLICK_SLOP = 5
 
 const clampZoom = (z: number) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, z))
 
@@ -74,7 +77,14 @@ type Interaction =
       started: boolean
     }
   | { kind: "marquee"; start: { x: number; y: number }; additive: boolean }
-  | { kind: "connect"; from: string; side: Side }
+  | {
+      kind: "connect"
+      from: string
+      side: Side
+      /** dove è cominciato, sullo schermo: un clic fermo non collega niente */
+      sx: number
+      sy: number
+    }
   | { kind: "place"; start: { x: number; y: number } }
   | { kind: "draw"; points: number[] }
   | { kind: "erase"; started: boolean }
@@ -244,7 +254,9 @@ export function BoardCanvas({
   }
 
   const hitNode = (world: { x: number; y: number }, skip?: string) => {
-    const list = dataRef.current.nodes
+    // nell'ordine in cui si vedono: una sezione disegnata dopo gli elementi
+    // che contiene sta comunque sotto, e non deve rubare il collegamento
+    const list = sortedForRender(dataRef.current.nodes)
     for (let i = list.length - 1; i >= 0; i--) {
       const n = list[i]
       if (n.id === skip || n.kind === "draw") continue
@@ -847,7 +859,13 @@ export function BoardCanvas({
       finishStroke(it.points)
     }
 
-    if (it.kind === "connect") {
+    // un clic su un elemento (o su un suo pallino) senza trascinare non
+    // collega niente: prima creava un elemento nuovo sopra quello di partenza,
+    // o un collegamento con la sezione che lo contiene
+    const dragged =
+      it.kind === "connect" &&
+      Math.hypot(e.clientX - it.sx, e.clientY - it.sy) > CLICK_SLOP
+    if (it.kind === "connect" && dragged) {
       const hit = hitNode(world, it.from)
       store.snapshot(fileId)
       if (hit) {
@@ -995,8 +1013,10 @@ export function BoardCanvas({
       return
     }
     if (e.key === "Enter" && sel.nodes.length === 1) {
+      const node = dataRef.current.nodes.find((n) => n.id === sel.nodes[0])
+      if (!node || !hasEditableText(node)) return
       e.preventDefault()
-      setEditingNode(sel.nodes[0])
+      setEditingNode(node.id)
       return
     }
     if (e.key.startsWith("Arrow") && sel.nodes.length) {
@@ -1093,7 +1113,17 @@ export function BoardCanvas({
 
   /* ------------------------------- handlers ------------------------------ */
 
+  /**
+   * Il menu contestuale vive in un portale, fuori dal canvas nella pagina ma
+   * dentro nell'albero di React: i suoi eventi risalgono fino a qui. Il clic
+   * su una voce chiudeva il menu già alla pressione, e la voce non faceva
+   * niente. Si ascolta solo quello che succede davvero sul canvas.
+   */
+  const fromCanvas = (e: React.SyntheticEvent) =>
+    e.currentTarget.contains(e.target as Node)
+
   const onCanvasPointerDown = (e: React.PointerEvent) => {
+    if (!fromCanvas(e)) return
     setMenu(null)
     if (e.button === 1 || space || tool.t === "hand") {
       e.preventDefault()
@@ -1140,7 +1170,13 @@ export function BoardCanvas({
       setMenu(null)
 
       if (tool.t === "connect") {
-        begin({ kind: "connect", from: node.id, side: "auto" })
+        begin({
+          kind: "connect",
+          from: node.id,
+          side: "auto",
+          sx: e.clientX,
+          sy: e.clientY,
+        })
         setOverlay({
           connect: {
             from: node.id,
@@ -1193,7 +1229,13 @@ export function BoardCanvas({
     (node: BoardNode, side: Exclude<Side, "auto">, e: React.PointerEvent) => {
       e.stopPropagation()
       e.preventDefault()
-      begin({ kind: "connect", from: node.id, side })
+      begin({
+        kind: "connect",
+        from: node.id,
+        side,
+        sx: e.clientX,
+        sy: e.clientY,
+      })
       setOverlay({
         connect: {
           from: node.id,
@@ -1233,8 +1275,7 @@ export function BoardCanvas({
           return
         }
       }
-      if (node.kind === "icon" || node.kind === "draw" || node.kind === "chart")
-        return
+      if (!hasEditableText(node)) return
       setEditingNode(node.id)
     }
   )
@@ -1246,9 +1287,18 @@ export function BoardCanvas({
     setMenu({ ...state, x: e.clientX, y: e.clientY })
   }
 
+  // il tasto destro su un elemento non selezionato lo seleziona, come la
+  // pressione prolungata: Copia, Taglia e Duplica lavorano sulla selezione,
+  // e prima agivano su quello che era selezionato prima (o su niente)
   const onNodeContextMenu = useStableHandler(
-    (node: BoardNode, e: React.MouseEvent) =>
+    (node: BoardNode, e: React.MouseEvent) => {
+      if (!selRef.current.nodes.includes(node.id)) {
+        const next = { nodes: [node.id], edges: [] }
+        selRef.current = next
+        setSelection(next)
+      }
       openMenuAt({ type: "node", id: node.id, x: 0, y: 0 }, e)
+    }
   )
 
   const onNodeTextCommit = useStableHandler((node: BoardNode, v: string) => {
@@ -1304,8 +1354,14 @@ export function BoardCanvas({
   )
 
   const onEdgeContextMenu = useStableHandler(
-    (edge: BoardEdge, e: React.MouseEvent) =>
+    (edge: BoardEdge, e: React.MouseEvent) => {
+      if (!selRef.current.edges.includes(edge.id)) {
+        const next = { nodes: [], edges: [edge.id] }
+        selRef.current = next
+        setSelection(next)
+      }
       openMenuAt({ type: "edge", id: edge.id, x: 0, y: 0 }, e)
+    }
   )
 
   const onEdgeDoubleClick = useStableHandler(
@@ -1399,12 +1455,16 @@ export function BoardCanvas({
       ref={ref}
       className="relative h-full w-full touch-none overflow-hidden overscroll-none [-webkit-touch-callout:none]"
       style={{ ...bgStyle, cursor }}
-      onPointerDownCapture={onRootPointerDownCapture}
+      onPointerDownCapture={(e) => {
+        if (fromCanvas(e)) onRootPointerDownCapture(e)
+      }}
       onPointerDown={onCanvasPointerDown}
       onPointerMove={(e) => {
-        lastPointer.current = { x: e.clientX, y: e.clientY }
+        if (fromCanvas(e)) lastPointer.current = { x: e.clientX, y: e.clientY }
       }}
-      onContextMenu={(e) => openMenuAt({ type: "canvas", x: 0, y: 0 }, e)}
+      onContextMenu={(e) => {
+        if (fromCanvas(e)) openMenuAt({ type: "canvas", x: 0, y: 0 }, e)
+      }}
       onDoubleClick={(e) => {
         if (e.target !== e.currentTarget) return
         const w = toWorld(e.clientX, e.clientY)

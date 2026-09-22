@@ -627,6 +627,22 @@ export function tableSize(t: TableData) {
   }
 }
 
+/**
+ * La tabella cambiata (una riga o una colonna in più o in meno) insieme al
+ * riquadro che la contiene. Righe e colonne si disegnano in proporzione al
+ * riquadro: se non cresce con loro, una riga aggiunta schiaccia le altre. Una
+ * tabella ridimensionata a mano mantiene la sua scala.
+ */
+export function withTable(node: BoardNode, next: TableData) {
+  const size = tableSize(next)
+  const prev = node.table ? tableSize(node.table) : size
+  return {
+    table: next,
+    w: Math.max(1, Math.round((node.w * size.w) / (prev.w || size.w || 1))),
+    h: Math.max(1, Math.round((node.h * size.h) / (prev.h || size.h || 1))),
+  }
+}
+
 export function tableCell(t: TableData, r: number, c: number) {
   return t.cells[r * t.cols + c] ?? ""
 }
@@ -835,6 +851,21 @@ export function makeItem(
       }
     }
   }
+}
+
+/**
+ * Gli elementi con un testo che si scrive dentro al riquadro. Icone, tratti e
+ * grafici non ne hanno; le tabelle si scrivono cella per cella: aprire lì il
+ * campo di testo faceva scrivere un testo che poi non si vedeva da nessuna
+ * parte.
+ */
+export function hasEditableText(n: BoardNode) {
+  return (
+    n.kind === "shape" ||
+    n.kind === "section" ||
+    n.kind === "frame" ||
+    n.kind === "wire"
+  )
 }
 
 /** true per gli elementi che fanno da contenitore (trascinandoli portano con sé il contenuto) */
