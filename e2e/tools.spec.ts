@@ -539,3 +539,34 @@ test("Copia formato non toglie commenti e revisioni", async ({ page }) => {
   expect(await marks(13)).toEqual(["bold", "comment"])
   expect(await marks(17)).toEqual(["bold", "deletion"])
 })
+
+test("Cancella formattazione lascia commenti, revisioni e collegamenti", async ({
+  page,
+}) => {
+  await openDemo(page)
+  await withEditor(
+    page,
+    `editor.commands.setContent({ type: "doc", content: [
+      { type: "docTitle", content: [{ type: "text", text: "Prova" }] },
+      { type: "paragraph", content: [
+        { type: "text", text: "uno", marks: [{ type: "bold" }, { type: "comment", attrs: { id: "c1" } }] },
+        { type: "text", text: " " },
+        { type: "text", text: "due", marks: [{ type: "italic" }, { type: "deletion", attrs: { author: "Ada", date: 1 } }] },
+        { type: "text", text: " " },
+        { type: "text", text: "tre", marks: [{ type: "underline" }, { type: "link", attrs: { href: "https://example.com" } }] },
+      ] },
+    ] })
+    editor.chain().focus().setTextSelection({ from: 8, to: 19 }).run()`
+  )
+  await openTab(page, "Home")
+  await (await ribbonButton(page, "Cancella tutta la formattazione")).click()
+  const marks = (at: number) =>
+    withEditor<string[]>(
+      page,
+      `return editor.state.doc.resolve(${at}).marks().map((m) => m.type.name).sort()`
+    )
+  // la formattazione se ne va, il resto no
+  expect(await marks(9)).toEqual(["comment"])
+  expect(await marks(13)).toEqual(["deletion"])
+  expect(await marks(17)).toEqual(["link"])
+})

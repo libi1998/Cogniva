@@ -50,15 +50,35 @@ export function applyDocStyle(editor: Editor, theme: DocTheme, id: string) {
   chain.run()
 }
 
+/**
+ * I marchi che non sono formattazione: commenti, revisioni, collegamenti,
+ * segnalibri e voci d'indice. «Cancella formattazione» e il pennello non li
+ * toccano: togliendoli un commento restava senza testo e una parola eliminata
+ * con le revisioni ricompariva come se niente fosse.
+ */
+const NOT_FORMAT = new Set([
+  "comment",
+  "insertion",
+  "deletion",
+  "link",
+  "bookmark",
+  "indexEntry",
+])
+
+export const isFormatMark = (name: string) => !NOT_FORMAT.has(name)
+
+/** Toglie dalla selezione solo i marchi di formattazione */
+export function unsetFormatMarks(editor: Editor) {
+  const chain = editor.chain().focus()
+  for (const name of Object.keys(editor.schema.marks)) {
+    if (isFormatMark(name)) chain.unsetMark(name)
+  }
+  return chain
+}
+
 /** «Cancella formattazione»: testo e paragrafo tornano «Normale» */
 export function clearFormatting(editor: Editor) {
-  editor
-    .chain()
-    .focus()
-    .unsetAllMarks()
-    .clearNodes()
-    .setBlockStyleId(null)
-    .run()
+  unsetFormatMarks(editor).clearNodes().setBlockStyleId(null).run()
 }
 
 const ALIGNS: StyleAlign[] = ["left", "center", "right", "justify"]

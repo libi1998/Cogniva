@@ -3,23 +3,7 @@
 import * as React from "react"
 import type { Editor } from "@tiptap/react"
 import type { Mark as PMMark } from "@tiptap/pm/model"
-
-/**
- * I marchi che non sono formattazione: commenti, revisioni, collegamenti,
- * segnalibri e voci d'indice restano dove sono. Prima il pennello li toglieva
- * dal testo su cui passava (un commento perdeva il suo testo, un'eliminazione
- * rilevata tornava visibile) e li copiava su quello nuovo.
- */
-const NOT_FORMAT = new Set([
-  "comment",
-  "insertion",
-  "deletion",
-  "link",
-  "bookmark",
-  "indexEntry",
-])
-
-const isFormat = (name: string) => !NOT_FORMAT.has(name)
+import { isFormatMark, unsetFormatMarks } from "./style-actions"
 
 export type FormatPainter = {
   armed: boolean
@@ -48,7 +32,10 @@ export function useFormatPainter(editor: Editor | null): FormatPainter {
       empty
         ? $from.marks()
         : state.doc.resolve(Math.min(from + 1, state.doc.content.size)).marks()
-    ).filter((m) => isFormat(m.type.name))
+    )
+      // commenti, revisioni e collegamenti non sono formattazione: restano
+      // dove sono, sia da dove si copia sia dove si dipinge
+      .filter((m) => isFormatMark(m.type.name))
     setArmed(true)
   }, [editor])
 
@@ -60,10 +47,7 @@ export function useFormatPainter(editor: Editor | null): FormatPainter {
     const apply = () => {
       const { from, to } = editor.state.selection
       if (from === to) return
-      const chain = editor.chain().focus()
-      for (const name of Object.keys(editor.schema.marks)) {
-        if (isFormat(name)) chain.unsetMark(name)
-      }
+      const chain = unsetFormatMarks(editor)
       marks.current.forEach((m) => chain.setMark(m.type.name, m.attrs))
       chain.run()
       setArmed(false)
