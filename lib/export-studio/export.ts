@@ -1,6 +1,9 @@
 "use client"
 
 import { PdfWriter } from "./pdf"
+import { VectorPdfWriter } from "./pdf-vector"
+import { parseColor } from "./vector"
+import { sceneToSvg } from "./svg-vector"
 import {
   CANVAS_MAX_AREA,
   CANVAS_MAX_SIDE,
@@ -59,6 +62,19 @@ export async function exportPdf(
 ): Promise<Blob> {
   const q = QUALITY[opts.quality]
   const unit = Math.min(PT, PDF_MAX / Math.max(layout.width, layout.height))
+
+  // un PDF vero: testo, forme e tabelle a vettori, le foto come immagini
+  if (session.vector) {
+    try {
+      return await vectorPdf(session, layout, opts, unit)
+    } catch (error) {
+      if (opts.signal?.aborted) throw error
+      // qualcosa che il disegno vettoriale non sa fare: si ripiega sulle
+      // pagine come immagini, con il testo selezionabile sopra
+      console.warn("PDF vettoriale non riuscito, si passa alle immagini", error)
+    }
+  }
+
   const writer = new PdfWriter()
   let done = 0
   opts.onProgress?.(0, opts.indices.length)
@@ -92,6 +108,98 @@ export async function exportPdf(
   })
   opts.signal?.throwIfAborted()
   return writer.finish({ title: opts.title, language: opts.language })
+}
+
+async function vectorPdf(
+  session: ExportSession,
+  layout: SessionLayout,
+  opts: {
+    indices: number[]
+    quality: ExportQuality
+    gray: boolean
+    selectable: boolean
+    title: string
+    language?: string
+    signal?: AbortSignal
+    onProgress?: Progress
+  },
+  unit: number
+) {
+  const q = QUALITY[opts.quality]
+  const vector = session.vector
+  if (!vector) throw new Error("vector")
+  opts.onProgress?.(0, opts.indices.length)
+  const { scene, slices, paper } = await vector({
+    scale: q.scale,
+    jpeg: q.jpeg,
+    lossless: q.lossless,
+    gray: opts.gray,
+  })
+  opts.signal?.throwIfAborted()
+  const writer = new VectorPdfWriter(scene.fonts, { gray: opts.gray, unit })
+  const paperColor = parseColor(paper)
+  let done = 0
+  for (const index of opts.indices) {
+    opts.signal?.throwIfAborted()
+    const slice = slices[index]
+    if (!slice) continue
+    const words = opts.selectable
+      ? session.words(index).map((w) => ({
+          text: w.text,
+          x: w.x * unit,
+          y: w.baseline * unit,
+          width: w.width * unit,
+          size: w.size * unit,
+        }))
+      : undefined
+    await writer.addPage({
+      width: layout.width,
+      height: layout.height,
+      slice,
+      paints: scene.paints,
+      paper: paperColor,
+      words,
+    })
+    opts.onProgress?.(++done, opts.indices.length)
+  }
+  return writer.finish({ title: opts.title, language: opts.language })
+}
+
+/**
+ * Il documento in un SVG vero, tutto il foglio in un file: la stessa scena
+ * del PDF vettoriale, con il testo trasparente sopra per cercarlo.
+ */
+export async function exportSvg(
+  session: ExportSession,
+  layout: SessionLayout,
+  opts: { gray: boolean; title: string; signal?: AbortSignal }
+): Promise<Blob> {
+  const vector = session.vector
+  if (!vector) throw new Error("vector")
+  const { scene, slices, paper } = await vector({
+    scale: 2,
+    jpeg: 0.9,
+    lossless: false,
+    gray: opts.gray,
+  })
+  opts.signal?.throwIfAborted()
+  const height = Math.max(layout.height, ...slices.map((s) => s.top + s.height))
+  // le parole della sessione sono per pagina: tornano sul foglio intero
+  const words = slices.flatMap((slice, index) =>
+    session.words(index).map((w) => ({
+      ...w,
+      baseline: w.baseline + slice.top - slice.dy,
+    }))
+  )
+  const svg = await sceneToSvg(scene, {
+    width: layout.width,
+    height,
+    paper: parseColor(paper),
+    gray: opts.gray,
+    words,
+    title: opts.title,
+  })
+  return new Blob([svg], { type: "image/svg+xml;charset=utf-8" })
 }
 
 /**

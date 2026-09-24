@@ -12,6 +12,7 @@ import {
   paperCanvas,
 } from "./raster"
 import { tr } from "@/lib/i18n/client"
+import { paintNode, type Scene, type VectorOptions } from "./vector"
 
 /**
  * Una sessione di esportazione: prepara una volta il documento (o la board) e
@@ -47,6 +48,15 @@ export type ExportSession = {
   ) => Promise<void>
   /** le parole di una pagina, per il testo selezionabile del PDF */
   words: (index: number) => PageWord[]
+  /**
+   * il disegno vettoriale delle pagine (vedi vector.ts), con il pezzo di
+   * foglio di ogni pagina e il colore della carta
+   */
+  vector?: (opts: VectorOptions) => Promise<{
+    scene: Scene
+    slices: Slice[]
+    paper: string
+  }>
   dispose: () => void
 }
 
@@ -63,7 +73,7 @@ export type DocSnapshot = {
   columns: number
 }
 
-type Slice = { top: number; height: number; dy: number }
+export type Slice = { top: number; height: number; dy: number }
 
 export async function createDocSession(
   snapshot: DocSnapshot
@@ -160,6 +170,12 @@ export async function createDocSession(
         }
       }),
     words: (index) => words[index] ?? [],
+    vector: (opts) =>
+      serial(async () => {
+        if (!node) throw new Error("vector: not laid out")
+        const scene = await paintNode(node, opts)
+        return { scene, slices, paper: snapshot.paper }
+      }),
     dispose: () => host.dispose(),
   }
 }
@@ -391,6 +407,24 @@ export async function createBoardSession(opts: {
       await onPage(0, canvas)
     },
     words: () => [],
+    vector: async (vectorOpts) => {
+      // la board è già un SVG vero: si monta nella stanza isolata e si legge
+      const host = await createRenderHost()
+      try {
+        const box = host.doc.createElement("div")
+        box.style.cssText = `width:${width}px;height:${height}px;background:${opts.background};`
+        box.innerHTML = svg
+        const node = await host.mount(box, width)
+        const scene = await paintNode(node, vectorOpts)
+        return {
+          scene,
+          slices: [{ top: 0, height, dy: 0 }],
+          paper: opts.background,
+        }
+      } finally {
+        host.dispose()
+      }
+    },
     svg: () => svgToBlob(svg),
     dispose: () => URL.revokeObjectURL(url),
   }

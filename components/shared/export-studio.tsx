@@ -20,6 +20,7 @@ import { Switch } from "@/components/ui/switch"
 import { download, safeName } from "@/lib/export"
 import {
   exportPdf,
+  exportSvg,
   exportPng,
   parsePageRange,
   renderPreview,
@@ -880,8 +881,28 @@ async function runStudioExport(job: {
       )
     } else if (format === "svg") {
       if (origin.kind === "doc") {
-        job.onHandOff()
-        await origin.exportSvg(name)
+        // un SVG vero, a tracciati; se non si riesce, quello di prima
+        let blob: Blob | null = null
+        if (session?.vector && layout) {
+          try {
+            blob = await exportSvg(session, layout, {
+              gray: job.gray,
+              title: origin.title || tr("Senza titolo"),
+              signal: job.signal,
+            })
+          } catch (error) {
+            if (job.signal.aborted) throw error
+            console.warn("SVG vettoriale non riuscito", error)
+          }
+        }
+        if (!blob) {
+          job.onHandOff()
+          await origin.exportSvg(name)
+          return
+        }
+        download(blob, `${name}.svg`)
+        toast.success(tr("Esportato in {label}", { label }))
+        job.onFinish(true)
         return
       }
       download((session as BoardSession).svg(), `${name}.svg`)

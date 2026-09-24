@@ -440,7 +440,7 @@ right the settings. Nothing goes through the browser's print dialog.
 | **Format**          | PDF, PNG, SVG, `.docx` or Markdown (boards: PDF, PNG and SVG)                                      |
 | **Pages**           | all, the page you were looking at, or a range such as `1-3, 5`; excluded pages fade in the preview |
 | **Paper**           | for documents without a paper size: A4, A5, A3, Letter, Legal or Tabloid, portrait or landscape    |
-| **Quality**         | draft (96 dpi), standard (192 dpi) or high (300 dpi, lossless)                                     |
+| **Quality**         | resolution of photos and PNG pages: draft (96 dpi), standard (192 dpi), high (300 dpi, lossless)   |
 | **Colors**          | color or black and white                                                                           |
 | **Selectable text** | the PDF keeps an invisible text layer, so it can be searched and copied                            |
 | **One image**       | PNG with several pages: one tall image instead of a `.zip` with a file per page                    |
@@ -449,10 +449,10 @@ right the settings. Nothing goes through the browser's print dialog.
 
 |              | Board                                 | Document                                       |
 | ------------ | ------------------------------------- | ---------------------------------------------- |
-| **PDF**      | ✔ one page, board size                | ✔ multi-page, selectable and searchable text   |
+| **PDF**      | ✔ one page, board size, vector        | ✔ multi-page, vector, searchable text, links   |
 | **DOCX**     | —                                     | ✔ editable `.docx`                             |
 | **Markdown** | —                                     | ✔ `.md` (GitHub Flavored)                      |
-| **SVG**      | ✔ pure vector (~40 KB, embedded font) | ✔ whole document (used fonts embedded)         |
+| **SVG**      | ✔ pure vector (~40 KB, embedded font) | ✔ whole document, pure vector                  |
 | **PNG**      | ✔ up to 300 dpi                       | ✔ one per page (`.zip`) or a single tall image |
 
 **Print…** is still there, in the Export view and with `⌘P`, for sending the document to a
@@ -489,11 +489,19 @@ the canvas would exceed Chromium's limits.
 The **automatic** sheet is always printed and exported **light**, even with the app in
 dark mode, and exports keep backgrounds — colored cells, highlights, page color.
 
-The **PDF is built inside the app** (`lib/export-studio/`). Each page is drawn in an isolated
-frame that carries only the app's styles, so it looks exactly like the document, and an
-invisible text layer placed word by word keeps the text selectable and searchable. A
-document with a paper size keeps its pages; one without is laid out on the chosen paper,
-breaking between paragraphs like a printer would.
+The **PDF is built inside the app** (`lib/export-studio/`) and it is a **real vector PDF**,
+not pictures of pages. The document is laid out in an isolated frame that carries only the
+app's styles, then redrawn object by object (`vector.ts`): backgrounds, borders and table
+cells as paths, text with the **actual outlines of the letters** from the same font files the
+browser uses (variable fonts included, with their real bold), SVG content — shapes, charts,
+boards, icons, equations — path by path, photos as images, list bullets and numbers, and
+links that stay clickable. On top, an invisible text layer placed word by word keeps the
+text selectable and searchable. Only effects with no vector equivalent (text shadows,
+filters, rotated elements) become a high-resolution picture of that element alone; if the
+vector drawing ever fails, the PDF falls back to page pictures with the text layer. The
+document **SVG** export uses the same drawing: a pure SVG with paths and embedded images,
+no `<foreignObject>`. A document with a paper size keeps its pages; one without is laid out
+on the chosen paper, breaking between paragraphs like a printer would.
 
 ## Project structure
 

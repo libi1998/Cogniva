@@ -90,7 +90,11 @@ test("inserisce una forma 3D, la ruota e usa le visualizzazioni", async ({
   await expect
     .poll(async () => String((await modelAttrs(page))?.poster ?? ""))
     .toMatch(/^data:image\/png/)
-  await expect(page.getByText("Modello 3D selezionato")).toBeVisible()
+  // il modello resta selezionato e la sua scheda si apre da sola
+  await expect(page.getByRole("tab", { name: "Modello 3D" })).toHaveAttribute(
+    "aria-selected",
+    "true"
+  )
 
   // trascinare ruota la vista
   const before = await modelAttrs(page)
@@ -112,6 +116,8 @@ test("inserisce una forma 3D, la ruota e usa le visualizzazioni", async ({
   // il documento non ha perso il modello né selezionato testo
   expect(await page.locator("#doc-sheet .doc-model3d").count()).toBe(1)
 
+  // visualizzazioni, zoom e rotazione stanno in «Altre opzioni»
+  await (await ribbonButton(page, "Altre opzioni")).click()
   await page.getByRole("button", { name: "Dall'alto" }).click()
   await expect.poll(async () => (await modelAttrs(page))?.pitch).toBe(89)
   await page.getByRole("button", { name: "Reimposta" }).click()

@@ -37,40 +37,29 @@ function readPdf(bytes: Buffer) {
   const words: string[] = []
   const byPage: string[][] = []
   const images: Buffer[] = []
+  const imageWidths: number[] = []
+  /** glifi disegnati come vettori, in tutte le pagine */
+  let glyphs = 0
   const streams = /<<([^>]*?\/Length (\d+)[^>]*?)>>\nstream\n/g
   for (const match of text.matchAll(streams)) {
     const start = (match.index ?? 0) + match[0].length
     const body = bytes.subarray(start, start + Number(match[2]))
     if (match[1].includes("/Subtype /Image")) {
       if (match[1].includes("/DCTDecode")) images.push(body)
+      imageWidths.push(Number(/\/Width (\d+)/.exec(match[1])?.[1] ?? 0))
       continue
     }
+    // i disegni dei glifi non sono pagine
+    if (match[1].includes("/Subtype /Form")) continue
     if (!match[1].includes("/FlateDecode")) continue
     const content = inflateSync(body).toString("latin1")
     const page: string[] = []
     for (const tj of content.matchAll(/\((.*?)\) Tj/g)) page.push(tj[1].trim())
+    glyphs += content.match(/\/G\d+ Do/g)?.length ?? 0
     words.push(...page)
     byPage.push(page)
   }
-  return { pages, words, byPage, images }
-}
-
-/** Il colore dei pixel ai bordi di una pagina JPEG, decodificata nel browser */
-async function edgePixels(page: Page, jpeg: Buffer) {
-  return page.evaluate(async (b64) => {
-    const img = new Image()
-    img.src = `data:image/jpeg;base64,${b64}`
-    await img.decode()
-    const canvas = document.createElement("canvas")
-    canvas.width = img.width
-    canvas.height = img.height
-    const ctx = canvas.getContext("2d")!
-    ctx.drawImage(img, 0, 0)
-    const y = Math.round(img.height / 2)
-    return [0, 3, 6].map((x) =>
-      Math.min(...ctx.getImageData(x, y, 1, 1).data.slice(0, 3))
-    )
-  }, jpeg.toString("base64"))
+  return { pages, words, byPage, images, imageWidths, glyphs }
 }
 
 test("un documento nuovo è completamente vuoto", async ({ page }) => {
@@ -199,7 +188,8 @@ test("pagine lunghe: interruzioni fra i paragrafi, testo nella pagina giusta, ni
   expect(pdf.pages).toBeGreaterThan(2)
   // ogni pagina dopo la prima comincia con un titolo di sezione intero
   for (const words of pdf.byPage.slice(1)) expect(words[0]).toBe("Sezione")
-  // i bordi della carta sono bianchi: l'ombra dei fogli resta a video
-  for (const value of await edgePixels(page, pdf.images[0]))
-    expect(value).toBeGreaterThan(250)
+  // un PDF vero: il testo è disegnato a vettori e nessuna pagina è una
+  // fotografia del foglio (prima ogni pagina era un JPEG grande quanto lei)
+  expect(pdf.glyphs).toBeGreaterThan(200)
+  expect(Math.max(0, ...pdf.imageWidths)).toBeLessThan(700)
 })
