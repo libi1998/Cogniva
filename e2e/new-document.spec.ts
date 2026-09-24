@@ -68,3 +68,23 @@ test("rinominato dalla home, il documento tiene il nome nuovo", async ({
   await page.waitForTimeout(600)
   await expect(name).toHaveValue("Brief di lancio")
 })
+
+test("l'app non scorre: niente sporge oltre la finestra", async ({ page }) => {
+  // l'intestazione nascosta della tavolozza comandi stava fuori dalla
+  // finestra, in fondo alla pagina e alta 29 px: la pagina intera scorreva
+  // di 28 px e a volte l'app scivolava in su, sotto al puntatore
+  const overflow = () =>
+    page.evaluate(
+      () => document.documentElement.scrollHeight - window.innerHeight
+    )
+  await page.goto("/it")
+  await expect(
+    page.getByRole("button", { name: /^Tutti i file \d/ })
+  ).toBeVisible()
+  expect(await overflow()).toBe(0)
+  await openDemo(page)
+  expect(await overflow()).toBe(0)
+  await page.goto("/it/board/demo-board")
+  await expect(page.getByRole("button", { name: "Esporta" })).toBeVisible()
+  expect(await overflow()).toBe(0)
+})

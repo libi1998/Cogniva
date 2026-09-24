@@ -92,17 +92,8 @@ test("il menu contestuale propone i sinonimi quando il dizionario c'è", async (
     .first()
     .boundingBox()
   await page.mouse.click(box!.x + 40, box!.y + 8, { button: "right" })
-  const synonyms = page.getByRole("menuitem", { name: "Sinonimi" })
-  await synonyms.hover()
+  await page.getByRole("menuitem", { name: "Sinonimi" }).hover()
   const thesaurus = page.getByRole("menuitem", { name: /Thesaurus…/ })
-  // il sottomenu si apre passandoci sopra; se il puntatore è arrivato
-  // mentre il menu si stava ancora aprendo, lo apre la freccia, come da
-  // tastiera (su un runner lento il passaggio a volte andava perso)
-  if (!(await thesaurus.isVisible().catch(() => false))) {
-    await page.waitForTimeout(300)
-    if (!(await thesaurus.isVisible().catch(() => false)))
-      await page.keyboard.press("ArrowRight")
-  }
   await expect(thesaurus).toBeVisible()
   const suggestions = page.getByRole("menu").last().getByRole("menuitem")
   await expect.poll(() => suggestions.count()).toBeGreaterThan(2)
