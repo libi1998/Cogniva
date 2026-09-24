@@ -5655,6 +5655,13 @@
     "de": "Titel des Diagramms",
     "pt": "Título do gráfico"
   },
+  "Titolo del sommario": {
+    "en": "Table of contents title",
+    "es": "Título de la tabla de contenido",
+    "fr": "Titre de la table des matières",
+    "de": "Titel des Inhaltsverzeichnisses",
+    "pt": "Título do sumário"
+  },
   "Titolo della card": {
     "en": "Card title",
     "es": "Título de la tarjeta",

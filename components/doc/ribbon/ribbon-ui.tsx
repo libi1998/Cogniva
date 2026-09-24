@@ -55,6 +55,7 @@ export function RibbonGroup({
   children,
   className,
   safe,
+  launcher,
 }: {
   label: string
   /** icona del pulsante quando il gruppo si riduce */
@@ -63,6 +64,11 @@ export function RibbonGroup({
   className?: string
   /** i comandi del gruppo non toccano la selezione del testo */
   safe?: boolean
+  /**
+   * il pulsantino ↘ accanto al nome del gruppo, come in Word: apre la
+   * finestra con tutte le opzioni («Carattere…», «Paragrafo…»)
+   */
+  launcher?: { title: string; onClick: () => void }
 }) {
   const collapsed = React.useContext(CollapsedGroups).has(label)
   const body = (
@@ -89,8 +95,29 @@ export function RibbonGroup({
       className="flex shrink-0 flex-col border-r border-border/70 px-2 last:border-r-0"
     >
       {body}
-      <div className="pt-0.5 text-center text-[10px] leading-4 text-muted-foreground select-none">
+      <div className="relative pt-0.5 text-center text-[10px] leading-4 text-muted-foreground select-none">
         {label}
+        {launcher ? (
+          <button
+            type="button"
+            title={launcher.title}
+            aria-label={launcher.title}
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={launcher.onClick}
+            className="absolute right-[-6px] bottom-0 flex size-4 items-center justify-center rounded-[3px] text-muted-foreground hover:bg-muted hover:text-foreground"
+          >
+            <svg viewBox="0 0 10 10" className="size-2.5" aria-hidden>
+              <path
+                d="M1.5 1.5v7h7M4 6 8.5 1.5M8.5 1.5v3M8.5 1.5h-3"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.1"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        ) : null}
       </div>
     </div>
   )
@@ -345,6 +372,49 @@ export function RibbonMenu({
         </CloseMenuContext.Provider>
       </DropdownMenuContent>
     </DropdownMenu>
+  )
+}
+
+/**
+ * Comando che apre un riquadro con dei campi (cursori, caselle, colori): a
+ * differenza di un menu resta aperto mentre si lavora e si chiude con un clic
+ * fuori o con Esc. Chiudendolo il fuoco torna nel testo.
+ */
+export function RibbonPopover({
+  trigger,
+  children,
+  align = "start",
+  className,
+  label,
+}: {
+  trigger: React.ReactElement
+  children: React.ReactNode
+  align?: "start" | "center" | "end"
+  className?: string
+  /** nome del riquadro per i lettori di schermo */
+  label: string
+}) {
+  const backToText = useFinalFocus()
+  const [open, setOpen] = React.useState(false)
+  useFocusBackWhenClosed(open)
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger render={trigger} />
+      <PopoverContent
+        align={align}
+        sideOffset={4}
+        aria-label={label}
+        className={cn(
+          "max-h-[min(70dvh,560px)] w-72 overflow-y-auto p-0",
+          className
+        )}
+        finalFocus={backToText ?? false}
+      >
+        <CloseMenuContext.Provider value={() => setOpen(false)}>
+          {children}
+        </CloseMenuContext.Provider>
+      </PopoverContent>
+    </Popover>
   )
 }
 

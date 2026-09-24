@@ -153,6 +153,13 @@
     "de": "{active} von {total}",
     "pt": "{active} de {total}"
   },
+  "{color} scuro": {
+    "en": "Dark {color}",
+    "es": "{color} oscuro",
+    "fr": "{color} foncé",
+    "de": "Dunkles {color}",
+    "pt": "{color} escuro"
+  },
   "{columns} colonne per {rows} righe": {
     "en": "{columns} columns by {rows} rows",
     "es": "{columns} columnas por {rows} filas",
@@ -383,6 +390,13 @@
     "fr": "Abaisser en corps de texte",
     "de": "Auf Fließtext herabstufen",
     "pt": "Rebaixar para corpo do texto"
+  },
+  "Abbassata": {
+    "en": "Lowered",
+    "es": "Bajada",
+    "fr": "Abaissée",
+    "de": "Tiefgestellt",
+    "pt": "Rebaixada"
   },
   "Abbastanza facile": {
     "en": "Fairly easy",
@@ -706,6 +720,13 @@
     "de": "Hohe Wirkung\ngeringer Aufwand",
     "pt": "Alto impacto\nbaixo esforço"
   },
+  "Altre opzioni": {
+    "en": "More options",
+    "es": "Más opciones",
+    "fr": "Plus d'options",
+    "de": "Weitere Optionen",
+    "pt": "Mais opções"
+  },
   "Altre opzioni: accetta": {
     "en": "More options: accept",
     "es": "Más opciones: aceptar",
@@ -755,6 +776,13 @@
     "de": "Auf Überschrift 1 hochstufen",
     "pt": "Promover para Título 1"
   },
+  "Alzata": {
+    "en": "Raised",
+    "es": "Elevada",
+    "fr": "Surélevée",
+    "de": "Hochgestellt",
+    "pt": "Elevada"
+  },
   "Ampia": {
     "en": "Wide",
     "es": "Amplia",
@@ -797,6 +825,13 @@
     "de": "Strich zurücknehmen",
     "pt": "Desfazer o traço"
   },
+  "Anteponi interruzione di pagina": {
+    "en": "Page break before",
+    "es": "Salto de página anterior",
+    "fr": "Saut de page avant",
+    "de": "Seitenumbruch oberhalb",
+    "pt": "Quebra de página antes"
+  },
   "Anteprima del codice QR": {
     "en": "QR code preview",
     "es": "Vista previa del código QR",
@@ -824,6 +859,13 @@
     "fr": "Appliquer",
     "de": "Anwenden",
     "pt": "Aplicar"
+  },
+  "Applica alle celle": {
+    "en": "Apply to cells",
+    "es": "Aplicar a las celdas",
+    "fr": "Appliquer aux cellules",
+    "de": "Auf Zellen anwenden",
+    "pt": "Aplicar às células"
   },
   "Appunti": {
     "en": "Clipboard",
@@ -1084,13 +1126,6 @@
     "de": "Eingebettetes Board",
     "pt": "Quadro incorporado"
   },
-  "Board selezionata": {
-    "en": "Board selected",
-    "es": "Tablero seleccionado",
-    "fr": "Tableau sélectionné",
-    "de": "Board ausgewählt",
-    "pt": "Quadro selecionado"
-  },
   "Board: {caption}": {
     "en": "Board: {caption}",
     "es": "Tablero: {caption}",
@@ -1112,12 +1147,54 @@
     "de": "Absatzrahmen",
     "pt": "Bordas do parágrafo"
   },
+  "Bordi della cella o delle celle selezionate": {
+    "en": "Borders of the cell or selected cells",
+    "es": "Bordes de la celda o de las celdas seleccionadas",
+    "fr": "Bordures de la cellule ou des cellules sélectionnées",
+    "de": "Rahmen der Zelle oder der ausgewählten Zellen",
+    "pt": "Bordas da célula ou das células selecionadas"
+  },
+  "Bordi della tabella (predefiniti)": {
+    "en": "Table borders (default)",
+    "es": "Bordes de la tabla (predeterminados)",
+    "fr": "Bordures du tableau (par défaut)",
+    "de": "Tabellenrahmen (Standard)",
+    "pt": "Bordas da tabela (padrão)"
+  },
+  "Bordi e sfondo": {
+    "en": "Borders and shading",
+    "es": "Bordes y sombreado",
+    "fr": "Bordures et trame",
+    "de": "Rahmen und Schattierung",
+    "pt": "Bordas e sombreamento"
+  },
+  "Bordi esterni": {
+    "en": "Outside borders",
+    "es": "Bordes externos",
+    "fr": "Bordures extérieures",
+    "de": "Rahmenlinien außen",
+    "pt": "Bordas externas"
+  },
+  "Bordi interni": {
+    "en": "Inside borders",
+    "es": "Bordes internos",
+    "fr": "Bordures intérieures",
+    "de": "Rahmenlinien innen",
+    "pt": "Bordas internas"
+  },
   "Bordi pagina": {
     "en": "Page borders",
     "es": "Bordes de página",
     "fr": "Bordures de page",
     "de": "Seitenränder",
     "pt": "Bordas da página"
+  },
+  "Bordo destro": {
+    "en": "Right border",
+    "es": "Borde derecho",
+    "fr": "Bordure droite",
+    "de": "Rahmenlinie rechts",
+    "pt": "Borda direita"
   },
   "Bordo esterno": {
     "en": "Outside border",
@@ -1133,12 +1210,33 @@
     "de": "Untere Rahmenlinie",
     "pt": "Borda inferior"
   },
+  "Bordo orizzontale interno": {
+    "en": "Inside horizontal border",
+    "es": "Borde horizontal interno",
+    "fr": "Bordure horizontale intérieure",
+    "de": "Innere horizontale Rahmenlinie",
+    "pt": "Borda horizontal interna"
+  },
+  "Bordo sinistro": {
+    "en": "Left border",
+    "es": "Borde izquierdo",
+    "fr": "Bordure gauche",
+    "de": "Rahmenlinie links",
+    "pt": "Borda esquerda"
+  },
   "Bordo superiore": {
     "en": "Top border",
     "es": "Borde superior",
     "fr": "Bordure supérieure",
     "de": "Obere Rahmenlinie",
     "pt": "Borda superior"
+  },
+  "Bordo verticale interno": {
+    "en": "Inside vertical border",
+    "es": "Borde vertical interno",
+    "fr": "Bordure verticale intérieure",
+    "de": "Innere vertikale Rahmenlinie",
+    "pt": "Borda vertical interna"
   },
   "Busta": {
     "en": "Envelope",
@@ -1195,6 +1293,13 @@
     "fr": "Changer d'image…",
     "de": "Bild ändern…",
     "pt": "Trocar a imagem…"
+  },
+  "Cambia tipo": {
+    "en": "Change type",
+    "es": "Cambiar tipo",
+    "fr": "Modifier le type",
+    "de": "Typ ändern",
+    "pt": "Alterar tipo"
   },
   "Campi": {
     "en": "Fields",
@@ -1329,19 +1434,19 @@
     "de": "Schrift der Überschriften",
     "pt": "Fonte dos títulos"
   },
-  "Carattere, colori e paragrafo sono nella scheda Home; rientri e spaziatura in Layout.": {
-    "en": "Font, colors and paragraph are on the Home tab; indents and spacing on Layout.",
-    "es": "La fuente, los colores y el párrafo están en la pestaña Inicio; las sangrías y el espaciado, en Diseño.",
-    "fr": "La police, les couleurs et le paragraphe sont dans l'onglet Accueil ; les retraits et l'espacement dans Mise en page.",
-    "de": "Schrift, Farben und Absatz findest du im Tab Start; Einzüge und Abstände im Tab Layout.",
-    "pt": "Fonte, cores e parágrafo estão na aba Início; recuos e espaçamento em Layout."
-  },
   "Carattere: {theme}, {count} pt": {
     "en": "Font: {theme}, {count} pt",
     "es": "Fuente: {theme}, {count} pt",
     "fr": "Police : {theme}, {count} pt",
     "de": "Schrift: {theme}, {count} pt",
     "pt": "Fonte: {theme}, {count} pt"
+  },
+  "Carattere: spaziatura e posizione…": {
+    "en": "Font: spacing and position…",
+    "es": "Fuente: espaciado y posición…",
+    "fr": "Police : espacement et position…",
+    "de": "Schriftart: Abstand und Position…",
+    "pt": "Fonte: espaçamento e posição…"
   },
   "Caratteri (spazi esclusi)": {
     "en": "Characters (no spaces)",
@@ -1623,13 +1728,6 @@
     "de": "Kurzzitat",
     "pt": "Citação curta"
   },
-  "Citazione selezionata": {
-    "en": "Citation selected",
-    "es": "Cita seleccionada",
-    "fr": "Citation sélectionnée",
-    "de": "Zitat ausgewählt",
-    "pt": "Citação selecionada"
-  },
   "Citazioni e bibliografia": {
     "en": "Citations and bibliography",
     "es": "Citas y bibliografía",
@@ -1811,6 +1909,13 @@
     "fr": "Comment le texte s'écoule autour",
     "de": "Wie der Text darum fließt",
     "pt": "Como o texto flui ao redor"
+  },
+  "Comincia sempre su una pagina nuova": {
+    "en": "Always starts on a new page",
+    "es": "Empieza siempre en una página nueva",
+    "fr": "Commence toujours sur une nouvelle page",
+    "de": "Beginnt immer auf einer neuen Seite",
+    "pt": "Começa sempre em uma nova página"
   },
   "Commenta il testo selezionato (⌥⌘M)": {
     "en": "Comment on the selected text (⌥⌘M)",
@@ -2295,6 +2400,13 @@
     "de": "Daten",
     "pt": "dados"
   },
+  "Dati e stile": {
+    "en": "Data and style",
+    "es": "Datos y estilo",
+    "fr": "Données et style",
+    "de": "Daten und Stil",
+    "pt": "Dados e estilo"
+  },
   "Decrescente (Z → A)": {
     "en": "Descending (Z → A)",
     "es": "Descendente (Z → A)",
@@ -2393,6 +2505,13 @@
     "de": "von",
     "pt": "de"
   },
+  "Di": {
+    "en": "By",
+    "es": "En",
+    "fr": "De",
+    "de": "Um",
+    "pt": "Em"
+  },
   "Diagonale": {
     "en": "Diagonal",
     "es": "Diagonal",
@@ -2470,6 +2589,13 @@
     "de": "Größe",
     "pt": "Tamanho"
   },
+  "Dimensioni cella": {
+    "en": "Cell size",
+    "es": "Tamaño de celda",
+    "fr": "Taille de cellule",
+    "de": "Zellengröße",
+    "pt": "Tamanho da célula"
+  },
   "Direzione": {
     "en": "Direction",
     "es": "Dirección",
@@ -2512,6 +2638,20 @@
     "de": "Textumbruch",
     "pt": "Disposição do texto"
   },
+  "Distribuisci colonne": {
+    "en": "Distribute columns",
+    "es": "Distribuir columnas",
+    "fr": "Uniformiser les colonnes",
+    "de": "Spalten verteilen",
+    "pt": "Distribuir colunas"
+  },
+  "Distribuzione testo": {
+    "en": "Line and page breaks",
+    "es": "Líneas y saltos de página",
+    "fr": "Enchaînements",
+    "de": "Zeilen- und Seitenumbruch",
+    "pt": "Quebras de linha e de página"
+  },
   "Diventa una board incorporata: si modifica con tutti gli strumenti delle board.": {
     "en": "It becomes an embedded board: you edit it with all the board tools.",
     "es": "Se convierte en un tablero incrustado: se edita con todas las herramientas de los tableros.",
@@ -2532,6 +2672,13 @@
     "fr": "Fractionner",
     "de": "Teilen",
     "pt": "Dividir"
+  },
+  "Dividi cella": {
+    "en": "Split cell",
+    "es": "Dividir celda",
+    "fr": "Fractionner la cellule",
+    "de": "Zelle teilen",
+    "pt": "Dividir célula"
   },
   "Dizionario di LibreOffice ({language}) · {credit}": {
     "en": "LibreOffice dictionary ({language}) · {credit}",
@@ -2785,6 +2932,13 @@
     "de": "{name} vom Gerät löschen",
     "pt": "Excluir {name} do dispositivo"
   },
+  "Elimina colonne": {
+    "en": "Delete columns",
+    "es": "Eliminar columnas",
+    "fr": "Supprimer les colonnes",
+    "de": "Spalten löschen",
+    "pt": "Excluir colunas"
+  },
   "Elimina commento": {
     "en": "Delete comment",
     "es": "Eliminar comentario",
@@ -2862,6 +3016,20 @@
     "de": "Diesen Kommentar löschen",
     "pt": "Excluir este comentário"
   },
+  "Elimina righe": {
+    "en": "Delete rows",
+    "es": "Eliminar filas",
+    "fr": "Supprimer les lignes",
+    "de": "Zeilen löschen",
+    "pt": "Excluir linhas"
+  },
+  "Elimina sommario": {
+    "en": "Delete table of contents",
+    "es": "Eliminar tabla de contenido",
+    "fr": "Supprimer la table des matières",
+    "de": "Inhaltsverzeichnis löschen",
+    "pt": "Excluir sumário"
+  },
   "Elimina tabella": {
     "en": "Delete table",
     "es": "Eliminar la tabla",
@@ -2896,13 +3064,6 @@
     "fr": "Équation dans le texte",
     "de": "Formel im Text",
     "pt": "Equação no texto"
-  },
-  "Equazione selezionata": {
-    "en": "Equation selected",
-    "es": "Ecuación seleccionada",
-    "fr": "Équation sélectionnée",
-    "de": "Formel ausgewählt",
-    "pt": "Equação selecionada"
   },
   "Equazioni": {
     "en": "Equations",
@@ -2980,6 +3141,13 @@
     "fr": "Exclure l'étiquette",
     "de": "Bezeichnung ausschließen",
     "pt": "Excluir o rótulo"
+  },
+  "Espansa": {
+    "en": "Expanded",
+    "es": "Expandido",
+    "fr": "Étendu",
+    "de": "Erweitert",
+    "pt": "Expandido"
   },
   "Esporta in Markdown (.md)": {
     "en": "Export to Markdown (.md)",
@@ -3296,6 +3464,20 @@
     "de": "Seitenformat",
     "pt": "Formato da página"
   },
+  "Formato grafico": {
+    "en": "Chart format",
+    "es": "Formato de gráfico",
+    "fr": "Format du graphique",
+    "de": "Diagrammformat",
+    "pt": "Formato do gráfico"
+  },
+  "Formato immagine": {
+    "en": "Picture format",
+    "es": "Formato de imagen",
+    "fr": "Format de l'image",
+    "de": "Bildformat",
+    "pt": "Formato da imagem"
+  },
   "Formato libero": {
     "en": "Free size",
     "es": "Tamaño libre",
@@ -3540,13 +3722,6 @@
     "fr": "Graphique en colonnes",
     "de": "Säulendiagramm",
     "pt": "Gráfico de colunas"
-  },
-  "Grafico selezionato": {
-    "en": "Chart selected",
-    "es": "Gráfico seleccionado",
-    "fr": "Graphique sélectionné",
-    "de": "Diagramm ausgewählt",
-    "pt": "Gráfico selecionado"
   },
   "Grassetto": {
     "en": "Bold",
@@ -3800,6 +3975,13 @@
     "de": "Der Absatz erscheint im Inhaltsverzeichnis auf der gewählten Ebene",
     "pt": "O parágrafo aparece no sumário no nível escolhido"
   },
+  "Il paragrafo non si spezza fra due pagine": {
+    "en": "The paragraph is not split across two pages",
+    "es": "El párrafo no se divide entre dos páginas",
+    "fr": "Le paragraphe n'est pas coupé sur deux pages",
+    "de": "Der Absatz wird nicht auf zwei Seiten getrennt",
+    "pt": "O parágrafo não é dividido entre duas páginas"
+  },
   "Il sistema non ha voci per questa lingua: puoi aggiungerle dalle impostazioni di accessibilità del computer.": {
     "en": "Your system has no voices for this language: you can add them from the accessibility settings of the computer.",
     "es": "El sistema no tiene voces para este idioma: puedes añadirlas desde los ajustes de accesibilidad del ordenador.",
@@ -3877,6 +4059,13 @@
     "de": "Der Titel des Dokuments: Er ändert sich, wenn du den Titel änderst.",
     "pt": "O título do documento: muda quando você muda o título."
   },
+  "Il titolo si scrive direttamente nel sommario": {
+    "en": "Type the title directly in the table of contents",
+    "es": "El título se escribe directamente en la tabla de contenido",
+    "fr": "Le titre se saisit directement dans la table des matières",
+    "de": "Den Titel direkt im Inhaltsverzeichnis eingeben",
+    "pt": "O título é digitado diretamente no sumário"
+  },
   "Il traduttore del browser non conosce questa coppia di lingue: scegli il modello sul dispositivo.": {
     "en": "The browser translator does not know this language pair: choose the model on the device.",
     "es": "El traductor del navegador no conoce este par de idiomas: elige el modelo del dispositivo.",
@@ -3946,13 +4135,6 @@
     "fr": "Image non valide",
     "de": "Ungültiges Bild",
     "pt": "Imagem inválida"
-  },
-  "Immagine selezionata": {
-    "en": "Picture selected",
-    "es": "Imagen seleccionada",
-    "fr": "Image sélectionnée",
-    "de": "Bild ausgewählt",
-    "pt": "Imagem selecionada"
   },
   "Immagine senza testo alternativo": {
     "en": "Picture without alt text",
@@ -4114,6 +4296,13 @@
     "fr": "index",
     "de": "Index",
     "pt": "índice"
+  },
+  "Indice": {
+    "en": "Index",
+    "es": "Índice",
+    "fr": "Index",
+    "de": "Verzeichnis",
+    "pt": "Índice"
   },
   "Indice analitico aggiornato": {
     "en": "Index updated",
@@ -4381,6 +4570,20 @@
     "de": "„{term}“ einfügen",
     "pt": "Inserir “{term}”"
   },
+  "Inserisci a destra": {
+    "en": "Insert right",
+    "es": "Insertar a la derecha",
+    "fr": "Insérer à droite",
+    "de": "Rechts einfügen",
+    "pt": "Inserir à direita"
+  },
+  "Inserisci a sinistra": {
+    "en": "Insert left",
+    "es": "Insertar a la izquierda",
+    "fr": "Insérer à gauche",
+    "de": "Links einfügen",
+    "pt": "Inserir à esquerda"
+  },
   "Inserisci blocco indirizzo": {
     "en": "Insert address block",
     "es": "Insertar bloque de direcciones",
@@ -4555,6 +4758,20 @@
     "fr": "Insérer la ligne de salutation",
     "de": "Grußzeile einfügen",
     "pt": "Inserir linha de saudação"
+  },
+  "Inserisci sopra": {
+    "en": "Insert above",
+    "es": "Insertar arriba",
+    "fr": "Insérer au-dessus",
+    "de": "Oberhalb einfügen",
+    "pt": "Inserir acima"
+  },
+  "Inserisci sotto": {
+    "en": "Insert below",
+    "es": "Insertar debajo",
+    "fr": "Insérer en dessous",
+    "de": "Unterhalb einfügen",
+    "pt": "Inserir abaixo"
   },
   "Inserisci tabella": {
     "en": "Insert table",
@@ -5144,6 +5361,13 @@
     "de": "Link, WLAN, E-Mail und Telefon in einem Code zum Scannen",
     "pt": "Link, Wi-Fi, e-mail e telefone em um código para escanear"
   },
+  "Livelli": {
+    "en": "Levels",
+    "es": "Niveles",
+    "fr": "Niveaux",
+    "de": "Ebenen",
+    "pt": "Níveis"
+  },
   "Livelli dal più ampio": {
     "en": "Levels from the widest",
     "es": "Niveles desde el más amplio",
@@ -5200,6 +5424,13 @@
     "de": "Nächste Ebene (Tab)",
     "pt": "Próximo nível (Tab)"
   },
+  "Lo leggono i lettori di schermo e compare nelle esportazioni al posto dell'immagine.": {
+    "en": "Screen readers read it, and exports show it in place of the image.",
+    "es": "Lo leen los lectores de pantalla y aparece en las exportaciones en lugar de la imagen.",
+    "fr": "Les lecteurs d'écran le lisent, et il remplace l'image dans les exportations.",
+    "de": "Screenreader lesen ihn vor, und in Exporten steht er anstelle des Bildes.",
+    "pt": "Os leitores de tela o leem, e ele aparece nas exportações no lugar da imagem."
+  },
   "Lorem ipsum {number}": {
     "en": "Lorem ipsum {number}",
     "es": "Lorem ipsum {number}",
@@ -5248,6 +5479,20 @@
     "fr": "Petites capitales",
     "de": "Kapitälchen",
     "pt": "Versalete"
+  },
+  "Mantieni assieme le righe": {
+    "en": "Keep lines together",
+    "es": "Conservar líneas juntas",
+    "fr": "Lignes solidaires",
+    "de": "Diesen Absatz zusammenhalten",
+    "pt": "Manter linhas juntas"
+  },
+  "Mantieni con il successivo": {
+    "en": "Keep with next",
+    "es": "Conservar con el siguiente",
+    "fr": "Paragraphes solidaires",
+    "de": "Nicht vom nächsten Absatz trennen",
+    "pt": "Manter com o próximo"
   },
   "Mantieni formattazione": {
     "en": "Keep formatting",
@@ -5466,13 +5711,6 @@
     "de": "Modell",
     "pt": "Modelo"
   },
-  "Modello 3D selezionato": {
-    "en": "3D model selected",
-    "es": "Modelo 3D seleccionado",
-    "fr": "Modèle 3D sélectionné",
-    "de": "3D-Modell ausgewählt",
-    "pt": "Modelo 3D selecionado"
-  },
   "Modello 3D: {name}": {
     "en": "3D model: {name}",
     "es": "Modelo 3D: {name}",
@@ -5676,6 +5914,13 @@
     "de": "Formatierungszeichen ein-/ausblenden ¶",
     "pt": "Mostrar/ocultar as marcas de formatação ¶"
   },
+  "Multipla": {
+    "en": "Multiple",
+    "es": "Múltiple",
+    "fr": "Multiple",
+    "de": "Mehrfach",
+    "pt": "Múltiplos"
+  },
   "Nascondi commenti": {
     "en": "Hide comments",
     "es": "Ocultar los comentarios",
@@ -5738,13 +5983,6 @@
     "fr": "Dans le texte",
     "de": "Im Text",
     "pt": "No texto"
-  },
-  "Nella tabella": {
-    "en": "In the table",
-    "es": "En la tabla",
-    "fr": "Dans le tableau",
-    "de": "In der Tabelle",
-    "pt": "Na tabela"
   },
   "Nessun bordo": {
     "en": "No border",
@@ -6061,6 +6299,13 @@
     "de": "Nicht im Inhaltsverzeichnis anzeigen",
     "pt": "Não mostrar no sumário"
   },
+  "Non resta da solo in fondo alla pagina": {
+    "en": "Never left alone at the bottom of a page",
+    "es": "No queda solo al final de la página",
+    "fr": "Ne reste jamais seul en bas de page",
+    "de": "Bleibt nie allein am Seitenende",
+    "pt": "Não fica sozinho no fim da página"
+  },
   "Non riesco a confrontare le versioni": {
     "en": "The versions cannot be compared",
     "es": "No se pueden comparar las versiones",
@@ -6165,13 +6410,6 @@
     "fr": "Note regroupée à la fin du document, numérotée i, ii, iii (⌥⌘D)",
     "de": "Notiz am Ende des Dokuments, nummeriert i, ii, iii (⌥⌘D)",
     "pt": "Nota reunida no fim do documento, numerada i, ii, iii (⌥⌘D)"
-  },
-  "Nota selezionata": {
-    "en": "Note selected",
-    "es": "Nota seleccionada",
-    "fr": "Note sélectionnée",
-    "de": "Notiz ausgewählt",
-    "pt": "Nota selecionada"
   },
   "Nota successiva": {
     "en": "Next note",
@@ -6326,6 +6564,13 @@
     "fr": "Chaque modification est suivie",
     "de": "Jede Änderung wird nachverfolgt",
     "pt": "Cada alteração é registrada"
+  },
+  "OK": {
+    "en": "OK",
+    "es": "Aceptar",
+    "fr": "OK",
+    "de": "OK",
+    "pt": "OK"
   },
   "Olandese": {
     "en": "Dutch",
@@ -6550,6 +6795,13 @@
     "fr": "Paragraphe suivant",
     "de": "Nächster Absatz",
     "pt": "Próximo parágrafo"
+  },
+  "Paragrafo: rientri, spaziatura e distribuzione…": {
+    "en": "Paragraph: indents, spacing and breaks…",
+    "es": "Párrafo: sangrías, espaciado y saltos…",
+    "fr": "Paragraphe : retraits, espacement et enchaînements…",
+    "de": "Absatz: Einzüge, Abstände und Umbrüche…",
+    "pt": "Parágrafo: recuos, espaçamento e quebras…"
   },
   "Parallelogramma": {
     "en": "Parallelogram",
@@ -7237,6 +7489,13 @@
     "de": "Zeichnet die Striche in der Reihenfolge nach, in der sie entstanden sind",
     "pt": "Redesenha os traços na ordem em que foram feitos"
   },
+  "Ridotta": {
+    "en": "Condensed",
+    "es": "Comprimido",
+    "fr": "Condensé",
+    "de": "Schmal",
+    "pt": "Condensado"
+  },
   "Riduci ⌘−": {
     "en": "Zoom out ⌘−",
     "es": "Alejar ⌘−",
@@ -7258,19 +7517,33 @@
     "de": "Einzug verkleinern ⇧Tab",
     "pt": "Reduzir o recuo ⇧Tab"
   },
+  "Rientri": {
+    "en": "Indentation",
+    "es": "Sangría",
+    "fr": "Retrait",
+    "de": "Einzug",
+    "pt": "Recuo"
+  },
+  "Rientri e spaziatura": {
+    "en": "Indents and spacing",
+    "es": "Sangría y espacio",
+    "fr": "Retrait et espacement",
+    "de": "Einzüge und Abstände",
+    "pt": "Recuos e espaçamento"
+  },
+  "Rientri, spaziatura e distribuzione del testo sulle pagine.": {
+    "en": "Indents, spacing and how the text flows across pages.",
+    "es": "Sangrías, espaciado y distribución del texto en las páginas.",
+    "fr": "Retraits, espacement et enchaînement du texte sur les pages.",
+    "de": "Einzüge, Abstände und Umbruch des Textes auf den Seiten.",
+    "pt": "Recuos, espaçamento e distribuição do texto nas páginas."
+  },
   "Rientro": {
     "en": "Indent",
     "es": "Sangría",
     "fr": "Retrait",
     "de": "Einzug",
     "pt": "Recuo"
-  },
-  "Rientro prima riga": {
-    "en": "First line indent",
-    "es": "Sangría de primera línea",
-    "fr": "Retrait de première ligne",
-    "de": "Einzug der ersten Zeile",
-    "pt": "Recuo da primeira linha"
   },
   "Rientro: {value} cm": {
     "en": "Indent: {value} cm",
@@ -7342,12 +7615,26 @@
     "de": "Signaturzeile",
     "pt": "Linha de assinatura"
   },
+  "Riga di intestazione": {
+    "en": "Header row",
+    "es": "Fila de encabezado",
+    "fr": "Ligne d'en-tête",
+    "de": "Kopfzeile",
+    "pt": "Linha de cabeçalho"
+  },
   "Riga saluto": {
     "en": "Greeting line",
     "es": "Línea de saludo",
     "fr": "Ligne de salutation",
     "de": "Grußzeile",
     "pt": "Linha de saudação"
+  },
+  "Righe e colonne": {
+    "en": "Rows and columns",
+    "es": "Filas y columnas",
+    "fr": "Lignes et colonnes",
+    "de": "Zeilen und Spalten",
+    "pt": "Linhas e colunas"
   },
   "Righello": {
     "en": "Ruler",
@@ -7552,12 +7839,12 @@
     "de": "Aufgabenbereich",
     "pt": "Painel de tarefas"
   },
-  "Riquadro colorato, senza pagine": {
-    "en": "Colored box, no page numbers",
-    "es": "Recuadro de color, sin páginas",
-    "fr": "Encadré coloré, sans pages",
-    "de": "Farbiger Kasten, ohne Seitenzahlen",
-    "pt": "Quadro colorido, sem páginas"
+  "Riquadro colorato, con i numeri di pagina": {
+    "en": "Colored box, with page numbers",
+    "es": "Recuadro de color, con números de página",
+    "fr": "Encadré coloré, avec numéros de page",
+    "de": "Farbiger Kasten, mit Seitenzahlen",
+    "pt": "Quadro colorido, com números de página"
   },
   "Riquadro della firma": {
     "en": "Signature box",
@@ -7951,6 +8238,20 @@
     "de": "Lesezeichen „{name}“ hinzugefügt",
     "pt": "Marcador “{name}” adicionado"
   },
+  "Seleziona cella": {
+    "en": "Select cell",
+    "es": "Seleccionar celda",
+    "fr": "Sélectionner la cellule",
+    "de": "Zelle auswählen",
+    "pt": "Selecionar célula"
+  },
+  "Seleziona colonna": {
+    "en": "Select column",
+    "es": "Seleccionar columna",
+    "fr": "Sélectionner la colonne",
+    "de": "Spalte auswählen",
+    "pt": "Selecionar coluna"
+  },
   "Seleziona destinatari": {
     "en": "Select recipients",
     "es": "Seleccionar destinatarios",
@@ -7993,12 +8294,26 @@
     "de": "Bild auswählen…",
     "pt": "Selecionar imagem…"
   },
+  "Seleziona o trascina per spostare": {
+    "en": "Select, or drag to move",
+    "es": "Selecciona o arrastra para mover",
+    "fr": "Sélectionner, ou faire glisser pour déplacer",
+    "de": "Auswählen oder zum Verschieben ziehen",
+    "pt": "Selecione ou arraste para mover"
+  },
   "Seleziona oggetti": {
     "en": "Select objects",
     "es": "Seleccionar objetos",
     "fr": "Sélectionner des objets",
     "de": "Objekte auswählen",
     "pt": "Selecionar objetos"
+  },
+  "Seleziona più celle trascinando sopra la tabella": {
+    "en": "Select several cells by dragging across the table",
+    "es": "Selecciona varias celdas arrastrando sobre la tabla",
+    "fr": "Sélectionnez plusieurs cellules en faisant glisser sur le tableau",
+    "de": "Mehrere Zellen durch Ziehen über die Tabelle auswählen",
+    "pt": "Selecione várias células arrastando sobre a tabela"
   },
   "Seleziona prima del testo nel documento.": {
     "en": "Select some text in the document first.",
@@ -8014,12 +8329,26 @@
     "de": "Markiere zuerst den Text, den du kennzeichnen willst",
     "pt": "Selecione antes o texto a marcar"
   },
+  "Seleziona riga": {
+    "en": "Select row",
+    "es": "Seleccionar fila",
+    "fr": "Sélectionner la ligne",
+    "de": "Zeile auswählen",
+    "pt": "Selecionar linha"
+  },
   "Seleziona righe con le colonne separate da tabulazione, «;» o «|»": {
     "en": "Select rows with the columns separated by a tab, “;” or “|”",
     "es": "Selecciona filas con las columnas separadas por tabulación, «;» o «|»",
     "fr": "Sélectionnez des lignes dont les colonnes sont séparées par une tabulation, « ; » ou « | »",
     "de": "Markiere Zeilen, deren Spalten durch Tabulator, „;“ oder „|“ getrennt sind",
     "pt": "Selecione linhas com as colunas separadas por tabulação, “;” ou “|”"
+  },
+  "Seleziona tabella": {
+    "en": "Select table",
+    "es": "Seleccionar tabla",
+    "fr": "Sélectionner le tableau",
+    "de": "Tabelle auswählen",
+    "pt": "Selecionar tabela"
   },
   "Seleziona un'immagine o una forma": {
     "en": "Select a picture or a shape",
@@ -8139,6 +8468,13 @@
     "fr": "Fond de la cellule",
     "de": "Zellenhintergrund",
     "pt": "Fundo da célula"
+  },
+  "Sfondo della cella o delle celle selezionate": {
+    "en": "Shading of the cell or selected cells",
+    "es": "Sombreado de la celda o de las celdas seleccionadas",
+    "fr": "Trame de la cellule ou des cellules sélectionnées",
+    "de": "Schattierung der Zelle oder der ausgewählten Zellen",
+    "pt": "Sombreamento da célula ou das células selecionadas"
   },
   "Sfondo intorno al foglio": {
     "en": "Background around the page",
@@ -8525,6 +8861,13 @@
     "de": "Zeichenabstand",
     "pt": "Espaçamento entre caracteres"
   },
+  "Spaziatura e posizione del testo selezionato.": {
+    "en": "Spacing and position of the selected text.",
+    "es": "Espaciado y posición del texto seleccionado.",
+    "fr": "Espacement et position du texte sélectionné.",
+    "de": "Abstand und Position des ausgewählten Textes.",
+    "pt": "Espaçamento e posição do texto selecionado."
+  },
   "Spaziatura paragrafo": {
     "en": "Paragraph spacing",
     "es": "Espaciado entre párrafos",
@@ -8574,6 +8917,13 @@
     "de": "Abstand vor: {value} pt",
     "pt": "Espaço antes: {value} pt"
   },
+  "Speciale": {
+    "en": "Special",
+    "es": "Especial",
+    "fr": "De 1re ligne",
+    "de": "Sondereinzug",
+    "pt": "Especial"
+  },
   "Spegnendola il testo resta esattamente come lo batti": {
     "en": "Turn it off and the text stays exactly as you type it",
     "es": "Si la apagas, el texto queda exactamente como lo escribes",
@@ -8595,6 +8945,13 @@
     "de": "Trennt lange Wörter am Zeilenende, je nach Sprache des Dokuments",
     "pt": "Quebra as palavras longas no fim da linha, conforme o idioma do documento"
   },
+  "Sporgente": {
+    "en": "Hanging",
+    "es": "Francesa",
+    "fr": "Suspendu",
+    "de": "Hängend",
+    "pt": "Deslocamento"
+  },
   "Sposta giù": {
     "en": "Move down",
     "es": "Bajar",
@@ -8602,12 +8959,26 @@
     "de": "Nach unten",
     "pt": "Mover para baixo"
   },
+  "Sposta giù di un blocco ⌥↓": {
+    "en": "Move down one block ⌥↓",
+    "es": "Bajar un bloque ⌥↓",
+    "fr": "Descendre d'un bloc ⌥↓",
+    "de": "Einen Block nach unten ⌥↓",
+    "pt": "Descer um bloco ⌥↓"
+  },
   "Sposta su": {
     "en": "Move up",
     "es": "Subir",
     "fr": "Monter",
     "de": "Nach oben",
     "pt": "Mover para cima"
+  },
+  "Sposta su di un blocco ⌥↑": {
+    "en": "Move up one block ⌥↑",
+    "es": "Subir un bloque ⌥↑",
+    "fr": "Monter d'un bloc ⌥↑",
+    "de": "Einen Block nach oben ⌥↑",
+    "pt": "Subir um bloco ⌥↑"
   },
   "Spunte e segni": {
     "en": "Ticks and marks",
@@ -8650,6 +9021,13 @@
     "fr": "Style des citations",
     "de": "Zitierstil",
     "pt": "Estilo das citações"
+  },
+  "Stile sommario": {
+    "en": "Contents style",
+    "es": "Estilo de tabla de contenido",
+    "fr": "Style de table des matières",
+    "de": "Verzeichnisstil",
+    "pt": "Estilo do sumário"
   },
   "Stile sottolineatura": {
     "en": "Underline style",
@@ -8931,6 +9309,13 @@
     "de": "Text der Notiz",
     "pt": "Texto da nota"
   },
+  "Testo di esempio": {
+    "en": "Sample text",
+    "es": "Texto de ejemplo",
+    "fr": "Texte d'exemple",
+    "de": "Beispieltext",
+    "pt": "Texto de exemplo"
+  },
   "Testo finale, una riga rossa accanto": {
     "en": "Final text, a red line beside it",
     "es": "Texto final, con una línea roja al lado",
@@ -9043,6 +9428,13 @@
     "de": "Titel der Person",
     "pt": "Cargo do signatário"
   },
+  "Titolo predefinito": {
+    "en": "Default title",
+    "es": "Título predeterminado",
+    "fr": "Titre par défaut",
+    "de": "Standardtitel",
+    "pt": "Título padrão"
+  },
   "Titolo su una fascia colorata": {
     "en": "Title on a colored band",
     "es": "Título sobre una banda de color",
@@ -9056,6 +9448,13 @@
     "fr": "Titre vide",
     "de": "Leere Überschrift",
     "pt": "Título vazio"
+  },
+  "Titolo, dati, legenda, colori": {
+    "en": "Title, data, legend, colors",
+    "es": "Título, datos, leyenda, colores",
+    "fr": "Titre, données, légende, couleurs",
+    "de": "Titel, Daten, Legende, Farben",
+    "pt": "Título, dados, legenda, cores"
   },
   "Titolo, livello 1": {
     "en": "Heading, level 1",
@@ -9337,6 +9736,13 @@
     "de": "Alle Formatvorlagen: anwenden, ändern, erstellen",
     "pt": "Todos os estilos: aplicar, modificar, criar"
   },
+  "Tutti i bordi": {
+    "en": "All borders",
+    "es": "Todos los bordes",
+    "fr": "Toutes les bordures",
+    "de": "Alle Rahmenlinien",
+    "pt": "Todas as bordas"
+  },
   "Tutti i commenti con markup": {
     "en": "All the comments with markup",
     "es": "Todos los comentarios con marcas",
@@ -9547,6 +9953,13 @@
     "de": "Verbinden",
     "pt": "Mesclar"
   },
+  "Unisci celle": {
+    "en": "Merge cells",
+    "es": "Combinar celdas",
+    "fr": "Fusionner les cellules",
+    "de": "Zellen verbinden",
+    "pt": "Mesclar células"
+  },
   "Usa «Spazio prima» e «Spazio dopo» (scheda Layout): i lettori di schermo annunciano ogni riga vuota.": {
     "en": "Use “Space before” and “Space after” (Layout tab): screen readers announce every empty line.",
     "es": "Usa «Espacio antes» y «Espacio después» (pestaña Diseño): los lectores de pantalla anuncian cada línea vacía.",
@@ -9700,13 +10113,6 @@
     "fr": "Vidéo en ligne",
     "de": "Onlinevideo",
     "pt": "Vídeo online"
-  },
-  "Video selezionato": {
-    "en": "Video selected",
-    "es": "Vídeo seleccionado",
-    "fr": "Vidéo sélectionnée",
-    "de": "Video ausgewählt",
-    "pt": "Vídeo selecionado"
   },
   "Virgolette tipografiche": {
     "en": "Smart quotes",

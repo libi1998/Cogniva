@@ -7,6 +7,7 @@ import { STORAGE, readStorage } from "@/lib/storage"
 import { guardClicks } from "../focus-guard"
 import { DesignTab } from "./design-tab"
 import { DrawTab } from "./draw-tab"
+import { FormatTab, formatKind, formatTabLabel } from "./format-tab"
 import { HomeTab } from "./home-tab"
 import { InsertTab } from "./insert-tab"
 import { LayoutTab } from "./layout-tab"
@@ -30,12 +31,15 @@ const TABS = [
   { key: "review", label: N_("Revisione"), Body: ReviewTab },
   { key: "view", label: N_("Visualizza"), Body: ViewTab },
 ] as const
-type TabKey = (typeof TABS)[number]["key"]
+type FixedKey = (typeof TABS)[number]["key"]
+/** «format» è la scheda contestuale dell'oggetto su cui si lavora */
+type TabKey = FixedKey | "format"
 
 const STORAGE_KEY = STORAGE.ribbon
 
-type Prefs = { tab: TabKey; collapsed: boolean }
-const DEFAULT: Prefs = { tab: "home", collapsed: false }
+/** `back`: la scheda da riaprire quando la scheda contestuale sparisce */
+type Prefs = { tab: TabKey; collapsed: boolean; back: FixedKey }
+const DEFAULT: Prefs = { tab: "home", collapsed: false, back: "home" }
 
 /*
  * La scheda aperta si ricorda fra una sessione e l'altra. È un piccolo store
@@ -49,9 +53,14 @@ function readPrefs(): Prefs {
   if (cache) return cache
   try {
     const raw = JSON.parse(readStorage(STORAGE_KEY) ?? "{}")
+    const fixed = (key: unknown): FixedKey =>
+      TABS.some((t) => t.key === key) ? (key as FixedKey) : "home"
+    // riaprendo il documento niente è selezionato: la scheda contestuale
+    // lascia il posto a quella da cui si era arrivati
     cache = {
-      tab: TABS.some((t) => t.key === raw.tab) ? raw.tab : "home",
+      tab: raw.tab === "format" ? fixed(raw.back) : fixed(raw.tab),
       collapsed: raw.collapsed === true,
+      back: fixed(raw.back),
     }
   } catch {
     cache = DEFAULT
@@ -67,6 +76,20 @@ function writePrefs(next: Prefs) {
     // senza localStorage la scheda semplicemente non viene ricordata
   }
   listeners.forEach((l) => l())
+}
+
+/**
+ * Apre una scheda della barra da fuori, per esempio la scheda dell'oggetto
+ * appena inserito (un grafico, una forma) o scelto dal menu contestuale.
+ */
+export function openRibbonTab(tab: TabKey) {
+  const prefs = readPrefs()
+  writePrefs({
+    ...prefs,
+    tab,
+    collapsed: false,
+    back: prefs.tab === "format" ? prefs.back : prefs.tab,
+  })
 }
 
 function subscribe(listener: () => void) {
@@ -86,8 +109,36 @@ export function Ribbon({ ctx }: { ctx: RibbonCtx | null }) {
   const state = React.useSyncExternalStore(subscribe, readPrefs, () => DEFAULT)
   const update = (next: Partial<Prefs>) => writePrefs({ ...state, ...next })
 
-  const active = TABS.find((t) => t.key === state.tab) ?? TABS[0]
+  // la scheda dell'oggetto su cui si lavora, come «Layout tabella» in Word
+  const kind = ctx ? formatKind(ctx.st) : null
+  const formatLabel = kind ? formatTabLabel(kind) : null
+  const onFormat = state.tab === "format" && kind !== null
+  // l'oggetto non c'è più (clic nel testo, oggetto eliminato): si torna alla
+  // scheda di prima. Solo quando sparisce: aprendo la scheda per un oggetto
+  // che sta per essere inserito, l'oggetto ancora non c'è
+  const lastKind = React.useRef(kind)
+  React.useEffect(() => {
+    const was = lastKind.current
+    lastKind.current = kind
+    if (was && !kind && state.tab === "format") {
+      writePrefs({ ...state, tab: state.back })
+    }
+  }, [kind, state])
+
+  const shownKey: FixedKey = state.tab === "format" ? state.back : state.tab
+  const active = TABS.find((t) => t.key === shownKey) ?? TABS[0]
   const Body = active.Body
+  const pick = (key: TabKey) =>
+    update({
+      tab: key,
+      collapsed: false,
+      back:
+        key === "format"
+          ? state.tab === "format"
+            ? state.back
+            : state.tab
+          : state.back,
+    })
 
   return (
     <div
@@ -99,30 +150,57 @@ export function Ribbon({ ctx }: { ctx: RibbonCtx | null }) {
         aria-label={t("Schede")}
         className="flex h-9 items-end gap-1 overflow-x-auto px-2"
       >
-        {TABS.map((tab) => (
+        {TABS.map((tab) => {
+          const selected = !onFormat && tab.key === shownKey
+          return (
+            <button
+              key={tab.key}
+              type="button"
+              role="tab"
+              data-safe=""
+              aria-selected={selected}
+              onMouseDown={(e) => e.preventDefault()}
+              // un clic apre la scheda (e la barra, se era compressa); il
+              // doppio clic comprime, come in Word
+              onClick={() => pick(tab.key)}
+              onDoubleClick={() =>
+                selected && update({ collapsed: !state.collapsed })
+              }
+              className={cn(
+                "relative h-8 shrink-0 rounded-t-md px-3 text-[13px] transition-colors",
+                selected
+                  ? "font-semibold text-foreground after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:rounded-full after:bg-primary"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+            >
+              {t(tab.label)}
+            </button>
+          )
+        })}
+        {formatLabel ? (
           <button
-            key={tab.key}
             type="button"
             role="tab"
             data-safe=""
-            aria-selected={tab.key === state.tab}
+            data-contextual=""
+            aria-selected={onFormat}
             onMouseDown={(e) => e.preventDefault()}
-            // un clic apre la scheda (e la barra, se era compressa); il
-            // doppio clic comprime, come in Word
-            onClick={() => update({ tab: tab.key, collapsed: false })}
+            onClick={() => pick("format")}
             onDoubleClick={() =>
-              tab.key === state.tab && update({ collapsed: !state.collapsed })
+              onFormat && update({ collapsed: !state.collapsed })
             }
+            // colorata come le schede contestuali di Word: si nota che è
+            // comparsa e che vale per l'oggetto selezionato
             className={cn(
-              "relative h-8 shrink-0 rounded-t-md px-3 text-[13px] transition-colors",
-              tab.key === state.tab
-                ? "font-semibold text-foreground after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:rounded-full after:bg-primary"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              "relative h-8 shrink-0 rounded-t-md px-3 text-[13px] text-primary transition-colors",
+              onFormat
+                ? "bg-primary/10 font-semibold after:absolute after:inset-x-3 after:bottom-0 after:h-[3px] after:rounded-full after:bg-primary"
+                : "hover:bg-primary/10"
             )}
           >
-            {t(tab.label)}
+            {formatLabel}
           </button>
-        ))}
+        ) : null}
         <button
           type="button"
           data-safe=""
@@ -145,9 +223,15 @@ export function Ribbon({ ctx }: { ctx: RibbonCtx | null }) {
       </div>
 
       {!state.collapsed ? (
-        <RibbonBody key={active.key} label={t(active.label)}>
-          {ctx ? <Body ctx={ctx} /> : null}
-        </RibbonBody>
+        onFormat && ctx && formatLabel ? (
+          <RibbonBody key={`format-${kind}`} label={formatLabel}>
+            <FormatTab ctx={ctx} />
+          </RibbonBody>
+        ) : (
+          <RibbonBody key={active.key} label={t(active.label)}>
+            {ctx ? <Body ctx={ctx} /> : null}
+          </RibbonBody>
+        )
       ) : null}
     </div>
   )

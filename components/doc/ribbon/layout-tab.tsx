@@ -181,7 +181,7 @@ const LINE_NUMBERS: {
 
 export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
   const t = useT()
-  const { editor, st, theme, setTheme } = ctx
+  const { editor, theme, setTheme } = ctx
   const paged = Boolean(PAGE_FORMATS[theme.format].mm)
 
   return (
@@ -415,80 +415,7 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
         label={t("Paragrafo")}
         icon={<LayoutList className="size-5" />}
       >
-        {/* intestazioni e due righe di campi nell'altezza della barra: più
-            alti, la seconda riga finiva sotto l'etichetta del gruppo */}
-        {/* le caselle non riportano il fuoco nel testo a ogni tasto: dopo la
-            prima cifra quello che si scriveva finiva nel documento */}
-        <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
-          <span className="text-[11px] leading-3 font-medium text-muted-foreground">
-            {t("Rientro")}
-          </span>
-          <span className="text-[11px] leading-3 font-medium text-muted-foreground">
-            {t("Spaziatura")}
-          </span>
-          <Stepper
-            compact
-            label={t("A sinistra")}
-            value={st.indentLeft / CM}
-            unit="cm"
-            step={0.5}
-            min={0}
-            max={8.4}
-            onChange={(cm) =>
-              editor
-                .chain()
-                .setIndentLeft(cm * CM)
-                .run()
-            }
-          />
-          <Stepper
-            compact
-            label={t("Prima")}
-            value={st.spaceBefore / PT}
-            unit="pt"
-            step={6}
-            min={0}
-            max={96}
-            decimals={0}
-            onChange={(pt) =>
-              editor
-                .chain()
-                .setSpaceBefore(Math.round(pt * PT))
-                .run()
-            }
-          />
-          <Stepper
-            compact
-            label={t("A destra")}
-            value={st.indentRight / CM}
-            unit="cm"
-            step={0.5}
-            min={0}
-            max={8.4}
-            onChange={(cm) =>
-              editor
-                .chain()
-                .setIndentRight(cm * CM)
-                .run()
-            }
-          />
-          <Stepper
-            compact
-            label={t("Dopo")}
-            value={st.spaceAfter / PT}
-            unit="pt"
-            step={6}
-            min={0}
-            max={96}
-            decimals={0}
-            onChange={(pt) =>
-              editor
-                .chain()
-                .setSpaceAfter(Math.round(pt * PT))
-                .run()
-            }
-          />
-        </div>
+        <IndentSpacingGrid ctx={ctx} />
       </RibbonGroup>
 
       <ArrangeGroup ctx={ctx} />
@@ -620,7 +547,7 @@ function documentObjects(ctx: RibbonCtx): DocObject[] {
 }
 
 /** «Disponi»: posizione, testo a capo, livelli, allineamento e rotazione */
-function ArrangeGroup({ ctx }: { ctx: RibbonCtx }) {
+export function ArrangeGroup({ ctx }: { ctx: RibbonCtx }) {
   const t = useT()
   const { editor, st, theme } = ctx
   const [objects, setObjects] = React.useState<DocObject[]>([])
@@ -856,5 +783,92 @@ function ArrangeGroup({ ctx }: { ctx: RibbonCtx }) {
         </DropdownMenuItem>
       </RibbonMenu>
     </RibbonGroup>
+  )
+}
+
+/**
+ * Rientri e spaziatura del paragrafo, in quattro caselle: nella scheda
+ * Layout e, come chiesto da chi scrive, anche nella scheda Home.
+ */
+export function IndentSpacingGrid({ ctx }: { ctx: RibbonCtx }) {
+  const t = useT()
+  const { editor, st } = ctx
+  return (
+    <>
+      {/* intestazioni e due righe di campi nell'altezza della barra: più
+            alti, la seconda riga finiva sotto l'etichetta del gruppo */}
+      {/* le caselle non riportano il fuoco nel testo a ogni tasto: dopo la
+            prima cifra quello che si scriveva finiva nel documento */}
+      <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
+        <span className="text-[11px] leading-3 font-medium text-muted-foreground">
+          {t("Rientro")}
+        </span>
+        <span className="text-[11px] leading-3 font-medium text-muted-foreground">
+          {t("Spaziatura")}
+        </span>
+        <Stepper
+          compact
+          label={t("A sinistra")}
+          value={st.indentLeft / CM}
+          unit="cm"
+          step={0.5}
+          min={0}
+          max={8.4}
+          onChange={(cm) =>
+            editor
+              .chain()
+              .setIndentLeft(cm * CM)
+              .run()
+          }
+        />
+        <Stepper
+          compact
+          label={t("Prima")}
+          value={st.spaceBefore / PT}
+          unit="pt"
+          step={6}
+          min={0}
+          max={96}
+          decimals={0}
+          onChange={(pt) =>
+            editor
+              .chain()
+              .setSpaceBefore(Math.round(pt * PT))
+              .run()
+          }
+        />
+        <Stepper
+          compact
+          label={t("A destra")}
+          value={st.indentRight / CM}
+          unit="cm"
+          step={0.5}
+          min={0}
+          max={8.4}
+          onChange={(cm) =>
+            editor
+              .chain()
+              .setIndentRight(cm * CM)
+              .run()
+          }
+        />
+        <Stepper
+          compact
+          label={t("Dopo")}
+          value={st.spaceAfter / PT}
+          unit="pt"
+          step={6}
+          min={0}
+          max={96}
+          decimals={0}
+          onChange={(pt) =>
+            editor
+              .chain()
+              .setSpaceAfter(Math.round(pt * PT))
+              .run()
+          }
+        />
+      </div>
+    </>
   )
 }

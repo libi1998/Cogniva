@@ -16,6 +16,8 @@ import { FindReplace } from "@/lib/find-replace"
 import { ReadAloudHighlight } from "@/lib/read-aloud/highlight"
 import { Pagination } from "@/lib/pagination"
 import { FormattingMarks } from "@/lib/formatting-marks"
+import { TableFormat } from "@/lib/table-format"
+import { ParagraphFlowExtension, TextPosition } from "@/lib/paragraph-format"
 import { ListStyles, SortBlocks, TextEffects } from "@/lib/doc-typography"
 import { Bookmark, CoverPart, DropCap, Field, TextBox } from "@/lib/doc-fields"
 import {
@@ -79,6 +81,8 @@ export function createDocExtensions(): AnyExtension[] {
     FontFamily,
     FontSize,
     LetterSpacing,
+    TextPosition,
+    ParagraphFlowExtension,
     TextEffects,
     LineHeight,
     Spacing,
@@ -114,6 +118,7 @@ export function createDocExtensions(): AnyExtension[] {
     StyledTableHeader,
     StyledTableCell,
     CellStyle,
+    TableFormat,
     DocImage.configure({ allowBase64: true, inline: false }),
     CharacterCount,
     BoardEmbed,

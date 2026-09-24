@@ -9,22 +9,13 @@ import {
   AlignRight,
   ArrowDown,
   ArrowUp,
-  BookOpenText,
-  ChartColumnBig,
   Columns3,
   ExternalLink,
-  Image as ImageIcon,
   Layers,
   Merge,
-  NotebookPen,
-  Quote,
   Rows3,
-  Sigma,
   Split,
-  Table2,
   Trash2,
-  Type,
-  Video,
   WrapText,
   Rotate3d,
 } from "lucide-react"
@@ -147,49 +138,6 @@ function Cmd({
       {icon}
       {label}
     </Button>
-  )
-}
-
-/* --------------------------------- testo --------------------------------- */
-
-/**
- * Nel testo il pannello mostra solo quello che la barra non ha: carattere,
- * corpo, colori, interlinea, rientri e spaziature stanno nelle schede Home e
- * Layout.
- */
-function TextSection({ editor, st }: { editor: Editor; st: DocState }) {
-  const t = useT()
-  return (
-    <Section title={t("Testo")}>
-      <SliderRow
-        label={t("Spaziatura caratteri")}
-        value={st.letterSpacing}
-        min={-2}
-        max={12}
-        step={0.5}
-        // senza portare il fuoco nel testo: al primo passo il cursore lo
-        // perdeva, e le frecce dopo spostavano il cursore del testo e
-        // toglievano la selezione
-        onChange={(v) =>
-          editor
-            .chain()
-            .setLetterSpacing(v || null)
-            .run()
-        }
-      />
-      <SliderRow
-        label={t("Rientro prima riga")}
-        value={st.firstLine}
-        min={0}
-        max={96}
-        onChange={(v) => editor.chain().setFirstLineIndent(v).run()}
-      />
-      <p className="text-[11px] leading-snug text-muted-foreground">
-        {t(
-          "Carattere, colori e paragrafo sono nella scheda Home; rientri e spaziatura in Layout."
-        )}
-      </p>
-    </Section>
   )
 }
 
@@ -1475,11 +1423,12 @@ function MathSection({ editor, st }: { editor: Editor; st: DocState }) {
 /* ------------------------------- pannello ------------------------------- */
 
 /**
- * Pannello contestuale: mostra solo quello su cui si sta lavorando — testo,
- * immagine, tabella, board incorporata o nota. Le impostazioni del file stanno
- * nelle schede Layout e Progettazione.
+ * Le opzioni complete dell'oggetto selezionato — immagine, grafico, tabella,
+ * video, modello 3D, equazione, nota, citazione, board — nel riquadro «Altre
+ * opzioni» della sua scheda della barra. Prima stavano in un pannello Stile
+ * fisso a destra che rubava spazio al foglio.
  */
-export function DocInspector({
+export function ObjectOptions({
   editor,
   st,
   theme,
@@ -1487,79 +1436,15 @@ export function DocInspector({
   sources,
   onSources,
 }: {
-  editor: Editor | null
+  editor: Editor
   st: DocState
   theme: DocTheme
   pageHeight: number
   sources: DocSource[]
   onSources: (id?: string | null, cite?: boolean) => void
 }) {
-  const t = useT()
-  if (!editor) return null
-  const heading = st.onImage
-    ? {
-        icon: <ImageIcon className="size-3.5" />,
-        label: t("Immagine selezionata"),
-      }
-    : st.onChart
-      ? {
-          icon: <ChartColumnBig className="size-3.5" />,
-          label: t("Grafico selezionato"),
-        }
-      : st.onCitation
-        ? {
-            icon: <Quote className="size-3.5" />,
-            label: t("Citazione selezionata"),
-          }
-        : st.onBibliography
-          ? {
-              icon: <BookOpenText className="size-3.5" />,
-              label: t("Bibliografia"),
-            }
-          : st.onVideo
-            ? {
-                icon: <Video className="size-3.5" />,
-                label: t("Video selezionato"),
-              }
-            : st.onModel3d
-              ? {
-                  icon: <Rotate3d className="size-3.5" />,
-                  label: t("Modello 3D selezionato"),
-                }
-              : st.onMath
-                ? {
-                    icon: <Sigma className="size-3.5" />,
-                    label: t("Equazione selezionata"),
-                  }
-                : st.onFootnote
-                  ? {
-                      icon: <NotebookPen className="size-3.5" />,
-                      label: t("Nota selezionata"),
-                    }
-                  : st.onEmbed
-                    ? {
-                        icon: <ImageIcon className="size-3.5" />,
-                        label: t("Board selezionata"),
-                      }
-                    : st.inTable
-                      ? {
-                          icon: <Table2 className="size-3.5" />,
-                          label: t("Nella tabella"),
-                        }
-                      : {
-                          icon: <Type className="size-3.5" />,
-                          label: t("Nel testo"),
-                        }
-
   return (
-    <div
-      className="flex h-full w-full flex-col overflow-y-auto"
-      onClickCapture={guardClicks(editor)}
-    >
-      <div className="flex h-9 shrink-0 items-center gap-1.5 border-b border-border px-4 text-[11px] font-semibold text-muted-foreground">
-        {heading.icon}
-        {heading.label}
-      </div>
+    <div onClickCapture={guardClicks(editor)}>
       {st.onImage ? (
         <ImageSection
           editor={editor}
@@ -1596,9 +1481,7 @@ export function DocInspector({
         <EmbedSection editor={editor} st={st} />
       ) : st.inTable ? (
         <TableSection editor={editor} st={st} />
-      ) : (
-        <TextSection editor={editor} st={st} />
-      )}
+      ) : null}
     </div>
   )
 }

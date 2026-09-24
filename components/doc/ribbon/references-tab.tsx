@@ -109,8 +109,12 @@ export function ReferencesTab({ ctx }: { ctx: RibbonCtx }) {
           <DropdownMenuLabel>{t("Predefiniti")}</DropdownMenuLabel>
           {(
             [
-              ["card", t("Automatico 1"), t("Riquadro colorato, senza pagine")],
-              ["classic", t("Automatico 2"), t("Puntini e numeri di pagina")],
+              ["classic", t("Automatico 1"), t("Puntini e numeri di pagina")],
+              [
+                "card",
+                t("Automatico 2"),
+                t("Riquadro colorato, con i numeri di pagina"),
+              ],
               ["simple", t("Semplice"), t("Solo i titoli")],
             ] as const
           ).map(([variant, label, hint]) => (

@@ -68,7 +68,10 @@ export function prepareSheet(
   node.style.borderRadius = "0"
   node.style.margin = "0"
   node.querySelectorAll("[data-guide]").forEach((g) => g.remove())
-  // i segni di formattazione e le evidenziazioni della ricerca restano a video
+  // la maniglia degli oggetti e i segni di formattazione restano a video
+  node
+    .querySelectorAll("[data-block-handle], .doc-block-drop, .doc-mark")
+    .forEach((g) => g.remove())
   node.classList.remove("doc-marks")
   // la copia per l'SVG ha già perso le classi: si riconoscono dagli attributi
   node.querySelectorAll<HTMLElement>("[data-find-match]").forEach((m) => {

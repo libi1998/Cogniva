@@ -77,6 +77,12 @@ export type DocState = {
   indentRight: number
   shading: string
   paragraphBorder: string
+  /** «Distribuzione testo» del paragrafo */
+  keepNext: boolean
+  keepLines: boolean
+  breakBefore: boolean
+  /** testo alzato (positivo) o abbassato, in px */
+  raise: number
 
   inTable: boolean
   canMerge: boolean
@@ -87,6 +93,17 @@ export type DocState = {
   tableBorderColor: string
   tableBorderStyle: string
   tableBanded: boolean
+  /** margine interno e altezza minima della cella del cursore, in px */
+  cellPadding: number
+  cellMinHeight: number
+  /** la selezione è una tabella intera (non una cella) */
+  tableSelected: boolean
+
+  /** sommario, indice delle figure o indice analitico selezionato */
+  onToc: boolean
+  tocVariant: string
+  tocLevels: number
+  onIndex: boolean
 
   onImage: boolean
   imageWidth: number
@@ -199,6 +216,10 @@ const EMPTY: DocState = {
   indentRight: 0,
   shading: "",
   paragraphBorder: "none",
+  keepNext: false,
+  keepLines: false,
+  breakBefore: false,
+  raise: 0,
   inTable: false,
   canMerge: false,
   canSplit: false,
@@ -208,6 +229,13 @@ const EMPTY: DocState = {
   tableBorderColor: "",
   tableBorderStyle: "solid",
   tableBanded: false,
+  cellPadding: 0,
+  cellMinHeight: 0,
+  tableSelected: false,
+  onToc: false,
+  tocVariant: "classic",
+  tocLevels: 3,
+  onIndex: false,
   onImage: false,
   imageWidth: 100,
   imageWrap: "inline",
@@ -348,6 +376,14 @@ export function useDocState(editor: Editor | null): DocState {
             ? e.getAttributes("tableHeader")
             : e.getAttributes("tableCell")
           : EMPTY_ATTRS
+        // il nodo selezionato come oggetto (clic su un'immagine, un sommario,
+        // la maniglia di una tabella)
+        const picked = e.state.selection as {
+          node?: { type: { name: string } }
+        }
+        const selectedNode = picked.node?.type.name ?? null
+        const onToc = selectedNode === "toc"
+        const toc = onToc ? e.getAttributes("toc") : EMPTY_ATTRS
         const highlight = e.isActive("highlight")
         // lo stile: quello della citazione per i suoi paragrafi, altrimenti
         // quello del blocco di testo del cursore
@@ -439,6 +475,10 @@ export function useDocState(editor: Editor | null): DocState {
           indentRight: px(block.indentRight),
           shading: String(block.shading ?? ""),
           paragraphBorder: String(block.border ?? "none"),
+          keepNext: block.keepNext === true,
+          keepLines: block.keepLines === true,
+          breakBefore: block.breakBefore === true,
+          raise: Number(style.raise ?? 0) || 0,
 
           inTable,
           canMerge: inTable && e.can().mergeCells(),
@@ -449,6 +489,15 @@ export function useDocState(editor: Editor | null): DocState {
           tableBorderColor: String(table.borderColor ?? ""),
           tableBorderStyle: String(table.borderStyle ?? "solid"),
           tableBanded: Boolean(table.banded),
+          cellPadding: Number(cell.padding ?? 0) || 0,
+          cellMinHeight: Number(cell.minHeight ?? 0) || 0,
+          tableSelected: selectedNode === "table",
+
+          onToc,
+          tocVariant: String(toc.variant ?? "card"),
+          tocLevels: Number(toc.levels ?? 3),
+          onIndex:
+            selectedNode === "figureIndex" || selectedNode === "docIndex",
 
           onImage,
           imageWidth: parseFloat(String(image.width ?? "100")) || 100,

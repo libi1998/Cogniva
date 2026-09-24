@@ -439,7 +439,7 @@ test("board: quello che si cambia dal pannello Stile si annulla", async ({
   await expect.poll(size).toBe(before)
 })
 
-test("pannello Stile del documento: il cursore si regola con le frecce", async ({
+test("Carattere: la spaziatura si imposta dalla finestra e resta sulla selezione", async ({
   page,
 }) => {
   await openDemo(page)
@@ -448,12 +448,18 @@ test("pannello Stile del documento: il cursore si regola con le frecce", async (
     page,
     `editor.chain().focus().setTextSelection({ from: 8, to: 20 }).run()`
   )
-  const slider = page.getByRole("slider", { name: "Spaziatura caratteri" })
-  await slider.focus()
-  for (let i = 0; i < 4; i += 1) await page.keyboard.press("ArrowRight")
-  // prima al primo passo il fuoco tornava nel testo: le frecce dopo
-  // spostavano il cursore e toglievano la selezione
-  await expect(slider).toBeFocused()
+  await openTab(page, "Home")
+  await page
+    .getByRole("button", { name: "Carattere: spaziatura e posizione…" })
+    .click()
+  const dialog = page.getByRole("dialog", { name: "Carattere" })
+  await dialog
+    .getByLabel("Spaziatura", { exact: true })
+    .selectOption("expanded")
+  await dialog.getByLabel("Di", { exact: true }).fill("1,5")
+  await dialog.getByRole("button", { name: "OK" }).click()
+  await expect(dialog).toBeHidden()
+  // 1,5 pt sono 2 px; la selezione resta quella di prima
   expect(
     await withEditor<[string | null, number, number]>(
       page,

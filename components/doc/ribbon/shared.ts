@@ -38,8 +38,13 @@ export type RibbonCtx = {
   comments: CommentsController
   /** pagine del documento impaginato (1 senza formato di carta) */
   pages: number
-  /** apre il pannello Stile: gli oggetti appena inseriti si scrivono lì */
+  /**
+   * apre la scheda dell'oggetto (Formato immagine, Tabella…): gli oggetti
+   * appena inseriti si sistemano da lì
+   */
   openPanel: () => void
+  /** altezza esatta della pagina se il documento è impaginato, altrimenti 0 */
+  pageHeight: number
   sources: DocSource[]
   /** «Gestisci fonti»; con `cite` il pulsante inserisce la fonte nel testo */
   openSources: (id?: string | null, cite?: boolean) => void
