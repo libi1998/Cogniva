@@ -183,14 +183,17 @@ function FigureIndexView({ editor, node, selected }: NodeViewProps) {
         })),
       equalityFn: sameRows,
     }) ?? []
+  // le etichette standard hanno il loro titolo in ogni lingua: prima in
+  // inglese si leggeva «Table of figure», in tedesco «Verzeichnis der
+  // abbildung»
   const title =
-    label === t("Tabella")
-      ? t("Indice delle tabelle")
-      : label === t("Equazione")
-        ? t("Indice delle equazioni")
-        : t("Indice delle {items}", {
-            items: label === "Figura" ? "figure" : label.toLowerCase(),
-          })
+    label === t("Figura")
+      ? t("Indice delle figure")
+      : label === t("Tabella")
+        ? t("Indice delle tabelle")
+        : label === t("Equazione")
+          ? t("Indice delle equazioni")
+          : t("Indice delle {items}", { items: label })
 
   return (
     <NodeViewWrapper

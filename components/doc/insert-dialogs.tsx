@@ -21,12 +21,14 @@ import { Glyph } from "@/components/board/glyph"
 import { useAuthor } from "@/lib/author"
 import {
   BOOKMARK_NAME,
+  captionLabels,
   DATE_FORMATS,
   FIELD_LABELS,
   goToBookmark,
   hiddenBookmarkName,
   listBookmarks,
   REF_FORMATS,
+  textWithFields,
   type FieldKind,
 } from "@/lib/doc-fields"
 import {
@@ -268,7 +270,29 @@ function BookmarkForm({
 
 /* ------------------------- riferimento incrociato ------------------------ */
 
-type RefKind = "heading" | "bookmark" | "Figura" | "Tabella" | "Equazione"
+/**
+ * Titoli, segnalibri o le didascalie di un'etichetta («seq:Figura»). Le
+ * etichette sono quelle scritte nel documento, nella lingua in cui si sono
+ * create, più quelle personalizzate: prima si cercavano sempre «Figura»,
+ * «Tabella» ed «Equazione», e con l'app in un'altra lingua non si trovava
+ * nessuna didascalia
+ */
+type RefKind = "heading" | "bookmark" | `seq:${string}`
+
+const seqLabel = (kind: RefKind) =>
+  kind.startsWith("seq:") ? kind.slice(4) : null
+
+/** Le etichette delle didascalie: quelle standard e quelle del documento */
+function refLabels(editor: Editor) {
+  const labels = new Set(captionLabels())
+  editor.state.doc.descendants((node) => {
+    if (node.type.name === "field" && node.attrs.kind === "seq")
+      labels.add(String(node.attrs.label ?? ""))
+    return true
+  })
+  labels.delete("")
+  return [...labels]
+}
 
 type RefItem = {
   key: string
@@ -288,7 +312,8 @@ function refItems(editor: Editor, kind: RefKind): RefItem[] {
     }))
   }
   const items: RefItem[] = []
-  const counters = new Map<string, number>()
+  const label = seqLabel(kind)
+  let count = 0
   state.doc.descendants((node, pos) => {
     if (kind === "heading" && node.type.name === "heading") {
       const hidden = node.firstChild?.marks.find(
@@ -308,16 +333,19 @@ function refItems(editor: Editor, kind: RefKind): RefItem[] {
       return false
     }
     if (
+      label !== null &&
       node.type.name === "field" &&
       node.attrs.kind === "seq" &&
-      node.attrs.label === kind
+      node.attrs.label === label
     ) {
-      const n = (counters.get(kind) ?? 0) + 1
-      counters.set(kind, n)
+      count += 1
       const $pos = state.doc.resolve(pos)
       items.push({
         key: String(pos),
-        label: $pos.parent.textContent.trim() || `${kind} ${n}`,
+        // con il numero della didascalia: il solo testo dava «Figura : …»
+        label:
+          textWithFields(state, $pos.parent, $pos.before()) ||
+          `${label} ${count}`,
         target: `seq:${node.attrs.target}`,
       })
     }
@@ -363,10 +391,10 @@ function CrossRefForm({
   const [format, setFormat] = React.useState("text")
   const [picked, setPicked] = React.useState<string | null>(null)
   const items = refItems(editor, kind)
+  const [labels] = React.useState(() => refLabels(editor))
+  const caption = seqLabel(kind)
   const formats = REF_FORMATS.filter(
-    (f) =>
-      f.for === "any" ||
-      (f.for === "seq" && kind !== "heading" && kind !== "bookmark")
+    (f) => f.for === "any" || (f.for === "seq" && caption !== null)
   )
   const current = items.find((i) => i.key === picked) ?? null
 
@@ -416,9 +444,11 @@ function CrossRefForm({
           >
             <option value="heading">{t("Titolo")}</option>
             <option value="bookmark">{t("Segnalibro")}</option>
-            <option value="Figura">{t("Figura")}</option>
-            <option value="Tabella">{t("Tabella")}</option>
-            <option value="Equazione">{t("Equazione")}</option>
+            {labels.map((label) => (
+              <option key={label} value={`seq:${label}`}>
+                {label}
+              </option>
+            ))}
           </select>
         </label>
         <label className="block space-y-1">
@@ -432,7 +462,7 @@ function CrossRefForm({
           >
             {formats.map((f) => (
               <option key={f.id} value={f.id}>
-                {f.id === "text" && kind !== "heading" && kind !== "bookmark"
+                {f.id === "text" && caption !== null
                   ? t("Didascalia intera")
                   : f.label}
               </option>
@@ -473,7 +503,7 @@ function CrossRefForm({
                       )
                     : t(
                         "Nessuna didascalia «{kind}»: aggiungila da Riferimenti › Inserisci didascalia.",
-                        { kind }
+                        { kind: caption ?? "" }
                       )}
               </p>
             )}

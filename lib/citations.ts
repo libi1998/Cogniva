@@ -125,6 +125,8 @@ export function inTextCitation(
   const people = parseAuthors(source.authors)
   const title = source.title.trim() || tr("Senza titolo")
   const p = pages.trim()
+  // «p. 45» ma «pp. 45–50»: un intervallo o un elenco di pagine è al plurale
+  const pageLabel = /[-–—,]/.test(p) ? "pp." : "p."
 
   const lead = (and: string, upper = false, etAl = 3) => {
     if (!people.length) return upper ? title.toUpperCase() : title
@@ -139,9 +141,9 @@ export function inTextCitation(
     case "chicago":
       return `(${lead("and", false, 4)} ${year(source)}${p ? `, ${p}` : ""})`
     case "iso690":
-      return `(${lead("e", true)}, ${year(source)}${p ? `, p. ${p}` : ""})`
+      return `(${lead("e", true)}, ${year(source)}${p ? `, ${pageLabel} ${p}` : ""})`
     default:
-      return `(${lead("&")}, ${year(source)}${p ? `, p. ${p}` : ""})`
+      return `(${lead("&")}, ${year(source)}${p ? `, ${pageLabel} ${p}` : ""})`
   }
 }
 
