@@ -334,7 +334,10 @@ function SynonymsMenu({
               key={term}
               onClick={onPick(() => {
                 const text = matchCase(target.text, term)
-                const marks = editor.state.doc.resolve(target.from).marks()
+                // la formattazione della parola, non del testo prima
+                const marks = editor.state.doc
+                  .resolve(Math.min(target.from + 1, target.to))
+                  .marks()
                 editor
                   .chain()
                   .focus()

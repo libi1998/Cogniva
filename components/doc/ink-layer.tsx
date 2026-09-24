@@ -42,8 +42,11 @@ export type InkController = {
   clear: () => void
   replaying: boolean
   replay: () => void
-  /** cambia i tratti tenendo il passo per «Annulla» */
-  commit: (fn: (ink: InkStroke[]) => InkStroke[]) => void
+  /**
+   * cambia i tratti tenendo il passo per «Annulla»; con `sameStep` la
+   * modifica si aggiunge al passo di prima (una passata di gomma)
+   */
+  commit: (fn: (ink: InkStroke[]) => InkStroke[], sameStep?: boolean) => void
 }
 
 const NO_INK: InkStroke[] = []
@@ -71,13 +74,13 @@ export function useInk(fileId: string): InkController {
 
   const setPens = savePens
 
-  const update = (fn: (ink: InkStroke[]) => InkStroke[]) => {
+  const update = (fn: (ink: InkStroke[]) => InkStroke[], sameStep = false) => {
     const current = getWorkspace().files.find(
       (f) => f.id === fileId && f.kind === "doc"
     )
     const before =
       current && current.kind === "doc" ? (current.data.ink ?? NO_INK) : NO_INK
-    setHistory((h) => [...h.slice(-49), before])
+    if (!sameStep) setHistory((h) => [...h.slice(-49), before])
     getWorkspace().updateDocInk(fileId, fn)
   }
 
@@ -164,6 +167,10 @@ export function InkLayer({
   const svgRef = React.useRef<SVGSVGElement>(null)
   const points = React.useRef<number[]>([])
   const drawing = React.useRef(false)
+  // i tratti già cancellati in questa passata di gomma: una passata è un
+  // solo passo di «Annulla», e un tratto non si cancella due volte prima che
+  // la pagina si ridisegni
+  const erased = React.useRef<Set<string> | null>(null)
   const [draft, setDraft] = React.useState<number[] | null>(null)
   const frame = React.useRef(0)
   const pen = ink.pens.find((p) => p.id === ink.activePen) ?? ink.pens[0]
@@ -188,10 +195,15 @@ export function InkLayer({
   }
 
   const erase = (x: number, y: number) => {
-    const hit = ink.strokes.filter((s) => hitStroke(s, x, y, 8))
+    const done = (erased.current ??= new Set())
+    const hit = ink.strokes.filter(
+      (s) => !done.has(s.id) && hitStroke(s, x, y, 8)
+    )
     if (!hit.length) return
     const ids = new Set(hit.map((s) => s.id))
-    commit((list) => list.filter((s) => !ids.has(s.id)))
+    const sameStep = done.size > 0
+    for (const id of ids) done.add(id)
+    commit((list) => list.filter((s) => !ids.has(s.id)), sameStep)
   }
 
   const schedule = () => {
@@ -229,6 +241,7 @@ export function InkLayer({
         drawing.current = true
         const [x, y] = toSheet(e)
         if (ink.tool === "eraser") {
+          erased.current = new Set()
           erase(x, y)
           return
         }
@@ -252,6 +265,7 @@ export function InkLayer({
       onPointerUp={() => {
         if (!drawing.current) return
         drawing.current = false
+        erased.current = null
         if (ink.tool !== "draw" || !pen) return
         let pts = thinPoints(points.current)
         if (ink.toShape) pts = recognizeShape(pts) ?? pts
@@ -270,6 +284,7 @@ export function InkLayer({
       }}
       onPointerCancel={() => {
         drawing.current = false
+        erased.current = null
         points.current = []
         setDraft(null)
       }}
