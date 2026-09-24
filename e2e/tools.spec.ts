@@ -1,6 +1,12 @@
 import { readFileSync } from "node:fs"
 import { expect, test, type Page } from "@playwright/test"
-import { openDemo, openTab, ribbonButton, withEditor } from "./editor"
+import {
+  caretAfter,
+  openDemo,
+  openTab,
+  ribbonButton,
+  withEditor,
+} from "./editor"
 
 /**
  * Gli strumenti del documento e della board, ciascuno con il caso che prima
@@ -455,4 +461,40 @@ test("pannello Stile del documento: il cursore si regola con le frecce", async (
        return [m?.attrs.letterSpacing ?? null, editor.state.selection.from, editor.state.selection.to]`
     )
   ).toEqual(["2px", 8, 20])
+})
+
+test("Layout: il rientro si scrive nella casella, non nel documento", async ({
+  page,
+}) => {
+  await openDemo(page)
+  await setParagraphs(page, ["Testo del paragrafo"])
+  await caretAfter(page, 1, "Te")
+  await openTab(page, "Layout")
+  const field = page.getByLabel("A sinistra", { exact: true })
+  await field.click()
+  // la casella seleziona il suo testo al fotogramma dopo il fuoco
+  await field.evaluate(
+    () =>
+      new Promise((done) =>
+        requestAnimationFrame(() => requestAnimationFrame(done))
+      )
+  )
+  await page.keyboard.type("1,5", { delay: 30 })
+  // prima dopo la prima cifra il fuoco tornava al testo: «,5» finiva nel
+  // documento («Te,5sto del paragrafo»)
+  await expect(field).toBeFocused()
+  await page.keyboard.press("ArrowUp")
+  await expect(field).toBeFocused()
+  expect(await paragraphs(page)).toEqual(["Testo del paragrafo"])
+  expect(
+    await withEditor<number>(
+      page,
+      "return editor.state.doc.child(1).attrs.indent"
+    )
+  ).toBe(Math.round((2 * 96) / 2.54))
+
+  // Invio torna al testo, dove si era
+  await page.keyboard.press("Enter")
+  await page.keyboard.type("X")
+  expect(await paragraphs(page)).toEqual(["TeXsto del paragrafo"])
 })

@@ -418,6 +418,7 @@ export function Stepper({
   compact?: boolean
 }) {
   const t = useT()
+  const backToText = useFinalFocus()
   const [draft, setDraft] = React.useState<string | null>(null)
   const clamp = (v: number) =>
     Math.min(max, Math.max(min, Number(v.toFixed(decimals))))
@@ -461,7 +462,17 @@ export function Stepper({
           }}
           onBlur={() => setDraft(null)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") (e.target as HTMLInputElement).blur()
+            // Invio torna al testo, come in Word: si riprende a scrivere nel
+            // documento (il valore si applica già mentre si digita). In una
+            // finestra, come «Modifica stile», si resta nella finestra
+            if (e.key === "Enter") {
+              e.preventDefault()
+              const input = e.currentTarget
+              if (backToText?.current && !input.closest('[role="dialog"]'))
+                backToText.current.focus()
+              else input.blur()
+              return
+            }
             if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return
             e.preventDefault()
             const next = clamp(value + (e.key === "ArrowUp" ? step : -step))
