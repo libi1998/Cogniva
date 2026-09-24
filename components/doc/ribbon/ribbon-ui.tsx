@@ -13,12 +13,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import {
+  focusBack,
   useFinalFocus,
   useFocusBackWhenClosed,
 } from "@/components/ui/final-focus"
 import { cn } from "@/lib/utils"
 
 import { useT } from "@/lib/i18n/client"
+import { formatDecimal } from "@/lib/numbers"
 /**
  * Pezzi della barra a schede. I pulsanti usano il `title` nativo invece dei
  * tooltip: con un centinaio di comandi, un tooltip ciascuno pesava su ogni
@@ -173,6 +175,16 @@ function CollapsedGroup({
                 return
               }
               setOpen(false)
+            }}
+            // Invio in una casella (rientro, corpo del carattere) conferma e
+            // torna al testo: il gruppo si chiude, invece di restare aperto
+            // sopra al documento
+            onKeyDown={(event) => {
+              if (
+                event.key === "Enter" &&
+                (event.target as HTMLElement).tagName === "INPUT"
+              )
+                setOpen(false)
             }}
           >
             {children}
@@ -417,12 +429,12 @@ export function Stepper({
   compact?: boolean
 }) {
   const t = useT()
+  const backToText = useFinalFocus()
   const [draft, setDraft] = React.useState<string | null>(null)
   const clamp = (v: number) =>
     Math.min(max, Math.max(min, Number(v.toFixed(decimals))))
   const shown =
-    draft ??
-    `${String(Number(value.toFixed(decimals))).replace(".", ",")} ${unit}`
+    draft ?? `${formatDecimal(Number(value.toFixed(decimals)))} ${unit}`
 
   const commit = (text: string) => {
     const n = Number(text.replace(",", ".").replace(/[^\d.-]/g, ""))
@@ -452,7 +464,7 @@ export function Stepper({
           inputMode="decimal"
           aria-label={label}
           onFocus={(e) => {
-            setDraft(String(Number(value.toFixed(decimals))).replace(".", ","))
+            setDraft(formatDecimal(Number(value.toFixed(decimals))))
             requestAnimationFrame(() => e.target.select())
           }}
           onChange={(e) => {
@@ -461,11 +473,23 @@ export function Stepper({
           }}
           onBlur={() => setDraft(null)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") (e.target as HTMLInputElement).blur()
+            // Invio torna al testo, come in Word: si riprende a scrivere nel
+            // documento (il valore si applica già mentre si digita). In una
+            // finestra, come «Modifica stile», si resta nella finestra; nel
+            // riquadro di un gruppo ridotto è il gruppo a chiudersi e a
+            // rimettere il fuoco nel testo
+            if (e.key === "Enter") {
+              e.preventDefault()
+              const input = e.currentTarget
+              if (backToText?.current && !input.closest('[role="dialog"]'))
+                focusBack(backToText.current)
+              else input.blur()
+              return
+            }
             if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return
             e.preventDefault()
             const next = clamp(value + (e.key === "ArrowUp" ? step : -step))
-            setDraft(String(next).replace(".", ","))
+            setDraft(formatDecimal(next))
             onChange(next)
           }}
           className="h-full w-0 min-w-0 flex-1 bg-transparent px-1.5 text-foreground tabular-nums outline-none"

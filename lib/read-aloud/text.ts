@@ -49,11 +49,16 @@ function splitLong(text: string, start: number): [number, number][] {
   return out
 }
 
+/**
+ * `split: false` lascia intere le frasi lunghe: servono spezzate alla voce,
+ * ma chi le conta (la leggibilità) deve vederle come sono.
+ */
 export function sentencesOf(
   doc: PMNode,
   from: number,
   to: number,
-  lang: string
+  lang: string,
+  { split = true }: { split?: boolean } = {}
 ): Sentence[] {
   const units = readingUnits(doc, from, to)
   const seg = segmenter(lang, "sentence")
@@ -71,7 +76,10 @@ export function sentencesOf(
     for (const [start, end] of bounds) {
       const piece = unit.text.slice(start, end)
       if (!/[\p{L}\p{N}]/u.test(piece)) continue
-      for (const [a, b] of splitLong(piece, start)) {
+      const parts: [number, number][] = split
+        ? splitLong(piece, start)
+        : [[start, end]]
+      for (const [a, b] of parts) {
         const text = unit.text.slice(a, b)
         if (!/[\p{L}\p{N}]/u.test(text)) continue
         out.push({ text, map: unit.map.slice(a, b), paragraph })

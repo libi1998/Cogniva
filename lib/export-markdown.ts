@@ -23,10 +23,14 @@ type Ctx = {
   fields: Map<PMNode, string>
 }
 
+// «1. testo» in un paragrafo non deve diventare un elenco: si protegge il
+// punto, non la cifra. «\1.» non è una sequenza del Markdown e la barra
+// restava nel testo
 const escapeText = (text: string) =>
   text
     .replace(/([\\`*_[\]<>])/g, "\\$1")
-    .replace(/^(\s*)([#+-]|\d+\.)(\s)/, "$1\\$2$3")
+    .replace(/^(\s*)([#+-])(\s)/, "$1\\$2$3")
+    .replace(/^(\s*)(\d+)([.)])(\s)/, "$1$2\\$3$4")
 
 const escapeCell = (text: string) =>
   text.replace(/\|/g, "\\|").replace(/\n/g, " ")

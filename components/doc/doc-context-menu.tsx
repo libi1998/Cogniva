@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import type { Editor } from "@tiptap/react"
-import { insertPlainText } from "./plain-paste"
+import { insertPlainText, pasteFromClipboard } from "./plain-paste"
 import {
   Bold,
   CaseLower,
@@ -37,6 +37,7 @@ import {
 import { Glyph } from "@/components/board/glyph"
 import { useShallow } from "zustand/react/shallow"
 import { useStore } from "@/lib/store"
+import { displayTitle } from "@/lib/types"
 import { thesaurusFor } from "@/lib/thesaurus/catalog"
 import {
   cleanTerm,
@@ -45,6 +46,8 @@ import {
   thesaurusDownloaded,
 } from "@/lib/thesaurus/client"
 import { wordAtSelection } from "@/lib/word-at"
+import { toast } from "sonner"
+import { applyLink } from "./ribbon/shared"
 
 import { useT } from "@/lib/i18n/client"
 export function DocContextMenu({
@@ -66,8 +69,9 @@ export function DocContextMenu({
 }) {
   const t = useT()
   // confronto superficiale: il menu non si ridisegna a ogni salvataggio
+  // le board nel cestino non si incorporano
   const boards = useStore(
-    useShallow((s) => s.files.filter((f) => f.kind === "board"))
+    useShallow((s) => s.files.filter((f) => f.kind === "board" && !f.deletedAt))
   )
   if (!point || !editor) return null
 
@@ -115,14 +119,8 @@ export function DocContextMenu({
           <DropdownMenuShortcut>⌘X</DropdownMenuShortcut>
         </DropdownMenuItem>
         <DropdownMenuItem
-          onClick={run(async () => {
-            try {
-              const text = await navigator.clipboard.readText()
-              insertPlainText(editor, text)
-            } catch {
-              editor.chain().focus().run()
-            }
-          })}
+          // con la formattazione, come ⌘V: prima incollava solo il testo
+          onClick={run(() => void pasteFromClipboard(editor))}
         >
           <ClipboardPaste className="size-4" /> {t("Incolla")}
           <DropdownMenuShortcut>⌘V</DropdownMenuShortcut>
@@ -188,14 +186,23 @@ export function DocContextMenu({
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={run(() => {
-            const url = window.prompt(t("Indirizzo del link"), "https://")
-            if (url)
-              editor
-                .chain()
-                .focus()
-                .extendMarkRange("link")
-                .setLink({ href: url })
-                .run()
+            const current = String(editor.getAttributes("link").href ?? "")
+            const url = window.prompt(
+              t("Indirizzo del link"),
+              current || "https://"
+            )
+            // come dalla scheda Inserisci: «cogniva.app» diventa un sito, un
+            // indirizzo che non porta da nessuna parte lo si dice. Prima
+            // finiva nel collegamento così com'era, e senza selezione non si
+            // vedeva niente
+            if (url === null || url.trim() === "https://") return
+            if (!applyLink(editor, url)) {
+              toast.error(t("Indirizzo non valido"), {
+                description: t(
+                  "Un collegamento può portare a un sito, a un'e-mail o a un punto del documento."
+                ),
+              })
+            }
           })}
         >
           <Link2 className="size-4" /> {t("Link")}
@@ -261,7 +268,7 @@ export function DocContextMenu({
                   onClick={run(() => onInsertBoard(b.id))}
                 >
                   <Glyph name={b.icon} size={15} strokeWidth={1.9} />
-                  <span className="truncate">{b.title}</span>
+                  <span className="truncate">{displayTitle(b)}</span>
                 </DropdownMenuItem>
               ))
             ) : (
@@ -334,7 +341,10 @@ function SynonymsMenu({
               key={term}
               onClick={onPick(() => {
                 const text = matchCase(target.text, term)
-                const marks = editor.state.doc.resolve(target.from).marks()
+                // la formattazione della parola, non del testo prima
+                const marks = editor.state.doc
+                  .resolve(Math.min(target.from + 1, target.to))
+                  .marks()
                 editor
                   .chain()
                   .focus()

@@ -9,6 +9,7 @@ import { fontRows } from "@/components/shared/font-picker"
 import { cn } from "@/lib/utils"
 
 import { useT } from "@/lib/i18n/client"
+import { formatDecimal } from "@/lib/numbers"
 /** Le dimensioni del menu «Dimensione carattere» di Word, in punti */
 const WORD_SIZES = [
   8, 9, 10, 10.5, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72,
@@ -24,7 +25,7 @@ export function toPt(css: string, fallbackPx: number): number {
   return css.endsWith("pt") ? half(n) : half(n * 0.75)
 }
 
-const fmt = (n: number) => String(n).replace(".", ",")
+const fmt = (n: number) => formatDecimal(n)
 
 /**
  * Casella combinata: si può scrivere per filtrare o premere la freccia per
@@ -290,7 +291,7 @@ export function SizeCombo({
       display={fmt(pt)}
       items={WORD_SIZES}
       isActive={(n) => n === pt}
-      filter={(n, q) => fmt(n).startsWith(q.replace(".", ","))}
+      filter={(n, q) => fmt(n).startsWith(formatDecimal(q.replace(",", ".")))}
       renderItem={(n) => <span className="tabular-nums">{fmt(n)}</span>}
       onPick={onPick}
       onCommitText={(text) => {

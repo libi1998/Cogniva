@@ -269,10 +269,14 @@ export function useDictation(
   // l'utente vuole ascoltare: il browser chiude le sessioni dopo una pausa e
   // qui si riaprono
   const wanted = React.useRef(false)
+  // si sta chiedendo al browser se la lingua è sul dispositivo: un secondo
+  // clic in quel momento annulla, invece di aprire due sessioni insieme
+  const starting = React.useRef(false)
 
   React.useEffect(
     () => () => {
       wanted.current = false
+      starting.current = false
       rec.current?.abort()
     },
     []
@@ -301,10 +305,12 @@ export function useDictation(
         }
         const glue =
           before && !/\s$/.test(before) && !/^[,.;:!?…)»]/.test(text) ? " " : ""
+        // come testo: una stringa passata a insertContent si legge come HTML,
+        // e «a <b» detto a voce diventava un grassetto
         editor
           .chain()
           .focus()
-          .insertContent(glue + text)
+          .insertContent({ type: "text", text: glue + text })
           .run()
       }
     },
@@ -312,6 +318,10 @@ export function useDictation(
   )
 
   const toggle = React.useCallback(() => {
+    if (starting.current) {
+      starting.current = false
+      return
+    }
     if (wanted.current || listening) {
       wanted.current = false
       rec.current?.stop()
@@ -323,6 +333,7 @@ export function useDictation(
     if (!Ctor || !editor) return
 
     const begin = (processLocally: boolean) => {
+      starting.current = false
       const r = new Ctor()
       r.lang = language
       r.continuous = true
@@ -373,8 +384,11 @@ export function useDictation(
     // sul dispositivo quando c'è; se si può scaricare lo si fa per la
     // prossima volta e intanto si usa quello del browser
     if (typeof Ctor.available === "function") {
+      starting.current = true
       Ctor.available({ langs: [language], processLocally: true })
         .then((status) => {
+          // annullata con un secondo clic mentre si aspettava la risposta
+          if (!starting.current) return
           if (status === "available") return begin(true)
           if (status === "downloadable" && typeof Ctor.install === "function") {
             onInfo?.(
@@ -388,7 +402,7 @@ export function useDictation(
           }
           begin(false)
         })
-        .catch(() => begin(false))
+        .catch(() => starting.current && begin(false))
       return
     }
     begin(false)

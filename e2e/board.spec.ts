@@ -127,13 +127,20 @@ test("Inverti le punte gira la freccia invece di toglierla", async ({
   const tail = edge.tail ?? theme.arrows.tail
   expect(head).not.toBe(tail)
 
-  const path = page.locator('[data-edge-id="e1"]').first()
-  const box = (await path.boundingBox())!
-  await path.dispatchEvent("contextmenu", {
-    clientX: box.x + box.width / 2,
-    clientY: box.y + box.height / 2,
-    bubbles: true,
+  // il tasto destro vero, a metà del connettore: sta dentro una sezione, e
+  // finché la sezione era disegnata sopra il clic andava a lei
+  const mid = await page.evaluate(() => {
+    const path = document.querySelector<SVGPathElement>(
+      'path[data-edge-id="e1"]'
+    )!
+    const point = path.getPointAtLength(path.getTotalLength() / 2)
+    const m = path.getScreenCTM()!
+    return {
+      x: point.x * m.a + point.y * m.c + m.e,
+      y: point.x * m.b + point.y * m.d + m.f,
+    }
   })
+  await page.mouse.click(mid.x, mid.y, { button: "right" })
   await page.getByRole("menuitem", { name: "Inverti le punte" }).click()
 
   await expect

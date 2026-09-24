@@ -58,7 +58,7 @@ import { IMPORTABLE, fileHref, importFiles } from "@/lib/import-files"
 import { exportWorkspace, getWorkspace, useStore } from "@/lib/store"
 import { displayTitle, type FileKind, type WFile } from "@/lib/types"
 import { useDocumentTitle } from "@/lib/use-document-title"
-import { cn } from "@/lib/utils"
+import { cn, localDateStamp } from "@/lib/utils"
 
 import {
   useT,
@@ -134,7 +134,7 @@ function titleCollator() {
 
 function exportAll() {
   const blob = new Blob([exportWorkspace()], { type: "application/json" })
-  download(blob, `cogniva-${new Date().toISOString().slice(0, 10)}.json`)
+  download(blob, `cogniva-${localDateStamp()}.json`)
   toast.success(tr("Spazio di lavoro esportato"), {
     description: tr(
       "Il file .json si reimporta da «Importa» anche su un altro computer."

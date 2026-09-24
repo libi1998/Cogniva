@@ -97,6 +97,13 @@
     "de": "{name} · {width}×{height} mm",
     "pt": "{name} · {width}×{height} mm"
   },
+  "{number}° trim.||trimestre": {
+    "en": "Q{number}",
+    "es": "{number}.º trim.",
+    "fr": "{number}e trim.",
+    "de": "{number}. Quartal",
+    "pt": "{number}.º trim."
+  },
   "{page} · esclusa": {
     "en": "{page} · excluded",
     "es": "{page} · excluida",
@@ -2904,6 +2911,13 @@
     "de": "Formelverzeichnis",
     "pt": "Índice de equações"
   },
+  "Indice delle figure": {
+    "en": "Table of figures",
+    "es": "Índice de figuras",
+    "fr": "Table des figures",
+    "de": "Abbildungsverzeichnis",
+    "pt": "Índice de figuras"
+  },
   "Indice delle tabelle": {
     "en": "Table of tables",
     "es": "Índice de tablas",
@@ -4962,26 +4976,12 @@
     "de": "Ohne Titel",
     "pt": "Sem título"
   },
-  "Serie 1": {
-    "en": "Series 1",
-    "es": "Serie 1",
-    "fr": "Série 1",
-    "de": "Reihe 1",
-    "pt": "Série 1"
-  },
-  "Serie 2": {
-    "en": "Series 2",
-    "es": "Serie 2",
-    "fr": "Série 2",
-    "de": "Reihe 2",
-    "pt": "Série 2"
-  },
-  "Serie 3": {
-    "en": "Series 3",
-    "es": "Serie 3",
-    "fr": "Série 3",
-    "de": "Reihe 3",
-    "pt": "Série 3"
+  "Serie {number}": {
+    "en": "Series {number}",
+    "es": "Serie {number}",
+    "fr": "Série {number}",
+    "de": "Reihe {number}",
+    "pt": "Série {number}"
   },
   "Serie di Fourier": {
     "en": "Fourier series",

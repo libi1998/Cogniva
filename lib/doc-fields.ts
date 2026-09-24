@@ -8,6 +8,7 @@ import { formatPageNumber } from "./header-footer"
 import { getPagination, pageAt } from "./pagination"
 import { docTitleText } from "./tiptap-extensions"
 import type { PageNumberFormat } from "./types"
+import { localDateStamp } from "./utils"
 
 import { tr as translate, currentRegion } from "@/lib/i18n/client"
 /**
@@ -87,7 +88,13 @@ export const DATE_FORMATS: {
         year: "2-digit",
       }),
   },
-  { id: "iso", kind: "date", render: (d) => d.toISOString().slice(0, 10) },
+  {
+    id: "iso",
+    kind: "date",
+    // la data del posto in cui si è: toISOString è in UTC, e in Italia dopo
+    // mezzanotte il campo mostrava ancora il giorno prima
+    render: (d) => localDateStamp(d),
+  },
   {
     id: "month",
     kind: "date",
@@ -612,7 +619,15 @@ export const Bookmark = Mark.create({
           if (from === to) {
             // senza selezione: la parola del cursore, o tutto il paragrafo
             const $from = state.selection.$from
-            const text = $from.parent.textContent
+            // un carattere per ogni campo o immagine, come nelle posizioni:
+            // col solo testo il segnalibro finiva spostato di uno per ognuno
+            const parent = $from.parent
+            const text = parent.textBetween(
+              0,
+              parent.content.size,
+              undefined,
+              "\ufffc"
+            )
             const offset = $from.parentOffset
             let start = offset
             let end = offset

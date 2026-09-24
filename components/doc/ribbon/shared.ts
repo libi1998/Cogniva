@@ -195,6 +195,23 @@ export function applyLink(editor: Editor, raw: string) {
   }
   // senza schema è un sito: «/pagina» e «#segnalibro» restano come sono
   const full = /^[a-z][\w+.-]*:|^\/|^#/i.test(href) ? href : `https://${href}`
+  // senza testo selezionato (e fuori da un collegamento) si scrive
+  // l'indirizzo, come in Word: prima il collegamento restava «in sospeso» sul
+  // cursore e non si vedeva niente
+  if (editor.state.selection.empty && !editor.isActive("link")) {
+    if (!editor.can().setLink({ href: full })) return false
+    const text = full.startsWith("#bm-") ? full.slice(4) : href
+    return editor
+      .chain()
+      .focus()
+      .insertContent({
+        type: "text",
+        text,
+        marks: [{ type: "link", attrs: { href: full } }],
+      })
+      .unsetMark("link")
+      .run()
+  }
   return editor
     .chain()
     .focus()

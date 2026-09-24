@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import type { AddinApi } from "./api"
 
 import { useT, tr } from "@/lib/i18n/client"
+import { formatDecimal } from "@/lib/numbers"
 /**
  * Indici di leggibilità, ciascuno per la sua lingua: Gulpease (italiano),
  * Flesch Reading Ease (inglese), Kandel-Moles (francese), Fernández Huerta
@@ -42,7 +43,11 @@ function syllables(word: string, lang: string) {
 
 function analyse(api: AddinApi): Report {
   const lang = api.language.slice(0, 2).toLowerCase()
-  const sentences = sentencesOf(api.editor.state.doc, 0, 0, api.language)
+  // le frasi intere: la lettura ad alta voce spezza quelle oltre i 260
+  // caratteri, e così una frase di 50 parole contava come due da 25
+  const sentences = sentencesOf(api.editor.state.doc, 0, 0, api.language, {
+    split: false,
+  })
   let words = 0
   let letters = 0
   let syl = 0
@@ -170,10 +175,7 @@ export function ReadabilityAddin({ api }: { api: AddinApi }) {
             {[
               [t("Parole"), report.words],
               [t("Frasi"), report.sentences],
-              [
-                t("Parole per frase"),
-                String(report.wordsPerSentence).replace(".", ","),
-              ],
+              [t("Parole per frase"), formatDecimal(report.wordsPerSentence)],
               [t("Parole lunghe"), `${report.longWords}%`],
               [t("Tempo di lettura"), `${report.minutes} min`],
             ].map(([k, v]) => (

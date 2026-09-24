@@ -4,7 +4,7 @@ import * as React from "react"
 import { ArrowLeft, ExternalLink, LoaderCircle, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { paragraph, richParts, type AddinApi } from "./api"
+import { errorText, paragraph, richParts, type AddinApi } from "./api"
 
 import { useT, tr, languageName, useLocale } from "@/lib/i18n/client"
 /**
@@ -105,7 +105,10 @@ export function WikipediaAddin({ api }: { api: AddinApi }) {
     const controller = new AbortController()
     const timer = window.setTimeout(() => {
       if (!q) {
+        // una ricerca interrotta a metà lasciava la rotellina che gira
         setHits([])
+        setError("")
+        setLoading(false)
         return
       }
       setLoading(true)
@@ -116,7 +119,8 @@ export function WikipediaAddin({ api }: { api: AddinApi }) {
         })
         .catch((e: unknown) => {
           if (controller.signal.aborted) return
-          setError(e instanceof Error ? e.message : t("Ricerca non riuscita"))
+          setHits([])
+          setError(errorText(e, t("Wikipedia non risponde")))
         })
         .finally(() => !controller.signal.aborted && setLoading(false))
     }, 300)
@@ -126,14 +130,21 @@ export function WikipediaAddin({ api }: { api: AddinApi }) {
     }
   }, [query, lang, t])
 
+  // due clic di fila su voci diverse: conta l'ultima, non quella che
+  // risponde per ultima
+  const opening = React.useRef(0)
   const open = (hit: Hit) => {
+    const ticket = ++opening.current
     setLoading(true)
+    setError("")
     summary(lang, hit.key)
-      .then(setPage)
-      .catch((e: unknown) =>
-        setError(e instanceof Error ? e.message : t("Voce non disponibile"))
+      .then((p) => ticket === opening.current && setPage(p))
+      .catch(
+        (e: unknown) =>
+          ticket === opening.current &&
+          setError(errorText(e, t("Voce non disponibile")))
       )
-      .finally(() => setLoading(false))
+      .finally(() => ticket === opening.current && setLoading(false))
   }
 
   const credit = (p: Summary) =>

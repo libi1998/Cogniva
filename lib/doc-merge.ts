@@ -1,6 +1,7 @@
 import { Node, mergeAttributes, type JSONContent } from "@tiptap/core"
 import type { Editor } from "@tiptap/core"
 import type { MergeData, MergeRule } from "./types"
+import { guessDelimiter, splitDelimited } from "./delimited"
 import { currentLocale, tr } from "@/lib/i18n/client"
 import { N_, stripContext } from "@/lib/i18n/config"
 /**
@@ -72,46 +73,9 @@ export function parseDelimited(text: string): {
   fields: string[]
   rows: Record<string, string>[]
 } {
-  const clean = text.replace(/^\uFEFF/, "")
-  const firstLine = clean.split(/\r?\n/, 1)[0] ?? ""
-  const counts = [",", ";", "\t"].map(
-    (d) => [d, firstLine.split(d).length] as const
-  )
-  const delimiter = counts.sort((a, b) => b[1] - a[1])[0][0]
-  const table: string[][] = []
-  let row: string[] = []
-  let cell = ""
-  let quoted = false
-  for (let i = 0; i < clean.length; i += 1) {
-    const c = clean[i]
-    if (quoted) {
-      if (c === '"' && clean[i + 1] === '"') {
-        cell += '"'
-        i += 1
-      } else if (c === '"') {
-        quoted = false
-      } else {
-        cell += c
-      }
-    } else if (c === '"') {
-      quoted = true
-    } else if (c === delimiter) {
-      row.push(cell)
-      cell = ""
-    } else if (c === "\n" || c === "\r") {
-      if (c === "\r" && clean[i + 1] === "\n") i += 1
-      row.push(cell)
-      table.push(row)
-      row = []
-      cell = ""
-    } else {
-      cell += c
-    }
-  }
-  if (cell || row.length) {
-    row.push(cell)
-    table.push(row)
-  }
+  // le virgolette contano solo in testa alla cella: in «Schermo 5"» sono un
+  // carattere, e prima si mangiavano tutte le righe fino alla fine
+  const table = splitDelimited(text, guessDelimiter(text))
   const nonEmpty = table.filter((r) => r.some((v) => v.trim()))
   const header = (nonEmpty[0] ?? []).map((h, i) => h.trim() || `Campo${i + 1}`)
   // nomi ripetuti: «Nome», «Nome 2»
@@ -130,7 +94,7 @@ export function parseDelimited(text: string): {
 
 export function toCsv(merge: MergeData) {
   const quote = (v: string) =>
-    /[;"\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v
+    /[;"\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v
   return [
     merge.fields.map(quote).join(";"),
     ...merge.rows.map((r) =>
@@ -237,10 +201,31 @@ const text = (value: string, marks?: JSONContent["marks"]): JSONContent[] =>
     ? [{ type: "text", text: value, ...(marks?.length ? { marks } : {}) }]
     : []
 
+/**
+ * Il testo di una regola con i campi «Nome» sostituiti dai valori del
+ * record: così la riga di saluto intera («Gentile «Nome» «Cognome»,») sta in
+ * una regola sola, e il testo alternativo la sostituisce tutta. Un campo
+ * vuoto si porta via lo spazio che lo precede («Gentile Mario,» e non
+ * «Gentile Mario ,»); un «…» che non è un campo dell'elenco resta com'è.
+ */
+export function fillTemplate(
+  text: string,
+  row: Record<string, string>,
+  /** i campi dell'elenco: un record può non avere tutte le colonne */
+  fields: readonly string[] = []
+) {
+  return text.replace(/(\s?)«([^«»]+)»/g, (whole, space: string, name) => {
+    if (!(name in row) && !fields.includes(name)) return whole
+    const value = (row[name] ?? "").trim()
+    return value ? `${space}${value}` : ""
+  })
+}
+
 /** Il contenuto con i campi sostituiti dai valori di un record */
 export function fillContent(
   node: JSONContent,
-  row: Record<string, string>
+  row: Record<string, string>,
+  fields: readonly string[] = []
 ): JSONContent[] {
   if (node.type === "mergeField") {
     const name = String(node.attrs?.name ?? "")
@@ -253,13 +238,20 @@ export function fillContent(
       op: (a.op ?? "eq") as MergeRule["op"],
       value: String(a.value ?? ""),
     })
-    return text(String(ok ? (a.then ?? "") : (a.otherwise ?? "")), node.marks)
+    return text(
+      fillTemplate(
+        String(ok ? (a.then ?? "") : (a.otherwise ?? "")),
+        row,
+        fields
+      ),
+      node.marks
+    )
   }
   if (!node.content) return [node]
   return [
     {
       ...node,
-      content: node.content.flatMap((child) => fillContent(child, row)),
+      content: node.content.flatMap((child) => fillContent(child, row, fields)),
     },
   ]
 }
@@ -278,7 +270,7 @@ export function mergedDocument(
       // il titolo del modello diventa un Titolo 1 in ogni lettera: tutte
       // uguali, e il documento unito tiene il suo nome («… — unione»)
       // invece di prendere quello della prima riga
-      const filled = fillContent(block, row)
+      const filled = fillContent(block, row, merge.fields)
       for (const node of filled) {
         out.push(
           node.type === "docTitle"
@@ -649,7 +641,8 @@ export const MergeIf = Node.create({
         { class: "doc-merge-field", "data-merge-if": "" },
         HTMLAttributes
       ),
-      `«Se ${node.attrs.field}»`,
+      // come a schermo, nella lingua dell'app (prima sempre «Se»)
+      tr("«Se {field}…»", { field: node.attrs.field }),
     ]
   },
 
@@ -673,7 +666,10 @@ export const MergeIf = Node.create({
         if (!row)
           return { text: tr("«Se {field}…»", { field: a.field }), title }
         const ok = testRule(row, { field: a.field, op: a.op, value: a.value })
-        return { text: String(ok ? a.then : a.otherwise), title }
+        return {
+          text: fillTemplate(String(ok ? a.then : a.otherwise), row),
+          title,
+        }
       })
       return {
         dom: view.dom,

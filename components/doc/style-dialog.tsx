@@ -52,6 +52,7 @@ import {
 } from "./style-actions"
 
 import { useT, tr } from "@/lib/i18n/client"
+import { formatDecimal } from "@/lib/numbers"
 export type StyleDialogRequest =
   { mode: "modify"; id: string } | { mode: "new"; baseId: string }
 
@@ -164,7 +165,7 @@ const CAPS_OPTIONS: { value: StyleCaps; label: string }[] = [
 
 const CM_PER_PT = 2.54 / 72
 const fmt = (n: number, d = 1) =>
-  String(Math.round(n * 10 ** d) / 10 ** d).replace(".", ",")
+  formatDecimal(Math.round(n * 10 ** d) / 10 ** d)
 
 /** Il colore come lo vede chi guarda: i gettoni del tema diventano colori */
 function previewColor(theme: DocTheme, value: string) {

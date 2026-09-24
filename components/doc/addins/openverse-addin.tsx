@@ -5,7 +5,7 @@ import { ArrowLeft, ExternalLink, LoaderCircle, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { paragraph, type AddinApi } from "./api"
+import { errorText, paragraph, type AddinApi } from "./api"
 
 import { useT, tr } from "@/lib/i18n/client"
 /**
@@ -104,7 +104,10 @@ export function OpenverseAddin({ api }: { api: AddinApi }) {
     const controller = new AbortController()
     const timer = window.setTimeout(() => {
       if (q.length < 2) {
+        // una ricerca interrotta a metà lasciava la rotellina che gira
         setResults([])
+        setError("")
+        setLoading(false)
         return
       }
       setLoading(true)
@@ -115,7 +118,8 @@ export function OpenverseAddin({ api }: { api: AddinApi }) {
         })
         .catch((e: unknown) => {
           if (controller.signal.aborted) return
-          setError(e instanceof Error ? e.message : t("Ricerca non riuscita"))
+          setResults([])
+          setError(errorText(e, t("Openverse non risponde")))
         })
         .finally(() => !controller.signal.aborted && setLoading(false))
     }, 400)

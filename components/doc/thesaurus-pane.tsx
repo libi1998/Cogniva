@@ -143,7 +143,12 @@ export function ThesaurusPane({
         : null
     const text = range ? matchCase(range.text, value) : value
     const { from, to } = range ?? editor.state.selection
-    const marks = editor.state.doc.resolve(from).marks()
+    // la formattazione della parola che si sostituisce, non quella del testo
+    // prima: una parola in grassetto dopo uno spazio normale lo perdeva
+    const marks =
+      to > from
+        ? editor.state.doc.resolve(from + 1).marks()
+        : (editor.state.storedMarks ?? editor.state.doc.resolve(from).marks())
     editor
       .chain()
       .focus()

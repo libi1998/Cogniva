@@ -2,8 +2,13 @@ import { Extension } from "@tiptap/core"
 import { Fragment, type Node as PMNode } from "@tiptap/pm/model"
 import { TextSelection, type EditorState } from "@tiptap/pm/state"
 import { cssValue } from "./css"
+import { firstNumber } from "./numbers"
 
-import { tr as translate, currentLocale } from "@/lib/i18n/client"
+import {
+  tr as translate,
+  currentLocale,
+  currentRegion,
+} from "@/lib/i18n/client"
 /**
  * Tipografia della scheda Home che Word ha e lo starter kit no: effetti del
  * testo (ombra, contorno, bagliore, riempimento sfumato), stili di
@@ -844,37 +849,81 @@ const collator = new Intl.Collator(currentLocale(), {
   sensitivity: "base",
 })
 
+/** Una data valida o niente: il 31/02 non diventa il 3 marzo */
+function dayOf(year: number, month: number, day: number) {
+  const date = new Date(year, month - 1, day)
+  return date.getMonth() === month - 1 && date.getDate() === day
+    ? date.getTime()
+    : Number.NaN
+}
+
 function parseDateText(text: string): number {
   const t = text.trim()
-  // 31/12/2025, 31-12-25, 31.12.2025
+  // 2025-12-31: prima era letta come 25/12/2031
+  const iso = t.match(/(\d{4})[/.-](\d{1,2})[/.-](\d{1,2})/)
+  if (iso) return dayOf(Number(iso[1]), Number(iso[2]), Number(iso[3]))
+  // 31/12/2025, 31-12-25, 31.12.2025; negli Stati Uniti 12/31/2025
   const m = t.match(/(\d{1,2})[/.-](\d{1,2})[/.-](\d{2,4})/)
   if (m) {
     const year = Number(m[3].length === 2 ? `20${m[3]}` : m[3])
-    return new Date(year, Number(m[2]) - 1, Number(m[1])).getTime()
+    const a = Number(m[1])
+    const b = Number(m[2])
+    const monthFirst =
+      a <= 12 && (b > 12 || (b <= 12 && currentRegion() === "en-US"))
+    return monthFirst ? dayOf(year, a, b) : dayOf(year, b, a)
   }
-  const parsed = Date.parse(t)
-  return Number.isNaN(parsed) ? Number.POSITIVE_INFINITY : parsed
+  // «12 marzo 2025», «3 févr. 2024», «March 3, 2025»: Date.parse conosce
+  // solo i mesi inglesi, e le date scritte in italiano restavano in disordine
+  const named =
+    t.match(/(\d{1,2})\.?\s+(?:de\s+)?(\p{L}+)\.?\s+(?:de\s+)?(\d{4})/u) ??
+    t.match(/(\p{L}+)\.?\s+(\d{1,2}),?\s+(\d{4})/u)
+  if (named) {
+    const dayFirst = /^\d/.test(named[1])
+    const month = monthNumber(dayFirst ? named[2] : named[1])
+    const day = Number(dayFirst ? named[1] : named[2])
+    if (month) return dayOf(Number(named[3]), month, day)
+  }
+  return Date.parse(t)
 }
 
-function parseNumberText(text: string): number {
-  const m = text
-    .replace(/\./g, "")
-    .replace(",", ".")
-    .match(/-?\d+(\.\d+)?/)
-  return m ? Number(m[0]) : Number.POSITIVE_INFINITY
+let months: Map<string, number> | null = null
+/** Il numero del mese dal nome, intero o abbreviato, nelle lingue dell'app */
+function monthNumber(name: string) {
+  if (!months) {
+    months = new Map()
+    for (const lang of ["it", "en", "es", "fr", "de", "pt"]) {
+      for (let m = 0; m < 12; m += 1) {
+        const date = new Date(2024, m, 15)
+        for (const month of ["long", "short"] as const) {
+          const label = date
+            .toLocaleString(lang, { month })
+            .toLocaleLowerCase()
+            .replace(/\.$/, "")
+          months.set(label, m + 1)
+          // «gen», «feb»…: le tre lettere di un nome già noto non si cambiano
+          const three = label.slice(0, 3)
+          if (label.length > 3 && !months.has(three)) months.set(three, m + 1)
+        }
+      }
+    }
+  }
+  return months.get(name.toLocaleLowerCase().replace(/\.$/, "")) ?? 0
 }
 
 export function compareSortText(a: string, b: string, options: SortOptions) {
-  let result: number
-  if (options.by === "number") {
-    result = parseNumberText(a) - parseNumberText(b)
-  } else if (options.by === "date") {
-    result = parseDateText(a) - parseDateText(b)
-  } else {
-    result = collator.compare(a.trim(), b.trim())
+  if (options.by === "text") {
+    const result = collator.compare(a.trim(), b.trim())
+    return options.direction === "asc" ? result : -result
   }
-  if (!Number.isFinite(result)) result = 0
-  return options.direction === "asc" ? result : -result
+  const parse = options.by === "number" ? firstNumber : parseDateText
+  const x = parse(a)
+  const y = parse(b)
+  // quello che non è un numero (o una data) va in fondo, in tutti e due gli
+  // ordini: prima contava come uguale a tutto e l'ordine veniva a caso
+  const okX = Number.isFinite(x)
+  const okY = Number.isFinite(y)
+  if (!okX || !okY) return okX === okY ? 0 : okX ? -1 : 1
+  return options.direction === "asc" ? x - y : y - x
 }
 
 /** Dove agisce «Ordina»: righe di tabella, voci di elenco o paragrafi */

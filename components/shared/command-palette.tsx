@@ -38,6 +38,7 @@ import { Glyph } from "@/components/board/glyph"
 import { fileHref, pickAndImport } from "@/lib/import-files"
 import { normalizeSearch } from "@/lib/search"
 import { download } from "@/lib/export"
+import { localDateStamp } from "@/lib/utils"
 import { exportWorkspace, getWorkspace } from "@/lib/store"
 import { STORAGE, readStorage, writeStorage } from "@/lib/storage"
 import { setThemePreference } from "@/lib/use-theme"
@@ -256,7 +257,7 @@ function PaletteBody({ onNavigate }: { onNavigate: (href: Route) => void }) {
       keywords: [t("backup"), t("copia"), t("salva"), t("esporta")],
       run: () => {
         const blob = new Blob([exportWorkspace()], { type: "application/json" })
-        download(blob, `cogniva-${new Date().toISOString().slice(0, 10)}.json`)
+        download(blob, `cogniva-${localDateStamp()}.json`)
       },
     },
     {

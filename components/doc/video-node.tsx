@@ -29,6 +29,17 @@ export type VideoInfo = {
 }
 
 /** Riconosce i servizi supportati, come «Video online» di Word */
+/**
+ * Il punto di partenza di un video di YouTube in secondi: «90», «90s» e anche
+ * «1m30s» o «1h2m3s», come li scrive il pulsante «Condividi» (prima questi
+ * ultimi si perdevano e il video partiva dall'inizio)
+ */
+function youtubeStart(value: string | null) {
+  const m = value?.trim().match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s?)?$/)
+  if (!m) return 0
+  return Number(m[1] ?? 0) * 3600 + Number(m[2] ?? 0) * 60 + Number(m[3] ?? 0)
+}
+
 export function parseVideo(raw: string): VideoInfo | null {
   let url: URL
   try {
@@ -56,10 +67,12 @@ export function parseVideo(raw: string): VideoInfo | null {
           path.match(/^\/(?:embed|shorts|live)\/([\w-]{6,})/)?.[1] ??
           null)
     if (!id || !/^[\w-]{6,}$/.test(id)) return null
-    const start = url.searchParams.get("t")?.replace(/s$/, "")
+    const start = youtubeStart(
+      url.searchParams.get("t") ?? url.searchParams.get("start")
+    )
     return {
       provider: "YouTube",
-      embed: `https://www.youtube-nocookie.com/embed/${id}?rel=0${start && /^\d+$/.test(start) ? `&start=${start}` : ""}`,
+      embed: `https://www.youtube-nocookie.com/embed/${id}?rel=0${start ? `&start=${start}` : ""}`,
       poster: `https://i.ytimg.com/vi/${id}/hqdefault.jpg`,
     }
   }

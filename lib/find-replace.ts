@@ -205,7 +205,12 @@ export const FindReplace = Extension.create({
           if (dispatch) {
             const tr = state.tr
             replaceRange(tr, state, target, replacement)
-            tr.setMeta(findKey, { active: find.active }).scrollIntoView()
+            // si passa all'occorrenza dopo il testo appena scritto: se la
+            // sostituzione contiene la parola cercata («gatto» → «gattone»)
+            // prima si restava lì e si sostituiva all'infinito
+            tr.setMeta(findKey, {
+              after: tr.mapping.map(target.to),
+            }).scrollIntoView()
             dispatch(tr)
           }
           return true
@@ -237,7 +242,13 @@ export const FindReplace = Extension.create({
           init: (_config, state) => build(state.doc, EMPTY, 0, []),
           apply(tr, prev, _old, state) {
             const meta = tr.getMeta(findKey) as
-              { options?: Partial<FindOptions>; active?: number } | undefined
+              | {
+                  options?: Partial<FindOptions>
+                  active?: number
+                  /** la prima occorrenza da qui in avanti diventa l'attiva */
+                  after?: number
+                }
+              | undefined
             const opt = meta?.options
               ? ({ ...prev, ...meta.options } as FindOptions)
               : prev
@@ -260,7 +271,9 @@ export const FindReplace = Extension.create({
             const matches = changed ? findMatches(tr.doc, opt) : prev.matches
             const active = meta?.options
               ? nearest(matches, state.selection.from)
-              : (meta?.active ?? prev.active)
+              : meta?.after !== undefined
+                ? nearest(matches, meta.after)
+                : (meta?.active ?? prev.active)
             return build(tr.doc, opt, active, matches)
           },
         },

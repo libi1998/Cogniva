@@ -58,6 +58,7 @@ import {
 import { CM, PT, type RibbonCtx } from "./shared"
 
 import { useT, tr } from "@/lib/i18n/client"
+import { formatDecimal } from "@/lib/numbers"
 const cm = (value: number) => Math.round(value * CM * 100) / 100
 
 /** I margini predefiniti di Word, in centimetri */
@@ -115,7 +116,7 @@ const MARGIN_PRESETS: { label: string; margins: DocMargins }[] = [
 ]
 
 const fmtCm = (px: number) =>
-  `${(Math.round((px / CM) * 100) / 100).toString().replace(".", ",")} cm`
+  `${formatDecimal(Math.round((px / CM) * 100) / 100)} cm`
 
 const WIDTHS: { value: DocTheme["width"]; label: string }[] = [
   {
@@ -416,6 +417,8 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
       >
         {/* intestazioni e due righe di campi nell'altezza della barra: più
             alti, la seconda riga finiva sotto l'etichetta del gruppo */}
+        {/* le caselle non riportano il fuoco nel testo a ogni tasto: dopo la
+            prima cifra quello che si scriveva finiva nel documento */}
         <div className="grid grid-cols-2 gap-x-4 gap-y-0.5">
           <span className="text-[11px] leading-3 font-medium text-muted-foreground">
             {t("Rientro")}
@@ -434,7 +437,6 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
             onChange={(cm) =>
               editor
                 .chain()
-                .focus()
                 .setIndentLeft(cm * CM)
                 .run()
             }
@@ -451,7 +453,6 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
             onChange={(pt) =>
               editor
                 .chain()
-                .focus()
                 .setSpaceBefore(Math.round(pt * PT))
                 .run()
             }
@@ -467,7 +468,6 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
             onChange={(cm) =>
               editor
                 .chain()
-                .focus()
                 .setIndentRight(cm * CM)
                 .run()
             }
@@ -484,7 +484,6 @@ export function LayoutTab({ ctx }: { ctx: RibbonCtx }) {
             onChange={(pt) =>
               editor
                 .chain()
-                .focus()
                 .setSpaceAfter(Math.round(pt * PT))
                 .run()
             }

@@ -98,7 +98,7 @@ import {
 import { docAccent } from "@/lib/palette"
 import { getWorkspace, useStore } from "@/lib/store"
 import { docTitleText } from "@/lib/tiptap-extensions"
-import type { PageNumberPosition } from "@/lib/types"
+import { displayTitle, type PageNumberPosition } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import {
   RibbonButton,
@@ -620,8 +620,9 @@ function Models3DMenu({ ctx, accent }: { ctx: RibbonCtx; accent: string }) {
 export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
   const t = useT()
   const { editor, st, theme, setTheme } = ctx
+  // le board nel cestino non si incorporano
   const boards = useStore(
-    useShallow((s) => s.files.filter((f) => f.kind === "board"))
+    useShallow((s) => s.files.filter((f) => f.kind === "board" && !f.deletedAt))
   )
   const [dialog, setDialog] = React.useState<InsertDialog>(null)
   const fileRef = React.useRef<HTMLInputElement>(null)
@@ -947,12 +948,16 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => {
-              const url = window.prompt(
-                t("Indirizzo dell'immagine"),
-                "https://"
-              )
-              if (url && /^https:\/\//i.test(url.trim())) {
-                body().setImage({ src: url.trim() }).run()
+              const url = window
+                .prompt(t("Indirizzo dell'immagine"), "https://")
+                ?.trim()
+              if (!url || url === "https://") return
+              if (/^https:\/\/\S+$/i.test(url)) {
+                body().setImage({ src: url }).run()
+              } else {
+                // prima un indirizzo http:// o scritto male non faceva niente,
+                // senza dire perché
+                toast.error(t("Serve un indirizzo https a un'immagine"))
               }
             }}
           >
@@ -1082,7 +1087,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
                 onClick={() => ctx.onInsertBoard(b.id)}
               >
                 <Glyph name={b.icon} size={15} strokeWidth={1.9} />
-                <span className="truncate">{b.title}</span>
+                <span className="truncate">{displayTitle(b)}</span>
               </DropdownMenuItem>
             ))
           ) : (

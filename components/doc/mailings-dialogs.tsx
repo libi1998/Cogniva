@@ -33,6 +33,7 @@ import { cn } from "@/lib/utils"
 import { useT, useLocale, currentLocale } from "@/lib/i18n/client"
 import type { Locale } from "@/lib/i18n/config"
 import { fieldName, findField, type MergeFieldKey } from "@/lib/doc-merge"
+import { formatDecimal } from "@/lib/numbers"
 const selectClass =
   "h-8 w-full min-w-0 rounded-md border border-input bg-transparent px-2 text-sm text-foreground"
 
@@ -651,28 +652,23 @@ function GreetingForm({
           type="button"
           disabled={!parts.length}
           onClick={() => {
-            // senza il primo campo del nome si usa la frase alternativa
+            // la riga intera è una regola: senza il primo campo del nome la
+            // frase alternativa prende il posto di tutto. Prima nome e
+            // punteggiatura restavano anche lì: «Gentile cliente, Rossi,»
             const first = parts[0]
             editor
               .chain()
               .focus()
-              .insertContent([
-                {
-                  type: "mergeIf",
-                  attrs: {
-                    field: first,
-                    op: "empty",
-                    value: "",
-                    then: fallback,
-                    otherwise: `${salutation} `,
-                  },
+              .insertContent({
+                type: "mergeIf",
+                attrs: {
+                  field: first,
+                  op: "empty",
+                  value: "",
+                  then: fallback,
+                  otherwise: `${salutation} ${parts.map((f) => `«${f}»`).join(" ")}${punctuation}`,
                 },
-                ...parts.flatMap((f, i) => [
-                  ...(i ? [{ type: "text", text: " " }] : []),
-                  { type: "mergeField", attrs: { name: f } },
-                ]),
-                ...(punctuation ? [{ type: "text", text: punctuation }] : []),
-              ])
+              })
               .run()
             onClose()
           }}
@@ -1146,8 +1142,7 @@ function LabelsForm({
             ))}
           </div>
           <p className="text-xs text-muted-foreground">
-            {p.cols} × {p.rows} · {String(p.w).replace(".", ",")} ×{" "}
-            {String(p.h).replace(".", ",")} mm
+            {p.cols} × {p.rows} · {formatDecimal(p.w)} × {formatDecimal(p.h)} mm
           </p>
         </div>
       </DialogBody>
@@ -1244,7 +1239,10 @@ function EmailForm({
                   className="flex items-center gap-2 border-b border-border px-2.5 py-1.5 last:border-b-0"
                 >
                   <span className="min-w-0 flex-1 truncate">
-                    {[row.Nome, row.Cognome].filter(Boolean).join(" ") ||
+                    {[findField(fields, "first"), findField(fields, "last")]
+                      .map((f) => (f ? (row[f] ?? "").trim() : ""))
+                      .filter(Boolean)
+                      .join(" ") ||
                       t("Destinatario {number}", { number: index + 1 })}
                     <span className="ml-2 text-xs text-muted-foreground">
                       {address || t("senza indirizzo")}

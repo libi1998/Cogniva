@@ -65,6 +65,7 @@ import {
 import type { RibbonCtx } from "./shared"
 
 import { useT, tr } from "@/lib/i18n/client"
+import { formatDecimal } from "@/lib/numbers"
 const PT = 96 / 72
 
 const PAPERS = [
@@ -872,7 +873,7 @@ function SpacingMenu({ ctx }: { ctx: RibbonCtx }) {
                         ".",
                         ","
                       ),
-                      lineHeight: String(normal.lineHeight).replace(".", ","),
+                      lineHeight: formatDecimal(normal.lineHeight),
                     })
                   : preset.hint}
               </span>

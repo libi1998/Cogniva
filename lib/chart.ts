@@ -1,4 +1,6 @@
 import { whim } from "./palette"
+import { splitDelimited } from "./delimited"
+import { decimalMark, parseLocaleNumber } from "./numbers"
 
 import { tr, currentRegion } from "@/lib/i18n/client"
 /**
@@ -173,16 +175,23 @@ export function defaultChart(type: ChartType = "column"): ChartSpec {
   return {
     type,
     title: tr("Titolo del grafico"),
-    categories: pie
-      ? ["1° trim.", "2° trim.", "3° trim.", "4° trim."]
-      : ["Categoria 1", "Categoria 2", "Categoria 3", "Categoria 4"],
+    // nella lingua di chi scrive: prima le categorie restavano in italiano
+    categories: [1, 2, 3, 4].map((number) =>
+      pie
+        ? tr("{number}° trim.||trimestre", { number })
+        : tr("Categoria {number}", { number })
+    ),
     series: pie
       ? [{ name: tr("Vendite"), color: null, values: [8.2, 3.2, 1.4, 1.2] }]
       : [
-          { name: tr("Serie 1"), color: null, values: [4.3, 2.5, 3.5, 4.5] },
-          { name: tr("Serie 2"), color: null, values: [2.4, 4.4, 1.8, 2.8] },
-          { name: tr("Serie 3"), color: null, values: [2, 2, 3, 5] },
-        ],
+          [4.3, 2.5, 3.5, 4.5],
+          [2.4, 4.4, 1.8, 2.8],
+          [2, 2, 3, 5],
+        ].map((values, i) => ({
+          name: tr("Serie {number}", { number: i + 1 }),
+          color: null,
+          values,
+        })),
     stacked: false,
     legend: "bottom",
     labels: false,
@@ -204,7 +213,7 @@ function normalizeChart(raw: unknown): ChartSpec {
     : base.categories
   const series = Array.isArray(r.series)
     ? r.series.map((s, i) => ({
-        name: String(s?.name ?? `Serie ${i + 1}`),
+        name: String(s?.name ?? tr("Serie {number}", { number: i + 1 })),
         color: typeof s?.color === "string" && s.color ? s.color : null,
         values: categories.map((_, j) => {
           const v = Number(s?.values?.[j])
@@ -236,17 +245,20 @@ export function parseChartAttr(value: unknown): ChartSpec {
   return normalizeChart(value)
 }
 
-/** Numero scritto all'italiana o all'inglese: «1.234,5» e «1234.5» */
+/**
+ * Numero scritto all'italiana o all'inglese: «1.234,5» e «1234.5». Con un
+ * solo separatore seguito da tre cifre decide la lingua: «1.234» è
+ * milleduecentotrentaquattro in italiano, «1,234» in inglese. Prima un
+ * «1,234» incollato da un foglio inglese diventava 1,234 e «1.234» da uno
+ * italiano pure.
+ */
 export function parseNumber(text: string): number {
-  const t = text.trim().replace(/\s|%|€|\$/g, "")
-  if (!t) return 0
-  const normalized =
-    t.includes(",") &&
-    (!t.includes(".") || t.lastIndexOf(",") > t.lastIndexOf("."))
-      ? t.replace(/\./g, "").replace(",", ".")
-      : t.replace(/,/g, "")
-  const n = Number(normalized)
-  return Number.isFinite(n) ? n : 0
+  const t = text.trim().replace(/%|€|\$|£/g, "")
+  if (!t.trim()) return 0
+  const n = parseLocaleNumber(t)
+  if (Number.isFinite(n)) return n
+  const plain = Number(t)
+  return Number.isFinite(plain) ? plain : 0
 }
 
 /**
@@ -256,17 +268,15 @@ export function parseNumber(text: string): number {
 export function parseTable(
   text: string
 ): Pick<ChartSpec, "categories" | "series"> | null {
-  const lines = text
-    .replace(/\r/g, "")
-    .split("\n")
-    .filter((l) => l.trim())
-  if (lines.length < 2) return null
-  const sep = lines[0].includes("\t")
-    ? "\t"
-    : lines[0].includes(";")
-      ? ";"
-      : ","
-  const rows = lines.map((l) => l.split(sep))
+  const first =
+    text
+      .replace(/\r/g, "")
+      .split("\n")
+      .find((l) => l.trim()) ?? ""
+  const sep = first.includes("\t") ? "\t" : first.includes(";") ? ";" : ","
+  // le celle fra virgolette possono contenere il separatore («"1,5"»)
+  const rows = splitDelimited(text, sep).filter((r) => r.some((c) => c.trim()))
+  if (rows.length < 2) return null
   const width = Math.max(...rows.map((r) => r.length))
   if (width < 2) return null
   const header = rows[0]
@@ -274,13 +284,16 @@ export function parseTable(
   const series: ChartSeries[] = []
   for (let c = 1; c < width; c++) {
     series.push({
-      name: (header[c] ?? "").trim() || `Serie ${c}`,
+      name: (header[c] ?? "").trim() || tr("Serie {number}", { number: c }),
       color: null,
       values: body.map((r) => parseNumber(r[c] ?? "")),
     })
   }
   return {
-    categories: body.map((r, i) => (r[0] ?? "").trim() || `Categoria ${i + 1}`),
+    categories: body.map(
+      (r, i) =>
+        (r[0] ?? "").trim() || tr("Categoria {number}", { number: i + 1 })
+    ),
     series,
   }
 }
@@ -291,7 +304,11 @@ export function toTable(spec: ChartSpec) {
   const rows = spec.categories.map((c, i) =>
     [
       c,
-      ...spec.series.map((s) => String(s.values[i] ?? 0).replace(".", ",")),
+      // con la virgola dei decimali solo dove si usa: un foglio inglese
+      // leggeva «4,3» come testo
+      ...spec.series.map((s) =>
+        String(s.values[i] ?? 0).replace(".", decimalMark())
+      ),
     ].join("\t")
   )
   return [head, ...rows].join("\n")

@@ -88,7 +88,7 @@ import {
   TEXT_COLORS,
   type RibbonCtx,
 } from "./shared"
-import { insertPlainText } from "../plain-paste"
+import { insertPlainText, pasteFromClipboard } from "../plain-paste"
 import { clearFormatting } from "../style-actions"
 import { SortDialog } from "../sort-dialog"
 import { AddinsGroup } from "../addins/addins-group"
@@ -260,40 +260,6 @@ function ListSample({ marks, nested }: { marks: string[]; nested?: boolean }) {
   )
 }
 
-async function pasteRich(ctx: RibbonCtx) {
-  const { editor } = ctx
-  try {
-    const items = await navigator.clipboard.read()
-    for (const item of items) {
-      const image = item.types.find((t) => t.startsWith("image/"))
-      if (image) {
-        const blob = await item.getType(image)
-        const reader = new FileReader()
-        reader.onload = () =>
-          editor
-            .chain()
-            .focus()
-            .setImage({ src: String(reader.result) })
-            .run()
-        reader.readAsDataURL(blob)
-        return
-      }
-      if (item.types.includes("text/html")) {
-        const html = await (await item.getType("text/html")).text()
-        editor.chain().focus().insertContent(html).run()
-        return
-      }
-      if (item.types.includes("text/plain")) {
-        insertPlainText(editor, await (await item.getType("text/plain")).text())
-        return
-      }
-    }
-  } catch {
-    // senza permesso di lettura resta la scorciatoia ⌘V
-    editor.commands.focus()
-  }
-}
-
 export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
   const t = useT()
   const { editor, st, theme, painter, dictation } = ctx
@@ -378,7 +344,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
             label={t("Incolla")}
             title={t("Incolla ⌘V")}
             icon={<ClipboardPaste className="size-5" />}
-            onClick={() => void pasteRich(ctx)}
+            onClick={() => void pasteFromClipboard(editor)}
             className="h-[42px]"
           />
           <RibbonMenu
@@ -391,7 +357,7 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
               />
             }
           >
-            <DropdownMenuItem onClick={() => void pasteRich(ctx)}>
+            <DropdownMenuItem onClick={() => void pasteFromClipboard(editor)}>
               <ClipboardPaste className="size-4" />{" "}
               {t("Mantieni formattazione")}
             </DropdownMenuItem>

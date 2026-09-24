@@ -88,19 +88,48 @@ export function parseClip(text: string): ClipPayload | null {
   }
 }
 
+/**
+ * Gli appunti del sistema hanno ricevuto l'ultima copia. Solo se la scrittura
+ * non è riuscita (permesso negato, pagina non in primo piano) conta la copia
+ * in memoria: altrimenti un testo copiato dopo, da un'altra app, è la cosa da
+ * incollare, e non gli elementi copiati prima.
+ */
+let systemMissed = false
+
 export function writeClip(p: ClipPayload) {
   memory = p
   const text = serializeClip(p)
+  const missed = () => {
+    if (memory === p) systemMissed = true
+  }
+  systemMissed = false
   try {
-    void navigator.clipboard?.writeText(text)
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).catch(missed)
+    } else missed()
   } catch {
-    /* il fallback in memoria basta */
+    // il fallback in memoria basta
+    missed()
   }
   try {
     localStorage.setItem(STORAGE.clipboard, text)
   } catch {
     /* ignora */
   }
+}
+
+/**
+ * Cosa incollare dato il testo degli appunti del sistema: gli elementi che
+ * contiene; se è vuoto, l'ultima copia di Cogniva; se è un testo qualunque,
+ * il testo (`null`), a meno che l'ultima copia non sia mai arrivata agli
+ * appunti. Prima vinceva sempre la copia in memoria (o quella di un'altra
+ * sessione): un testo copiato da un'altra app non si incollava più.
+ */
+export function clipForPaste(text: string): ClipPayload | null {
+  const clip = parseClip(text)
+  if (clip) return clip
+  if (!text.trim()) return readClipFallback()
+  return systemMissed ? memory : null
 }
 
 export function readClipFallback(): ClipPayload | null {

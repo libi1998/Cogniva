@@ -481,6 +481,8 @@ export async function buildDocx({
           break
         }
         case "mathInline": {
+          // un collegamento subito prima va chiuso qui, o finiva dopo la formula
+          flushLink()
           const index = out.length
           out.push(
             new d.TextRun({
@@ -1226,12 +1228,15 @@ export async function buildDocx({
         return [
           new d.Paragraph({
             heading: d.HeadingLevel.HEADING_2,
+            // come nel documento: un'etichetta personalizzata ha il suo nome
             text:
-              label === tr("Tabella")
-                ? tr("Indice delle tabelle")
-                : label === tr("Equazione")
-                  ? tr("Indice delle equazioni")
-                  : tr("Indice delle figure"),
+              label === tr("Figura")
+                ? tr("Indice delle figure")
+                : label === tr("Tabella")
+                  ? tr("Indice delle tabelle")
+                  : label === tr("Equazione")
+                    ? tr("Indice delle equazioni")
+                    : tr("Indice delle {items}", { items: label }),
           }),
           ...captionEntries(editor.state, label).map(
             (entry) =>
