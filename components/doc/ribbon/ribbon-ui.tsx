@@ -19,6 +19,7 @@ import {
 import { cn } from "@/lib/utils"
 
 import { useT } from "@/lib/i18n/client"
+import { formatDecimal } from "@/lib/numbers"
 /**
  * Pezzi della barra a schede. I pulsanti usano il `title` nativo invece dei
  * tooltip: con un centinaio di comandi, un tooltip ciascuno pesava su ogni
@@ -421,8 +422,7 @@ export function Stepper({
   const clamp = (v: number) =>
     Math.min(max, Math.max(min, Number(v.toFixed(decimals))))
   const shown =
-    draft ??
-    `${String(Number(value.toFixed(decimals))).replace(".", ",")} ${unit}`
+    draft ?? `${formatDecimal(Number(value.toFixed(decimals)))} ${unit}`
 
   const commit = (text: string) => {
     const n = Number(text.replace(",", ".").replace(/[^\d.-]/g, ""))
@@ -452,7 +452,7 @@ export function Stepper({
           inputMode="decimal"
           aria-label={label}
           onFocus={(e) => {
-            setDraft(String(Number(value.toFixed(decimals))).replace(".", ","))
+            setDraft(formatDecimal(Number(value.toFixed(decimals))))
             requestAnimationFrame(() => e.target.select())
           }}
           onChange={(e) => {
@@ -465,7 +465,7 @@ export function Stepper({
             if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return
             e.preventDefault()
             const next = clamp(value + (e.key === "ArrowUp" ? step : -step))
-            setDraft(String(next).replace(".", ","))
+            setDraft(formatDecimal(next))
             onChange(next)
           }}
           className="h-full w-0 min-w-0 flex-1 bg-transparent px-1.5 text-foreground tabular-nums outline-none"

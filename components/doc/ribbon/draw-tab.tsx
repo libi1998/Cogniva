@@ -37,6 +37,7 @@ import {
 import type { RibbonCtx } from "./shared"
 
 import { useT } from "@/lib/i18n/client"
+import { formatDecimal } from "@/lib/numbers"
 /** L'icona di una penna, col suo colore e spessore sotto */
 function PenIcon({ pen }: { pen: Pen }) {
   const Icon =
@@ -84,7 +85,7 @@ function PenOptions({
           <button
             key={w}
             type="button"
-            title={t("{width} px", { width: String(w).replace(".", ",") })}
+            title={t("{width} px", { width: formatDecimal(w) })}
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => onChange({ width: w })}
             className={cn(
@@ -194,7 +195,7 @@ export function DrawTab({ ctx }: { ctx: RibbonCtx }) {
                 <RibbonButton
                   title={t("{pen} · {width} px", {
                     pen: PEN_LABELS[pen.kind],
-                    width: String(pen.width).replace(".", ","),
+                    width: formatDecimal(pen.width),
                   })}
                   active={active}
                   icon={<PenIcon pen={pen} />}

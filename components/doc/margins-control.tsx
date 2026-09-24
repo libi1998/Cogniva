@@ -7,6 +7,7 @@ import { clampMargin, type DocMargins, type MarginSide } from "@/lib/types"
 
 import { useT, tr } from "@/lib/i18n/client"
 import { N_ } from "@/lib/i18n/config"
+import { formatDecimal } from "@/lib/numbers"
 /** pixel CSS in un centimetro */
 const CM = 96 / 2.54
 const toCm = (px: number) => Math.round((px / CM) * 10) / 10
@@ -75,7 +76,7 @@ function CmInput({
   const t = useT()
   // mentre si scrive il testo resta com'è: «2,» non deve diventare «2»
   const [draft, setDraft] = React.useState<string | null>(null)
-  const shown = draft ?? String(toCm(value)).replace(".", ",")
+  const shown = draft ?? formatDecimal(toCm(value))
 
   const commit = (text: string) => {
     const cm = Number(text.replace(",", "."))
@@ -199,9 +200,7 @@ export function MarginsControl({
               type="button"
               title={t("{label}: {values} cm", {
                 label: p.label,
-                values: p.cm
-                  .map((c) => String(c).replace(".", ","))
-                  .join(" · "),
+                values: p.cm.map((c) => formatDecimal(c)).join(" · "),
               })}
               onClick={() => {
                 setLinked(top === right && right === bottom && bottom === left)

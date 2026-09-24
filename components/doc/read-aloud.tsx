@@ -62,6 +62,7 @@ import {
 } from "./ribbon/ribbon-ui"
 
 import { useT, useRegion } from "@/lib/i18n/client"
+import { formatDecimal } from "@/lib/numbers"
 /**
  * «Leggi ad alta voce» di Word: legge dal cursore (o la selezione) con una voce
  * del sistema o con una voce neurale che gira sul dispositivo, evidenziando la
@@ -69,7 +70,7 @@ import { useT, useRegion } from "@/lib/i18n/client"
  */
 
 const RATES = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
-const formatRate = (r: number) => `${String(r).replace(".", ",")}×`
+const formatRate = (r: number) => `${formatDecimal(r)}×`
 
 const speechSupported = () =>
   typeof window !== "undefined" && "speechSynthesis" in window

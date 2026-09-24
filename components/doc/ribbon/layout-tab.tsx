@@ -58,6 +58,7 @@ import {
 import { CM, PT, type RibbonCtx } from "./shared"
 
 import { useT, tr } from "@/lib/i18n/client"
+import { formatDecimal } from "@/lib/numbers"
 const cm = (value: number) => Math.round(value * CM * 100) / 100
 
 /** I margini predefiniti di Word, in centimetri */
@@ -115,7 +116,7 @@ const MARGIN_PRESETS: { label: string; margins: DocMargins }[] = [
 ]
 
 const fmtCm = (px: number) =>
-  `${(Math.round((px / CM) * 100) / 100).toString().replace(".", ",")} cm`
+  `${formatDecimal(Math.round((px / CM) * 100) / 100)} cm`
 
 const WIDTHS: { value: DocTheme["width"]; label: string }[] = [
   {

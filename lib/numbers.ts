@@ -40,3 +40,10 @@ export function firstNumber(text: string): number {
   const m = text.match(/[-−]?\d[\d.,'’\u00a0\u202f]*/)
   return m ? parseLocaleNumber(m[0].replace(/[.,]+$/, "")) : Number.NaN
 }
+
+/**
+ * Un numero da mostrare con il separatore dei decimali della lingua: «2,5»
+ * in italiano, «2.5» in inglese. Le caselle accettano comunque tutti e due.
+ */
+export const formatDecimal = (n: number | string) =>
+  String(n).replace(".", decimalMark())

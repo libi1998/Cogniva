@@ -33,6 +33,7 @@ import { cn } from "@/lib/utils"
 import { useT, useLocale, currentLocale } from "@/lib/i18n/client"
 import type { Locale } from "@/lib/i18n/config"
 import { fieldName, findField, type MergeFieldKey } from "@/lib/doc-merge"
+import { formatDecimal } from "@/lib/numbers"
 const selectClass =
   "h-8 w-full min-w-0 rounded-md border border-input bg-transparent px-2 text-sm text-foreground"
 
@@ -1146,8 +1147,7 @@ function LabelsForm({
             ))}
           </div>
           <p className="text-xs text-muted-foreground">
-            {p.cols} × {p.rows} · {String(p.w).replace(".", ",")} ×{" "}
-            {String(p.h).replace(".", ",")} mm
+            {p.cols} × {p.rows} · {formatDecimal(p.w)} × {formatDecimal(p.h)} mm
           </p>
         </div>
       </DialogBody>
