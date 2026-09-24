@@ -39,6 +39,7 @@ import {
   type ChartSpec,
   type ChartType,
 } from "@/lib/chart"
+import { decimalMark } from "@/lib/numbers"
 import { useIsDark } from "@/lib/use-theme"
 import { cn } from "@/lib/utils"
 import { Row, Segmented } from "./inspector-ui"
@@ -289,7 +290,7 @@ function ChartDataDialog({
       ...spec,
       categories: [
         ...spec.categories,
-        `Categoria ${spec.categories.length + 1}`,
+        t("Categoria {number}", { number: spec.categories.length + 1 }),
       ],
       series: spec.series.map((s) => ({ ...s, values: [...s.values, 0] })),
     })
@@ -308,7 +309,7 @@ function ChartDataDialog({
       series: [
         ...spec.series,
         {
-          name: `Serie ${spec.series.length + 1}`,
+          name: t("Serie {number}", { number: spec.series.length + 1 }),
           color: null,
           values: spec.categories.map(() => 0),
         },
@@ -464,7 +465,10 @@ function ChartDataDialog({
                           aria-label={`${s.name}, ${cat}`}
                           value={
                             drafts[`${si}:${ci}`] ??
-                            String(s.values[ci] ?? 0).replace(".", ",")
+                            String(s.values[ci] ?? 0).replace(
+                              ".",
+                              decimalMark()
+                            )
                           }
                           onChange={(e) => setCell(si, ci, e.target.value)}
                           onBlur={() =>

@@ -1,6 +1,7 @@
 import { Node, mergeAttributes, type JSONContent } from "@tiptap/core"
 import type { Editor } from "@tiptap/core"
 import type { MergeData, MergeRule } from "./types"
+import { guessDelimiter, splitDelimited } from "./delimited"
 import { currentLocale, tr } from "@/lib/i18n/client"
 import { N_, stripContext } from "@/lib/i18n/config"
 /**
@@ -72,46 +73,9 @@ export function parseDelimited(text: string): {
   fields: string[]
   rows: Record<string, string>[]
 } {
-  const clean = text.replace(/^\uFEFF/, "")
-  const firstLine = clean.split(/\r?\n/, 1)[0] ?? ""
-  const counts = [",", ";", "\t"].map(
-    (d) => [d, firstLine.split(d).length] as const
-  )
-  const delimiter = counts.sort((a, b) => b[1] - a[1])[0][0]
-  const table: string[][] = []
-  let row: string[] = []
-  let cell = ""
-  let quoted = false
-  for (let i = 0; i < clean.length; i += 1) {
-    const c = clean[i]
-    if (quoted) {
-      if (c === '"' && clean[i + 1] === '"') {
-        cell += '"'
-        i += 1
-      } else if (c === '"') {
-        quoted = false
-      } else {
-        cell += c
-      }
-    } else if (c === '"') {
-      quoted = true
-    } else if (c === delimiter) {
-      row.push(cell)
-      cell = ""
-    } else if (c === "\n" || c === "\r") {
-      if (c === "\r" && clean[i + 1] === "\n") i += 1
-      row.push(cell)
-      table.push(row)
-      row = []
-      cell = ""
-    } else {
-      cell += c
-    }
-  }
-  if (cell || row.length) {
-    row.push(cell)
-    table.push(row)
-  }
+  // le virgolette contano solo in testa alla cella: in «Schermo 5"» sono un
+  // carattere, e prima si mangiavano tutte le righe fino alla fine
+  const table = splitDelimited(text, guessDelimiter(text))
   const nonEmpty = table.filter((r) => r.some((v) => v.trim()))
   const header = (nonEmpty[0] ?? []).map((h, i) => h.trim() || `Campo${i + 1}`)
   // nomi ripetuti: «Nome», «Nome 2»
@@ -130,7 +94,7 @@ export function parseDelimited(text: string): {
 
 export function toCsv(merge: MergeData) {
   const quote = (v: string) =>
-    /[;"\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v
+    /[;"\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v
   return [
     merge.fields.map(quote).join(";"),
     ...merge.rows.map((r) =>

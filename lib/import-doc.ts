@@ -39,18 +39,33 @@ function makeDoc(title: string, content: JSONContent): WFile {
 function htmlToDoc(
   html: string,
   fallbackTitle: string,
-  { math = false }: { math?: boolean } = {}
+  /** l'HTML viene dal Markdown: formule coi dollari e titoli spostati */
+  { markdown = false }: { markdown?: boolean } = {}
 ): WFile {
   const dom = new window.DOMParser().parseFromString(html, "text/html")
   const body = dom.body
   sanitizeImportedDom(body)
-  normalizeImportedDom(body, { math })
+  normalizeImportedDom(body, { math: markdown })
 
   let title = fallbackTitle
   const first = body.firstElementChild
   if (first?.tagName === "H1" && first.textContent?.trim()) {
     title = first.textContent.trim()
     first.remove()
+    // «# Titolo» e poi «## Sezione»: nel Markdown il titolo occupa il primo
+    // livello, e le sezioni sono i Titoli 1 del documento. È anche la forma
+    // in cui Cogniva esporta: prima ogni esportazione e importazione
+    // abbassava i titoli di un livello
+    if (markdown && !body.querySelector("h1")) {
+      body.querySelectorAll("h2, h3, h4, h5, h6").forEach((heading) => {
+        const level = Number(heading.tagName.slice(1)) - 1
+        const next = dom.createElement(`h${level}`)
+        next.append(...heading.childNodes)
+        for (const attr of Array.from(heading.attributes))
+          next.setAttribute(attr.name, attr.value)
+        heading.replaceWith(next)
+      })
+    }
   }
 
   const doc = ProseMirrorParser.fromSchema(docSchema()).parse(body)
@@ -158,6 +173,16 @@ function normalizeImportedDom(body: HTMLElement, { math }: { math: boolean }) {
     li.parentElement?.setAttribute("data-type", "taskList")
   })
 
+  // il codice del Markdown finisce sempre con un a capo: nel blocco
+  // diventava una riga vuota in fondo
+  body.querySelectorAll("pre").forEach((pre) => {
+    const walker = document.createTreeWalker(pre, NodeFilter.SHOW_TEXT)
+    let last: Text | null = null
+    for (let n = walker.nextNode(); n; n = walker.nextNode()) last = n as Text
+    if (last?.nodeValue?.endsWith("\n"))
+      last.nodeValue = last.nodeValue.slice(0, -1)
+  })
+
   if (!math) return
 
   // formule: $$…$$ su una riga sola, $…$ dentro al testo
@@ -237,7 +262,7 @@ async function importMarkdown(file: File): Promise<WFile> {
     markdownFootnotes(normalizeNewlines(await file.text())),
     { gfm: true }
   )
-  return htmlToDoc(html, baseName(file.name), { math: true })
+  return htmlToDoc(html, baseName(file.name), { markdown: true })
 }
 
 /**
