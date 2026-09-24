@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { getAuthor } from "@/lib/author"
 import { useStore } from "@/lib/store"
 import { commentRanges } from "@/lib/tiptap-extensions"
+import { wordAtSelection } from "@/lib/word-at"
 import type { DocComment } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
@@ -122,20 +123,17 @@ export function useComments(
       const { state } = editor
       let { from, to } = state.selection
       if (from === to) {
-        // senza selezione si commenta la parola sotto al cursore, come Word
-        const $pos = state.selection.$from
-        const text = $pos.parent.textContent
-        let start = $pos.parentOffset
-        let end = start
-        const word = /[\p{L}\p{N}_'’-]/u
-        while (start > 0 && word.test(text[start - 1])) start--
-        while (end < text.length && word.test(text[end])) end++
-        if (start === end) {
+        // senza selezione si commenta la parola sotto al cursore, come Word.
+        // Le posizioni vengono dal paragrafo vero: contate sul suo testo, un
+        // campo o un'immagine prima del cursore spostavano il commento di un
+        // carattere per ognuno
+        const word = wordAtSelection(editor)
+        if (!word) {
           toast.info(t("Seleziona il testo da commentare"))
           return
         }
-        from = $pos.start() + start
-        to = $pos.start() + end
+        from = word.from
+        to = word.to
       }
       const id = nanoid(8)
       const tr = state.tr.addMark(

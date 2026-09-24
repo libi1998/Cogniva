@@ -612,7 +612,15 @@ export const Bookmark = Mark.create({
           if (from === to) {
             // senza selezione: la parola del cursore, o tutto il paragrafo
             const $from = state.selection.$from
-            const text = $from.parent.textContent
+            // un carattere per ogni campo o immagine, come nelle posizioni:
+            // col solo testo il segnalibro finiva spostato di uno per ognuno
+            const parent = $from.parent
+            const text = parent.textBetween(
+              0,
+              parent.content.size,
+              undefined,
+              "\ufffc"
+            )
             const offset = $from.parentOffset
             let start = offset
             let end = offset

@@ -197,10 +197,7 @@ export function FindBar({
           size="sm"
           className="h-7 gap-1 px-2 text-[11px]"
           disabled={!find.total}
-          onClick={() => {
-            editor.commands.replaceCurrent(replacement)
-            editor.commands.setSearch({})
-          }}
+          onClick={() => editor.commands.replaceCurrent(replacement)}
         >
           <Replace className="size-3.5" /> {t("Sostituisci")}
         </Button>
