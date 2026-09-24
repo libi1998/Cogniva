@@ -175,6 +175,16 @@ function CollapsedGroup({
               }
               setOpen(false)
             }}
+            // Invio in una casella (rientro, corpo del carattere) conferma e
+            // torna al testo: il gruppo si chiude, invece di restare aperto
+            // sopra al documento
+            onKeyDown={(event) => {
+              if (
+                event.key === "Enter" &&
+                (event.target as HTMLElement).tagName === "INPUT"
+              )
+                setOpen(false)
+            }}
           >
             {children}
           </div>
