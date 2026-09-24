@@ -42,7 +42,11 @@ function syllables(word: string, lang: string) {
 
 function analyse(api: AddinApi): Report {
   const lang = api.language.slice(0, 2).toLowerCase()
-  const sentences = sentencesOf(api.editor.state.doc, 0, 0, api.language)
+  // le frasi intere: la lettura ad alta voce spezza quelle oltre i 260
+  // caratteri, e così una frase di 50 parole contava come due da 25
+  const sentences = sentencesOf(api.editor.state.doc, 0, 0, api.language, {
+    split: false,
+  })
   let words = 0
   let letters = 0
   let syl = 0

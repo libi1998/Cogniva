@@ -59,8 +59,11 @@ const LEVELS = [
   },
 ] as const
 
-/** Nel formato Wi-Fi i caratteri speciali vanno protetti */
-const wifiEscape = (value: string) => value.replace(/([\;,:"])/g, "\\$1")
+/**
+ * Nel formato Wi-Fi i caratteri speciali vanno protetti, compresa la barra
+ * rovesciata: senza, una password che la contiene non si leggeva giusta
+ */
+const wifiEscape = (value: string) => value.replace(/([\\;,:"])/g, "\\$1")
 
 export function QrAddin({ api }: { api: AddinApi }) {
   const t = useT()
@@ -100,7 +103,12 @@ export function QrAddin({ api }: { api: AddinApi }) {
   React.useEffect(() => {
     let live = true
     if (!payload || payload === "https://") {
-      void Promise.resolve().then(() => live && setPreview(null))
+      // anche l'avviso «troppo lungo» di prima: il campo ora è vuoto
+      void Promise.resolve().then(() => {
+        if (!live) return
+        setPreview(null)
+        setError("")
+      })
       return
     }
     QRCode.toDataURL(payload, {

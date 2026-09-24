@@ -135,13 +135,24 @@ export function SignatureAddin({ api }: { api: AddinApi }) {
     redraw(strokes)
   }, [strokes, redraw])
 
+  // il riquadro è largo quanto il pannello, non 320 px: il punto si misura
+  // sul foglio del canvas, altrimenti il tratto finiva lontano dal puntatore
   const point = (e: React.PointerEvent<HTMLCanvasElement>): Point => {
-    const rect = e.currentTarget.getBoundingClientRect()
+    const canvas = e.currentTarget
+    const rect = canvas.getBoundingClientRect()
+    const sx = rect.width ? canvas.width / scale / rect.width : 1
+    const sy = rect.height ? canvas.height / scale / rect.height : 1
     return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
+      x: (e.clientX - rect.left) * sx,
+      y: (e.clientY - rect.top) * sy,
       p: e.pointerType === "pen" && e.pressure ? e.pressure : 0.5,
     }
+  }
+
+  const finish = () => {
+    const stroke = current.current
+    current.current = null
+    if (stroke) setStrokes((s) => [...s, stroke])
   }
 
   return (
@@ -165,11 +176,10 @@ export function SignatureAddin({ api }: { api: AddinApi }) {
           current.current.push(point(e))
           redraw(strokes, current.current)
         }}
-        onPointerUp={() => {
-          const stroke = current.current
-          current.current = null
-          if (stroke) setStrokes((s) => [...s, stroke])
-        }}
+        onPointerUp={finish}
+        // il sistema può interrompere il tratto (un gesto, una notifica):
+        // quello che si era disegnato resta
+        onPointerCancel={finish}
       />
       <div className="flex items-center gap-2">
         {INKS.map((c) => (

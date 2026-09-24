@@ -41,6 +41,17 @@ export function createAddinApi(
 }
 
 /**
+ * Il messaggio di un errore da mostrare nel riquadro. Senza rete `fetch`
+ * rifiuta con un TypeError del browser («Failed to fetch»), in inglese e poco
+ * chiaro: al suo posto va la frase di ripiego.
+ */
+export function errorText(e: unknown, fallback: string) {
+  return e instanceof Error && !(e instanceof TypeError) && e.message
+    ? e.message
+    : fallback
+}
+
+/**
  * Una frase tradotta con dei pezzi speciali (collegamenti, grassetti) al posto
  * dei segnaposto: «Fonte: «{title}»…» → ["Fonte: «", {title}, "»…"]. L'ordine
  * delle parole resta quello della lingua.
