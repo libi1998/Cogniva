@@ -1,0 +1,311 @@
+import { readFileSync } from "node:fs"
+import { expect, test, type Page } from "@playwright/test"
+import { openDemo, openTab, ribbonButton, withEditor } from "./editor"
+
+/**
+ * Gli strumenti del documento e della board, ciascuno con il caso che prima
+ * sbagliava: leggibilità, firma e codice QR, trova e sostituisci, ordina,
+ * commenti, riferimenti incrociati, Markdown e appunti della board.
+ */
+
+/** Sostituisce il documento con un titolo e dei paragrafi */
+async function setParagraphs(page: Page, paragraphs: string[]) {
+  await withEditor(
+    page,
+    `editor.commands.setContent({ type: "doc", content: [
+      { type: "docTitle", content: [{ type: "text", text: "Prova" }] },
+      ...arg.map((text) => ({ type: "paragraph", content: text ? [{ type: "text", text }] : [] })),
+    ] })`,
+    paragraphs
+  )
+}
+
+const paragraphs = (page: Page) =>
+  withEditor<string[]>(
+    page,
+    `const out = []
+     editor.state.doc.forEach((n, _, i) => { if (i > 0) out.push(n.textContent) })
+     return out`
+  )
+
+async function openAddin(page: Page, name: string) {
+  await openTab(page, "Home")
+  await (await ribbonButton(page, "Componenti aggiuntivi")).click()
+  await page.getByRole("menuitem", { name: new RegExp(`^${name}`) }).click()
+  const pane = page.getByLabel(name, { exact: true })
+  await expect(pane).toBeVisible()
+  return pane
+}
+
+test("Leggibilità: una frase lunga resta una frase sola", async ({ page }) => {
+  await openDemo(page)
+  // 56 parole in una frase: la lettura ad alta voce la spezza oltre i 260
+  // caratteri, e prima anche l'indice la contava come due frasi da 25
+  const words = Array.from({ length: 48 }, (_, i) => `parola${i}`).join(" ")
+  await setParagraphs(page, [
+    `Questa è una frase ${words} che non finisce mai.`,
+  ])
+  const pane = await openAddin(page, "Leggibilità")
+  await pane.getByRole("button", { name: "Ricalcola" }).click()
+  await expect(pane.getByText("56 parole")).toBeVisible()
+  // il titolo e la frase lunga
+  await expect(
+    pane.locator("dt", { hasText: /^Frasi$/ }).locator("xpath=..")
+  ).toContainText("2")
+})
+
+test("Firma: il tratto compare sotto il puntatore", async ({ page }) => {
+  await openDemo(page)
+  const pane = await openAddin(page, "Firma")
+  const canvas = pane.getByTestId("signature-canvas")
+  const box = (await canvas.boundingBox())!
+  // il riquadro è largo quanto il pannello, non 320 px: si disegna vicino al
+  // bordo destro, dove prima il tratto finiva decine di pixel più a sinistra
+  const x = box.x + box.width - 20
+  await page.mouse.move(x, box.y + 60)
+  await page.mouse.down()
+  for (let i = 1; i <= 8; i += 1) await page.mouse.move(x, box.y + 60 + i * 6)
+  await page.mouse.up()
+  const drawnAt = await canvas.evaluate((c: HTMLCanvasElement) => {
+    const data = c.getContext("2d")!.getImageData(0, 0, c.width, c.height).data
+    let min = c.width
+    let max = -1
+    for (let y = 0; y < c.height; y += 1)
+      for (let px = 0; px < c.width; px += 1)
+        if (data[(y * c.width + px) * 4 + 3]! > 8) {
+          min = Math.min(min, px)
+          max = Math.max(max, px)
+        }
+    const scale = c.getBoundingClientRect().width / c.width
+    return ((min + max) / 2) * scale
+  })
+  expect(Math.abs(drawnAt - (box.width - 20))).toBeLessThan(4)
+})
+
+test("Codice QR: svuotato il campo, sparisce l'avviso «troppo lungo»", async ({
+  page,
+}) => {
+  await openDemo(page)
+  const pane = await openAddin(page, "Codice QR")
+  const field = pane.locator("textarea")
+  await field.fill("x".repeat(5000))
+  await expect(pane.getByText("troppo lungo")).toBeVisible()
+  await field.fill("")
+  await expect(pane.getByText("Scrivi il contenuto del codice")).toBeVisible()
+})
+
+test("Sostituisci passa alla parola dopo anche se la sostituzione la contiene", async ({
+  page,
+}) => {
+  await openDemo(page)
+  await setParagraphs(page, ["il gatto e il gatto nero", "un altro gatto"])
+  await page.keyboard.press("ControlOrMeta+f")
+  await page.getByPlaceholder("Trova", { exact: true }).fill("gatto")
+  await expect(page.getByText("1 di 3")).toBeVisible()
+  await page.getByPlaceholder("Sostituisci con").fill("gattone")
+  const replace = page.locator("[data-slot=button]", { hasText: "Sostituisci" })
+  for (let i = 0; i < 3; i += 1) await replace.first().click()
+  // prima si restava su «gattone» e la terza volta diventava «gattonene»
+  expect(await paragraphs(page)).toEqual([
+    "il gattone e il gattone nero",
+    "un altro gattone",
+  ])
+})
+
+test("Ordina per numero e per data legge i numeri e le date di ogni lingua", async ({
+  page,
+}) => {
+  await openDemo(page)
+  const sort = async (by: "number" | "date") => {
+    await withEditor(page, `editor.commands.focus(10)`)
+    await openTab(page, "Home")
+    await (
+      await ribbonButton(
+        page,
+        "Ordina: paragrafi, voci di elenco o righe di tabella"
+      )
+    ).click()
+    const dialog = page.getByRole("dialog", { name: "Ordina testo" })
+    await dialog
+      .locator("label", { hasText: "Tipo" })
+      .locator("select")
+      .selectOption(by)
+    await dialog.getByRole("button", { name: "Ordina", exact: true }).click()
+    await expect(dialog).toBeHidden()
+  }
+
+  // prima «3.5» valeva 35 e quello che non era un numero stava a caso
+  await setParagraphs(page, ["10", "3.5", "2,25", "n/d", "100"])
+  await sort("number")
+  expect(await paragraphs(page)).toEqual(["2,25", "3.5", "10", "100", "n/d"])
+
+  // «2025-12-31» era letta come 25/12/2031, «12 marzo 2025» non era una data
+  await setParagraphs(page, [
+    "2025-12-31",
+    "12 marzo 2025",
+    "01/02/2024",
+    "2024-06-01",
+  ])
+  await sort("date")
+  expect(await paragraphs(page)).toEqual([
+    "01/02/2024",
+    "2024-06-01",
+    "12 marzo 2025",
+    "2025-12-31",
+  ])
+})
+
+test("un commento senza selezione prende la parola giusta anche dopo un campo", async ({
+  page,
+}) => {
+  await openDemo(page)
+  await withEditor(
+    page,
+    `editor.commands.setContent({ type: "doc", content: [
+      { type: "docTitle", content: [{ type: "text", text: "Prova" }] },
+      { type: "paragraph", content: [
+        { type: "field", attrs: { kind: "date" } },
+        { type: "text", text: " parola importante" },
+      ] },
+    ] })
+    let pos = editor.state.doc.child(0).nodeSize + 1
+    // il cursore dentro «importante»
+    pos += 1 + " parola impo".length
+    editor.commands.focus(pos)`
+  )
+  await page.keyboard.press("ControlOrMeta+Alt+m")
+  await expect
+    .poll(() =>
+      withEditor<string[]>(
+        page,
+        `const out = []
+         editor.state.doc.descendants((n) => {
+           if (n.isText && n.marks.some((m) => m.type.name === "comment")) out.push(n.text)
+         })
+         return out`
+      )
+    )
+    .toEqual(["importante"])
+})
+
+test("in inglese il riferimento incrociato trova le didascalie «Figure»", async ({
+  page,
+}) => {
+  await page.goto("/en/doc/demo-doc")
+  await expect(page.locator("#doc-sheet .ProseMirror")).toBeVisible()
+  await page.waitForFunction(() =>
+    Boolean(
+      (
+        document.querySelector("#doc-sheet .ProseMirror") as unknown as {
+          editor?: unknown
+        } | null
+      )?.editor
+    )
+  )
+  await withEditor(
+    page,
+    `editor.commands.setContent({ type: "doc", content: [
+      { type: "docTitle", content: [{ type: "text", text: "Test" }] },
+      { type: "paragraph", attrs: { styleId: "caption" }, content: [
+        { type: "text", text: "Figure " },
+        { type: "field", attrs: { kind: "seq", label: "Figure", format: "arabic", target: "fig1" } },
+        { type: "text", text: ": Sales" },
+      ] },
+      { type: "paragraph", content: [{ type: "text", text: "See " }] },
+    ] })
+    editor.commands.focus("end")`
+  )
+  await openTab(page, "Insert")
+  await (await ribbonButton(page, "Cross-reference")).click()
+  const dialog = page.getByRole("dialog", { name: "Cross-reference" })
+  await dialog
+    .locator("label", { hasText: "Reference type" })
+    .locator("select")
+    .selectOption({ label: "Figure" })
+  await dialog.getByRole("button", { name: "Figure 1: Sales" }).click()
+  await dialog.getByRole("button", { name: "Insert", exact: true }).click()
+  await expect(page.locator("#doc-sheet .ProseMirror > p").last()).toHaveText(
+    "See Figure 1"
+  )
+})
+
+test("il Markdown esportato si reimporta uguale", async ({ page }, info) => {
+  await openDemo(page)
+  await withEditor(
+    page,
+    `editor.commands.setContent({ type: "doc", content: [
+      { type: "docTitle", content: [{ type: "text", text: "Rapporto" }] },
+      { type: "heading", attrs: { level: 1 }, content: [{ type: "text", text: "Introduzione" }] },
+      { type: "paragraph", content: [{ type: "text", text: "1. non è un elenco" }] },
+      { type: "heading", attrs: { level: 2 }, content: [{ type: "text", text: "Dettagli" }] },
+      { type: "codeBlock", content: [{ type: "text", text: "const x = 1" }] },
+      { type: "paragraph", content: [{ type: "text", text: "Fine." }] },
+    ] })`
+  )
+  await page.getByRole("button", { name: "Esporta", exact: true }).click()
+  const studio = page.getByRole("dialog")
+  await studio.getByRole("button", { name: /^Markdown/ }).click()
+  const download = page.waitForEvent("download")
+  await studio.getByRole("button", { name: "Esporta Markdown" }).click()
+  const file = info.outputPath("rapporto.md")
+  await (await download).saveAs(file)
+  const markdown = readFileSync(file, "utf8")
+  // «\1.» mostrava la barra: si protegge il punto
+  expect(markdown).toContain("1\\. non è un elenco")
+
+  await page.goto("/it")
+  const chooser = page.waitForEvent("filechooser")
+  await page.getByRole("button", { name: "Importa" }).click()
+  await page.getByRole("menuitem", { name: /Word, Markdown/ }).click()
+  await (await chooser).setFiles(file)
+  await expect(page.locator("#doc-sheet .ProseMirror")).toBeVisible({
+    timeout: 60_000,
+  })
+  await page.waitForFunction(() =>
+    Boolean(
+      (
+        document.querySelector("#doc-sheet .ProseMirror") as unknown as {
+          editor?: unknown
+        } | null
+      )?.editor
+    )
+  )
+  // prima ogni giro abbassava i titoli di un livello, e il codice prendeva
+  // una riga vuota in fondo
+  expect(
+    await withEditor<string[]>(
+      page,
+      `const out = []
+       editor.state.doc.forEach((n) => out.push(n.type.name + (n.attrs.level ?? "") + ":" + n.textContent))
+       return out`
+    )
+  ).toEqual([
+    "docTitle:Rapporto",
+    "heading1:Introduzione",
+    "paragraph:1. non è un elenco",
+    "heading2:Dettagli",
+    "codeBlock:const x = 1",
+    "paragraph:Fine.",
+  ])
+})
+
+test("board: un testo copiato da un'altra app si incolla come testo", async ({
+  page,
+}) => {
+  await page.goto("/it/board/demo-board")
+  const node = page.locator('[data-node-id="n2"]')
+  await expect(node).toBeVisible()
+  await node.click()
+  await page.keyboard.press("ControlOrMeta+c")
+  // dopo, gli appunti ricevono un testo qualunque
+  await page.evaluate(() => navigator.clipboard.writeText("testo da fuori"))
+  const count = () => page.locator("[data-node-id]").count()
+  const before = await count()
+  await page.mouse.move(700, 700)
+  await page.keyboard.press("ControlOrMeta+v")
+  await expect.poll(count).toBe(before + 1)
+  // prima tornava la copia degli elementi di prima
+  await expect(
+    page.locator("[data-node-id]", { hasText: "testo da fuori" })
+  ).toBeVisible()
+})
