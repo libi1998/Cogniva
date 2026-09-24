@@ -542,22 +542,40 @@ function TranslateForm({
             : null
   const checking = browserState === null || download === null
 
+  // ogni traduzione ha il suo numero: una annullata (o una finestra chiusa)
+  // mentre il traduttore del browser si scarica non deve più arrivare
+  const attempt = React.useRef(0)
+  React.useEffect(
+    () => () => {
+      attempt.current += 1
+    },
+    []
+  )
+
   const run = () => {
+    const ticket = ++attempt.current
+    const current = () => ticket === attempt.current
     setBusy(true)
     setResult(null)
     setProgress(null)
     saveEngine(engine)
-    createTranslator(source, target, { engine, onProgress: setProgress })
+    const onProgress = (p: TranslateProgress) => current() && setProgress(p)
+    createTranslator(source, target, { engine, onProgress })
       .then(async (translator) => {
+        if (!current()) {
+          translator.destroy()
+          return
+        }
         running.current = translator
         const translated = await translateContent(
           scope === "selection" ? selection.content : editor.getJSON(),
           translator.translate,
-          setProgress
+          onProgress
         )
         running.current = null
         // i modelli sul dispositivo restano caricati per la prossima volta
         if (translator.engine === "browser") translator.destroy()
+        if (!current()) return
         if (scope === "selection") {
           setResult(translated)
           return
@@ -581,6 +599,7 @@ function TranslateForm({
         router.push(fileHref({ kind: "doc", id }) as Route)
       })
       .catch((error: unknown) => {
+        if (!current()) return
         if (error instanceof DOMException && error.name === "AbortError") return
         toast.error(
           error instanceof Error
@@ -589,6 +608,7 @@ function TranslateForm({
         )
       })
       .finally(() => {
+        if (!current()) return
         running.current = null
         setBusy(false)
         setProgress(null)
@@ -596,6 +616,7 @@ function TranslateForm({
   }
 
   const cancel = () => {
+    attempt.current += 1
     running.current?.destroy()
     running.current = null
     setBusy(false)
@@ -938,7 +959,14 @@ function CompareDialog({
                 createdAt: now,
                 updatedAt: now,
                 data: {
-                  content: compareDocuments(a, b, other.title || author),
+                  // le revisioni sono di chi ha scritto la revisione: con
+                  // questo documento come revisione, sono sue
+                  content: compareDocuments(
+                    a,
+                    b,
+                    (direction === "this-original" ? other.title : ctx.title) ||
+                      author
+                  ),
                   theme: { ...newDocTheme(), ...ctx.theme, markup: "all" },
                 },
               }
