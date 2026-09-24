@@ -68,13 +68,18 @@ export function prepareSheet(
   node.style.borderRadius = "0"
   node.style.margin = "0"
   node.querySelectorAll("[data-guide]").forEach((g) => g.remove())
-  // la maniglia degli oggetti e i segni di formattazione restano a video
+  // la maniglia degli oggetti, le maniglie e il contorno dell'oggetto
+  // selezionato e i segni di formattazione restano a video: con una forma
+  // selezionata finivano nel PDF i quadratini per ridimensionarla
   node
     .querySelectorAll(
-      "[data-block-handle], .doc-block-drop, .doc-mark, [data-band-editor]"
+      "[data-block-handle], .doc-block-drop, .doc-mark, [data-band-editor], .doc-image-handle"
     )
     .forEach((g) => g.remove())
   node.classList.remove("doc-marks")
+  node
+    .querySelectorAll(".ProseMirror-selectednode")
+    .forEach((el) => el.classList.remove("ProseMirror-selectednode"))
   // la copia per l'SVG ha già perso le classi: si riconoscono dagli attributi
   node.querySelectorAll<HTMLElement>("[data-find-match]").forEach((m) => {
     m.classList.remove("find-match", "find-match-active")

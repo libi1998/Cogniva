@@ -640,6 +640,24 @@ function selectInserted(type: string) {
   }
 }
 
+/**
+ * Una forma davanti al testo non sta dentro una frase: va subito dopo il
+ * paragrafo (o la tabella) del cursore e resta selezionata. Inserita dove
+ * c'era il cursore spezzava il paragrafo in due («Un d» / «ocumento…»).
+ */
+function insertFloating(attrs: Record<string, unknown>) {
+  return ({ tr }: { tr: Transaction }) => {
+    const type = tr.doc.type.schema.nodes.image
+    if (!type) return false
+    const $from = tr.selection.$from
+    const pos = $from.depth ? $from.after(1) : $from.pos
+    tr.insert(pos, type.create(attrs))
+    tr.setSelection(NodeSelection.create(tr.doc, pos))
+    tr.scrollIntoView()
+    return true
+  }
+}
+
 export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
   const t = useT()
   const { editor, st, theme, setTheme } = ctx
@@ -1035,16 +1053,14 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
                           // come in Word: colore pieno, davanti al testo e
                           // libera di spostarsi sul foglio
                           body()
-                            .insertContent({
-                              type: "image",
-                              attrs: {
+                            .command(
+                              insertFloating({
                                 ...shapeImageAttrs(shape.kind, look),
                                 alt: shape.label,
                                 width: `${svg.width}%`,
                                 wrap: "front",
-                              },
-                            })
-                            .command(selectInserted("image"))
+                              })
+                            )
                             .run()
                         }}
                       >
