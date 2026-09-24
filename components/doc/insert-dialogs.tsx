@@ -1585,7 +1585,7 @@ function HeaderFooterForm({
           ))}
         </div>
         <div className="grid gap-2 sm:grid-cols-3">
-          {([t("A sinistra"), "Al centro", t("A destra")] as const).map(
+          {([t("A sinistra"), t("Al centro"), t("A destra")] as const).map(
             (label, i) => (
               <label key={label} className="block space-y-1">
                 <span className="text-xs text-muted-foreground">{label}</span>
