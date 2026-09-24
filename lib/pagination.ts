@@ -892,6 +892,12 @@ export const Pagination = Extension.create({
           let queued = false
           let frame = 0
           let rounds = 0
+          // quanto è costato l'ultimo calcolo e quando è finito: su un
+          // documento lungo rifare tutte le pagine a ogni tasto rallenta la
+          // scrittura, e allora mentre si scrive si rifanno a intervalli
+          let cost = 0
+          let last = 0
+          let timer: ReturnType<typeof setTimeout> | null = null
 
           // se due calcoli di fila si contraddicono ci si ferma fino alla
           // prossima modifica vera: meglio uno spazio imperfetto che un ciclo
@@ -902,7 +908,10 @@ export const Pagination = Extension.create({
             if (view.isDestroyed || view.composing || stalled) return
             const st = paginationKey.getState(view.state)
             if (!st || !st.layout.pageHeight) return
+            const started = performance.now()
             const result = paginate(view, st.layout)
+            last = performance.now()
+            cost = last - started
             if (!result) return
             const domChanged = syncDomGaps(view, result.domGaps)
             if (sameResult(result, st)) {
@@ -926,12 +935,33 @@ export const Pagination = Extension.create({
             queued = true
             queueMicrotask(run)
           }
-          // immagini che arrivano, font che si caricano, finestra che cambia
+          /**
+           * Dopo una modifica del testo. Se impaginare è rapido si rifà
+           * subito, come sempre; se costa più di un terzo di fotogramma si
+           * rifà al più ogni sei volte il suo costo (fra 60 e 400 ms), così
+           * i tasti restano pronti e le pagine si aggiustano mentre si scrive
+           */
+          const scheduleEdit = () => {
+            if (cost < 6) {
+              schedule()
+              return
+            }
+            if (timer) return
+            const gap = Math.min(400, Math.max(60, cost * 6))
+            const wait = Math.max(0, last + gap - performance.now())
+            timer = setTimeout(() => {
+              timer = null
+              schedule()
+            }, wait)
+          }
+          // immagini che arrivano, font che si caricano, finestra che cambia;
+          // anche una riga in più mentre si scrive cambia l'altezza, quindi
+          // vale la stessa cadenza delle modifiche
           const later = () => {
             if (!frame) {
               frame = requestAnimationFrame(() => {
                 frame = 0
-                schedule()
+                scheduleEdit()
               })
             }
           }
@@ -944,10 +974,14 @@ export const Pagination = Extension.create({
             update: (v, prev) => {
               const a = paginationKey.getState(v.state)
               const b = paginationKey.getState(prev)
-              if (v.state.doc !== prev.doc || a?.layout !== b?.layout) {
+              if (a?.layout !== b?.layout) {
                 rounds = 0
                 stalled = false
                 schedule()
+              } else if (v.state.doc !== prev.doc) {
+                rounds = 0
+                stalled = false
+                scheduleEdit()
               } else if (
                 paginationKey.getState(v.state) !== paginationKey.getState(prev)
               ) {
@@ -955,6 +989,7 @@ export const Pagination = Extension.create({
               }
             },
             destroy: () => {
+              if (timer) clearTimeout(timer)
               ro.disconnect()
               document.fonts?.removeEventListener("loadingdone", later)
               if (frame) cancelAnimationFrame(frame)

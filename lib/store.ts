@@ -75,6 +75,17 @@ type State = {
   renameFile: (id: string, title: string) => void
   setIcon: (id: string, icon: string) => void
   toggleStar: (id: string) => void
+  /*
+   * le stesse operazioni su più file insieme, dalla selezione della home:
+   * una sola modifica dello spazio di lavoro, quindi un solo salvataggio e un
+   * solo ridisegno
+   */
+  trashFiles: (ids: string[]) => void
+  restoreFiles: (ids: string[]) => void
+  deleteFilesForever: (ids: string[]) => void
+  /** le copie, subito dopo ciascun originale; restituisce i loro id */
+  duplicateFiles: (ids: string[]) => string[]
+  setStarred: (ids: string[], starred: boolean) => void
 
   snapshot: (id: string) => void
   undo: (id: string) => void
@@ -259,27 +270,41 @@ export const useStore = create<State>((set, get) => {
       return file.id
     },
 
-    trashFile: (id) =>
+    trashFile: (id) => get().trashFiles([id]),
+    restoreFile: (id) => get().restoreFiles([id]),
+    deleteForever: (id) => get().deleteFilesForever([id]),
+
+    trashFiles: (ids) => {
+      const which = new Set(ids)
+      const now = Date.now()
       set({
         files: get().files.map((f) =>
-          f.id === id ? { ...f, deletedAt: Date.now(), starred: false } : f
+          which.has(f.id) && !f.deletedAt
+            ? { ...f, deletedAt: now, starred: false }
+            : f
         ),
-      }),
+      })
+    },
 
-    restoreFile: (id) =>
+    restoreFiles: (ids) => {
+      const which = new Set(ids)
       set({
         files: get().files.map((f) => {
-          if (f.id !== id) return f
+          if (!which.has(f.id) || !f.deletedAt) return f
           const rest = { ...f }
           delete rest.deletedAt
           return rest
         }),
-      }),
+      })
+    },
 
-    deleteForever: (id) => {
-      history.delete(id)
-      void deleteVersionsOf(id)
-      set({ files: get().files.filter((f) => f.id !== id) })
+    deleteFilesForever: (ids) => {
+      const which = new Set(ids)
+      for (const id of which) {
+        history.delete(id)
+        void deleteVersionsOf(id)
+      }
+      set({ files: get().files.filter((f) => !which.has(f.id)) })
     },
 
     emptyTrash: () => {
@@ -321,22 +346,28 @@ export const useStore = create<State>((set, get) => {
       return id
     },
 
-    duplicateFile: (id) => {
-      const f = get().files.find((x) => x.id === id)
-      if (!f) return null
-      const newId = nanoid(10)
-      const copy = {
-        ...structuredClone(f),
-        id: newId,
-        title: tr("{title} (copia)", { title: displayTitle(f) }),
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-      } as WFile
-      const idx = get().files.findIndex((x) => x.id === id)
-      const files = [...get().files]
-      files.splice(idx + 1, 0, copy)
-      set({ files })
-      return newId
+    duplicateFile: (id) => get().duplicateFiles([id])[0] ?? null,
+
+    duplicateFiles: (ids) => {
+      const which = new Set(ids)
+      const now = Date.now()
+      const made: string[] = []
+      const files: WFile[] = []
+      for (const f of get().files) {
+        files.push(f)
+        if (!which.has(f.id) || f.deletedAt) continue
+        const newId = nanoid(10)
+        made.push(newId)
+        files.push({
+          ...structuredClone(f),
+          id: newId,
+          title: tr("{title} (copia)", { title: displayTitle(f) }),
+          createdAt: now,
+          updatedAt: now,
+        } as WFile)
+      }
+      if (made.length) set({ files })
+      return made
     },
 
     renameFile: (id, title) =>
@@ -359,6 +390,17 @@ export const useStore = create<State>((set, get) => {
           f.id === id ? { ...f, starred: !f.starred } : f
         ),
       }),
+
+    setStarred: (ids, starred) => {
+      const which = new Set(ids)
+      set({
+        files: get().files.map((f) =>
+          which.has(f.id) && !f.deletedAt && Boolean(f.starred) !== starred
+            ? { ...f, starred }
+            : f
+        ),
+      })
+    },
 
     /* ------------------------------ history ------------------------------- */
 
@@ -685,8 +727,15 @@ export function getWorkspace() {
   return useStore.getState()
 }
 
-export function exportWorkspace() {
-  return JSON.stringify(useStore.getState().files, null, 2)
+/** Lo spazio di lavoro in .json; con `ids` solo quei file */
+export function exportWorkspace(ids?: readonly string[]) {
+  const files = useStore.getState().files
+  const which = ids ? new Set(ids) : null
+  return JSON.stringify(
+    which ? files.filter((f) => which.has(f.id)) : files,
+    null,
+    2
+  )
 }
 
 /**

@@ -903,12 +903,40 @@ export function BoardCanvas({
 
   React.useEffect(() => {
     if (interKind === "none") return
-    const move = (e: PointerEvent) => onInteractionMove(e)
-    const up = (e: PointerEvent) => onInteractionEnd(e)
+    // mouse e penne arrivano a 120-240 movimenti al secondo, più di quanti
+    // fotogrammi lo schermo mostri: la board si aggiorna una volta per
+    // fotogramma con l'ultima posizione. Il tratto a mano e la gomma ricevono
+    // invece tutti i punti, per non perdere dettagli
+    let frame = 0
+    let queued: PointerEvent[] = []
+    const flush = () => {
+      frame = 0
+      const events = queued
+      queued = []
+      const kind = interRef.current.kind
+      if (kind === "draw" || kind === "erase") {
+        for (const event of events) onInteractionMove(event)
+      } else if (events.length) {
+        onInteractionMove(events[events.length - 1])
+      }
+    }
+    const move = (e: PointerEvent) => {
+      queued.push(e)
+      if (!frame) frame = requestAnimationFrame(flush)
+    }
+    const up = (e: PointerEvent) => {
+      // l'ultimo movimento conta prima di chiudere il gesto
+      if (frame) {
+        cancelAnimationFrame(frame)
+        flush()
+      }
+      onInteractionEnd(e)
+    }
     window.addEventListener("pointermove", move)
     window.addEventListener("pointerup", up)
     window.addEventListener("pointercancel", up)
     return () => {
+      if (frame) cancelAnimationFrame(frame)
       window.removeEventListener("pointermove", move)
       window.removeEventListener("pointerup", up)
       window.removeEventListener("pointercancel", up)
