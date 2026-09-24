@@ -167,10 +167,12 @@ function TextSection({ editor, st }: { editor: Editor; st: DocState }) {
         min={-2}
         max={12}
         step={0.5}
+        // senza portare il fuoco nel testo: al primo passo il cursore lo
+        // perdeva, e le frecce dopo spostavano il cursore del testo e
+        // toglievano la selezione
         onChange={(v) =>
           editor
             .chain()
-            .focus()
             .setLetterSpacing(v || null)
             .run()
         }
@@ -180,7 +182,7 @@ function TextSection({ editor, st }: { editor: Editor; st: DocState }) {
         value={st.firstLine}
         min={0}
         max={96}
-        onChange={(v) => editor.chain().focus().setFirstLineIndent(v).run()}
+        onChange={(v) => editor.chain().setFirstLineIndent(v).run()}
       />
       <p className="text-[11px] leading-snug text-muted-foreground">
         {t(
@@ -610,7 +612,10 @@ function TableSection({ editor, st }: { editor: Editor; st: DocState }) {
           min={0}
           max={8}
           step={0.5}
-          onChange={(v) => chain().setTableStyle({ borderWidth: v }).run()}
+          // il fuoco resta sul cursore, come negli altri
+          onChange={(v) =>
+            editor.chain().setTableStyle({ borderWidth: v }).run()
+          }
         />
         <Row label={t("Tipo di linea")} stacked>
           <Segmented<string>

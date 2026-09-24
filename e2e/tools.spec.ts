@@ -432,3 +432,27 @@ test("board: quello che si cambia dal pannello Stile si annulla", async ({
   for (let i = 0; i < 5; i += 1) await page.keyboard.press("ControlOrMeta+z")
   await expect.poll(size).toBe(before)
 })
+
+test("pannello Stile del documento: il cursore si regola con le frecce", async ({
+  page,
+}) => {
+  await openDemo(page)
+  await setParagraphs(page, ["Un paragrafo abbastanza lungo da selezionare"])
+  await withEditor(
+    page,
+    `editor.chain().focus().setTextSelection({ from: 8, to: 20 }).run()`
+  )
+  const slider = page.getByRole("slider", { name: "Spaziatura caratteri" })
+  await slider.focus()
+  for (let i = 0; i < 4; i += 1) await page.keyboard.press("ArrowRight")
+  // prima al primo passo il fuoco tornava nel testo: le frecce dopo
+  // spostavano il cursore e toglievano la selezione
+  await expect(slider).toBeFocused()
+  expect(
+    await withEditor<[string | null, number, number]>(
+      page,
+      `const m = editor.state.doc.resolve(9).marks().find((m) => m.type.name === "textStyle")
+       return [m?.attrs.letterSpacing ?? null, editor.state.selection.from, editor.state.selection.to]`
+    )
+  ).toEqual(["2px", 8, 20])
+})
