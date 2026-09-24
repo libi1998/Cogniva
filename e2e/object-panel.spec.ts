@@ -8,7 +8,7 @@ import {
 } from "./editor"
 
 /**
- * Il pannello di un oggetto selezionato: nota, immagine, grafico.
+ * La scheda di un oggetto selezionato: nota, immagine, grafico.
  *
  * Cambiare un attributo riscrive l'oggetto, e per ProseMirror quello
  * selezionato spariva: la selezione diventava un cursore, il pannello si
@@ -37,7 +37,7 @@ test("il testo di una nota si scrive tutto", async ({ page }) => {
   await openTab(page, "Riferimenti")
   await (await ribbonButton(page, "Inserisci nota a piè di pagina")).click()
 
-  // la nota nuova si scrive subito, nel campo del pannello
+  // la nota nuova si scrive subito, nel campo della sua scheda
   const field = page.getByPlaceholder("Testo della nota")
   await expect(field).toBeFocused()
   await page.keyboard.type("Fonte: archivio comunale", { delay: 12 })
@@ -60,8 +60,11 @@ test("la descrizione di un'immagine si scrive tutta", async ({ page }) => {
      editor.state.doc.descendants((n, p) => { if (n.type.name === "image") pos = p })
      editor.chain().focus().setNodeSelection(pos).run()`
   )
+  // il testo alternativo sta nella scheda dell'immagine, come in Word
+  await page.getByRole("tab", { name: "Formato immagine" }).click()
+  await page.getByRole("button", { name: "Testo alternativo" }).click()
   const field = page.getByPlaceholder("Descrivi l'immagine")
-  await field.click()
+  await expect(field).toBeFocused()
   await page.keyboard.type("Grafico delle vendite", { delay: 12 })
 
   await expect(field).toBeFocused()

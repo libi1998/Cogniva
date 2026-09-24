@@ -1,15 +1,16 @@
 "use client"
 
 import { PdfWriter } from "./pdf"
+import { VectorPdfWriter } from "./pdf-vector"
+import { parseColor } from "./vector"
+import { sceneToSvg } from "./svg-vector"
 import {
-  CANVAS_MAX_AREA,
-  CANVAS_MAX_SIDE,
   QUALITY,
   canvasToBlob,
+  fitScale,
   grayscale,
   paperCanvas,
   pdfImage,
-  type ExportQuality,
 } from "./raster"
 import type { ExportSession, SessionLayout } from "./session"
 import { makeZip } from "./zip"
@@ -43,27 +44,52 @@ export function parsePageRange(text: string, total: number): number[] | null {
   return pages.size ? [...pages].sort((a, b) => a - b) : null
 }
 
+/**
+ * Il testo della pagina, invisibile sopra al disegno: nel PDF si cerca e si
+ * copia sempre, anche dove la pagina è un'immagine
+ */
+function pdfWords(session: ExportSession, index: number, unit: number) {
+  return session.words(index).map((w) => ({
+    text: w.text,
+    x: w.x * unit,
+    y: w.baseline * unit,
+    width: w.width * unit,
+    size: w.size * unit,
+  }))
+}
+
 export async function exportPdf(
   session: ExportSession,
   layout: SessionLayout,
   opts: {
     indices: number[]
-    quality: ExportQuality
     gray: boolean
-    selectable: boolean
     title: string
     language?: string
     signal?: AbortSignal
     onProgress?: Progress
   }
 ): Promise<Blob> {
-  const q = QUALITY[opts.quality]
+  const q = QUALITY
   const unit = Math.min(PT, PDF_MAX / Math.max(layout.width, layout.height))
+
+  // un PDF vero: testo, forme e tabelle a vettori, le foto come immagini
+  if (session.vector) {
+    try {
+      return await vectorPdf(session, layout, opts, unit)
+    } catch (error) {
+      if (opts.signal?.aborted) throw error
+      // qualcosa che il disegno vettoriale non sa fare: si ripiega sulle
+      // pagine come immagini, con il testo selezionabile sopra
+      console.warn("PDF vettoriale non riuscito, si passa alle immagini", error)
+    }
+  }
+
   const writer = new PdfWriter()
   let done = 0
   opts.onProgress?.(0, opts.indices.length)
   await session.render(opts.indices, {
-    scale: q.scale,
+    scale: fitScale(layout.width, layout.height),
     signal: opts.signal,
     onPage: async (index, canvas) => {
       if (opts.gray) grayscale(canvas)
@@ -72,26 +98,98 @@ export async function exportPdf(
         gray: opts.gray,
         jpeg: q.jpeg,
       })
-      const words = opts.selectable
-        ? session.words(index).map((w) => ({
-            text: w.text,
-            x: w.x * unit,
-            y: w.baseline * unit,
-            width: w.width * unit,
-            size: w.size * unit,
-          }))
-        : undefined
       await writer.addPage({
         width: layout.width * unit,
         height: layout.height * unit,
         image,
-        words,
+        words: pdfWords(session, index, unit),
       })
       opts.onProgress?.(++done, opts.indices.length)
     },
   })
   opts.signal?.throwIfAborted()
   return writer.finish({ title: opts.title, language: opts.language })
+}
+
+async function vectorPdf(
+  session: ExportSession,
+  layout: SessionLayout,
+  opts: {
+    indices: number[]
+    gray: boolean
+    title: string
+    language?: string
+    signal?: AbortSignal
+    onProgress?: Progress
+  },
+  unit: number
+) {
+  const q = QUALITY
+  const vector = session.vector
+  if (!vector) throw new Error("vector")
+  opts.onProgress?.(0, opts.indices.length)
+  const { scene, slices, paper } = await vector({
+    scale: q.scale,
+    jpeg: q.jpeg,
+    lossless: q.lossless,
+    gray: opts.gray,
+  })
+  opts.signal?.throwIfAborted()
+  const writer = new VectorPdfWriter(scene.fonts, { gray: opts.gray, unit })
+  const paperColor = parseColor(paper)
+  let done = 0
+  for (const index of opts.indices) {
+    opts.signal?.throwIfAborted()
+    const slice = slices[index]
+    if (!slice) continue
+    await writer.addPage({
+      width: layout.width,
+      height: layout.height,
+      slice,
+      paints: scene.paints,
+      paper: paperColor,
+      words: pdfWords(session, index, unit),
+    })
+    opts.onProgress?.(++done, opts.indices.length)
+  }
+  return writer.finish({ title: opts.title, language: opts.language })
+}
+
+/**
+ * Il documento in un SVG vero, tutto il foglio in un file: la stessa scena
+ * del PDF vettoriale, con il testo trasparente sopra per cercarlo.
+ */
+export async function exportSvg(
+  session: ExportSession,
+  layout: SessionLayout,
+  opts: { gray: boolean; title: string; signal?: AbortSignal }
+): Promise<Blob> {
+  const vector = session.vector
+  if (!vector) throw new Error("vector")
+  const { scene, slices, paper } = await vector({
+    scale: QUALITY.scale,
+    jpeg: QUALITY.jpeg,
+    lossless: QUALITY.lossless,
+    gray: opts.gray,
+  })
+  opts.signal?.throwIfAborted()
+  const height = Math.max(layout.height, ...slices.map((s) => s.top + s.height))
+  // le parole della sessione sono per pagina: tornano sul foglio intero
+  const words = slices.flatMap((slice, index) =>
+    session.words(index).map((w) => ({
+      ...w,
+      baseline: w.baseline + slice.top - slice.dy,
+    }))
+  )
+  const svg = await sceneToSvg(scene, {
+    width: layout.width,
+    height,
+    paper: parseColor(paper),
+    gray: opts.gray,
+    words,
+    title: opts.title,
+  })
+  return new Blob([svg], { type: "image/svg+xml;charset=utf-8" })
 }
 
 /**
@@ -103,7 +201,6 @@ export async function exportPng(
   layout: SessionLayout,
   opts: {
     indices: number[]
-    quality: ExportQuality
     gray: boolean
     combine: boolean
     name: string
@@ -111,19 +208,13 @@ export async function exportPng(
     onProgress?: Progress
   }
 ): Promise<{ blob: Blob; filename: string }> {
-  const q = QUALITY[opts.quality]
   const total = opts.indices.length
   let done = 0
   opts.onProgress?.(0, total)
 
   if (total > 1 && opts.combine) {
     const fullHeight = layout.height * total
-    const scale = Math.min(
-      q.scale,
-      CANVAS_MAX_SIDE / layout.width,
-      CANVAS_MAX_SIDE / fullHeight,
-      Math.sqrt(CANVAS_MAX_AREA / (layout.width * fullHeight))
-    )
+    const scale = fitScale(layout.width, fullHeight)
     const sheet = paperCanvas(
       layout.width * scale,
       fullHeight * scale,
@@ -157,7 +248,7 @@ export async function exportPng(
   const files: { name: string; blob: Blob }[] = []
   const digits = String(Math.max(...opts.indices) + 1).length
   await session.render(opts.indices, {
-    scale: q.scale,
+    scale: fitScale(layout.width, layout.height),
     signal: opts.signal,
     onPage: async (index, canvas) => {
       if (opts.gray) grayscale(canvas)

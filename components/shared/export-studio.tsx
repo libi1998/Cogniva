@@ -20,11 +20,12 @@ import { Switch } from "@/components/ui/switch"
 import { download, safeName } from "@/lib/export"
 import {
   exportPdf,
+  exportSvg,
   exportPng,
   parsePageRange,
   renderPreview,
 } from "@/lib/export-studio/export"
-import { QUALITY, type ExportQuality } from "@/lib/export-studio/raster"
+import { QUALITY } from "@/lib/export-studio/raster"
 import {
   createBoardSession,
   createDocSession,
@@ -122,9 +123,7 @@ export function ExportStudio({
     "all"
   )
   const [rangeText, setRangeText] = React.useState("")
-  const [quality, setQuality] = React.useState<ExportQuality>("standard")
   const [gray, setGray] = React.useState(false)
-  const [selectable, setSelectable] = React.useState(true)
   const [combine, setCombine] = React.useState(false)
   const [comments, setComments] = React.useState(true)
   const [name, setName] = React.useState(() =>
@@ -243,9 +242,7 @@ export function ExportStudio({
       layout,
       format,
       indices: indices ?? [],
-      quality,
       gray,
-      selectable,
       combine,
       comments,
       markdown,
@@ -330,12 +327,12 @@ export function ExportStudio({
                     ? t("1 pagina")
                     : t("{count} pagine", { count: indices?.length ?? 0 }),
                 paper: formatLabel(paper.format, paper.orientation),
-                dpi: QUALITY[quality].dpi,
+                dpi: QUALITY.dpi,
               })
             : t("{width}×{height} px · {dpi} dpi", {
                 width: Math.round(layout.width),
                 height: Math.round(layout.height),
-                dpi: QUALITY[quality].dpi,
+                dpi: QUALITY.dpi,
               })
 
   return (
@@ -574,58 +571,26 @@ export function ExportStudio({
                 </Section>
               ) : null}
 
+              {/* sempre 600 dpi e, nel PDF, sempre il testo da cercare e
+                  copiare: niente da scegliere */}
               {raster ? (
-                <>
-                  <Section title={t("Qualità")}>
-                    <Segmented
-                      value={quality}
-                      onChange={setQuality}
-                      options={[
-                        {
-                          value: "draft",
-                          label: t("Bozza"),
-                          hint: `${QUALITY.draft.dpi} dpi`,
-                        },
-                        {
-                          value: "standard",
-                          label: t("Standard"),
-                          hint: `${QUALITY.standard.dpi} dpi`,
-                        },
-                        {
-                          value: "high",
-                          label: t("Alta"),
-                          hint: `${QUALITY.high.dpi} dpi`,
-                        },
-                      ]}
-                    />
-                  </Section>
-                  <Section title={t("Colori")}>
-                    <Segmented
-                      value={gray ? "gray" : "color"}
-                      onChange={(v) => setGray(v === "gray")}
-                      options={[
-                        { value: "color", label: t("A colori") },
-                        { value: "gray", label: t("Bianco e nero") },
-                      ]}
-                    />
-                  </Section>
-                </>
+                <Section title={t("Colori")}>
+                  <Segmented
+                    value={gray ? "gray" : "color"}
+                    onChange={(v) => setGray(v === "gray")}
+                    options={[
+                      { value: "color", label: t("A colori") },
+                      { value: "gray", label: t("Bianco e nero") },
+                    ]}
+                  />
+                </Section>
               ) : null}
 
-              {(format === "pdf" && isDoc) ||
-              (format === "png" && isDoc && (indices?.length ?? 0) > 1) ||
+              {(format === "png" && isDoc && (indices?.length ?? 0) > 1) ||
               (format === "docx" &&
                 origin.kind === "doc" &&
                 origin.hasComments) ? (
                 <Section title={t("Opzioni")}>
-                  {format === "pdf" ? (
-                    <Toggle
-                      checked={selectable}
-                      onChange={setSelectable}
-                      label={t("Testo selezionabile")}
-                      hint={t("Si può cercare e copiare nel PDF")}
-                    />
-                  ) : null}
                   {format === "png" ? (
                     <Toggle
                       checked={combine}
@@ -848,9 +813,7 @@ async function runStudioExport(job: {
   layout: SessionLayout | null
   format: StudioFormat
   indices: number[]
-  quality: ExportQuality
   gray: boolean
-  selectable: boolean
   combine: boolean
   comments: boolean
   markdown: string | null
@@ -880,8 +843,28 @@ async function runStudioExport(job: {
       )
     } else if (format === "svg") {
       if (origin.kind === "doc") {
-        job.onHandOff()
-        await origin.exportSvg(name)
+        // un SVG vero, a tracciati; se non si riesce, quello di prima
+        let blob: Blob | null = null
+        if (session?.vector && layout) {
+          try {
+            blob = await exportSvg(session, layout, {
+              gray: job.gray,
+              title: origin.title || tr("Senza titolo"),
+              signal: job.signal,
+            })
+          } catch (error) {
+            if (job.signal.aborted) throw error
+            console.warn("SVG vettoriale non riuscito", error)
+          }
+        }
+        if (!blob) {
+          job.onHandOff()
+          await origin.exportSvg(name)
+          return
+        }
+        download(blob, `${name}.svg`)
+        toast.success(tr("Esportato in {label}", { label }))
+        job.onFinish(true)
         return
       }
       download((session as BoardSession).svg(), `${name}.svg`)
@@ -889,9 +872,7 @@ async function runStudioExport(job: {
       if (format === "pdf") {
         const blob = await exportPdf(session, layout, {
           indices: job.indices,
-          quality: job.quality,
           gray: job.gray,
-          selectable: job.selectable && origin.kind === "doc",
           title: origin.title || tr("Senza titolo"),
           language: origin.kind === "doc" ? origin.language : undefined,
           signal: job.signal,
@@ -901,7 +882,6 @@ async function runStudioExport(job: {
       } else {
         const out = await exportPng(session, layout, {
           indices: job.indices,
-          quality: job.quality,
           gray: job.gray,
           combine: job.combine,
           name,

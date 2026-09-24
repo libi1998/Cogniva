@@ -24,6 +24,7 @@ import {
 } from "@tiptap/extension-table"
 import { Image } from "@tiptap/extension-image"
 import { cssColor, cssLength, cssValue } from "./css"
+import { cellFormatAttributes } from "./table-format"
 
 import { tr as translate } from "@/lib/i18n/client"
 declare module "@tiptap/core" {
@@ -83,6 +84,7 @@ declare module "@tiptap/core" {
       setTableOfContents: (attrs?: {
         variant?: TocVariant
         levels?: number
+        title?: string | null
       }) => ReturnType
     }
     moveBlock: {
@@ -641,6 +643,7 @@ export const TableOfContents = Node.create({
   group: "block",
   atom: true,
   selectable: true,
+  draggable: true,
   addAttributes() {
     return {
       // «Automatico 1» a riquadro, «Automatico 2» con puntini e pagine,
@@ -654,6 +657,12 @@ export const TableOfContents = Node.create({
         default: 3,
         parseHTML: (el) => Number(el.getAttribute("data-levels")) || 3,
         renderHTML: (a) => ({ "data-levels": a.levels }),
+      },
+      // il titolo scritto a mano; null = «Sommario» nella lingua dell'app
+      title: {
+        default: null,
+        parseHTML: (el) => el.getAttribute("data-title"),
+        renderHTML: (a) => (a.title == null ? {} : { "data-title": a.title }),
       },
     }
   },
@@ -795,7 +804,7 @@ const cellAttributes = {
 
 export const StyledTableCell = TableCell.extend({
   addAttributes() {
-    return { ...this.parent?.(), ...cellAttributes }
+    return { ...this.parent?.(), ...cellAttributes, ...cellFormatAttributes }
   },
   renderHTML({ HTMLAttributes }) {
     return ["td", mergeAttributes(HTMLAttributes), 0]
@@ -804,7 +813,7 @@ export const StyledTableCell = TableCell.extend({
 
 export const StyledTableHeader = TableHeader.extend({
   addAttributes() {
-    return { ...this.parent?.(), ...cellAttributes }
+    return { ...this.parent?.(), ...cellAttributes, ...cellFormatAttributes }
   },
   renderHTML({ HTMLAttributes }) {
     return ["th", mergeAttributes(HTMLAttributes), 0]
@@ -1586,6 +1595,14 @@ export const StyledImage = Image.extend({
       borderWidth: dataAttr("border-width", 0, Number),
       borderColor: dataAttr<string | null>("border-color", null),
       shadow: dataAttr("shadow", false, (v) => v === "true"),
+      // una forma (Inserisci › Forme): il disegno si rifà da questi valori,
+      // `src` ne è sempre la copia aggiornata per stampa ed esportazioni
+      shape: dataAttr<string | null>("shape", null),
+      fill: dataAttr<string | null>("fill", null),
+      stroke: dataAttr<string | null>("stroke", null),
+      strokeWidth: dataAttr("stroke-width", 3, Number),
+      ratio: dataAttr<number | null>("ratio", null, Number),
+      label: dataAttr("label", ""),
     }
   },
 })

@@ -67,6 +67,11 @@ export function getPagination(state: EditorState): PaginationInfo {
   return paginationKey.getState(state) ?? EMPTY_INFO
 }
 
+/** Il documento è su fogli veri (formato di carta, una colonna) */
+export function isPaginated(state: EditorState) {
+  return Boolean(paginationKey.getState(state)?.layout.pageHeight)
+}
+
 /** La pagina (da 1) su cui cade una posizione: ogni spaziatore è un salto */
 export function pageAt(state: EditorState, pos: number) {
   const gaps = paginationKey.getState(state)?.gaps ?? []
@@ -325,7 +330,8 @@ function collectUnits(view: EditorView) {
     nested: boolean
   ) => {
     const el = unitElement(view, node, pos)
-    const forced = forceNext
+    // «Anteponi interruzione di pagina» vale come un salto pagina prima
+    const forced = forceNext || node.attrs.breakBefore === true
     forceNext = node.type.name === "pageBreak"
     if (!el) return
     units.push({
@@ -336,7 +342,9 @@ function collectUnits(view: EditorView) {
       gapPos,
       gapKind,
       nested,
-      keepWithNext: node.type.name === "heading",
+      // «Mantieni con il successivo»: come un titolo, non resta da solo
+      keepWithNext:
+        node.type.name === "heading" || node.attrs.keepNext === true,
       forced,
     })
   }
@@ -458,7 +466,9 @@ function paginate(view: EditorView, layout: PageLayout): Result | null {
   }
 
   const { units, endsWithBreak } = collectUnits(view)
-  const isText = (u: Unit) => Boolean(u.node?.isTextblock)
+  // «Mantieni assieme le righe»: il paragrafo passa intero alla pagina dopo
+  const isText = (u: Unit) =>
+    Boolean(u.node?.isTextblock) && u.node?.attrs.keepLines !== true
 
   const gaps: PageGap[] = []
   const domGaps: DomGap[] = []

@@ -439,7 +439,7 @@ test("board: quello che si cambia dal pannello Stile si annulla", async ({
   await expect.poll(size).toBe(before)
 })
 
-test("pannello Stile del documento: il cursore si regola con le frecce", async ({
+test("Carattere: la spaziatura si imposta dalla finestra e resta sulla selezione", async ({
   page,
 }) => {
   await openDemo(page)
@@ -448,12 +448,18 @@ test("pannello Stile del documento: il cursore si regola con le frecce", async (
     page,
     `editor.chain().focus().setTextSelection({ from: 8, to: 20 }).run()`
   )
-  const slider = page.getByRole("slider", { name: "Spaziatura caratteri" })
-  await slider.focus()
-  for (let i = 0; i < 4; i += 1) await page.keyboard.press("ArrowRight")
-  // prima al primo passo il fuoco tornava nel testo: le frecce dopo
-  // spostavano il cursore e toglievano la selezione
-  await expect(slider).toBeFocused()
+  await openTab(page, "Home")
+  await page
+    .getByRole("button", { name: "Carattere: spaziatura e posizione…" })
+    .click()
+  const dialog = page.getByRole("dialog", { name: "Carattere" })
+  await dialog
+    .getByLabel("Spaziatura", { exact: true })
+    .selectOption("expanded")
+  await dialog.getByLabel("Di", { exact: true }).fill("1,5")
+  await dialog.getByRole("button", { name: "OK" }).click()
+  await expect(dialog).toBeHidden()
+  // 1,5 pt sono 2 px; la selezione resta quella di prima
   expect(
     await withEditor<[string | null, number, number]>(
       page,
@@ -472,7 +478,7 @@ test("Layout: il rientro si scrive nella casella, non nel documento", async ({
   await openTab(page, "Layout")
   const field = page.getByLabel("A sinistra", { exact: true })
   await field.click()
-  // la casella seleziona il suo testo al fotogramma dopo il fuoco
+  // la casella seleziona il suo numero appena ha il fuoco
   await field.evaluate(
     () =>
       new Promise((done) =>
@@ -569,4 +575,69 @@ test("Cancella formattazione lascia commenti, revisioni e collegamenti", async (
   expect(await marks(9)).toEqual(["comment"])
   expect(await marks(13)).toEqual(["deletion"])
   expect(await marks(17)).toEqual(["link"])
+})
+
+test("intestazione e piè di pagina si scrivono sul foglio", async ({
+  page,
+}) => {
+  await openDemo(page)
+  // su fogli veri, come un documento nuovo
+  await openTab(page, "Layout")
+  await (await ribbonButton(page, "Dimensioni")).click()
+  await page.getByRole("menuitem", { name: /^A4/ }).click()
+
+  await openTab(page, "Inserisci")
+  await (await ribbonButton(page, "Intestazione")).click()
+  await page.getByRole("menuitem", { name: "Modifica intestazione…" }).click()
+  const left = page.getByRole("textbox", { name: "Intestazione, a sinistra" })
+  await expect(left).toBeFocused()
+  await page.keyboard.type("Relazione", { delay: 12 })
+  await page.keyboard.press("Escape")
+  await expect(left).toBeHidden()
+  await expect(page.locator("[data-band]").first()).toContainText("Relazione")
+
+  // doppio clic nel margine alto: si riapre, con il cursore al centro
+  const sheet = await page.locator("#doc-sheet").boundingBox()
+  if (!sheet) throw new Error("foglio non trovato")
+  await page.mouse.dblclick(sheet.x + sheet.width / 2, sheet.y + 24)
+  const center = page.getByRole("textbox", { name: "Intestazione, al centro" })
+  await expect(center).toBeFocused()
+  await page
+    .locator("[data-band-editor]")
+    .getByRole("button", { name: "Numero di pagina" })
+    .click()
+  await expect(center).toBeFocused()
+  await page.keyboard.press("Enter")
+  await expect(page.locator("[data-band]").first()).toContainText("1")
+})
+
+test("forme: piene, davanti al testo, con la loro scheda", async ({ page }) => {
+  await openDemo(page)
+  await caretAfter(page, 1, "clic destro.")
+  await openTab(page, "Inserisci")
+  await (await ribbonButton(page, "Forme")).click()
+  await page.getByRole("button", { name: "Rettangolo", exact: true }).click()
+
+  const shape = () =>
+    withEditor<Record<string, unknown> | null>(
+      page,
+      `let out = null
+       editor.state.doc.descendants((n) => { if (!out && n.attrs.shape) out = n.attrs })
+       return out`
+    )
+  // un colore pieno, non il riempimento tenue di prima
+  await expect.poll(async () => (await shape())?.wrap).toBe("front")
+  const first = await shape()
+  expect(first?.shape).toBe("rect")
+  expect(String(first?.fill)).toMatch(/^#[0-9a-f]{6}$/i)
+  expect(first?.fill).not.toBe("#ffffff")
+
+  // la scheda della forma si apre da sola; il riempimento cambia il disegno
+  await expect(
+    page.getByRole("tab", { name: "Formato forma" })
+  ).toHaveAttribute("aria-selected", "true")
+  await (await ribbonButton(page, "Riempimento")).click()
+  await page.getByRole("button", { name: "Bianco", exact: true }).click()
+  await expect.poll(async () => (await shape())?.fill).toBe("#ffffff")
+  expect(String((await shape())?.src)).toContain(encodeURIComponent("#ffffff"))
 })

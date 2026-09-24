@@ -91,6 +91,8 @@ import {
 import { insertPlainText, pasteFromClipboard } from "../plain-paste"
 import { clearFormatting } from "../style-actions"
 import { SortDialog } from "../sort-dialog"
+import { FontDialog, ParagraphDialog } from "../paragraph-dialog"
+import { IndentSpacingGrid } from "./layout-tab"
 import { AddinsGroup } from "../addins/addins-group"
 import { StyleGallery, type StyleTools } from "../styles-panel"
 import { resolveStyle, styleFontLabel, styleFontStack } from "@/lib/doc-styles"
@@ -278,6 +280,8 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
     openDialog: ctx.openStyleDialog,
   }
   const [sortOpen, setSortOpen] = React.useState(false)
+  const [paragraphOpen, setParagraphOpen] = React.useState(false)
+  const [fontOpen, setFontOpen] = React.useState(false)
   const effects = (attrs: Partial<TextEffectAttrs>) =>
     chain().setTextEffects(attrs).run()
   // spazio prima e dopo effettivi: quello del paragrafo o quello dello stile
@@ -410,6 +414,10 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
       <RibbonGroup
         label={t("Carattere")}
         icon={<CaseSensitive className="size-5" />}
+        launcher={{
+          title: t("Carattere: spaziatura e posizione…"),
+          onClick: () => setFontOpen(true),
+        }}
       >
         <RibbonRows>
           <RibbonRow>
@@ -815,7 +823,14 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
-      <RibbonGroup label={t("Paragrafo")} icon={<Pilcrow className="size-5" />}>
+      <RibbonGroup
+        label={t("Paragrafo")}
+        icon={<Pilcrow className="size-5" />}
+        launcher={{
+          title: t("Paragrafo: rientri, spaziatura e distribuzione…"),
+          onClick: () => setParagraphOpen(true),
+        }}
+      >
         <RibbonRows>
           <RibbonRow>
             <SplitMenu
@@ -1130,6 +1145,17 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
         </RibbonRows>
       </RibbonGroup>
 
+      <RibbonGroup
+        label={t("Rientri e spaziatura")}
+        icon={<ListIndentIncrease className="size-5" />}
+        launcher={{
+          title: t("Paragrafo: rientri, spaziatura e distribuzione…"),
+          onClick: () => setParagraphOpen(true),
+        }}
+      >
+        <IndentSpacingGrid ctx={ctx} />
+      </RibbonGroup>
+
       <RibbonGroup label={t("Stili")} icon={<Palette className="size-5" />}>
         <StyleGallery
           tools={styleTools}
@@ -1224,6 +1250,18 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
         open={sortOpen}
         onClose={() => setSortOpen(false)}
         editor={editor}
+      />
+      <ParagraphDialog
+        open={paragraphOpen}
+        onClose={() => setParagraphOpen(false)}
+        editor={editor}
+        st={st}
+      />
+      <FontDialog
+        open={fontOpen}
+        onClose={() => setFontOpen(false)}
+        editor={editor}
+        st={st}
       />
     </>
   )

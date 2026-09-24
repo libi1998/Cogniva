@@ -30,14 +30,12 @@ import {
   Undo2,
   ZoomIn,
   Minus,
-  PanelRight,
   Plus,
   Printer,
-  X,
 } from "lucide-react"
 import { toast } from "sonner"
 
-import { Ribbon } from "./ribbon/ribbon"
+import { Ribbon, openRibbonTab } from "./ribbon/ribbon"
 import { insertPlainText } from "./plain-paste"
 import { FindBar } from "./find-bar"
 import { ReadAloudBar } from "./read-aloud"
@@ -57,7 +55,7 @@ import {
   useComments,
   type CommentsController,
 } from "./comments"
-import { DocInspector } from "./doc-inspector"
+import { BlockHandle } from "./block-handle"
 import { InkLayer, useInk } from "./ink-layer"
 import {
   DEFAULT_IMMERSIVE,
@@ -69,11 +67,13 @@ import {
   type ImmersiveSettings,
 } from "./view-modes"
 import {
+  bandAt,
   GridOverlay,
   PageDecor,
   PageGuides,
   PageLayer,
   usePagination,
+  type BandEditing,
 } from "./page-layer"
 import { StyleDialog, type StyleDialogRequest } from "./style-dialog"
 import { StylesPane } from "./styles-panel"
@@ -130,7 +130,7 @@ import {
   resolveColor,
   useIsDark,
 } from "@/lib/use-theme"
-import { useCollapsingPanel, useNarrow } from "@/lib/use-media"
+import { useNarrow } from "@/lib/use-media"
 import {
   PAGE_FORMATS,
   clampZoom,
@@ -191,10 +191,10 @@ export function DocEditor({
   // ≥ 1180 pannello in colonna · 640–1180 galleggia · < 640 telefono: foglio
   // adattato allo schermo, niente righelli, pannello dal basso
   const narrow = useNarrow(1180)
-  const tight = useNarrow(900)
   const compact = useNarrow(639)
-  const [panel, setPanel] = useCollapsingPanel(tight)
   const [outline, setOutline] = React.useState(false)
+  // intestazione o piè di pagina che si sta scrivendo sul foglio
+  const [band, setBand] = React.useState<BandEditing | null>(null)
   const [find, setFind] = React.useState<"find" | "replace" | null>(null)
   const [menu, setMenu] = React.useState<{ x: number; y: number } | null>(null)
   const [busy, setBusy] = React.useState(false)
@@ -433,6 +433,9 @@ export function DocEditor({
     setStylesPaneOpen(false)
     setTaskPane(pane)
   }
+  // la colonna di destra c'è solo per i riquadri: le opzioni degli oggetti
+  // stanno nella loro scheda della barra
+  const paneOpen = stylesPane || taskPane !== null
   // Invio usa lo «stile successivo»: l'estensione lo chiede agli stili del
   // documento, che cambiano senza ricreare l'editor
   React.useEffect(() => {
@@ -609,6 +612,15 @@ export function DocEditor({
   }, [editor, layoutHeight, layoutTop, layoutBottom])
   const pagination = usePagination(editor)
 
+  // segni di formattazione (¶): decorazioni dell'editor, accese dal tema
+  const marksVisible = Boolean(theme?.marks)
+  React.useEffect(() => {
+    if (!editor) return
+    queueMicrotask(() => {
+      if (!editor.isDestroyed) editor.commands.setFormattingMarks(marksVisible)
+    })
+  }, [editor, marksVisible])
+
   const zoom = theme?.zoom ?? 1
   const setZoom = React.useCallback(
     (value: number) => setDocTheme(fileId, { zoom: clampZoom(value) }),
@@ -721,6 +733,7 @@ export function DocEditor({
 
   const openStudio = (format: StudioFormat) => {
     if (!theme || title === null) return
+    setBand(null)
     if (mode !== "normal") setMode("normal")
     setStudio({
       format,
@@ -788,15 +801,6 @@ export function DocEditor({
         icon: <Replace />,
         keywords: [t("cambia")],
         run: () => setFind("replace"),
-      },
-      {
-        id: "doc.panel",
-        group,
-        label: panel
-          ? t("Nascondi il pannello Stile")
-          : t("Mostra il pannello Stile"),
-        icon: <PanelRight />,
-        run: () => setPanel(!panel),
       },
       {
         id: "doc.comment",
@@ -1027,7 +1031,7 @@ export function DocEditor({
   // spazio davvero libero: il pannello galleggiante è padding, non larghezza
   const usable = Math.max(
     0,
-    available - (narrow && !compact && panel ? 280 : 0)
+    available - (narrow && !compact && paneOpen ? 280 : 0)
   )
   // margine intorno al foglio (px-4 o px-2) e colonne accanto: righello
   // verticale e commenti. Prima a larghezza piena non si contavano, e il
@@ -1090,7 +1094,23 @@ export function DocEditor({
         dictation,
         comments,
         pages: paginated ? pagination.pages : 1,
-        openPanel: () => setPanel(true),
+        // la scheda dell'oggetto appena inserito, come in Word
+        openPanel: () => openRibbonTab("format"),
+        pageHeight: paginated && exact ? exact.h : 0,
+        editBand: (where) => {
+          if (!paginated) return false
+          if (mode !== "normal") setMode("normal")
+          setBand({
+            where,
+            part: 0,
+            page: visiblePage(
+              sheetRef.current,
+              scrollRef.current,
+              pagination.pages
+            ),
+          })
+          return true
+        },
         sources,
         openSources: (id = null, cite = false) =>
           setSourcesDialog({ id, cite }),
@@ -1139,17 +1159,8 @@ export function DocEditor({
         }}
         onClose={() => setStylesPaneOpen(false)}
       />
-    ) : (
-      <DocInspector
-        editor={editor}
-        st={st}
-        theme={theme}
-        pageHeight={paginated && exact ? exact.h : 0}
-        sources={sources}
-        onSources={(id = null, cite = false) => setSourcesDialog({ id, cite })}
-      />
-    )
-  const sidePanel = panel || stylesPane || taskPane !== null
+    ) : null
+  const sidePanel = paneOpen
 
   return (
     <div className="flex h-dvh flex-col bg-muted">
@@ -1231,18 +1242,6 @@ export function DocEditor({
                 </Button>
 
                 <ThemeToggle className="hidden sm:flex" />
-
-                <Button
-                  variant={panel ? "secondary" : "ghost"}
-                  size="sm"
-                  className="h-8 gap-1.5 px-2 text-xs sm:px-2.5"
-                  aria-label={t("Pannello Stile")}
-                  aria-pressed={panel}
-                  onClick={() => setPanel(!panel)}
-                >
-                  <PanelRight className="size-4" />
-                  <span className="hidden sm:inline">{t("Stile")}</span>
-                </Button>
               </>
             }
           />
@@ -1298,7 +1297,7 @@ export function DocEditor({
             className="min-h-0 flex-1 overflow-auto"
             // il pannello galleggiante non deve coprire il bordo del foglio
             style={{
-              paddingRight: narrow && !compact && panel ? 280 : undefined,
+              paddingRight: narrow && !compact && paneOpen ? 280 : undefined,
             }}
           >
             <div
@@ -1366,6 +1365,7 @@ export function DocEditor({
                           className={cn(
                             "doc-sheet relative isolate",
                             theme.marks && "doc-marks",
+                            band && "doc-band-editing",
                             !theme.comments && "doc-comments-hidden",
                             paginated && "doc-paginated",
                             theme.hyphenation && "doc-hyphens",
@@ -1386,6 +1386,46 @@ export function DocEditor({
                           }}
                           onMouseDownCapture={(e) => {
                             if (e.altKey && editor) selectBehind(editor, e)
+                            // un clic nel testo chiude intestazione e piè di
+                            // pagina, come in Word
+                            const target = e.target as HTMLElement
+                            if (
+                              band &&
+                              editor?.view.dom.contains(target) &&
+                              !target.closest("[data-page-gap]")
+                            ) {
+                              setBand(null)
+                            }
+                          }}
+                          onDoubleClick={(e) => {
+                            // doppio clic nel margine alto o basso di una
+                            // pagina: si scrive l'intestazione o il piè
+                            if (!editor?.isEditable || !paginated || !exact)
+                              return
+                            const target = e.target as HTMLElement
+                            if (
+                              target.closest(
+                                "[data-band-editor], .doc-page-notes, button, input, textarea"
+                              ) ||
+                              (editor.view.dom.contains(target) &&
+                                !target.closest("[data-page-gap]"))
+                            ) {
+                              return
+                            }
+                            const el = e.currentTarget
+                            const box = el.getBoundingClientRect()
+                            const scale = box.width / (el.offsetWidth || 1) || 1
+                            const hit = bandAt(
+                              (e.clientX - box.left) / scale,
+                              (e.clientY - box.top) / scale,
+                              el.offsetWidth,
+                              exact.h,
+                              forceLight ? 0 : PAGE_GAP,
+                              theme.margins
+                            )
+                            if (!hit) return
+                            e.preventDefault()
+                            setBand(hit)
                           }}
                           style={
                             {
@@ -1448,6 +1488,14 @@ export function DocEditor({
                               pages={pagination.pages}
                               paper={paper}
                               shadow={forceLight ? "none" : sheetShadow}
+                              band={band}
+                              onBandChange={(where, text) =>
+                                setTheme({ [where]: text })
+                              }
+                              onBandClose={() => {
+                                setBand(null)
+                                editor?.commands.focus()
+                              }}
                             />
                           ) : (
                             <>
@@ -1472,6 +1520,7 @@ export function DocEditor({
                             visible={theme.inkVisible ?? true}
                             paperDark={paperDark}
                           />
+                          <BlockHandle editor={editor} sheet={sheetRef} />
                           {/* tippy sposta la barretta fuori da qui: senza un involucro
                       fisso, aggiungere un fratello prima di lei fa fallire
                       l'inserimento nel DOM e la pagina si pianta */}
@@ -1559,28 +1608,9 @@ export function DocEditor({
         {mode !== "normal" ? null : compact ? (
           sidePanel ? (
             <aside
-              aria-label={
-                stylesPane
-                  ? t("Stili")
-                  : taskPane
-                    ? t("Riquadro attività")
-                    : t("Stile")
-              }
+              aria-label={stylesPane ? t("Stili") : t("Riquadro attività")}
               className="fixed inset-x-0 bottom-0 z-40 flex h-[min(70dvh,560px)] flex-col overflow-hidden rounded-t-2xl border-t border-border bg-card pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_40px_-12px_rgba(0,0,0,0.35)]"
             >
-              {stylesPane || taskPane ? null : (
-                <div className="flex h-11 shrink-0 items-center justify-between border-b border-border px-3">
-                  <span className="text-sm font-semibold">{t("Stile")}</span>
-                  <button
-                    type="button"
-                    onClick={() => setPanel(false)}
-                    aria-label={t("Chiudi il pannello")}
-                    className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground"
-                  >
-                    <X className="size-4" />
-                  </button>
-                </div>
-              )}
               <div className="min-h-0 flex-1">{inspector}</div>
             </aside>
           ) : null

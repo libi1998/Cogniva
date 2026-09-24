@@ -142,7 +142,7 @@ export class PdfWriter {
 
 /* ------------------------------- testo --------------------------------- */
 
-function textLayer(words: PdfWord[], pageHeight: number) {
+export function textLayer(words: PdfWord[], pageHeight: number) {
   let out = "BT 3 Tr\n"
   for (const word of words) {
     const text = winAnsi(word.text)
@@ -205,7 +205,7 @@ function winAnsi(text: string) {
   return out
 }
 
-function escape(bytes: string) {
+export function escape(bytes: string) {
   let out = ""
   for (const ch of bytes) {
     const code = ch.charCodeAt(0)
@@ -277,15 +277,15 @@ function textWidth(bytes: string) {
 
 /* ------------------------------ supporto ------------------------------- */
 
-const n = (value: number) => {
+export const n = (value: number) => {
   const fixed = value.toFixed(2)
   return fixed.includes(".") ? fixed.replace(/\.?0+$/, "") : fixed
 }
 
-const ascii = (text: string) => escape(text.replace(/[^\x20-\x7e]/g, ""))
+export const ascii = (text: string) => escape(text.replace(/[^\x20-\x7e]/g, ""))
 
 /** Stringa Unicode per il dizionario delle informazioni: UTF-16BE con BOM */
-function utf16(text: string) {
+export function utf16(text: string) {
   let hex = "FEFF"
   for (let i = 0; i < text.length; i++) {
     hex += text.charCodeAt(i).toString(16).padStart(4, "0")
@@ -293,7 +293,7 @@ function utf16(text: string) {
   return `<${hex.toUpperCase()}>`
 }
 
-function pdfDate(date: Date) {
+export function pdfDate(date: Date) {
   const p = (v: number) => String(v).padStart(2, "0")
   return `D:${date.getFullYear()}${p(date.getMonth() + 1)}${p(date.getDate())}${p(date.getHours())}${p(date.getMinutes())}${p(date.getSeconds())}`
 }

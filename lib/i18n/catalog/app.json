@@ -363,13 +363,6 @@
     "de": "Versalziffern tabellarisch",
     "pt": "Alinhados tabulares"
   },
-  "Alta": {
-    "en": "High",
-    "es": "Alta",
-    "fr": "Haute",
-    "de": "Hoch",
-    "pt": "Alta"
-  },
   "Alternative contestuali": {
     "en": "Contextual alternates",
     "es": "Alternativas contextuales",
@@ -929,13 +922,6 @@
     "fr": "Bouton icône",
     "de": "Symbolschaltfläche",
     "pt": "Botão de ícone"
-  },
-  "Bozza": {
-    "en": "Draft",
-    "es": "Borrador",
-    "fr": "Brouillon",
-    "de": "Entwurf",
-    "pt": "Rascunho"
   },
   "BOZZA": {
     "en": "DRAFT",
@@ -3002,6 +2988,20 @@
     "de": "Schalter",
     "pt": "Interruptor"
   },
+  "Interruzione di colonna": {
+    "en": "Column break",
+    "es": "Salto de columna",
+    "fr": "Saut de colonne",
+    "de": "Spaltenumbruch",
+    "pt": "Quebra de coluna"
+  },
+  "Interruzione di pagina": {
+    "en": "Page break",
+    "es": "Salto de página",
+    "fr": "Saut de page",
+    "de": "Seitenumbruch",
+    "pt": "Quebra de página"
+  },
   "Intervallo": {
     "en": "Range",
     "es": "Intervalo",
@@ -4430,13 +4430,6 @@
     "de": "Etwas ist schiefgelaufen · Cogniva",
     "pt": "Algo deu errado · Cogniva"
   },
-  "Qualità": {
-    "en": "Quality",
-    "es": "Calidad",
-    "fr": "Qualité",
-    "de": "Qualität",
-    "pt": "Qualidade"
-  },
   "Questa board non c'è": {
     "en": "This board is not here",
     "es": "Este tablero no está",
@@ -5067,13 +5060,6 @@
     "de": "Wird vom öffnenden Programm umbrochen",
     "pt": "Diagramado pelo programa que o abre"
   },
-  "Si può cercare e copiare nel PDF": {
-    "en": "It can be searched and copied in the PDF",
-    "es": "Se puede buscar y copiar en el PDF",
-    "fr": "Il peut être recherché et copié dans le PDF",
-    "de": "Im PDF durchsuchbar und kopierbar",
-    "pt": "Pode ser pesquisado e copiado no PDF"
-  },
   "Sidebar": {
     "en": "Sidebar",
     "es": "Barra lateral",
@@ -5543,13 +5529,6 @@
     "de": "Text fast anliegend",
     "pt": "Texto quase encostando"
   },
-  "Testo selezionabile": {
-    "en": "Selectable text",
-    "es": "Texto seleccionable",
-    "fr": "Texte sélectionnable",
-    "de": "Auswählbarer Text",
-    "pt": "Texto selecionável"
-  },
   "Testo…": {
     "en": "Text…",
     "es": "Texto…",
@@ -5640,6 +5619,13 @@
     "fr": "Titre du graphique",
     "de": "Titel des Diagramms",
     "pt": "Título do gráfico"
+  },
+  "Titolo del sommario": {
+    "en": "Table of contents title",
+    "es": "Título de la tabla de contenido",
+    "fr": "Titre de la table des matières",
+    "de": "Titel des Inhaltsverzeichnisses",
+    "pt": "Título do sumário"
   },
   "Titolo della card": {
     "en": "Card title",

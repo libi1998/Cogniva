@@ -620,6 +620,109 @@ body {
   overflow-x: auto;
 }
 
+/* la tabella selezionata intera (maniglia ✥, «Seleziona › Tabella») */
+.doc-prose .tableWrapper.ProseMirror-selectednode table {
+  outline: 2px solid var(--doc-accent);
+  outline-offset: 2px;
+}
+.doc-prose .tableWrapper.ProseMirror-selectednode td::after,
+.doc-prose .tableWrapper.ProseMirror-selectednode th::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--doc-accent) 12%, transparent);
+  pointer-events: none;
+}
+
+/* intestazione e piè di pagina scritti sul foglio (doppio clic nel margine) */
+.doc-band-editing .ProseMirror {
+  opacity: 0.45;
+  transition: opacity 0.15s;
+}
+.doc-band-line {
+  position: absolute;
+  height: 0;
+  border-top: 1px dashed var(--doc-accent);
+  pointer-events: none;
+}
+.doc-band-tag {
+  position: absolute;
+  left: 10px;
+  margin: 2px 0;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  line-height: 14px;
+  white-space: nowrap;
+  color: var(--doc-accent);
+  background: var(--doc-accent-soft);
+}
+.doc-band-input {
+  color: inherit;
+  font: inherit;
+  box-shadow: 0 0 0 1px var(--doc-border);
+}
+.doc-band-input:hover,
+.doc-band-input:focus {
+  box-shadow: 0 0 0 1.5px var(--doc-accent);
+}
+.doc-band-tools {
+  z-index: 5;
+  padding: 2px;
+  border: 1px solid var(--doc-border);
+  border-radius: 7px;
+  font-size: 12px;
+  color: var(--doc-muted);
+  background: var(--doc-paper, #fff);
+  box-shadow: 0 6px 16px -8px rgba(15, 1, 26, 0.35);
+}
+@media print {
+  [data-band-editor] {
+    display: none !important;
+  }
+}
+
+/* maniglia degli oggetti a blocco (components/doc/block-handle.tsx) */
+.doc-block-handle {
+  position: absolute;
+  z-index: 30;
+  display: flex;
+  width: 22px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--doc-border);
+  border-radius: 6px;
+  background: var(--doc-paper, #fff);
+  color: var(--doc-muted);
+  cursor: grab;
+  box-shadow: 0 2px 6px -2px rgba(15, 1, 26, 0.25);
+  touch-action: none;
+}
+.doc-block-handle:hover,
+.doc-block-handle:focus-visible {
+  color: var(--doc-accent);
+  border-color: var(--doc-accent);
+  outline: none;
+}
+.doc-block-handle:active {
+  cursor: grabbing;
+}
+.doc-block-drop {
+  position: absolute;
+  z-index: 30;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--doc-accent);
+  pointer-events: none;
+}
+@media print {
+  .doc-block-handle,
+  .doc-block-drop {
+    display: none !important;
+  }
+}
+
 /* --------------------------- Board incorporate --------------------------- */
 
 .doc-embed {
@@ -657,6 +760,19 @@ body {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--doc-muted);
+}
+/* il titolo si scrive nel foglio, come in Word */
+.doc-prose .doc-toc-title[contenteditable="true"] {
+  cursor: text;
+  outline: none;
+  border-radius: 3px;
+}
+.doc-prose .doc-toc-title[contenteditable="true"]:hover {
+  box-shadow: 0 0 0 1px var(--doc-border);
+}
+.doc-prose .doc-toc-title[contenteditable="true"]:focus {
+  box-shadow: 0 0 0 2px var(--doc-accent-soft);
+  text-transform: none;
 }
 .doc-prose .doc-toc ol {
   margin: 0;
@@ -873,6 +989,17 @@ body {
   right: -6px;
   cursor: nwse-resize;
 }
+/* le forme si allungano anche solo in larghezza o solo in altezza */
+.doc-image-handle-e {
+  top: calc(50% - 5px);
+  right: -6px;
+  cursor: ew-resize;
+}
+.doc-image-handle-s {
+  left: calc(50% - 5px);
+  bottom: -6px;
+  cursor: ns-resize;
+}
 
 .doc-prose sub,
 .doc-prose sup {
@@ -931,7 +1058,7 @@ body {
   border-top: 2px dashed var(--doc-border);
 }
 .doc-page-break::after {
-  content: "Interruzione di pagina";
+  content: attr(data-label);
   position: absolute;
   right: 0;
   top: -0.85em;
@@ -944,6 +1071,16 @@ body {
 .doc-prose .doc-page-break.ProseMirror-selectednode {
   border-top-color: var(--doc-accent);
 }
+/* sui fogli veri il salto si vede già: la pagina finisce. La riga e la
+   scritta restano coi segni di formattazione, come in Word */
+.doc-paginated:not(.doc-marks)
+  .doc-prose
+  .doc-page-break:not(.ProseMirror-selectednode) {
+  border-top-color: transparent;
+}
+.doc-paginated:not(.doc-marks) .doc-prose .doc-page-break::after {
+  content: none;
+}
 
 .doc-column-break {
   position: relative;
@@ -953,7 +1090,7 @@ body {
   break-after: column;
 }
 .doc-column-break::after {
-  content: "Interruzione di colonna";
+  content: attr(data-label);
   position: absolute;
   right: 0;
   top: -0.8em;
@@ -1298,26 +1435,65 @@ body {
   background: transparent !important;
 }
 
-/* segni di formattazione (¶) */
-.doc-marks .doc-prose p::after,
-.doc-marks .doc-prose h1::after,
-.doc-marks .doc-prose h2::after,
-.doc-marks .doc-prose h3::after,
-.doc-marks .doc-prose blockquote > p::after {
-  content: "¶";
+/* segni di formattazione (¶), vedi lib/formatting-marks.ts: fuori dal
+   flusso, così il testo non si sposta quando si accendono */
+.doc-prose .doc-mark {
+  display: none;
+}
+.doc-marks .doc-prose .doc-mark-pilcrow,
+.doc-marks .doc-prose .doc-mark-break {
+  display: inline;
+  position: absolute;
   margin-left: 2px;
   font-weight: 400;
+  font-style: normal;
   color: var(--doc-accent);
-  opacity: 0.45;
+  opacity: 0.55;
+  pointer-events: none;
+  user-select: none;
+}
+.doc-marks .doc-prose .doc-mark-break {
+  margin-left: 1px;
+}
+.doc-marks .doc-prose .doc-mark-cell {
+  opacity: 0.4;
+}
+.doc-marks .doc-prose .doc-mark-space,
+.doc-marks .doc-prose .doc-mark-nbsp,
+.doc-marks .doc-prose .doc-mark-tab {
+  position: relative;
+}
+.doc-marks .doc-prose .doc-mark-space::after,
+.doc-marks .doc-prose .doc-mark-nbsp::after,
+.doc-marks .doc-prose .doc-mark-tab::after {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  text-align: center;
+  font-weight: 400;
+  font-style: normal;
+  color: var(--doc-accent);
+  opacity: 0.6;
+  pointer-events: none;
+}
+.doc-marks .doc-prose .doc-mark-space::after {
+  content: "·";
+}
+.doc-marks .doc-prose .doc-mark-nbsp::after {
+  content: "°";
+}
+.doc-marks .doc-prose .doc-mark-tab::after {
+  content: "→";
 }
 
 @media print {
   /* a video aiutano, sulla carta no */
-  .doc-marks .doc-prose p::after,
-  .doc-marks .doc-prose h1::after,
-  .doc-marks .doc-prose h2::after,
-  .doc-marks .doc-prose h3::after,
-  .doc-marks .doc-prose blockquote > p::after {
+  .doc-prose .doc-mark {
+    display: none !important;
+  }
+  .doc-prose .doc-mark-space::after,
+  .doc-prose .doc-mark-nbsp::after,
+  .doc-prose .doc-mark-tab::after {
     content: none !important;
   }
   /* il lettore non si stampa: resta l'anteprima con l'indirizzo */

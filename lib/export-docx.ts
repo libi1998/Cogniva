@@ -11,7 +11,8 @@ import {
 } from "./citations"
 import { fontMap } from "./fonts"
 import { getAuthor } from "./author"
-import { bandParts, normalizeBand } from "./header-footer"
+import { bandParts, formatPageNumber, normalizeBand } from "./header-footer"
+import { isPaginated, pageAt } from "./pagination"
 import { fieldText } from "./doc-fields"
 import { renderWatermark } from "./watermark-image"
 import { captionEntries, indexItems } from "./doc-references"
@@ -319,6 +320,9 @@ export async function buildDocx({
           }
           if (a.letterSpacing)
             o.characterSpacing = Math.round(px(a.letterSpacing) * TWIP)
+          // «Posizione: alzato/abbassato di», in punti
+          if (Number(a.raise))
+            o.position = `${Math.round(Number(a.raise) * 0.75 * 10) / 10}pt`
           if (a.smallCaps) o.smallCaps = true
           if (typeof a.decoration === "string" && a.decoration) {
             const deco = a.decoration
@@ -582,6 +586,10 @@ export async function buildDocx({
       shading: shading
         ? { type: d.ShadingType.CLEAR, color: "auto", fill: shading }
         : undefined,
+      // «Distribuzione testo»
+      keepNext: a.keepNext === true || undefined,
+      keepLines: a.keepLines === true || undefined,
+      pageBreakBefore: a.breakBefore === true || undefined,
     }
   }
 
@@ -727,6 +735,50 @@ export async function buildDocx({
       size: Math.max(2, Math.round(bw * 6)),
       color: hex(a.borderColor) ?? "D4D4D8",
     }
+    /** «1px dashed #ff0000» → un bordo di Word; «none» lo toglie */
+    const sideBorder = (value: unknown) => {
+      if (value === "none") {
+        return { style: d.BorderStyle.NONE, size: 0, color: "auto" }
+      }
+      const m = /^([\d.]+)px (solid|dashed|dotted|double) (\S+)$/.exec(
+        String(value ?? "")
+      )
+      if (!m) return undefined
+      const kind =
+        m[2] === "dashed"
+          ? d.BorderStyle.DASHED
+          : m[2] === "dotted"
+            ? d.BorderStyle.DOTTED
+            : m[2] === "double"
+              ? d.BorderStyle.DOUBLE
+              : d.BorderStyle.SINGLE
+      return {
+        style: kind,
+        size: Math.max(2, Math.round(Number(m[1]) * 6)),
+        color: hex(m[3]) ?? "000000",
+      }
+    }
+    const cellBorders = (ca: Record<string, unknown>) => {
+      const top = sideBorder(ca.borderTop)
+      const right = sideBorder(ca.borderRight)
+      const bottom = sideBorder(ca.borderBottom)
+      const left = sideBorder(ca.borderLeft)
+      if (!top && !right && !bottom && !left) return undefined
+      return { top, right, bottom, left }
+    }
+    const cellMargins = (padding: unknown) => {
+      const n = Number(padding)
+      if (!Number.isFinite(n) || n <= 0) {
+        return { top: 60, bottom: 60, left: 100, right: 100 }
+      }
+      const v = Math.round(n * TWIP)
+      return {
+        top: v,
+        bottom: v,
+        left: Math.round(v * 1.6),
+        right: Math.round(v * 1.6),
+      }
+    }
     const rows: Docx.TableRow[] = []
     let rowIndex = 0
     const rowJobs: Promise<void>[] = []
@@ -775,15 +827,27 @@ export async function buildDocx({
                     type: d.WidthType.DXA,
                   }
                 : undefined,
-              margins: { top: 60, bottom: 60, left: 100, right: 100 },
+              margins: cellMargins(ca.padding),
+              borders: cellBorders(ca),
             })
           })
         )
       })
       rowJobs.push(
         Promise.all(cellJobs).then(() => {
+          // «Altezza riga: almeno», la più alta delle celle della riga
+          let minHeight = 0
+          row.forEach((cell) => {
+            minHeight = Math.max(minHeight, Number(cell.attrs.minHeight) || 0)
+          })
           rows[index] = new d.TableRow({
             children: cells,
+            height: minHeight
+              ? {
+                  value: Math.round(minHeight * TWIP),
+                  rule: d.HeightRule.ATLEAST,
+                }
+              : undefined,
             // solo le righe d'intestazione: un «false» esplicito confonde
             // alcuni lettori, che la trattano come intestazione ripetuta
             tableHeader:
@@ -952,6 +1016,15 @@ export async function buildDocx({
   })
   const allStyles = listStyles(theme)
   const byId = (id: string) => resolveStyle(theme, id)
+  /** Il numero della pagina di una posizione, come lo mostra il sommario */
+  const pageNumberAt = (pos: number) =>
+    isPaginated(editor.state)
+      ? formatPageNumber(
+          pageAt(editor.state, pos) + (theme.pageNumberStart ?? 1) - 1,
+          theme.pageNumberFormat ?? "arabic"
+        )
+      : ""
+
   /** Lo stile Word di un blocco, se non è quello implicito del suo tipo */
   const blockStyle = (node: PMNode) => {
     const id = styleIdOfNode(node)
@@ -1203,23 +1276,44 @@ export async function buildDocx({
       case "columnBreak":
         return [new d.Paragraph({ children: [new d.ColumnBreak()] })]
       case "toc": {
+        const levels = Number(node.attrs.levels ?? 3)
+        const withPages = node.attrs.variant !== "simple"
         const out: Block[] = [
           new d.Paragraph({
             heading: d.HeadingLevel.HEADING_2,
-            text: tr("Sommario"),
+            text:
+              node.attrs.title == null
+                ? tr("Sommario")
+                : String(node.attrs.title),
           }),
         ]
-        doc.descendants((n) => {
-          if (n.type.name === "heading") {
-            out.push(
-              new d.Paragraph({
-                indent: { left: (Number(n.attrs.level) - 1) * 360 },
-                spacing: { after: 40 },
-                children: [new d.TextRun(n.textContent)],
-              })
-            )
-          }
-          return n.type.name !== "heading"
+        doc.forEach((n, offset) => {
+          if (n.type.name !== "heading") return
+          const level = Number(n.attrs.level ?? 1)
+          if (level > levels) return
+          const page = withPages ? pageNumberAt(offset) : ""
+          out.push(
+            new d.Paragraph({
+              indent: { left: (level - 1) * 360 },
+              spacing: { after: 40 },
+              // i puntini fino al numero di pagina, allineato a destra
+              tabStops: page
+                ? [
+                    {
+                      type: d.TabStopType.RIGHT,
+                      position: d.TabStopPosition.MAX,
+                      leader: d.LeaderType.DOT,
+                    },
+                  ]
+                : undefined,
+              children: [
+                new d.TextRun({ text: n.textContent, bold: level === 1 }),
+                ...(page
+                  ? [new d.TextRun({ children: [new d.Tab(), page] })]
+                  : []),
+              ],
+            })
+          )
         })
         return out
       }

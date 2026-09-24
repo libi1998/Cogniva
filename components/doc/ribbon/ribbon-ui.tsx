@@ -55,6 +55,8 @@ export function RibbonGroup({
   children,
   className,
   safe,
+  launcher,
+  fixed,
 }: {
   label: string
   /** icona del pulsante quando il gruppo si riduce */
@@ -63,8 +65,19 @@ export function RibbonGroup({
   className?: string
   /** i comandi del gruppo non toccano la selezione del testo */
   safe?: boolean
+  /**
+   * il pulsantino ↘ accanto al nome del gruppo, come in Word: apre la
+   * finestra con tutte le opzioni («Carattere…», «Paragrafo…»)
+   */
+  launcher?: { title: string; onClick: () => void }
+  /**
+   * il gruppo è già un solo pulsante grande: ridotto sarebbe lo stesso
+   * pulsante, che apre un riquadro con dentro il pulsante vero
+   */
+  fixed?: boolean
 }) {
-  const collapsed = React.useContext(CollapsedGroups).has(label)
+  const shut = React.useContext(CollapsedGroups)
+  const collapsed = !fixed && shut.has(label)
   const body = (
     <div className={cn("flex min-h-0 flex-1 items-center gap-0.5", className)}>
       {children}
@@ -84,13 +97,35 @@ export function RibbonGroup({
       data-ribbon-group=""
       data-group-label={label}
       data-safe={safe ? "" : undefined}
+      data-fixed={fixed ? "" : undefined}
       role="group"
       aria-label={label}
       className="flex shrink-0 flex-col border-r border-border/70 px-2 last:border-r-0"
     >
       {body}
-      <div className="pt-0.5 text-center text-[10px] leading-4 text-muted-foreground select-none">
+      <div className="relative pt-0.5 text-center text-[10px] leading-4 text-muted-foreground select-none">
         {label}
+        {launcher ? (
+          <button
+            type="button"
+            title={launcher.title}
+            aria-label={launcher.title}
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={launcher.onClick}
+            className="absolute right-[-6px] bottom-0 flex size-4 items-center justify-center rounded-[3px] text-muted-foreground hover:bg-muted hover:text-foreground"
+          >
+            <svg viewBox="0 0 10 10" className="size-2.5" aria-hidden>
+              <path
+                d="M1.5 1.5v7h7M4 6 8.5 1.5M8.5 1.5v3M8.5 1.5h-3"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.1"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        ) : null}
       </div>
     </div>
   )
@@ -348,6 +383,49 @@ export function RibbonMenu({
   )
 }
 
+/**
+ * Comando che apre un riquadro con dei campi (cursori, caselle, colori): a
+ * differenza di un menu resta aperto mentre si lavora e si chiude con un clic
+ * fuori o con Esc. Chiudendolo il fuoco torna nel testo.
+ */
+export function RibbonPopover({
+  trigger,
+  children,
+  align = "start",
+  className,
+  label,
+}: {
+  trigger: React.ReactElement
+  children: React.ReactNode
+  align?: "start" | "center" | "end"
+  className?: string
+  /** nome del riquadro per i lettori di schermo */
+  label: string
+}) {
+  const backToText = useFinalFocus()
+  const [open, setOpen] = React.useState(false)
+  useFocusBackWhenClosed(open)
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger render={trigger} />
+      <PopoverContent
+        align={align}
+        sideOffset={4}
+        aria-label={label}
+        className={cn(
+          "max-h-[min(70dvh,560px)] w-72 overflow-y-auto p-0",
+          className
+        )}
+        finalFocus={backToText ?? false}
+      >
+        <CloseMenuContext.Provider value={() => setOpen(false)}>
+          {children}
+        </CloseMenuContext.Provider>
+      </PopoverContent>
+    </Popover>
+  )
+}
+
 /** Tavolozza dentro un menu */
 export function SwatchGrid({
   colors,
@@ -431,6 +509,18 @@ export function Stepper({
   const t = useT()
   const backToText = useFinalFocus()
   const [draft, setDraft] = React.useState<string | null>(null)
+  const input = React.useRef<HTMLInputElement>(null)
+  // entrando nella casella l'unità sparisce e il numero resta selezionato,
+  // per scriverci sopra. La selezione si rifà appena il numero è nella
+  // casella: fatta prima, cambiare il valore la toglierebbe e quello che si
+  // scrive finirebbe in coda («1» diventava «11,5»)
+  const selectAll = React.useRef(false)
+  const fresh = React.useRef(false)
+  React.useLayoutEffect(() => {
+    if (!selectAll.current) return
+    selectAll.current = false
+    input.current?.select()
+  }, [draft])
   const clamp = (v: number) =>
     Math.min(max, Math.max(min, Number(v.toFixed(decimals))))
   const shown =
@@ -460,12 +550,27 @@ export function Stepper({
         style={{ width }}
       >
         <input
+          ref={input}
           value={shown}
           inputMode="decimal"
           aria-label={label}
-          onFocus={(e) => {
+          onFocus={() => {
+            selectAll.current = true
+            fresh.current = true
             setDraft(formatDecimal(Number(value.toFixed(decimals))))
-            requestAnimationFrame(() => e.target.select())
+          }}
+          // il clic che dà il fuoco non deve togliere la selezione appena
+          // fatta, mettendo il cursore dove si è cliccato
+          onMouseUp={(e) => {
+            if (!fresh.current) return
+            fresh.current = false
+            if (e.currentTarget.selectionStart !== e.currentTarget.selectionEnd)
+              return
+            e.preventDefault()
+            e.currentTarget.select()
+          }}
+          onKeyUp={() => {
+            fresh.current = false
           }}
           onChange={(e) => {
             setDraft(e.target.value)

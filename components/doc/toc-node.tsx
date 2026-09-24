@@ -16,7 +16,7 @@ import {
   indexItems,
   type IndexKind,
 } from "@/lib/doc-references"
-import { getPagination, pageAt } from "@/lib/pagination"
+import { isPaginated, pageAt } from "@/lib/pagination"
 import { formatPageNumber } from "@/lib/header-footer"
 import { cn } from "@/lib/utils"
 
@@ -66,10 +66,14 @@ function sameRows<T extends Record<string, unknown>>(
   return true
 }
 
-/** Il numero di pagina di una posizione, se il documento ha più pagine */
-function pageLabel(editor: Editor, pos: number) {
+/**
+ * Il numero di pagina di una posizione, se il documento è su fogli veri:
+ * anche su una pagina sola, come in Word (prima i numeri comparivano solo da
+ * due pagine in su, e un sommario nuovo non ne aveva nessuno)
+ */
+export function pageLabel(editor: Editor, pos: number) {
   const state = editor.state
-  if (getPagination(state).pages <= 1) return ""
+  if (!isPaginated(state)) return ""
   const settings = editor.storage.field
   return formatPageNumber(
     pageAt(state, pos) + (settings?.pageStart ?? 1) - 1,
@@ -114,10 +118,59 @@ function RowButton({
   )
 }
 
-function TocView({ editor, node, selected }: NodeViewProps) {
+/**
+ * Il titolo di un sommario o di un indice, da scrivere direttamente nel
+ * foglio come in Word. Si conferma con Invio o uscendo; vuoto torna quello
+ * predefinito.
+ */
+function EditableTitle({
+  editor,
+  value,
+  fallback,
+  onChange,
+}: {
+  editor: Editor
+  value: string | null
+  fallback: string
+  onChange: (title: string | null) => void
+}) {
+  const t = useT()
+  const shown = value ?? fallback
+  const commit = (el: HTMLElement) => {
+    const text = (el.textContent ?? "").replace(/\s+/g, " ").trim()
+    const next = !text || text === fallback ? null : text
+    if (next !== value) onChange(next)
+    // il testo torna quello salvato: React non sa che il DOM è cambiato
+    el.textContent = next ?? fallback
+  }
+  return (
+    <p
+      className="doc-toc-title"
+      contentEditable={editor.isEditable}
+      suppressContentEditableWarning
+      spellCheck={false}
+      role={editor.isEditable ? "textbox" : undefined}
+      aria-label={editor.isEditable ? t("Titolo del sommario") : undefined}
+      onBlur={(e) => commit(e.currentTarget)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === "Escape") {
+          e.preventDefault()
+          if (e.key === "Escape") e.currentTarget.textContent = shown
+          e.currentTarget.blur()
+        }
+      }}
+    >
+      {shown}
+    </p>
+  )
+}
+
+function TocView({ editor, node, selected, updateAttributes }: NodeViewProps) {
   const t = useT()
   const variant = String(node.attrs.variant ?? "card")
   const levels = Number(node.attrs.levels ?? 3)
+  // puntini e numeri di pagina in tutti i sommari tranne «Semplice»
+  const leaders = variant !== "simple"
   const rows =
     useEditorState({
       editor,
@@ -131,7 +184,7 @@ function TocView({ editor, node, selected }: NodeViewProps) {
             level,
             text: child.textContent,
             pos: offset,
-            page: variant === "classic" ? pageLabel(e, offset) : "",
+            page: leaders ? pageLabel(e, offset) : "",
           })
         })
         return out
@@ -147,7 +200,13 @@ function TocView({ editor, node, selected }: NodeViewProps) {
       data-kind="toc"
       contentEditable={false}
     >
-      <p className="doc-toc-title">{t("Sommario")}</p>
+      <EditableTitle
+        key={String(node.attrs.title)}
+        editor={editor}
+        value={node.attrs.title == null ? null : String(node.attrs.title)}
+        fallback={t("Sommario")}
+        onChange={(title) => updateAttributes({ title })}
+      />
       {rows.length ? (
         <ol>
           {rows.map((row, i) => (
@@ -155,7 +214,7 @@ function TocView({ editor, node, selected }: NodeViewProps) {
               key={`${row.pos}-${i}`}
               editor={editor}
               row={row}
-              leaders={variant === "classic"}
+              leaders={leaders}
             />
           ))}
         </ol>

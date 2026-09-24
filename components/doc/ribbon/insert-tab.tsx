@@ -35,6 +35,7 @@ import {
   WholeWord,
 } from "lucide-react"
 import { toast } from "sonner"
+import { NodeSelection, type Transaction } from "@tiptap/pm/state"
 import {
   Box,
   Circle,
@@ -83,6 +84,8 @@ import {
   coverContent,
   iconSvg,
   SHAPE_GROUPS,
+  shapeImageAttrs,
+  shapeLook,
   shapeSvg,
   smartArtBoard,
   SMARTART_TEMPLATES,
@@ -98,7 +101,11 @@ import {
 import { docAccent } from "@/lib/palette"
 import { getWorkspace, useStore } from "@/lib/store"
 import { docTitleText } from "@/lib/tiptap-extensions"
-import { displayTitle, type PageNumberPosition } from "@/lib/types"
+import {
+  displayTitle,
+  PAGE_FORMATS,
+  type PageNumberPosition,
+} from "@/lib/types"
 import { cn } from "@/lib/utils"
 import {
   RibbonButton,
@@ -617,6 +624,22 @@ function Models3DMenu({ ctx, accent }: { ctx: RibbonCtx; accent: string }) {
   )
 }
 
+/**
+ * Dopo l'inserimento l'oggetto resta selezionato, come in Word: la sua
+ * scheda si apre e si può subito spostare, ridimensionare o colorare.
+ */
+function selectInserted(type: string) {
+  return ({ tr }: { tr: Transaction }) => {
+    const $from = tr.selection.$from
+    const start = $from.depth ? $from.before(1) : $from.pos
+    const prev = tr.doc.resolve(start).nodeBefore
+    if (prev?.type.name === type) {
+      tr.setSelection(NodeSelection.create(tr.doc, start - prev.nodeSize))
+    }
+    return true
+  }
+}
+
 export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
   const t = useT()
   const { editor, st, theme, setTheme } = ctx
@@ -627,6 +650,13 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
   const [dialog, setDialog] = React.useState<InsertDialog>(null)
   const fileRef = React.useRef<HTMLInputElement>(null)
   const body = () => atBody(editor, st)
+  // una pagina vuota o un salto pagina si vedono solo con i fogli veri: un
+  // documento «Schermo» è una striscia sola, e passa all'A4 come in Word
+  const paged = () => {
+    if (PAGE_FORMATS[theme.format].mm) return
+    setTheme({ format: "a4" })
+    toast(t("Il documento ora è impaginato su fogli A4"))
+  }
   const accent = docAccent(theme.accent)
   const close = () => setDialog(null)
 
@@ -680,7 +710,10 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
   }
 
   const insertImage = (src: string, alt: string, width: string) =>
-    body().insertContent({ type: "image", attrs: { src, alt, width } }).run()
+    body()
+      .insertContent({ type: "image", attrs: { src, alt, width } })
+      .command(selectInserted("image"))
+      .run()
 
   const insertSmartArt = (id: string) => {
     const template = SMARTART_TEMPLATES.find((t) => t.id === id)
@@ -766,7 +799,8 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
             title={t("Una pagina bianca nel punto del cursore")}
             icon={<RectangleHorizontal className="size-4 rotate-90" />}
             className="justify-start"
-            onClick={() =>
+            onClick={() => {
+              paged()
               body()
                 .insertContent([
                   { type: "pageBreak" },
@@ -774,7 +808,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
                   { type: "pageBreak" },
                 ])
                 .run()
-            }
+            }}
           />
           <RibbonButton
             compact
@@ -782,7 +816,10 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
             title={t("Il testo riparte dalla pagina successiva ⌘↵")}
             icon={<SquareSplitVertical className="size-4" />}
             className="justify-start"
-            onClick={() => body().setPageBreak().run()}
+            onClick={() => {
+              paged()
+              body().setPageBreak().run()
+            }}
           />
         </RibbonRows>
       </RibbonGroup>
@@ -981,7 +1018,13 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
                 <DropdownMenuLabel>{group.label}</DropdownMenuLabel>
                 <MenuGrid columns={8}>
                   {group.shapes.map((shape) => {
-                    const svg = shapeSvg(shape.kind, accent.fill, accent.solid)
+                    const look = shapeLook(shape.kind, accent.solid)
+                    const svg = shapeSvg(
+                      shape.kind,
+                      look.fill,
+                      look.stroke,
+                      look
+                    )
                     return (
                       <GridButton
                         key={shape.kind}
@@ -989,7 +1032,20 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
                         className="size-8"
                         onPick={() => {
                           ctx.openPanel()
-                          insertImage(svg.src, shape.label, `${svg.width}%`)
+                          // come in Word: colore pieno, davanti al testo e
+                          // libera di spostarsi sul foglio
+                          body()
+                            .insertContent({
+                              type: "image",
+                              attrs: {
+                                ...shapeImageAttrs(shape.kind, look),
+                                alt: shape.label,
+                                width: `${svg.width}%`,
+                                wrap: "front",
+                              },
+                            })
+                            .command(selectInserted("image"))
+                            .run()
                         }}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element -- anteprima SVG in data URI */}
@@ -1150,7 +1206,9 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
           active={Boolean(theme.header)}
           presets={HEADER_PRESETS}
           onPick={(value) => setTheme({ header: value })}
-          onEdit={() => setDialog("header")}
+          // come in Word si scrive sul foglio; la finestra resta per i
+          // documenti senza pagine
+          onEdit={() => ctx.editBand("header") || setDialog("header")}
           onRemove={() => setTheme({ header: "" })}
         />
         <BandMenu
@@ -1159,7 +1217,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
           active={Boolean(theme.footer)}
           presets={FOOTER_PRESETS}
           onPick={(value) => setTheme({ footer: value })}
-          onEdit={() => setDialog("footer")}
+          onEdit={() => ctx.editBand("footer") || setDialog("footer")}
           onRemove={() => setTheme({ footer: "" })}
         />
         <RibbonMenu

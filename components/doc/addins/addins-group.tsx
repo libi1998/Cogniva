@@ -25,7 +25,7 @@ export function AddinsGroup({ ctx }: { ctx: RibbonCtx }) {
   const list = ADDINS.filter((a) => enabled.includes(a.id))
 
   return (
-    <RibbonGroup label={t("Componenti aggiuntivi")} safe>
+    <RibbonGroup label={t("Componenti aggiuntivi")} safe fixed>
       <RibbonMenu
         className="w-64"
         trigger={
