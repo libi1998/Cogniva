@@ -69,6 +69,7 @@ import type {
   BoardData,
   BoardEdge,
   BoardNode,
+  BoardTheme,
   EdgeRouting,
   FrameKind,
   LineStyle,
@@ -453,15 +454,49 @@ export function BoardInspector({
   const nodes = data.nodes.filter((n) => pickedNodes.has(n.id))
   const edges = data.edges.filter((e) => pickedEdges.has(e.id))
 
-  const setTheme = store.setBoardTheme
   const snap = () => store.snapshot(fileId)
 
-  const patchNodes = (patch: Partial<BoardNode>, withHistory = true) => {
-    if (withHistory) snap()
+  // Un cursore trascinato o un testo scritto nel pannello cambiano l'elemento
+  // a ogni passo: la cronologia si fotografa una volta, prima del primo, e il
+  // gesto finisce lasciando il cursore o il campo. Prima la foto si scattava
+  // alla fine, a modifica già fatta: «Annulla» non tornava indietro, e quello
+  // scritto nel pannello non si annullava proprio
+  const gesture = React.useRef(false)
+  const live = () => {
+    if (gesture.current) return
+    gesture.current = true
+    snap()
+  }
+  const endGesture = () => {
+    gesture.current = false
+  }
+  // un'altra selezione è un altro gesto
+  React.useEffect(() => {
+    gesture.current = false
+  }, [selection])
+
+  // anche lo stile della board entra nella cronologia: prima un «Annulla»
+  // dopo aver cambiato lo sfondo toglieva, insieme allo sfondo, anche
+  // l'ultima modifica fatta agli elementi
+  const setTheme = (
+    id: string,
+    patch: Partial<BoardTheme>,
+    continuous = false
+  ) => {
+    if (continuous) live()
+    else snap()
+    store.setBoardTheme(id, patch)
+  }
+
+  /** `live`: un passo di un gesto continuo (cursore, testo) */
+  const patchNodes = (patch: Partial<BoardNode>, continuous = false) => {
+    if (continuous) live()
+    else snap()
     store.updateNodes(fileId, selection.nodes, patch)
   }
-  const patchEdges = (patch: Partial<BoardEdge>, withHistory = true) => {
-    if (withHistory) snap()
+  const patchEdges = (patch: Partial<BoardEdge>, continuous = false) => {
+    if (continuous) live()
+    else snap()
     store.updateEdges(fileId, selection.edges, patch)
   }
 
@@ -625,8 +660,8 @@ export function BoardInspector({
                 min={0.5}
                 max={kind === "icon" ? 4 : 24}
                 step={0.5}
-                onChange={(v) => patchNodes({ strokeWidth: v }, false)}
-                onCommit={() => snap()}
+                onChange={(v) => patchNodes({ strokeWidth: v }, true)}
+                onCommit={endGesture}
               />
             ) : null}
 
@@ -637,8 +672,8 @@ export function BoardInspector({
                 min={10}
                 max={100}
                 suffix="%"
-                onChange={(v) => patchNodes({ opacity: v / 100 }, false)}
-                onCommit={() => snap()}
+                onChange={(v) => patchNodes({ opacity: v / 100 }, true)}
+                onCommit={endGesture}
               />
             ) : null}
 
@@ -757,8 +792,8 @@ export function BoardInspector({
                   value={first?.radius ?? theme.cornerRadius}
                   min={0}
                   max={48}
-                  onChange={(v) => patchNodes({ radius: v }, false)}
-                  onCommit={() => snap()}
+                  onChange={(v) => patchNodes({ radius: v }, true)}
+                  onCommit={endGesture}
                 />
                 {first?.radius !== null && first?.radius !== undefined ? (
                   <button
@@ -785,9 +820,8 @@ export function BoardInspector({
                   <Input
                     className="h-8 text-xs"
                     value={first.text}
-                    onChange={(e) =>
-                      patchNodes({ text: e.target.value }, false)
-                    }
+                    onChange={(e) => patchNodes({ text: e.target.value }, true)}
+                    onBlur={endGesture}
                   />
                 </Row>
               ) : (
@@ -796,9 +830,8 @@ export function BoardInspector({
                     className="h-8 text-xs"
                     value={first.text}
                     placeholder={t("Testo…")}
-                    onChange={(e) =>
-                      patchNodes({ text: e.target.value }, false)
-                    }
+                    onChange={(e) => patchNodes({ text: e.target.value }, true)}
+                    onBlur={endGesture}
                   />
                 </Row>
               )}
@@ -807,8 +840,8 @@ export function BoardInspector({
                 value={first?.fontSize ?? 15}
                 min={9}
                 max={64}
-                onChange={(v) => patchNodes({ fontSize: v }, false)}
-                onCommit={() => snap()}
+                onChange={(v) => patchNodes({ fontSize: v }, true)}
+                onCommit={endGesture}
               />
               <div className="flex items-center gap-1.5">
                 <Segmented<TextAlign>
@@ -1017,8 +1050,8 @@ export function BoardInspector({
             value={firstEdge?.width ?? theme.arrows.width}
             min={1}
             max={8}
-            onChange={(v) => patchEdges({ width: v }, false)}
-            onCommit={() => snap()}
+            onChange={(v) => patchEdges({ width: v }, true)}
+            onCommit={endGesture}
           />
           <Row label={t("Colore")} stacked>
             <ColorGrid
@@ -1033,7 +1066,8 @@ export function BoardInspector({
               className="h-8 text-xs"
               value={firstEdge?.label ?? ""}
               placeholder={t("Nessuna")}
-              onChange={(e) => patchEdges({ label: e.target.value }, false)}
+              onChange={(e) => patchEdges({ label: e.target.value }, true)}
+              onBlur={endGesture}
             />
           </Row>
           <div className="flex gap-2">
@@ -1112,7 +1146,8 @@ export function BoardInspector({
           value={theme.cornerRadius}
           min={0}
           max={40}
-          onChange={(v) => setTheme(fileId, { cornerRadius: v })}
+          onChange={(v) => setTheme(fileId, { cornerRadius: v }, true)}
+          onCommit={endGesture}
         />
         <Row label={t("Forma predefinita")} stacked>
           <ShapeGrid
@@ -1198,10 +1233,13 @@ export function BoardInspector({
           colors={bgColors}
           onChange={(v) => setTheme(fileId, { background: v })}
         />
-        <CustomColor
-          value={theme.background}
-          onChange={(v) => setTheme(fileId, { background: v })}
-        />
+        {/* il selettore manda un colore a ogni movimento: un passo solo */}
+        <div onBlur={endGesture}>
+          <CustomColor
+            value={theme.background}
+            onChange={(v) => setTheme(fileId, { background: v }, true)}
+          />
+        </div>
         <Row label={t("Trama")} stacked>
           <Segmented<BackgroundPattern>
             value={theme.pattern}
@@ -1242,7 +1280,10 @@ export function BoardInspector({
             min={10}
             max={100}
             suffix="%"
-            onChange={(v) => setTheme(fileId, { patternOpacity: v / 100 })}
+            onChange={(v) =>
+              setTheme(fileId, { patternOpacity: v / 100 }, true)
+            }
+            onCommit={endGesture}
           />
         ) : null}
       </Section>
@@ -1339,8 +1380,9 @@ export function BoardInspector({
           min={1}
           max={8}
           onChange={(v) =>
-            setTheme(fileId, { arrows: { ...theme.arrows, width: v } })
+            setTheme(fileId, { arrows: { ...theme.arrows, width: v } }, true)
           }
+          onCommit={endGesture}
         />
         <SliderRow
           label={t("Raggio spigoli")}
@@ -1348,8 +1390,13 @@ export function BoardInspector({
           min={0}
           max={28}
           onChange={(v) =>
-            setTheme(fileId, { arrows: { ...theme.arrows, cornerRadius: v } })
+            setTheme(
+              fileId,
+              { arrows: { ...theme.arrows, cornerRadius: v } },
+              true
+            )
           }
+          onCommit={endGesture}
         />
         <Row label={t("Colore")} stacked>
           <ColorGrid

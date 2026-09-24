@@ -399,3 +399,36 @@ test("board: i connettori dentro una sezione si cliccano", async ({ page }) => {
   await page.keyboard.press("Enter")
   await expect(page.locator('span[data-edge-id="e1"]')).toHaveText("sì")
 })
+
+test("board: quello che si cambia dal pannello Stile si annulla", async ({
+  page,
+}) => {
+  await page.goto("/it/board/demo-board")
+  const node = page.locator('[data-node-id="n4"]')
+  await expect(node).toBeVisible()
+  await node.click()
+  const text = () => node.innerText()
+  await expect.poll(text).toBe("Login")
+
+  // un testo scritto nel pannello: prima non entrava nella cronologia, e
+  // «Annulla» saltava all'ultima modifica fatta sulla board
+  await page.getByPlaceholder("Testo…").fill("Accesso")
+  await expect.poll(text).toBe("Accesso")
+  await page.locator('[data-node-id="n6"]').click()
+  await page.keyboard.press("ControlOrMeta+z")
+  await expect.poll(text).toBe("Login")
+
+  // un cursore: la foto per «Annulla» si scattava a modifica finita, e il
+  // primo «Annulla» non faceva niente
+  await node.click()
+  const size = () =>
+    node.evaluate((el) => getComputedStyle(el.querySelector("span")!).fontSize)
+  const before = await size()
+  const slider = page.getByRole("slider", { name: "Dimensione" })
+  await slider.focus()
+  for (let i = 0; i < 5; i += 1) await page.keyboard.press("ArrowRight")
+  await expect.poll(size).not.toBe(before)
+  await page.locator('[data-node-id="n6"]').click()
+  for (let i = 0; i < 5; i += 1) await page.keyboard.press("ControlOrMeta+z")
+  await expect.poll(size).toBe(before)
+})

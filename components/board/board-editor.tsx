@@ -192,10 +192,26 @@ export function BoardEditor({ fileId }: { fileId: string }) {
     })
   }
 
-  const zoomBy = (f: number) => {
+  // la modalità è parte della board: cambiarla è un passo di «Annulla»,
+  // altrimenti l'annullamento dopo tornava indietro di due cose insieme
+  const setMode = (mode: BoardMode) => {
+    const store = getWorkspace()
+    store.snapshot(fileId)
+    store.setBoardTheme(fileId, { mode })
+  }
+
+  /**
+   * Ingrandisce tenendo fermo il centro della vista; con `absolute` porta a
+   * quello zoom («Zoom al 100%», che prima teneva fermo l'angolo in alto a
+   * sinistra e faceva saltare via quello che si stava guardando)
+   */
+  const zoomBy = (f: number, absolute = false) => {
     const { width, height } = viewportSize()
     setVp((v) => {
-      const next = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, v.zoom * f))
+      const next = Math.min(
+        MAX_ZOOM,
+        Math.max(MIN_ZOOM, absolute ? f : v.zoom * f)
+      )
       const cx = width / 2
       const cy = height / 2
       const wx = (cx - v.x) / v.zoom
@@ -254,7 +270,7 @@ export function BoardEditor({ fileId }: { fileId: string }) {
         group,
         label: t("Zoom al 100%"),
         icon: <Plus />,
-        run: () => setVp((v) => ({ ...v, zoom: 1 })),
+        run: () => zoomBy(1, true),
       },
       {
         id: "board.panel",
@@ -285,7 +301,7 @@ export function BoardEditor({ fileId }: { fileId: string }) {
         }),
         icon: m.icon,
         keywords: [m.hint],
-        run: () => getWorkspace().setBoardTheme(fileId, { mode: m.value }),
+        run: () => setMode(m.value),
       })),
       pick(t("Seleziona"), { t: "select" }, "v", <MousePointer2 />),
       pick(t("Rettangolo"), { t: "shape", shape: "rounded" }, "r", <Square />),
@@ -378,9 +394,7 @@ export function BoardEditor({ fileId }: { fileId: string }) {
                 {MODES.map((m) => (
                   <DropdownMenuItem
                     key={m.value}
-                    onClick={() =>
-                      getWorkspace().setBoardTheme(fileId, { mode: m.value })
-                    }
+                    onClick={() => setMode(m.value)}
                     className={cn(
                       mode === m.value && "bg-accent text-accent-foreground"
                     )}
@@ -502,7 +516,7 @@ export function BoardEditor({ fileId }: { fileId: string }) {
             </button>
             <button
               type="button"
-              onClick={() => setVp((v) => ({ ...v, zoom: 1 }))}
+              onClick={() => zoomBy(1, true)}
               title={t("Zoom al 100%")}
               className="min-w-[52px] rounded-lg px-1 py-1 text-xs font-medium text-foreground tabular-nums hover:bg-muted"
             >
