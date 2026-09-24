@@ -12,6 +12,9 @@ import {
   Copy,
   Download,
   FileText,
+  Folder,
+  FolderMinus,
+  FolderPlus,
   FileType2,
   FileUp,
   LayoutGrid,
@@ -50,6 +53,9 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
@@ -58,7 +64,13 @@ import { openCommandPalette } from "@/components/shared/command-palette"
 import { download } from "@/lib/export"
 import { normalizeSearch, searchSnippet, searchText } from "@/lib/search"
 import { IMPORTABLE, fileHref, importFiles } from "@/lib/import-files"
-import { exportWorkspace, getWorkspace, useStore } from "@/lib/store"
+import {
+  allFolders,
+  exportWorkspace,
+  getWorkspace,
+  sameFolder,
+  useStore,
+} from "@/lib/store"
 import { displayTitle, type FileKind, type WFile } from "@/lib/types"
 import { useDocumentTitle } from "@/lib/use-document-title"
 import { cn, localDateStamp } from "@/lib/utils"
@@ -153,6 +165,18 @@ function exportAll(ids?: readonly string[]) {
   )
 }
 
+/** I file trascinati dentro la home, verso una cartella */
+const DRAG_FILES = "application/x-cogniva-files"
+
+const draggedIds = (event: React.DragEvent): string[] | null => {
+  try {
+    const raw: unknown = JSON.parse(event.dataTransfer.getData(DRAG_FILES))
+    return Array.isArray(raw) ? raw.filter((x) => typeof x === "string") : null
+  } catch {
+    return null
+  }
+}
+
 /** Un tasto premuto in un campo di testo non è un comando della home */
 function typing(target: EventTarget | null) {
   const el = target as HTMLElement | null
@@ -171,8 +195,20 @@ export function HomeScreen() {
   const router = useRouter()
   const hydrated = useStore((s) => s.hydrated)
   const files = useStore((s) => s.files)
+  const storedFolders = useStore((s) => s.folders)
   const [q, setQ] = React.useState("")
   const [filter, setFilter] = React.useState<Filter>("all")
+  // la cartella aperta; con una cartella il filtro resta «Tutti i file»
+  const [folder, setFolder] = React.useState<string | null>(null)
+  const [folderDialog, setFolderDialog] = React.useState<{
+    mode: "create" | "rename"
+    from?: string
+    value: string
+    /** i file da mettere nella cartella appena creata */
+    move?: string[]
+  } | null>(null)
+  // la cartella su cui si stanno trascinando dei file ("" = fuori da tutte)
+  const [dropTarget, setDropTarget] = React.useState<string | null>(null)
   const [sort, setSort] = React.useState<Sort>("updated")
   const [renaming, setRenaming] = React.useState<{
     id: string
@@ -199,17 +235,22 @@ export function HomeScreen() {
   const live = files.filter((f) => !f.deletedAt)
   const trash = files.filter((f) => f.deletedAt)
   const query = normalizeSearch(q.trim())
+  const folders = allFolders(files, storedFolders)
+  const inFolder = (f: WFile, name: string) =>
+    Boolean(f.folder && sameFolder(f.folder, name))
 
   // un ordinamento per nome confronta n·log(n) volte: con la lingua passata a
   // ogni confronto il browser costruisce ogni volta le regole della lingua
   const byName = titleCollator()
   const visible = (filter === "trash" ? trash : live)
     .filter((f) =>
-      filter === "all" || filter === "trash"
-        ? true
-        : filter === "starred"
-          ? f.starred
-          : f.kind === filter
+      folder !== null && filter !== "trash"
+        ? inFolder(f, folder)
+        : filter === "all" || filter === "trash"
+          ? true
+          : filter === "starred"
+            ? f.starred
+            : f.kind === filter
     )
     .filter((f) => !query || searchText(f).includes(query))
     .sort((a, b) =>
@@ -231,8 +272,87 @@ export function HomeScreen() {
   }
   const showFilter = (next: Filter) => {
     setFilter(next)
+    setFolder(null)
     clearSelection()
   }
+  const showFolder = (name: string) => {
+    setFilter("all")
+    setFolder(name)
+    clearSelection()
+  }
+
+  /** Sposta i file in una cartella (o fuori con null), con Annulla */
+  const moveFiles = (ids: string[], target: string | null) => {
+    if (!ids.length) return
+    const before = new Map(
+      files.filter((f) => ids.includes(f.id)).map((f) => [f.id, f.folder])
+    )
+    getWorkspace().moveToFolder(ids, target)
+    toast.success(
+      target === null
+        ? ids.length === 1
+          ? t("1 file tolto dalla cartella")
+          : t("{count} file tolti dalla cartella", { count: ids.length })
+        : ids.length === 1
+          ? t("1 file spostato in «{folder}»", { folder: target })
+          : t("{count} file spostati in «{folder}»", {
+              count: ids.length,
+              folder: target,
+            }),
+      {
+        action: {
+          label: t("Annulla||annulla l'ultima modifica"),
+          onClick: () => {
+            // ogni file torna dov'era, anche se venivano da cartelle diverse
+            const back = new Map<string | null, string[]>()
+            for (const [id, was] of before) {
+              const key = was ?? null
+              back.set(key, [...(back.get(key) ?? []), id])
+            }
+            for (const [was, list] of back)
+              getWorkspace().moveToFolder(list, was)
+          },
+        },
+      }
+    )
+  }
+
+  const deleteFolder = (name: string) => {
+    const ids = files.filter((f) => inFolder(f, name)).map((f) => f.id)
+    getWorkspace().deleteFolder(name)
+    if (folder !== null && sameFolder(folder, name)) setFolder(null)
+    toast.success(t("Cartella «{folder}» eliminata", { folder: name }), {
+      description: ids.length
+        ? t("I file che conteneva restano in «Tutti i file».")
+        : undefined,
+      action: {
+        label: t("Annulla||annulla l'ultima modifica"),
+        onClick: () => {
+          const back = getWorkspace().createFolder(name)
+          if (back && ids.length) getWorkspace().moveToFolder(ids, back)
+        },
+      },
+    })
+  }
+
+  /** Le cartelle accolgono i file trascinati dalla griglia */
+  const dropProps = (target: string | null) => ({
+    onDragOver: (e: React.DragEvent) => {
+      if (!e.dataTransfer.types.includes(DRAG_FILES)) return
+      e.preventDefault()
+      e.dataTransfer.dropEffect = "move"
+      setDropTarget(target ?? "")
+    },
+    onDragLeave: () => setDropTarget(null),
+    onDrop: (e: React.DragEvent) => {
+      const ids = draggedIds(e)
+      setDropTarget(null)
+      if (!ids) return
+      e.preventDefault()
+      e.stopPropagation()
+      moveFiles(ids, target)
+    },
+  })
 
   /**
    * Un clic su un file mentre si sceglie: da solo lo aggiunge o lo toglie,
@@ -306,6 +426,8 @@ export function HomeScreen() {
 
   const create = (kind: FileKind) => {
     const id = getWorkspace().createFile(kind)
+    // creato dentro una cartella aperta, ci resta
+    if (folder !== null) getWorkspace().moveToFolder([id], folder)
     router.push(
       hrefFor(kind === "board" ? `/board/${id}` : `/doc/${id}`) as Route
     )
@@ -417,17 +539,63 @@ export function HomeScreen() {
           </Button>
         </div>
 
-        <nav className="space-y-0.5" aria-label={t("Filtri")}>
+        <nav
+          className="-mx-1 min-h-0 flex-1 space-y-0.5 overflow-y-auto px-1"
+          aria-label={t("Filtri")}
+        >
           {NAV.map((n) => (
             <NavButton
               key={n.key}
-              active={filter === n.key}
+              active={filter === n.key && folder === null}
               icon={n.icon}
               label={t(n.label)}
               count={counts[n.key]}
               onClick={() => showFilter(n.key)}
+              // trascinati su «Tutti i file», i file escono dalla cartella
+              drop={n.key === "all" ? dropProps(null) : undefined}
+              dropActive={n.key === "all" && dropTarget === ""}
             />
           ))}
+
+          <div className="flex items-center justify-between pt-3 pr-1 pb-1 pl-2.5">
+            <span className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+              {t("Cartelle")}
+            </span>
+            <button
+              type="button"
+              aria-label={t("Nuova cartella")}
+              title={t("Nuova cartella")}
+              disabled={!hydrated}
+              onClick={() => setFolderDialog({ mode: "create", value: "" })}
+              className="flex size-6 items-center justify-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:opacity-50"
+            >
+              <FolderPlus className="size-4" />
+            </button>
+          </div>
+          {folders.length ? (
+            folders.map((name) => (
+              <FolderButton
+                key={name}
+                name={name}
+                active={folder !== null && sameFolder(folder, name)}
+                count={
+                  hydrated ? live.filter((f) => inFolder(f, name)).length : null
+                }
+                dropActive={dropTarget === name}
+                drop={dropProps(name)}
+                onOpen={() => showFolder(name)}
+                onRename={() =>
+                  setFolderDialog({ mode: "rename", from: name, value: name })
+                }
+                onDelete={() => deleteFolder(name)}
+              />
+            ))
+          ) : (
+            <p className="px-2.5 pb-1 text-[11px] leading-snug text-muted-foreground">
+              {t("Nessuna cartella. Creane una con +.")}
+            </p>
+          )}
+
           <div className="my-2 h-px bg-border" />
           <NavButton
             active={filter === "trash"}
@@ -438,7 +606,7 @@ export function HomeScreen() {
           />
         </nav>
 
-        <div className="mt-auto space-y-0.5 border-t border-border pt-3">
+        <div className="mt-3 space-y-0.5 border-t border-border pt-3">
           <DropdownMenu>
             <DropdownMenuTrigger
               render={
@@ -562,6 +730,14 @@ export function HomeScreen() {
                   <DropdownMenuItem onClick={() => create("doc")}>
                     <FileText className="size-4" /> {t("Nuovo documento")}
                   </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() =>
+                      setFolderDialog({ mode: "create", value: "" })
+                    }
+                  >
+                    <FolderPlus className="size-4" /> {t("Nuova cartella")}
+                  </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -573,29 +749,35 @@ export function HomeScreen() {
               aria-label={t("Filtri")}
               className="-mx-[max(0.5rem,env(safe-area-inset-left))] flex [scrollbar-width:none] gap-1.5 overflow-x-auto px-[max(0.5rem,env(safe-area-inset-left))] sm:-mx-3 sm:px-3"
             >
-              {[...NAV, { key: "trash" as const, short: N_("Cestino") }].map(
-                (n) => (
-                  <button
-                    key={n.key}
-                    type="button"
-                    onClick={() => showFilter(n.key)}
-                    aria-current={filter === n.key ? "page" : undefined}
-                    className={cn(
-                      "flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition",
-                      filter === n.key
-                        ? "border-transparent bg-foreground text-background"
-                        : "border-border bg-background text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    {t(n.short)}
-                    {counts[n.key] !== null ? (
-                      <span className="tabular-nums opacity-60">
-                        {counts[n.key]}
-                      </span>
-                    ) : null}
-                  </button>
-                )
-              )}
+              {NAV.map((n) => (
+                <FilterChip
+                  key={n.key}
+                  label={t(n.short)}
+                  count={counts[n.key]}
+                  active={filter === n.key && folder === null}
+                  onClick={() => showFilter(n.key)}
+                />
+              ))}
+              {folders.map((name) => (
+                <FilterChip
+                  key={`folder:${name}`}
+                  icon={<Folder className="size-3.5" />}
+                  label={name}
+                  count={
+                    hydrated
+                      ? live.filter((f) => inFolder(f, name)).length
+                      : null
+                  }
+                  active={folder !== null && sameFolder(folder, name)}
+                  onClick={() => showFolder(name)}
+                />
+              ))}
+              <FilterChip
+                label={t("Cestino")}
+                count={counts.trash}
+                active={filter === "trash"}
+                onClick={() => showFilter("trash")}
+              />
             </nav>
           </div>
         </header>
@@ -619,6 +801,12 @@ export function HomeScreen() {
               )
             }}
             onExport={() => exportAll(pickedIds)}
+            folders={folders}
+            inAFolder={picked.some((f) => f.folder)}
+            onMove={(target) => moveFiles(pickedIds, target)}
+            onNewFolder={() =>
+              setFolderDialog({ mode: "create", value: "", move: pickedIds })
+            }
             onTrash={() => trashPicked(pickedIds)}
             onRestore={() => {
               getWorkspace().restoreFiles(pickedIds)
@@ -631,6 +819,42 @@ export function HomeScreen() {
             }}
             onDelete={() => setConfirmDelete(pickedIds)}
           />
+        ) : null}
+
+        {folder !== null && !selectMode ? (
+          <div className="flex min-h-11 flex-wrap items-center gap-x-2 gap-y-1 border-b border-border bg-card/60 py-2 safe-x text-sm md:px-6">
+            <Folder className="size-4 shrink-0 text-muted-foreground" />
+            <span className="min-w-0 truncate font-medium">{folder}</span>
+            <span className="text-xs text-muted-foreground tabular-nums">
+              {visible.length === 1
+                ? t("1 file")
+                : t("{count} file", { count: visible.length })}
+            </span>
+            <div className="ml-auto flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs"
+                onClick={() =>
+                  setFolderDialog({
+                    mode: "rename",
+                    from: folder,
+                    value: folder,
+                  })
+                }
+              >
+                <Pencil className="size-3.5" /> {t("Rinomina")}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 text-xs text-destructive hover:text-destructive"
+                onClick={() => deleteFolder(folder)}
+              >
+                <FolderMinus className="size-3.5" /> {t("Elimina cartella")}
+              </Button>
+            </div>
+          </div>
         ) : null}
 
         {filter === "trash" && !selectMode ? (
@@ -659,6 +883,7 @@ export function HomeScreen() {
             <EmptyState
               filter={filter}
               searching={Boolean(query)}
+              inFolder={folder !== null}
               onCreate={create}
             />
           ) : (
@@ -671,6 +896,15 @@ export function HomeScreen() {
                   selected={selected.has(f.id)}
                   selectMode={selectMode}
                   onPick={(range) => pick(f.id, range)}
+                  folders={folders}
+                  showFolder={folder === null}
+                  dragIds={() =>
+                    selected.has(f.id) && pickedIds.length ? pickedIds : [f.id]
+                  }
+                  onMove={(target) => moveFiles([f.id], target)}
+                  onNewFolder={() =>
+                    setFolderDialog({ mode: "create", value: "", move: [f.id] })
+                  }
                   onRename={() => setRenaming({ id: f.id, value: f.title })}
                   onTrash={() => trashFile(f)}
                 />
@@ -794,7 +1028,129 @@ export function HomeScreen() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <Dialog
+        open={folderDialog !== null}
+        onOpenChange={(o) => !o && setFolderDialog(null)}
+      >
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>
+              {folderDialog?.mode === "rename"
+                ? t("Rinomina cartella")
+                : t("Nuova cartella")}
+            </DialogTitle>
+            {folderDialog?.move?.length ? (
+              <DialogDescription>
+                {folderDialog.move.length === 1
+                  ? t("Il file andrà nella cartella nuova.")
+                  : t("I {count} file andranno nella cartella nuova.", {
+                      count: folderDialog.move.length,
+                    })}
+              </DialogDescription>
+            ) : null}
+          </DialogHeader>
+          <form
+            className="contents"
+            onSubmit={(e) => {
+              e.preventDefault()
+              const dialog = folderDialog
+              if (!dialog?.value.trim()) return
+              const store = getWorkspace()
+              if (dialog.mode === "rename" && dialog.from) {
+                const name = store.renameFolder(dialog.from, dialog.value)
+                if (name && folder !== null && sameFolder(folder, dialog.from))
+                  setFolder(name)
+              } else {
+                const name = store.createFolder(dialog.value)
+                if (name && dialog.move?.length) {
+                  moveFiles(dialog.move, name)
+                  clearSelection()
+                } else if (name) {
+                  toast.success(
+                    t("Cartella «{folder}» creata", { folder: name }),
+                    {
+                      description: t(
+                        "Trascinaci i file, o usa «Sposta in» dal loro menu."
+                      ),
+                    }
+                  )
+                }
+              }
+              setFolderDialog(null)
+            }}
+          >
+            <DialogBody>
+              <Input
+                autoFocus
+                aria-label={t("Nome della cartella")}
+                placeholder={t("Nome della cartella")}
+                value={folderDialog?.value ?? ""}
+                maxLength={60}
+                enterKeyHint="done"
+                onChange={(e) =>
+                  setFolderDialog((d) =>
+                    d ? { ...d, value: e.target.value } : d
+                  )
+                }
+              />
+            </DialogBody>
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setFolderDialog(null)}
+              >
+                {t("Annulla")}
+              </Button>
+              <Button type="submit" disabled={!folderDialog?.value.trim()}>
+                {folderDialog?.mode === "rename" ? t("Salva") : t("Crea")}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
+  )
+}
+
+/** Le voci «Sposta in»: le cartelle, una nuova, fuori da tutte */
+function MoveItems({
+  folders,
+  current,
+  inAFolder,
+  onMove,
+  onNewFolder,
+}: {
+  folders: string[]
+  /** la cartella in cui sta già (non si propone) */
+  current?: string
+  inAFolder: boolean
+  onMove: (target: string | null) => void
+  onNewFolder: () => void
+}) {
+  const t = useT()
+  return (
+    <>
+      {folders.map((name) => (
+        <DropdownMenuItem
+          key={name}
+          disabled={Boolean(current && sameFolder(current, name))}
+          onClick={() => onMove(name)}
+        >
+          <Folder className="size-4" />
+          <span className="min-w-0 truncate">{name}</span>
+        </DropdownMenuItem>
+      ))}
+      {folders.length ? <DropdownMenuSeparator /> : null}
+      <DropdownMenuItem onClick={onNewFolder}>
+        <FolderPlus className="size-4" /> {t("Nuova cartella…")}
+      </DropdownMenuItem>
+      {inAFolder ? (
+        <DropdownMenuItem onClick={() => onMove(null)}>
+          <FolderMinus className="size-4" /> {t("Togli dalla cartella")}
+        </DropdownMenuItem>
+      ) : null}
+    </>
   )
 }
 
@@ -812,6 +1168,10 @@ function SelectionBar({
   onStar,
   onDuplicate,
   onExport,
+  folders,
+  inAFolder,
+  onMove,
+  onNewFolder,
   onTrash,
   onRestore,
   onDelete,
@@ -825,6 +1185,10 @@ function SelectionBar({
   onStar: (starred: boolean) => void
   onDuplicate: () => void
   onExport: () => void
+  folders: string[]
+  inAFolder: boolean
+  onMove: (target: string | null) => void
+  onNewFolder: () => void
   onTrash: () => void
   onRestore: () => void
   onDelete: () => void
@@ -922,6 +1286,30 @@ function SelectionBar({
               <Copy className="size-3.5" />
               <span className="hidden sm:inline">{t("Duplica")}</span>
             </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                disabled={none}
+                render={
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className={action}
+                    disabled={none}
+                  />
+                }
+              >
+                <Folder className="size-3.5" />
+                <span className="hidden sm:inline">{t("Sposta in")}</span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <MoveItems
+                  folders={folders}
+                  inAFolder={inAFolder}
+                  onMove={onMove}
+                  onNewFolder={onNewFolder}
+                />
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button
               variant="ghost"
               size="sm"
@@ -1013,29 +1401,41 @@ function ImportItems({ onPick }: { onPick: () => void }) {
   )
 }
 
+type DropProps = {
+  onDragOver: (e: React.DragEvent) => void
+  onDragLeave: () => void
+  onDrop: (e: React.DragEvent) => void
+}
+
 function NavButton({
   active,
   icon,
   label,
   count,
   onClick,
+  drop,
+  dropActive,
 }: {
   active: boolean
   icon: React.ReactNode
   label: string
   count: number | null
   onClick: () => void
+  drop?: DropProps
+  dropActive?: boolean
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-current={active ? "page" : undefined}
+      {...drop}
       className={cn(
         "flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition",
         active
           ? "bg-accent text-accent-foreground"
-          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground",
+        dropActive && "ring-2 ring-primary ring-inset"
       )}
     >
       {icon}
@@ -1047,23 +1447,135 @@ function NavButton({
   )
 }
 
+/** Una cartella nella barra laterale: si apre, accoglie i file trascinati */
+function FolderButton({
+  name,
+  active,
+  count,
+  drop,
+  dropActive,
+  onOpen,
+  onRename,
+  onDelete,
+}: {
+  name: string
+  active: boolean
+  count: number | null
+  drop: DropProps
+  dropActive: boolean
+  onOpen: () => void
+  onRename: () => void
+  onDelete: () => void
+}) {
+  const t = useT()
+  return (
+    <div
+      {...drop}
+      className={cn(
+        "group/folder flex items-center rounded-lg transition",
+        active
+          ? "bg-accent text-accent-foreground"
+          : "text-muted-foreground hover:bg-muted hover:text-foreground",
+        dropActive && "ring-2 ring-primary ring-inset"
+      )}
+    >
+      <button
+        type="button"
+        onClick={onOpen}
+        aria-current={active ? "page" : undefined}
+        className="flex min-w-0 flex-1 items-center gap-2.5 py-2 pl-2.5 text-left text-sm font-medium"
+      >
+        <Folder className="size-4 shrink-0" />
+        <span className="min-w-0 flex-1 truncate">{name}</span>
+        <span className="min-w-4 text-right text-xs font-normal tabular-nums opacity-60 group-hover/folder:hidden group-has-[[data-popup-open]]/folder:hidden pointer-coarse:hidden">
+          {count}
+        </span>
+      </button>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={
+            <button
+              type="button"
+              aria-label={t("Azioni per la cartella {folder}", {
+                folder: name,
+              })}
+              className="mr-1 hidden size-6 shrink-0 items-center justify-center rounded-md group-hover/folder:flex hover:bg-background/70 focus-visible:flex data-popup-open:flex pointer-coarse:flex"
+            />
+          }
+        >
+          <MoreHorizontal className="size-4" />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="w-48">
+          <DropdownMenuItem onClick={onRename}>
+            <Pencil className="size-4" /> {t("Rinomina")}
+          </DropdownMenuItem>
+          <DropdownMenuItem variant="destructive" onClick={onDelete}>
+            <FolderMinus className="size-4" /> {t("Elimina cartella")}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  )
+}
+
+/** Un filtro a pillola, sul telefono */
+function FilterChip({
+  label,
+  count,
+  active,
+  icon,
+  onClick,
+}: {
+  label: string
+  count: number | null
+  active: boolean
+  icon?: React.ReactNode
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-current={active ? "page" : undefined}
+      className={cn(
+        "flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition",
+        active
+          ? "border-transparent bg-foreground text-background"
+          : "border-border bg-background text-muted-foreground hover:text-foreground"
+      )}
+    >
+      {icon}
+      {label}
+      {count !== null ? (
+        <span className="tabular-nums opacity-60">{count}</span>
+      ) : null}
+    </button>
+  )
+}
+
 function EmptyState({
   filter,
   searching,
+  inFolder,
   onCreate,
 }: {
   filter: Filter
   searching: boolean
+  inFolder: boolean
   onCreate: (kind: FileKind) => void
 }) {
   const t = useT()
   const message = searching
     ? t("Nessun file contiene quello che cerchi.")
-    : filter === "trash"
-      ? t("Il cestino è vuoto.")
-      : filter === "starred"
-        ? t("Nessun preferito: aggiungili dal menu di un file.")
-        : t("Non c'è ancora niente qui.")
+    : inFolder
+      ? t(
+          "La cartella è vuota: trascinaci dei file, o usa «Sposta in» dal loro menu."
+        )
+      : filter === "trash"
+        ? t("Il cestino è vuoto.")
+        : filter === "starred"
+          ? t("Nessun preferito: aggiungili dal menu di un file.")
+          : t("Non c'è ancora niente qui.")
   return (
     <div className="flex h-full min-h-72 flex-col items-center justify-center gap-3 px-4 text-center">
       <div className="flex size-14 items-center justify-center rounded-2xl bg-accent text-primary">
@@ -1094,6 +1606,11 @@ function FileCard({
   selected,
   selectMode,
   onPick,
+  folders,
+  showFolder,
+  dragIds,
+  onMove,
+  onNewFolder,
   onRename,
   onTrash,
 }: {
@@ -1104,6 +1621,13 @@ function FileCard({
   selectMode: boolean
   /** `range`: con Maiuscole, fino all'ultimo file scelto */
   onPick: (range: boolean) => void
+  folders: string[]
+  /** fuori da una cartella aperta il file mostra la sua */
+  showFolder: boolean
+  /** i file che si trascinano partendo da questo: lui o tutti gli scelti */
+  dragIds: () => string[]
+  onMove: (target: string | null) => void
+  onNewFolder: () => void
   onRename: () => void
   onTrash: () => void
 }) {
@@ -1140,6 +1664,7 @@ function FileCard({
           </p>
           <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
             {f.kind === "board" ? t("Board") : t("Documento")} ·{" "}
+            {showFolder && f.folder && !inTrash ? `${f.folder} · ` : null}
             {inTrash
               ? t("eliminato {timeAgo}", { timeAgo: timeAgo(f.deletedAt!) })
               : timeAgo(f.updatedAt)}
@@ -1157,6 +1682,13 @@ function FileCard({
   return (
     <div
       data-selected={selected ? "" : undefined}
+      // trascinato su una cartella della barra laterale ci finisce dentro,
+      // con tutti quelli scelti se fa parte della selezione
+      onDragStart={(event) => {
+        if (inTrash) return
+        event.dataTransfer.setData(DRAG_FILES, JSON.stringify(dragIds()))
+        event.dataTransfer.effectAllowed = "copyMove"
+      }}
       className={cn(
         // le card fuori schermo non si disegnano: con molti file le anteprime
         // delle board pesano
@@ -1266,6 +1798,20 @@ function FileCard({
             >
               <Copy className="size-4" /> {t("Duplica")}
             </DropdownMenuItem>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <Folder className="size-4" /> {t("Sposta in")}
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent className="w-56">
+                <MoveItems
+                  folders={folders}
+                  current={f.folder}
+                  inAFolder={Boolean(f.folder)}
+                  onMove={onMove}
+                  onNewFolder={onNewFolder}
+                />
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
             <DropdownMenuItem onClick={() => getWorkspace().toggleStar(f.id)}>
               <Star className="size-4" />
               {f.starred

@@ -76,6 +76,13 @@
     "de": "{count} Elemente",
     "pt": "{count} elementos"
   },
+  "{count} file": {
+    "en": "{count} files",
+    "es": "{count} archivos",
+    "fr": "{count} fichiers",
+    "de": "{count} Dateien",
+    "pt": "{count} arquivos"
+  },
   "{count} file esportati": {
     "en": "{count} files exported",
     "es": "{count} archivos exportados",
@@ -90,12 +97,26 @@
     "de": "{count} Dateien wiederhergestellt",
     "pt": "{count} arquivos restaurados"
   },
+  "{count} file spostati in «{folder}»": {
+    "en": "{count} files moved to “{folder}”",
+    "es": "{count} archivos movidos a «{folder}»",
+    "fr": "{count} fichiers déplacés dans « {folder} »",
+    "de": "{count} Dateien nach „{folder}“ verschoben",
+    "pt": "{count} arquivos movidos para “{folder}”"
+  },
   "{count} file spostati nel cestino": {
     "en": "{count} files moved to the trash",
     "es": "{count} archivos movidos a la papelera",
     "fr": "{count} fichiers placés dans la corbeille",
     "de": "{count} Dateien in den Papierkorb verschoben",
     "pt": "{count} arquivos movidos para a lixeira"
+  },
+  "{count} file tolti dalla cartella": {
+    "en": "{count} files removed from the folder",
+    "es": "{count} archivos sacados de la carpeta",
+    "fr": "{count} fichiers retirés du dossier",
+    "de": "{count} Dateien aus dem Ordner genommen",
+    "pt": "{count} arquivos retirados da pasta"
   },
   "{count} pagine": {
     "en": "{count} pages",
@@ -174,6 +195,13 @@
     "de": "1 Kopie erstellt",
     "pt": "1 cópia criada"
   },
+  "1 file": {
+    "en": "1 file",
+    "es": "1 archivo",
+    "fr": "1 fichier",
+    "de": "1 Datei",
+    "pt": "1 arquivo"
+  },
   "1 file esportato": {
     "en": "1 file exported",
     "es": "1 archivo exportado",
@@ -188,12 +216,26 @@
     "de": "1 Datei wiederhergestellt",
     "pt": "1 arquivo restaurado"
   },
+  "1 file spostato in «{folder}»": {
+    "en": "1 file moved to “{folder}”",
+    "es": "1 archivo movido a «{folder}»",
+    "fr": "1 fichier déplacé dans « {folder} »",
+    "de": "1 Datei nach „{folder}“ verschoben",
+    "pt": "1 arquivo movido para “{folder}”"
+  },
   "1 file spostato nel cestino": {
     "en": "1 file moved to the trash",
     "es": "1 archivo movido a la papelera",
     "fr": "1 fichier placé dans la corbeille",
     "de": "1 Datei in den Papierkorb verschoben",
     "pt": "1 arquivo movido para a lixeira"
+  },
+  "1 file tolto dalla cartella": {
+    "en": "1 file removed from the folder",
+    "es": "1 archivo sacado de la carpeta",
+    "fr": "1 fichier retiré du dossier",
+    "de": "1 Datei aus dem Ordner genommen",
+    "pt": "1 arquivo retirado da pasta"
   },
   "1 pagina": {
     "en": "1 page",
@@ -811,6 +853,13 @@
     "de": "Aktionen für {title}",
     "pt": "Ações para {title}"
   },
+  "Azioni per la cartella {folder}": {
+    "en": "Actions for folder {folder}",
+    "es": "Acciones de la carpeta {folder}",
+    "fr": "Actions du dossier {folder}",
+    "de": "Aktionen für Ordner {folder}",
+    "pt": "Ações da pasta {folder}"
+  },
   "Azzurro": {
     "en": "Light blue",
     "es": "Azul claro",
@@ -1167,6 +1216,27 @@
     "fr": "Papier",
     "de": "Papier",
     "pt": "Papel"
+  },
+  "Cartella «{folder}» creata": {
+    "en": "Folder “{folder}” created",
+    "es": "Carpeta «{folder}» creada",
+    "fr": "Dossier « {folder} » créé",
+    "de": "Ordner „{folder}“ erstellt",
+    "pt": "Pasta “{folder}” criada"
+  },
+  "Cartella «{folder}» eliminata": {
+    "en": "Folder “{folder}” deleted",
+    "es": "Carpeta «{folder}» eliminada",
+    "fr": "Dossier « {folder} » supprimé",
+    "de": "Ordner „{folder}“ gelöscht",
+    "pt": "Pasta “{folder}” excluída"
+  },
+  "Cartelle": {
+    "en": "Folders",
+    "es": "Carpetas",
+    "fr": "Dossiers",
+    "de": "Ordner",
+    "pt": "Pastas"
   },
   "Casella da spuntare, vuota": {
     "en": "Checkbox, empty task",
@@ -1707,6 +1777,13 @@
     "de": "erstellen",
     "pt": "criar"
   },
+  "Crea": {
+    "en": "Create",
+    "es": "Crear",
+    "fr": "Créer",
+    "de": "Erstellen",
+    "pt": "Criar"
+  },
   "Crea nuovo": {
     "en": "Create new",
     "es": "Crear nuevo",
@@ -2161,6 +2238,13 @@
     "fr": "Supprimer",
     "de": "Löschen",
     "pt": "Excluir"
+  },
+  "Elimina cartella": {
+    "en": "Delete folder",
+    "es": "Eliminar carpeta",
+    "fr": "Supprimer le dossier",
+    "de": "Ordner löschen",
+    "pt": "Excluir pasta"
   },
   "Elimina la riga": {
     "en": "Delete the row",
@@ -2722,12 +2806,26 @@
     "de": "Start|Projekte|Detail",
     "pt": "Início|Projetos|Detalhe"
   },
+  "I {count} file andranno nella cartella nuova.": {
+    "en": "The {count} files will go into the new folder.",
+    "es": "Los {count} archivos irán a la nueva carpeta.",
+    "fr": "Les {count} fichiers iront dans le nouveau dossier.",
+    "de": "Die {count} Dateien kommen in den neuen Ordner.",
+    "pt": "Os {count} arquivos irão para a nova pasta."
+  },
   "I {count} file verranno eliminati per sempre.": {
     "en": "The {count} files will be deleted forever.",
     "es": "Los {count} archivos se eliminarán para siempre.",
     "fr": "Les {count} fichiers seront supprimés définitivement.",
     "de": "Die {count} Dateien werden endgültig gelöscht.",
     "pt": "Os {count} arquivos serão excluídos para sempre."
+  },
+  "I file che conteneva restano in «Tutti i file».": {
+    "en": "The files it held stay in “All files”.",
+    "es": "Los archivos que contenía siguen en «Todos los archivos».",
+    "fr": "Les fichiers qu'il contenait restent dans « Tous les fichiers ».",
+    "de": "Die enthaltenen Dateien bleiben in „Alle Dateien“.",
+    "pt": "Os arquivos que continha ficam em “Todos os arquivos”."
   },
   "I file nel cestino si eliminano da soli dopo 30 giorni.": {
     "en": "The files in the trash delete themselves after 30 days.",
@@ -2805,6 +2903,13 @@
     "fr": "Le fichier .json se réimporte depuis « Importer », même sur un autre ordinateur.",
     "de": "Die .json-Datei importierst du über „Importieren“ wieder, auch auf einem anderen Computer.",
     "pt": "O arquivo .json é reimportado em “Importar”, inclusive em outro computador."
+  },
+  "Il file andrà nella cartella nuova.": {
+    "en": "The file will go into the new folder.",
+    "es": "El archivo irá a la nueva carpeta.",
+    "fr": "Le fichier ira dans le nouveau dossier.",
+    "de": "Die Datei kommt in den neuen Ordner.",
+    "pt": "O arquivo irá para a nova pasta."
   },
   "Il file verrà eliminato per sempre.": {
     "en": "The file will be deleted forever.",
@@ -3197,6 +3302,13 @@
     "fr": "Le SVG contient tout le document dans une seule image vectorielle.",
     "de": "Die SVG-Datei enthält das ganze Dokument in einem einzigen Vektorbild.",
     "pt": "O SVG contém o documento inteiro em uma única imagem vetorial."
+  },
+  "La cartella è vuota: trascinaci dei file, o usa «Sposta in» dal loro menu.": {
+    "en": "The folder is empty: drag files here, or use “Move to” from their menu.",
+    "es": "La carpeta está vacía: arrastra archivos aquí o usa «Mover a» desde su menú.",
+    "fr": "Le dossier est vide : faites-y glisser des fichiers, ou utilisez « Déplacer vers » dans leur menu.",
+    "de": "Der Ordner ist leer: Dateien hierher ziehen oder „Verschieben nach“ aus ihrem Menü verwenden.",
+    "pt": "A pasta está vazia: arraste arquivos para cá ou use “Mover para” no menu deles."
   },
   "Landing page": {
     "en": "Landing page",
@@ -3625,6 +3737,13 @@
     "de": "Keine",
     "pt": "Nenhuma"
   },
+  "Nessuna cartella. Creane una con +.": {
+    "en": "No folders. Create one with +.",
+    "es": "Ninguna carpeta. Crea una con +.",
+    "fr": "Aucun dossier. Créez-en un avec +.",
+    "de": "Keine Ordner. Erstelle einen mit +.",
+    "pt": "Nenhuma pasta. Crie uma com +."
+  },
   "Nessuna didascalia «{label}»: aggiungila con Inserisci didascalia.": {
     "en": "No “{label}” caption: add one with Insert caption.",
     "es": "No hay ningún título «{label}»: añádelo con Insertar título.",
@@ -3715,6 +3834,13 @@
     "fr": "Nom du fichier",
     "de": "Name der Datei",
     "pt": "Nome do arquivo"
+  },
+  "Nome della cartella": {
+    "en": "Folder name",
+    "es": "Nombre de la carpeta",
+    "fr": "Nom du dossier",
+    "de": "Ordnername",
+    "pt": "Nome da pasta"
   },
   "Nome della serie {number}": {
     "en": "Name of series {number}",
@@ -3890,6 +4016,20 @@
     "fr": "Nouveau tableau",
     "de": "Neues Board",
     "pt": "Novo quadro"
+  },
+  "Nuova cartella": {
+    "en": "New folder",
+    "es": "Nueva carpeta",
+    "fr": "Nouveau dossier",
+    "de": "Neuer Ordner",
+    "pt": "Nova pasta"
+  },
+  "Nuova cartella…": {
+    "en": "New folder…",
+    "es": "Nueva carpeta…",
+    "fr": "Nouveau dossier…",
+    "de": "Neuer Ordner…",
+    "pt": "Nova pasta…"
   },
   "Nuovo": {
     "en": "New",
@@ -4780,6 +4920,13 @@
     "de": "Umbenennen",
     "pt": "Renomear"
   },
+  "Rinomina cartella": {
+    "en": "Rename folder",
+    "es": "Cambiar nombre de la carpeta",
+    "fr": "Renommer le dossier",
+    "de": "Ordner umbenennen",
+    "pt": "Renomear pasta"
+  },
   "Ripristina": {
     "en": "Redo",
     "es": "Rehacer",
@@ -5403,6 +5550,13 @@
     "de": "Den Absatz verschieben",
     "pt": "Mover o parágrafo"
   },
+  "Sposta in": {
+    "en": "Move to",
+    "es": "Mover a",
+    "fr": "Déplacer vers",
+    "de": "Verschieben nach",
+    "pt": "Mover para"
+  },
   "Sposta nel cestino": {
     "en": "Move to the trash",
     "es": "Mover a la papelera",
@@ -5795,6 +5949,13 @@
     "de": "Anrede",
     "pt": "Tratamento"
   },
+  "Togli dalla cartella": {
+    "en": "Remove from folder",
+    "es": "Sacar de la carpeta",
+    "fr": "Retirer du dossier",
+    "de": "Aus dem Ordner nehmen",
+    "pt": "Retirar da pasta"
+  },
   "Togli intestazione": {
     "en": "Remove header row",
     "es": "Quitar el encabezado",
@@ -5864,6 +6025,13 @@
     "fr": "Faites glisser pour déplacer le modèle",
     "de": "Ziehen, um das Modell zu verschieben",
     "pt": "Arraste para mover o modelo"
+  },
+  "Trascinaci i file, o usa «Sposta in» dal loro menu.": {
+    "en": "Drag files into it, or use “Move to” from their menu.",
+    "es": "Arrastra archivos a ella o usa «Mover a» desde su menú.",
+    "fr": "Faites-y glisser des fichiers, ou utilisez « Déplacer vers » dans leur menu.",
+    "de": "Ziehe Dateien hinein oder verwende „Verschieben nach“ aus ihrem Menü.",
+    "pt": "Arraste arquivos para ela ou use “Mover para” no menu deles."
   },
   "Trattati": {
     "en": "Treaties",
