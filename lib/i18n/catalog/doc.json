@@ -8084,6 +8084,13 @@
     "de": "Nötig ist eine https-Adresse zu einer .glb- oder .gltf-Datei",
     "pt": "É preciso um endereço https para um arquivo .glb ou .gltf"
   },
+  "Serve un indirizzo https a un'immagine": {
+    "en": "You need an https address pointing to an image",
+    "es": "Hace falta una dirección https de una imagen",
+    "fr": "Il faut une adresse https vers une image",
+    "de": "Es wird eine https-Adresse zu einem Bild benötigt",
+    "pt": "É preciso um endereço https de uma imagem"
+  },
   "Serve un layout a più colonne": {
     "en": "A multi-column layout is needed",
     "es": "Hace falta un diseño de varias columnas",
