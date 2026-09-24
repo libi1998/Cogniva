@@ -34,10 +34,11 @@ Diagrams, wireframes and professional documents: **no account**, **no server**, 
 
 - 🔒 **Truly private** — your files never leave your browser. No account, no cloud, no tracking.
 - 📴 **Works offline** — translation, neural voices and synonyms run on your device, even without internet.
-- 📝 **A complete word processor** — nine ribbon tabs: styles, track changes, footnotes, citations, mail merge, table of contents and much more.
+- 📝 **A complete word processor** — nine ribbon tabs plus a contextual one for tables, pictures, shapes and charts: styles, track changes, footnotes, citations, mail merge, table of contents and much more.
+- 🗂️ **Your files in order** — folders, favorites and multi-select to move, duplicate, export or delete many files at once.
 - 🗺️ **Infinite boards** — flowcharts, wireframes and brainstorming, ready to paste into your documents.
-- 🔁 **Plays well with others** — open DOCX and Markdown files, export to DOCX, PDF, Markdown, PNG, SVG and JSON.
-- ⚡ **Blazing fast** — Next.js 16 with prerendering and the React Compiler: a keystroke takes under a millisecond, even in a 12,000-word document.
+- 🔁 **Plays well with others** — open DOCX and Markdown files, export to DOCX, **real vector PDF**, Markdown, PNG, SVG and JSON.
+- ⚡ **Blazing fast** — Next.js 16 with prerendering and the React Compiler: a keystroke takes under a millisecond, even in a 12,000-word document, and boards redraw once per frame however fast you drag.
 - 🌗 **Light, dark, everywhere** — light and dark themes on desktop, tablet and phone.
 - 🌍 **Speaks your language** — the whole interface in 🇮🇹 Italian, 🇬🇧 English, 🇪🇸 Spanish, 🇫🇷 French, 🇩🇪 German and 🇧🇷 Portuguese. It picks the one your browser asks for, and you can switch any time.
 
@@ -63,6 +64,14 @@ Diagrams, wireframes and professional documents: **no account**, **no server**, 
 
 ## ✨ What you can do
 
+### 🏠 All your files
+
+- 🗂️ **Folders** in the sidebar: drag files onto them, or use _Move to_; rename or delete a
+  folder and its files stay safe
+- ☑️ **Select several files** with the checkbox, ⌘/Ctrl + click, ⇧ + click or ⌘A, then
+  favorite, duplicate, move, export or trash them in one go — with Undo
+- 🔎 **Full-text search** inside every file, ⭐ favorites and a 🗑️ trash that keeps files for 30 days
+
 ### 🗺️ Boards
 
 - 🧭 **Three modes**: _Diagram_ for flows, _Wireframe_ for interfaces, _Cards_ for brainstorming and kanban
@@ -76,9 +85,16 @@ Diagrams, wireframes and professional documents: **no account**, **no server**, 
 <details open>
 <summary><b>✍️ Write and format</b></summary>
 
-- 🎨 **Editable styles** with a style gallery and a Styles pane
+- 🎨 **Editable styles** with a style gallery, plus **Paragraph** and **Font** dialogs like
+  Word's (keep with next, page break before, small caps, character spacing…)
 - 🔤 **308 modern fonts**, including free metric-compatible alternatives to the most common document fonts
-- 📃 **Real pages** with margins, headers, footers, columns and line numbers
+- 📃 **Real pages** — a new document starts on a full A4 sheet — with margins, columns and
+  line numbers
+- 🧾 **Headers and footers written right on the sheet**: double-click the margin, add page
+  numbers, title, author or date
+- 🎛️ **A contextual tab** for the object you're working on — _Table_, _Picture format_,
+  _Shape format_, _Chart format_, _Table of contents_… — that opens by itself on insert
+- ¶ **Formatting marks** for spaces, tabs, line breaks, paragraphs and cells
 - 🎙️ **Dictation**: just speak and the text appears, punctuation included
 - 🔍 **Find and replace**, word count and spell check
 - ✨ **AutoCorrect** while you type: smart quotes, dashes, `(c)` → ©, `1/2` → ½, capital
@@ -93,7 +109,12 @@ Diagrams, wireframes and professional documents: **no account**, **no server**, 
 <details>
 <summary><b>🧱 Insert</b></summary>
 
-- 🖼️ Pictures with seven text wrapping options, shapes, icons and smart diagrams
+- 🔲 **Tables like Word's**: borders side by side with pen style, width and color, shading,
+  nine-position alignment, cell margins and row height for every cell
+- ✥ **A move handle** on tables, charts, tables of contents, boards and more: click to
+  select, drag to move between paragraphs
+- 🖼️ Pictures with seven text wrapping options, icons and smart diagrams
+- 🔷 **Shapes** with a solid fill and outline, text inside, free to move on the page
 - 📊 Charts, 🧮 LaTeX equations, 🎬 online videos (YouTube, Vimeo, Loom…)
 - 🧊 **3D models** you can rotate with the mouse, or 12 ready-made 3D shapes
 - 🗺️ Embedded boards, cover pages, bookmarks and cross-references
@@ -103,7 +124,7 @@ Diagrams, wireframes and professional documents: **no account**, **no server**, 
 <details>
 <summary><b>📚 References and mailings</b></summary>
 
-- 📑 **Table of contents** and table of figures that update themselves
+- 📑 **Table of contents** with an editable title, dot leaders and page numbers, and a table of figures, both updating themselves
 - 🎓 **Citations and bibliography** in APA, MLA, Chicago and ISO 690
 - 🦶 Footnotes and endnotes, 🏷️ captions
 - ✉️ **Mail merge**: envelopes, labels, fields and rules
@@ -162,8 +183,12 @@ Nothing is sent to external services: models are downloaded once and then work o
 
 Just **drag a file** onto the window to open it. 🪄
 
-Exporting opens a **preview of every page** with its settings — pages, paper, quality, colors,
-selectable text — and builds the PDF right in the app, no print dialog. 🖨️
+Exporting opens a **preview of every page** with its settings — format, pages, paper,
+colors, file name — and builds the PDF right in the app, no print dialog. 🖨️ It's a
+**real vector PDF**: text drawn from the same font files the browser uses, sharp at any
+zoom, with clickable links and **always selectable, searchable text**; what can't be
+vector (photos, shadows, filters) is rendered at **600 dpi**. The document's SVG is true
+vector paths too.
 
 ### 🌍 Languages
 
