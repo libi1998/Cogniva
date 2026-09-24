@@ -1595,6 +1595,14 @@ export const StyledImage = Image.extend({
       borderWidth: dataAttr("border-width", 0, Number),
       borderColor: dataAttr<string | null>("border-color", null),
       shadow: dataAttr("shadow", false, (v) => v === "true"),
+      // una forma (Inserisci › Forme): il disegno si rifà da questi valori,
+      // `src` ne è sempre la copia aggiornata per stampa ed esportazioni
+      shape: dataAttr<string | null>("shape", null),
+      fill: dataAttr<string | null>("fill", null),
+      stroke: dataAttr<string | null>("stroke", null),
+      strokeWidth: dataAttr("stroke-width", 3, Number),
+      ratio: dataAttr<number | null>("ratio", null, Number),
+      label: dataAttr("label", ""),
     }
   },
 })

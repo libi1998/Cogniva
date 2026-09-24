@@ -13,6 +13,11 @@ import {
   type ImageAttrs,
 } from "@/lib/tiptap-extensions"
 import { cn } from "@/lib/utils"
+import {
+  isLineShape,
+  shapeImageAttrs,
+  type DocShapeKind,
+} from "@/lib/shape-svg"
 import { DocPageContext } from "./render-theme"
 import {
   placeFlowImage,
@@ -54,7 +59,15 @@ function ImageView({
   editor,
   getPos,
 }: NodeViewProps) {
-  const a = node.attrs as ImageAttrs & { src?: string; alt?: string }
+  const a = node.attrs as ImageAttrs & {
+    src?: string
+    alt?: string
+    shape?: string | null
+    fill?: string | null
+    stroke?: string | null
+    strokeWidth?: number
+    label?: string
+  }
   const pageHeight = React.useContext(DocPageContext)
   const free = isFreeWrap(a.wrap)
   const float = isFloatWrap(a.wrap)
@@ -188,6 +201,58 @@ function ImageView({
     window.addEventListener("pointerup", up)
   }
 
+  /**
+   * Le maniglie ai lati di una forma: la allungano solo in larghezza (e) o
+   * solo in altezza (s), come in Word. Lasciando, il disegno si rifà con le
+   * proporzioni nuove.
+   */
+  const stretch = (side: "e" | "s") => (e: React.PointerEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const el = box.current
+    const img = el?.querySelector("img")
+    const column = el?.closest<HTMLElement>(".ProseMirror")
+    if (!el || !img || !column || !a.shape) return
+    const s = viewScale(column)
+    const full = column.clientWidth
+    const rect = img.getBoundingClientRect()
+    const w0 = rect.width / s
+    const h0 = rect.height / s
+    const startX = e.clientX
+    const startY = e.clientY
+    let w = w0
+    let h = h0
+    const move = (ev: PointerEvent) => {
+      if (side === "e") {
+        w = Math.min(full, Math.max(16, w0 + (ev.clientX - startX) / s))
+        img.style.width = `${w}px`
+      } else {
+        h = Math.max(8, h0 + (ev.clientY - startY) / s)
+      }
+      img.style.height = `${h}px`
+    }
+    const up = () => {
+      window.removeEventListener("pointermove", move)
+      window.removeEventListener("pointerup", up)
+      img.style.width = ""
+      img.style.height = ""
+      if (Math.abs(w - w0) < 1 && Math.abs(h - h0) < 1) return
+      updateAttributes({
+        ...shapeImageAttrs(a.shape as DocShapeKind, {
+          fill: String(a.fill ?? "none"),
+          stroke: String(a.stroke ?? "#000000"),
+          strokeWidth: Number(a.strokeWidth ?? 3),
+          ratio: h / w,
+          text: String(a.label ?? ""),
+        }),
+        width: `${Math.round((w / full) * 100)}%`,
+      })
+    }
+    window.addEventListener("pointermove", move)
+    window.addEventListener("pointerup", up)
+  }
+  const stretchable = Boolean(a.shape) && !isLineShape(String(a.shape))
+
   let wrapperStyle: React.CSSProperties = {}
   if (free) {
     // l'altezza salvata è quella sulla carta: a schermo si aggiungono gli
@@ -269,6 +334,16 @@ function ImageView({
                 role="presentation"
                 className={`doc-image-handle doc-image-handle-${c}`}
                 onPointerDown={resize(c)}
+              />
+            ))
+          : null}
+        {editor.isEditable && selected && stretchable
+          ? (["e", "s"] as const).map((side) => (
+              <span
+                key={side}
+                role="presentation"
+                className={`doc-image-handle doc-image-handle-${side}`}
+                onPointerDown={stretch(side)}
               />
             ))
           : null}

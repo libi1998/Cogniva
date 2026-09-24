@@ -119,6 +119,13 @@ export type DocState = {
   imageBorderColor: string
   imageShadow: boolean
   imageAlt: string
+  /** l'immagine è una forma: tipo, colori, proporzioni e testo */
+  imageShape: string | null
+  imageFill: string
+  imageStroke: string
+  imageStrokeWidth: number
+  imageRatio: number | null
+  imageLabel: string
 
   onEmbed: boolean
   embedHeight: number
@@ -250,6 +257,12 @@ const EMPTY: DocState = {
   imageBorderColor: "",
   imageShadow: false,
   imageAlt: "",
+  imageShape: null,
+  imageFill: "",
+  imageStroke: "",
+  imageStrokeWidth: 3,
+  imageRatio: null,
+  imageLabel: "",
   onEmbed: false,
   embedHeight: 320,
   embedCaption: "",
@@ -513,6 +526,12 @@ export function useDocState(editor: Editor | null): DocState {
           imageBorderColor: String(image.borderColor ?? ""),
           imageShadow: Boolean(image.shadow),
           imageAlt: String(image.alt ?? ""),
+          imageShape: image.shape ? String(image.shape) : null,
+          imageFill: String(image.fill ?? ""),
+          imageStroke: String(image.stroke ?? ""),
+          imageStrokeWidth: Number(image.strokeWidth ?? 3),
+          imageRatio: num(image.ratio),
+          imageLabel: String(image.label ?? ""),
 
           onEmbed,
           embedHeight: Number(embed.height ?? 320),

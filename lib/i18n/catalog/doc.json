@@ -174,6 +174,13 @@
     "de": "{band}, Mitte",
     "pt": "{band}, ao centro"
   },
+  "{color} chiaro": {
+    "en": "Light {color}",
+    "es": "{color} claro",
+    "fr": "{color} clair",
+    "de": "Helles {color}",
+    "pt": "{color} claro"
+  },
   "{color} scuro": {
     "en": "Dark {color}",
     "es": "{color} oscuro",
@@ -3499,6 +3506,13 @@
     "de": "Seitenformat",
     "pt": "Formato da página"
   },
+  "Formato forma": {
+    "en": "Shape format",
+    "es": "Formato de forma",
+    "fr": "Format de la forme",
+    "de": "Formformat",
+    "pt": "Formato da forma"
+  },
   "Formato grafico": {
     "en": "Chart format",
     "es": "Formato de gráfico",
@@ -6089,6 +6103,13 @@
     "de": "Kein Problem mit der Barrierefreiheit gefunden.",
     "pt": "Nenhum problema de acessibilidade encontrado."
   },
+  "Nessun riempimento": {
+    "en": "No fill",
+    "es": "Sin relleno",
+    "fr": "Aucun remplissage",
+    "de": "Keine Füllung",
+    "pt": "Sem preenchimento"
+  },
   "Nessun risultato": {
     "en": "No results",
     "es": "Sin resultados",
@@ -7552,6 +7573,20 @@
     "de": "Einzug verkleinern ⇧Tab",
     "pt": "Reduzir o recuo ⇧Tab"
   },
+  "Riempimento": {
+    "en": "Fill",
+    "es": "Relleno",
+    "fr": "Remplissage",
+    "de": "Füllung",
+    "pt": "Preenchimento"
+  },
+  "Riempimento forma": {
+    "en": "Shape fill",
+    "es": "Relleno de forma",
+    "fr": "Remplissage de la forme",
+    "de": "Formfüllung",
+    "pt": "Preenchimento da forma"
+  },
   "Rientri": {
     "en": "Indentation",
     "es": "Sangría",
@@ -8188,6 +8223,13 @@
     "fr": "Écrivez le contenu du code",
     "de": "Schreib den Inhalt des Codes",
     "pt": "Escreva o conteúdo do código"
+  },
+  "Scrivi il testo della forma": {
+    "en": "Type the shape's text",
+    "es": "Escribe el texto de la forma",
+    "fr": "Saisissez le texte de la forme",
+    "de": "Text der Form eingeben",
+    "pt": "Digite o texto da forma"
   },
   "Scrivi il titolo o riportalo a «Normale».": {
     "en": "Write the heading or set it back to “Normal”.",
@@ -9064,6 +9106,13 @@
     "de": "Zitierstil",
     "pt": "Estilo das citações"
   },
+  "Stile forma": {
+    "en": "Shape style",
+    "es": "Estilo de forma",
+    "fr": "Style de forme",
+    "de": "Formenart",
+    "pt": "Estilo da forma"
+  },
   "Stile sommario": {
     "en": "Contents style",
     "es": "Estilo de tabla de contenido",
@@ -9364,6 +9413,13 @@
     "fr": "Texte final, avec un trait rouge à côté",
     "de": "Endgültiger Text, daneben ein roter Strich",
     "pt": "Texto final, com uma linha vermelha ao lado"
+  },
+  "Testo nella forma": {
+    "en": "Text in shape",
+    "es": "Texto en la forma",
+    "fr": "Texte dans la forme",
+    "de": "Text in der Form",
+    "pt": "Texto na forma"
   },
   "Testo segnaposto": {
     "en": "Placeholder text",

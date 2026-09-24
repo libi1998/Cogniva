@@ -35,6 +35,7 @@ import {
   WholeWord,
 } from "lucide-react"
 import { toast } from "sonner"
+import { NodeSelection, type Transaction } from "@tiptap/pm/state"
 import {
   Box,
   Circle,
@@ -83,6 +84,8 @@ import {
   coverContent,
   iconSvg,
   SHAPE_GROUPS,
+  shapeImageAttrs,
+  shapeLook,
   shapeSvg,
   smartArtBoard,
   SMARTART_TEMPLATES,
@@ -621,6 +624,22 @@ function Models3DMenu({ ctx, accent }: { ctx: RibbonCtx; accent: string }) {
   )
 }
 
+/**
+ * Dopo l'inserimento l'oggetto resta selezionato, come in Word: la sua
+ * scheda si apre e si può subito spostare, ridimensionare o colorare.
+ */
+function selectInserted(type: string) {
+  return ({ tr }: { tr: Transaction }) => {
+    const $from = tr.selection.$from
+    const start = $from.depth ? $from.before(1) : $from.pos
+    const prev = tr.doc.resolve(start).nodeBefore
+    if (prev?.type.name === type) {
+      tr.setSelection(NodeSelection.create(tr.doc, start - prev.nodeSize))
+    }
+    return true
+  }
+}
+
 export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
   const t = useT()
   const { editor, st, theme, setTheme } = ctx
@@ -691,7 +710,10 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
   }
 
   const insertImage = (src: string, alt: string, width: string) =>
-    body().insertContent({ type: "image", attrs: { src, alt, width } }).run()
+    body()
+      .insertContent({ type: "image", attrs: { src, alt, width } })
+      .command(selectInserted("image"))
+      .run()
 
   const insertSmartArt = (id: string) => {
     const template = SMARTART_TEMPLATES.find((t) => t.id === id)
@@ -996,7 +1018,13 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
                 <DropdownMenuLabel>{group.label}</DropdownMenuLabel>
                 <MenuGrid columns={8}>
                   {group.shapes.map((shape) => {
-                    const svg = shapeSvg(shape.kind, accent.fill, accent.solid)
+                    const look = shapeLook(shape.kind, accent.solid)
+                    const svg = shapeSvg(
+                      shape.kind,
+                      look.fill,
+                      look.stroke,
+                      look
+                    )
                     return (
                       <GridButton
                         key={shape.kind}
@@ -1004,7 +1032,20 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
                         className="size-8"
                         onPick={() => {
                           ctx.openPanel()
-                          insertImage(svg.src, shape.label, `${svg.width}%`)
+                          // come in Word: colore pieno, davanti al testo e
+                          // libera di spostarsi sul foglio
+                          body()
+                            .insertContent({
+                              type: "image",
+                              attrs: {
+                                ...shapeImageAttrs(shape.kind, look),
+                                alt: shape.label,
+                                width: `${svg.width}%`,
+                                wrap: "front",
+                              },
+                            })
+                            .command(selectInserted("image"))
+                            .run()
                         }}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element -- anteprima SVG in data URI */}

@@ -610,3 +610,34 @@ test("intestazione e piè di pagina si scrivono sul foglio", async ({
   await page.keyboard.press("Enter")
   await expect(page.locator("[data-band]").first()).toContainText("1")
 })
+
+test("forme: piene, davanti al testo, con la loro scheda", async ({ page }) => {
+  await openDemo(page)
+  await caretAfter(page, 1, "clic destro.")
+  await openTab(page, "Inserisci")
+  await (await ribbonButton(page, "Forme")).click()
+  await page.getByRole("button", { name: "Rettangolo", exact: true }).click()
+
+  const shape = () =>
+    withEditor<Record<string, unknown> | null>(
+      page,
+      `let out = null
+       editor.state.doc.descendants((n) => { if (!out && n.attrs.shape) out = n.attrs })
+       return out`
+    )
+  // un colore pieno, non il riempimento tenue di prima
+  await expect.poll(async () => (await shape())?.wrap).toBe("front")
+  const first = await shape()
+  expect(first?.shape).toBe("rect")
+  expect(String(first?.fill)).toMatch(/^#[0-9a-f]{6}$/i)
+  expect(first?.fill).not.toBe("#ffffff")
+
+  // la scheda della forma si apre da sola; il riempimento cambia il disegno
+  await expect(
+    page.getByRole("tab", { name: "Formato forma" })
+  ).toHaveAttribute("aria-selected", "true")
+  await (await ribbonButton(page, "Riempimento")).click()
+  await page.getByRole("button", { name: "Bianco", exact: true }).click()
+  await expect.poll(async () => (await shape())?.fill).toBe("#ffffff")
+  expect(String((await shape())?.src)).toContain(encodeURIComponent("#ffffff"))
+})

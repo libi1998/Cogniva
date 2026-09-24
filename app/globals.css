@@ -989,6 +989,17 @@ body {
   right: -6px;
   cursor: nwse-resize;
 }
+/* le forme si allungano anche solo in larghezza o solo in altezza */
+.doc-image-handle-e {
+  top: calc(50% - 5px);
+  right: -6px;
+  cursor: ew-resize;
+}
+.doc-image-handle-s {
+  left: calc(50% - 5px);
+  bottom: -6px;
+  cursor: ns-resize;
+}
 
 .doc-prose sub,
 .doc-prose sup {

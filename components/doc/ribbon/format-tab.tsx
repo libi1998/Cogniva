@@ -26,6 +26,8 @@ import {
   SquareDashed,
   TableColumnsSplit,
   Trash2,
+  Shapes,
+  Type,
 } from "lucide-react"
 import {
   DropdownMenuItem,
@@ -35,6 +37,11 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { CHART_TYPES, parseChartAttr, type ChartType } from "@/lib/chart"
+import {
+  isLineShape,
+  shapeImageAttrs,
+  type DocShapeKind,
+} from "@/lib/shape-svg"
 import { SWATCHES, whim } from "@/lib/palette"
 import type { BorderKind, BorderLine } from "@/lib/table-format"
 import { cn } from "@/lib/utils"
@@ -65,6 +72,7 @@ import { useT, tr } from "@/lib/i18n/client"
  */
 
 export type FormatKind =
+  | "shape"
   | "image"
   | "chart"
   | "toc"
@@ -80,6 +88,7 @@ export type FormatKind =
 
 /** L'oggetto su cui si lavora, o null nel testo semplice */
 export function formatKind(st: DocState): FormatKind | null {
+  if (st.onImage && st.imageShape) return "shape"
   if (st.onImage) return "image"
   if (st.onChart) return "chart"
   if (st.onToc) return "toc"
@@ -98,6 +107,8 @@ export function formatKind(st: DocState): FormatKind | null {
 /** Il nome della scheda, come in Word */
 export function formatTabLabel(kind: FormatKind): string {
   switch (kind) {
+    case "shape":
+      return tr("Formato forma")
     case "image":
       return tr("Formato immagine")
     case "chart":
@@ -892,6 +903,159 @@ function TableTab({ ctx }: { ctx: RibbonCtx }) {
 
 /* ------------------------------- immagine -------------------------------- */
 
+const SHAPE_FILLS = [
+  {
+    get label() {
+      return tr("Nessun riempimento")
+    },
+    value: "none",
+    swatch: NONE_SWATCH,
+  },
+  {
+    get label() {
+      return tr("Bianco")
+    },
+    value: "#ffffff",
+  },
+  ...LINE_COLORS,
+  ...SWATCHES.filter((s) => s.key !== "white").map((s) => ({
+    label: tr("{color} chiaro", { color: s.label }),
+    value: s.fill,
+  })),
+]
+
+/** Riempimento, contorno e testo di una forma: il disegno si rifà */
+function ShapeGroup({ ctx }: { ctx: RibbonCtx }) {
+  const t = useT()
+  const { editor, st } = ctx
+  const kind = st.imageShape as DocShapeKind
+  const line = isLineShape(kind)
+  const look = {
+    fill: st.imageFill || "none",
+    stroke: st.imageStroke || "#000000",
+    strokeWidth: st.imageStrokeWidth,
+    ratio: st.imageRatio,
+    text: st.imageLabel,
+  }
+  const set = (patch: Partial<typeof look>) =>
+    editor
+      .chain()
+      .updateAttributes("image", shapeImageAttrs(kind, { ...look, ...patch }))
+      .run()
+  return (
+    <RibbonGroup label={t("Stile forma")} icon={<Shapes className="size-5" />}>
+      {line ? null : (
+        <RibbonMenu
+          className="w-auto"
+          trigger={
+            <RibbonButton
+              large
+              chevron
+              label={t("Riempimento")}
+              icon={
+                <span className="relative">
+                  <PaintBucket className="size-5" />
+                  <span
+                    className="absolute -bottom-1 left-0 h-1 w-5 rounded-sm"
+                    style={{
+                      background:
+                        look.fill === "none" ? "transparent" : look.fill,
+                      boxShadow: "inset 0 0 0 1px rgba(15,1,26,0.2)",
+                    }}
+                  />
+                </span>
+              }
+            />
+          }
+        >
+          <DropdownMenuLabel>{t("Riempimento forma")}</DropdownMenuLabel>
+          <SwatchGrid
+            columns={8}
+            colors={SHAPE_FILLS}
+            value={look.fill}
+            onPick={(fill) => set({ fill })}
+          />
+        </RibbonMenu>
+      )}
+      <RibbonMenu
+        className="w-auto"
+        trigger={
+          <RibbonButton
+            large
+            chevron
+            label={t("Contorno")}
+            icon={
+              <span className="relative">
+                <SquareDashed className="size-5" />
+                <span
+                  className="absolute -bottom-1 left-0 h-1 w-5 rounded-sm"
+                  style={{
+                    background: look.strokeWidth ? look.stroke : "transparent",
+                  }}
+                />
+              </span>
+            }
+          />
+        }
+      >
+        <DropdownMenuLabel>{t("Colore del contorno")}</DropdownMenuLabel>
+        <SwatchGrid
+          columns={8}
+          colors={LINE_COLORS}
+          value={look.stroke}
+          onPick={(stroke) =>
+            set({ stroke, strokeWidth: look.strokeWidth || 2 })
+          }
+        />
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel>{t("Spessore")}</DropdownMenuLabel>
+        {(line ? [1, 2, 3, 4, 6, 8] : [0, 1, 2, 3, 4, 6]).map((w) => (
+          <DropdownMenuItem
+            key={w}
+            onClick={() => set({ strokeWidth: w })}
+            className={cn(look.strokeWidth === w && "font-semibold")}
+          >
+            {w ? (
+              <span
+                className="block w-16"
+                style={{ borderTop: `${w}px solid currentColor` }}
+              />
+            ) : (
+              t("Nessun contorno")
+            )}
+          </DropdownMenuItem>
+        ))}
+      </RibbonMenu>
+      {line ? null : (
+        <RibbonPopover
+          label={t("Testo nella forma")}
+          trigger={
+            <RibbonButton
+              large
+              chevron
+              label={t("Testo")}
+              active={Boolean(look.text)}
+              icon={<Type className="size-5" />}
+            />
+          }
+        >
+          <div className="space-y-2 p-3">
+            <p className="text-xs font-medium">{t("Testo nella forma")}</p>
+            <Textarea
+              rows={3}
+              autoFocus
+              className="text-sm"
+              value={look.text}
+              placeholder={t("Scrivi il testo della forma")}
+              onChange={(e) => set({ text: e.target.value })}
+            />
+          </div>
+        </RibbonPopover>
+      )}
+    </RibbonGroup>
+  )
+}
+
 function ImageTab({ ctx }: { ctx: RibbonCtx }) {
   const t = useT()
   const { editor, st } = ctx
@@ -899,6 +1063,7 @@ function ImageTab({ ctx }: { ctx: RibbonCtx }) {
     editor.chain().updateAttributes("image", attrs).run()
   return (
     <>
+      {st.imageShape ? <ShapeGroup ctx={ctx} /> : null}
       <RibbonGroup
         label={t("Stile")}
         icon={<SquareDashed className="size-5" />}
@@ -1308,6 +1473,7 @@ export function FormatTab({ ctx }: { ctx: RibbonCtx }) {
   switch (kind) {
     case "table":
       return <TableTab ctx={ctx} />
+    case "shape":
     case "image":
       return <ImageTab ctx={ctx} />
     case "chart":
