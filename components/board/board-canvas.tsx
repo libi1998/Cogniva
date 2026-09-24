@@ -20,7 +20,7 @@ import {
 } from "@/lib/items"
 import {
   boundsOf,
-  parseClip,
+  clipForPaste,
   readClipFallback,
   writeClip,
 } from "@/lib/clipboard"
@@ -1080,7 +1080,7 @@ export function BoardCanvas({
   const onPaste = React.useEffectEvent((e: ClipboardEvent) => {
     if (isTypingTarget(document.activeElement)) return
     const text = e.clipboardData?.getData("text/plain") ?? ""
-    const payload = parseClip(text) ?? readClipFallback()
+    const payload = clipForPaste(text)
     const rect = ref.current?.getBoundingClientRect()
     const world = toWorld(
       lastPointer.current.x || (rect ? rect.left + rect.width / 2 : 400),

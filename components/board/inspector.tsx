@@ -183,21 +183,23 @@ const SIDES: { value: Side; label: string }[] = [
   },
 ]
 
-// le etichette mostrate nella casella chiusa: Base UI altrimenti mostra il valore
-const WIRE_ITEMS = Object.fromEntries(
-  Object.entries(WIRE_SPECS).map(([key, spec]) => [key, spec.label])
-)
-const FRAME_ITEMS = Object.fromEntries(
-  Object.entries(FRAME_SPECS).map(([key, spec]) => [key, spec.label])
-)
-const PAGE_ITEMS = {
-  get infinite() {
-    return tr("Infinita")
-  },
+// le etichette mostrate nella casella chiusa: Base UI altrimenti mostra il
+// valore. Si leggono a ogni disegno: calcolate una volta sola restavano nella
+// lingua di prima quando si cambia lingua
+const wireItems = () =>
+  Object.fromEntries(
+    Object.entries(WIRE_SPECS).map(([key, spec]) => [key, spec.label])
+  )
+const frameItems = () =>
+  Object.fromEntries(
+    Object.entries(FRAME_SPECS).map(([key, spec]) => [key, spec.label])
+  )
+const pageItems = () => ({
+  infinite: tr("Infinita"),
   ...Object.fromEntries(
     Object.entries(PAGE_FORMATS).map(([key, format]) => [key, format.label])
   ),
-}
+})
 
 const KIND_LABEL: Record<string, string> = {
   get chart() {
@@ -494,7 +496,7 @@ export function BoardInspector({
               <Row label={t("Componente")} stacked>
                 <Select
                   value={first.wire}
-                  items={WIRE_ITEMS}
+                  items={wireItems()}
                   onValueChange={(v) => {
                     const spec = WIRE_SPECS[v as keyof typeof WIRE_SPECS]
                     patchNodes({
@@ -524,7 +526,7 @@ export function BoardInspector({
               <Row label={t("Dispositivo")} stacked>
                 <Select
                   value={first.frame ?? "plain"}
-                  items={FRAME_ITEMS}
+                  items={frameItems()}
                   onValueChange={(v) => {
                     const spec = FRAME_SPECS[v as FrameKind]
                     patchNodes({
@@ -1123,7 +1125,7 @@ export function BoardInspector({
       <Section title={t("Pagina")}>
         <Row label={t("Formato")} stacked>
           <Select
-            items={PAGE_ITEMS}
+            items={pageItems()}
             value={theme.page.format}
             onValueChange={(v) =>
               setTheme(fileId, {
