@@ -8,6 +8,7 @@ import { formatPageNumber } from "./header-footer"
 import { getPagination, pageAt } from "./pagination"
 import { docTitleText } from "./tiptap-extensions"
 import type { PageNumberFormat } from "./types"
+import { localDateStamp } from "./utils"
 
 import { tr as translate, currentRegion } from "@/lib/i18n/client"
 /**
@@ -87,7 +88,13 @@ export const DATE_FORMATS: {
         year: "2-digit",
       }),
   },
-  { id: "iso", kind: "date", render: (d) => d.toISOString().slice(0, 10) },
+  {
+    id: "iso",
+    kind: "date",
+    // la data del posto in cui si è: toISOString è in UTC, e in Italia dopo
+    // mezzanotte il campo mostrava ancora il giorno prima
+    render: (d) => localDateStamp(d),
+  },
   {
     id: "month",
     kind: "date",
