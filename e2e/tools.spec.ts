@@ -309,3 +309,62 @@ test("board: un testo copiato da un'altra app si incolla come testo", async ({
     page.locator("[data-node-id]", { hasText: "testo da fuori" })
   ).toBeVisible()
 })
+
+test("Disegno: una passata di gomma si annulla in un passo solo", async ({
+  page,
+}) => {
+  await openDemo(page)
+  await openTab(page, "Disegno")
+  await page.locator('[role="tabpanel"] button[title*=" px"]').first().click()
+  const sheet = (await page.locator("#doc-sheet").boundingBox())!
+  const x = sheet.x + 150
+  const y = sheet.y + 300
+  for (let k = 0; k < 3; k += 1) {
+    await page.mouse.move(x + k * 60, y)
+    await page.mouse.down()
+    for (let i = 1; i <= 8; i += 1)
+      await page.mouse.move(x + k * 60, y + i * 10)
+    await page.mouse.up()
+  }
+  const strokes = page.locator("svg[data-ink] path")
+  await expect(strokes).toHaveCount(3)
+
+  await (await ribbonButton(page, "Gomma")).click()
+  await page.mouse.move(x - 20, y + 40)
+  await page.mouse.down()
+  for (let i = 1; i <= 20; i += 1)
+    await page.mouse.move(x - 20 + i * 10, y + 40)
+  await page.mouse.up()
+  await expect(strokes).toHaveCount(0)
+
+  // prima ogni tratto cancellato era un passo: ne tornava uno alla volta
+  await (await ribbonButton(page, "Annulla tratto")).click()
+  await expect(strokes).toHaveCount(3)
+})
+
+test("in inglese i decimali si scrivono col punto", async ({ page }) => {
+  await page.goto("/en/doc/demo-doc")
+  await expect(page.locator("#doc-sheet .ProseMirror")).toBeVisible()
+  await page.waitForFunction(() =>
+    Boolean(
+      (
+        document.querySelector("#doc-sheet .ProseMirror") as unknown as {
+          editor?: unknown
+        } | null
+      )?.editor
+    )
+  )
+  await withEditor(
+    page,
+    `editor.commands.setContent({ type: "doc", content: [
+      { type: "docTitle", content: [{ type: "text", text: "Test" }] },
+      { type: "paragraph", content: [{ type: "text", text: "small", marks: [{ type: "textStyle", attrs: { fontSize: "10.5pt" } }] }] },
+    ] })
+    editor.chain().focus().setTextSelection({ from: 7, to: 10 }).run()`
+  )
+  await openTab(page, "Home")
+  // prima «10,5» anche in inglese
+  await expect(page.getByLabel("Font size", { exact: true })).toHaveValue(
+    "10.5"
+  )
+})
