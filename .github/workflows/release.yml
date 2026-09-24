@@ -1,0 +1,32 @@
+# Pubblica una release quando si carica un tag di versione (vX.Y.Z): il titolo
+# è «Cogniva vX.Y.Z», le note sono quelle scritte in .github/release-notes.md.
+#
+#   git tag -a v1.2.0 -m "Cogniva v1.2.0" && git push origin v1.2.0
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pubblica la release
+        run: |
+          # un tag già pubblicato a mano non si tocca
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "La release $TAG esiste già"
+            exit 0
+          fi
+          gh release create "$TAG" --repo "$GITHUB_REPOSITORY" \
+            --verify-tag --latest \
+            --title "Cogniva $TAG" \
+            --notes-file .github/release-notes.md
