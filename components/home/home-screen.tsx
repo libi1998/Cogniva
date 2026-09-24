@@ -6,6 +6,8 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import {
   ArrowDownWideNarrow,
+  Check,
+  CheckSquare,
   Clock,
   Copy,
   Download,
@@ -23,6 +25,7 @@ import {
   Star,
   Trash2,
   Upload,
+  X,
 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -132,14 +135,34 @@ function titleCollator() {
   return collator.value
 }
 
-function exportAll() {
-  const blob = new Blob([exportWorkspace()], { type: "application/json" })
+/** Tutto lo spazio di lavoro in .json, oppure solo i file dati */
+function exportAll(ids?: readonly string[]) {
+  const blob = new Blob([exportWorkspace(ids)], { type: "application/json" })
   download(blob, `cogniva-${localDateStamp()}.json`)
-  toast.success(tr("Spazio di lavoro esportato"), {
-    description: tr(
-      "Il file .json si reimporta da «Importa» anche su un altro computer."
-    ),
-  })
+  toast.success(
+    ids
+      ? ids.length === 1
+        ? tr("1 file esportato")
+        : tr("{count} file esportati", { count: ids.length })
+      : tr("Spazio di lavoro esportato"),
+    {
+      description: tr(
+        "Il file .json si reimporta da «Importa» anche su un altro computer."
+      ),
+    }
+  )
+}
+
+/** Un tasto premuto in un campo di testo non è un comando della home */
+function typing(target: EventTarget | null) {
+  const el = target as HTMLElement | null
+  return Boolean(
+    el &&
+    (el.isContentEditable ||
+      el.localName === "input" ||
+      el.localName === "textarea" ||
+      el.localName === "select")
+  )
 }
 
 export function HomeScreen() {
@@ -156,7 +179,18 @@ export function HomeScreen() {
     value: string
   } | null>(null)
   const [confirmEmpty, setConfirmEmpty] = React.useState(false)
+  const [confirmDelete, setConfirmDelete] = React.useState<string[] | null>(
+    null
+  )
   const [dragging, setDragging] = React.useState(false)
+  // la selezione: i file scelti e, per i dispositivi touch, la modalità in
+  // cui un tocco sceglie invece di aprire
+  const [selected, setSelected] = React.useState<ReadonlySet<string>>(
+    () => new Set()
+  )
+  const [selecting, setSelecting] = React.useState(false)
+  const anchor = React.useRef<string | null>(null)
+  const root = React.useRef<HTMLDivElement>(null)
   const fileInput = React.useRef<HTMLInputElement>(null)
   // la home resta montata (nascosta) mentre si lavora su un file: tornando
   // qui il titolo della scheda va rimesso
@@ -185,6 +219,90 @@ export function HomeScreen() {
           ? b.createdAt - a.createdAt
           : b.updatedAt - a.updatedAt
     )
+
+  // si sceglie fra i file che si vedono: cambiando filtro la selezione riparte
+  const picked = visible.filter((f) => selected.has(f.id))
+  const pickedIds = picked.map((f) => f.id)
+  const selectMode = selecting || picked.length > 0
+  const clearSelection = () => {
+    setSelected(new Set())
+    setSelecting(false)
+    anchor.current = null
+  }
+  const showFilter = (next: Filter) => {
+    setFilter(next)
+    clearSelection()
+  }
+
+  /**
+   * Un clic su un file mentre si sceglie: da solo lo aggiunge o lo toglie,
+   * con Maiuscole prende tutti quelli fra l'ultimo scelto e questo
+   */
+  const pick = (id: string, range: boolean) => {
+    const from = range && anchor.current ? anchor.current : null
+    const a = from ? visible.findIndex((f) => f.id === from) : -1
+    const b = visible.findIndex((f) => f.id === id)
+    setSelected((prev) => {
+      const next = new Set(prev)
+      if (a >= 0 && b >= 0) {
+        for (const f of visible.slice(Math.min(a, b), Math.max(a, b) + 1))
+          next.add(f.id)
+      } else if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+    if (!range || !anchor.current) anchor.current = id
+  }
+  const selectAll = () => {
+    setSelected(new Set(visible.map((f) => f.id)))
+    anchor.current = visible[0]?.id ?? null
+  }
+
+  const trashPicked = (ids: string[]) => {
+    if (!ids.length) return
+    getWorkspace().trashFiles(ids)
+    clearSelection()
+    toast.success(
+      ids.length === 1
+        ? t("1 file spostato nel cestino")
+        : t("{count} file spostati nel cestino", { count: ids.length }),
+      {
+        action: {
+          label: t("Annulla||annulla l'ultima modifica"),
+          onClick: () => getWorkspace().restoreFiles(ids),
+        },
+      }
+    )
+  }
+
+  // Esc toglie la selezione, ⌘A sceglie tutto, Canc sposta nel cestino. La
+  // home resta montata (nascosta) mentre si lavora su un file: i tasti
+  // valgono solo quando si vede
+  const onKey = React.useEffectEvent((event: KeyboardEvent) => {
+    const el = root.current
+    if (!el || !(el.checkVisibility?.() ?? el.offsetParent !== null)) return
+    if (typing(event.target) || document.querySelector('[role="dialog"]'))
+      return
+    const mod = event.metaKey || event.ctrlKey
+    if (event.key === "Escape" && selectMode) {
+      clearSelection()
+    } else if (mod && event.key.toLowerCase() === "a" && visible.length) {
+      event.preventDefault()
+      selectAll()
+    } else if (
+      (event.key === "Delete" || event.key === "Backspace") &&
+      picked.length
+    ) {
+      event.preventDefault()
+      if (filter === "trash") setConfirmDelete(pickedIds)
+      else trashPicked(pickedIds)
+    }
+  })
+  React.useEffect(() => {
+    const listener = (event: KeyboardEvent) => onKey(event)
+    window.addEventListener("keydown", listener)
+    return () => window.removeEventListener("keydown", listener)
+  }, [])
 
   const create = (kind: FileKind) => {
     const id = getWorkspace().createFile(kind)
@@ -254,6 +372,7 @@ export function HomeScreen() {
 
   return (
     <div
+      ref={root}
       className="flex h-dvh bg-muted"
       onDragOver={(e) => {
         if (!e.dataTransfer.types.includes("Files")) return
@@ -306,7 +425,7 @@ export function HomeScreen() {
               icon={n.icon}
               label={t(n.label)}
               count={counts[n.key]}
-              onClick={() => setFilter(n.key)}
+              onClick={() => showFilter(n.key)}
             />
           ))}
           <div className="my-2 h-px bg-border" />
@@ -315,7 +434,7 @@ export function HomeScreen() {
             icon={<Trash2 className="size-4" />}
             label={t("Cestino")}
             count={counts.trash}
-            onClick={() => setFilter("trash")}
+            onClick={() => showFilter("trash")}
           />
         </nav>
 
@@ -337,17 +456,12 @@ export function HomeScreen() {
           </DropdownMenu>
           <button
             type="button"
-            onClick={exportAll}
+            onClick={() => exportAll()}
             disabled={!hydrated}
             className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm text-muted-foreground transition hover:bg-muted hover:text-foreground disabled:pointer-events-none disabled:opacity-50"
           >
             <Download className="size-4" /> {t("Esporta tutto")}
           </button>
-          <p className="px-2.5 pt-2 text-[11px] leading-snug text-muted-foreground">
-            {t(
-              "Tutto resta in questo browser. Trascina qui un file Word o Markdown per aprirlo."
-            )}
-          </p>
         </div>
       </aside>
 
@@ -385,6 +499,27 @@ export function HomeScreen() {
             />
 
             <div className="ml-auto flex shrink-0 items-center gap-0.5 sm:gap-1.5">
+              <Button
+                variant={selectMode ? "secondary" : "ghost"}
+                size="sm"
+                className="h-8 gap-1.5 text-xs"
+                aria-pressed={selectMode}
+                aria-label={selectMode ? t("Fine") : t("Seleziona")}
+                title={
+                  selectMode
+                    ? t("Fine")
+                    : t("Seleziona più file (⌘/Ctrl o Maiuscole + clic)")
+                }
+                disabled={!hydrated || (!selectMode && visible.length === 0)}
+                onClick={() =>
+                  selectMode ? clearSelection() : setSelecting(true)
+                }
+              >
+                <CheckSquare className="size-4" />
+                <span className="hidden lg:inline">
+                  {selectMode ? t("Fine") : t("Seleziona")}
+                </span>
+              </Button>
               {sortMenu}
               <ThemeToggle />
               <DropdownMenu>
@@ -403,7 +538,10 @@ export function HomeScreen() {
                 <DropdownMenuContent align="end" className="w-64">
                   <ImportItems onPick={pickFiles} />
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={exportAll} disabled={!hydrated}>
+                  <DropdownMenuItem
+                    onClick={() => exportAll()}
+                    disabled={!hydrated}
+                  >
                     <Download className="size-4" /> {t("Esporta tutto")}
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={openCommandPalette}>
@@ -440,7 +578,7 @@ export function HomeScreen() {
                   <button
                     key={n.key}
                     type="button"
-                    onClick={() => setFilter(n.key)}
+                    onClick={() => showFilter(n.key)}
                     aria-current={filter === n.key ? "page" : undefined}
                     className={cn(
                       "flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-3 text-xs font-medium transition",
@@ -462,7 +600,40 @@ export function HomeScreen() {
           </div>
         </header>
 
-        {filter === "trash" ? (
+        {selectMode ? (
+          <SelectionBar
+            count={picked.length}
+            total={visible.length}
+            inTrash={filter === "trash"}
+            allStarred={picked.length > 0 && picked.every((f) => f.starred)}
+            onClose={clearSelection}
+            onSelectAll={selectAll}
+            onStar={(starred) => getWorkspace().setStarred(pickedIds, starred)}
+            onDuplicate={() => {
+              const made = getWorkspace().duplicateFiles(pickedIds)
+              setSelected(new Set(made))
+              toast.success(
+                made.length === 1
+                  ? t("1 copia creata")
+                  : t("{count} copie create", { count: made.length })
+              )
+            }}
+            onExport={() => exportAll(pickedIds)}
+            onTrash={() => trashPicked(pickedIds)}
+            onRestore={() => {
+              getWorkspace().restoreFiles(pickedIds)
+              clearSelection()
+              toast.success(
+                pickedIds.length === 1
+                  ? t("1 file ripristinato")
+                  : t("{count} file ripristinati", { count: pickedIds.length })
+              )
+            }}
+            onDelete={() => setConfirmDelete(pickedIds)}
+          />
+        ) : null}
+
+        {filter === "trash" && !selectMode ? (
           <div className="flex min-h-11 flex-wrap items-center gap-x-3 gap-y-1 border-b border-border bg-card/60 py-2 safe-x text-xs text-muted-foreground md:px-6">
             <Clock className="size-3.5 shrink-0" />
             <span className="min-w-0 flex-1">
@@ -489,7 +660,6 @@ export function HomeScreen() {
               filter={filter}
               searching={Boolean(query)}
               onCreate={create}
-              onImport={pickFiles}
             />
           ) : (
             <div className="grid grid-cols-[repeat(auto-fill,minmax(150px,1fr))] gap-3 sm:grid-cols-[repeat(auto-fill,minmax(228px,1fr))] sm:gap-4">
@@ -498,6 +668,9 @@ export function HomeScreen() {
                   key={f.id}
                   file={f}
                   query={q}
+                  selected={selected.has(f.id)}
+                  selectMode={selectMode}
+                  onPick={(range) => pick(f.id, range)}
                   onRename={() => setRenaming({ id: f.id, value: f.title })}
                   onTrash={() => trashFile(f)}
                 />
@@ -585,6 +758,195 @@ export function HomeScreen() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog
+        open={confirmDelete !== null}
+        onOpenChange={(o) => !o && setConfirmDelete(null)}
+      >
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>{t("Eliminare per sempre?")}</DialogTitle>
+            <DialogDescription>
+              {confirmDelete?.length === 1
+                ? t("Il file verrà eliminato per sempre.")
+                : t("I {count} file verranno eliminati per sempre.", {
+                    count: confirmDelete?.length ?? 0,
+                  })}{" "}
+              {t("Non si può annullare.")}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDelete(null)}>
+              {t("Annulla")}
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (confirmDelete)
+                  getWorkspace().deleteFilesForever(confirmDelete)
+                setConfirmDelete(null)
+                clearSelection()
+                toast.success(t("Eliminato per sempre"))
+              }}
+            >
+              {t("Elimina per sempre")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}
+
+/**
+ * La barra dei file scelti, al posto di un menu per ciascuno: preferiti,
+ * copie, esportazione e cestino per tutti insieme
+ */
+function SelectionBar({
+  count,
+  total,
+  inTrash,
+  allStarred,
+  onClose,
+  onSelectAll,
+  onStar,
+  onDuplicate,
+  onExport,
+  onTrash,
+  onRestore,
+  onDelete,
+}: {
+  count: number
+  total: number
+  inTrash: boolean
+  allStarred: boolean
+  onClose: () => void
+  onSelectAll: () => void
+  onStar: (starred: boolean) => void
+  onDuplicate: () => void
+  onExport: () => void
+  onTrash: () => void
+  onRestore: () => void
+  onDelete: () => void
+}) {
+  const t = useT()
+  const none = count === 0
+  const action = "h-8 gap-1.5 text-xs"
+  return (
+    <div
+      role="toolbar"
+      aria-label={t("File selezionati")}
+      className="flex min-h-12 flex-wrap items-center gap-1 border-b border-primary/30 bg-accent/60 py-1.5 safe-x md:px-5"
+    >
+      <Button
+        variant="ghost"
+        size="icon"
+        className="size-8"
+        aria-label={t("Annulla selezione")}
+        title={t("Annulla selezione (Esc)")}
+        onClick={onClose}
+      >
+        <X className="size-4" />
+      </Button>
+      <span
+        className="min-w-0 px-1 text-sm font-medium text-foreground tabular-nums"
+        aria-live="polite"
+      >
+        {none
+          ? t("Scegli i file")
+          : count === 1
+            ? t("1 selezionato")
+            : t("{count} selezionati", { count })}
+      </span>
+      {count < total ? (
+        <Button
+          variant="ghost"
+          size="sm"
+          className={action}
+          onClick={onSelectAll}
+          title={t("Seleziona tutti (⌘A)")}
+        >
+          {t("Seleziona tutti")}
+        </Button>
+      ) : null}
+      <div className="ml-auto flex flex-wrap items-center gap-1">
+        {inTrash ? (
+          <>
+            <Button
+              variant="outline"
+              size="sm"
+              className={action}
+              disabled={none}
+              onClick={onRestore}
+            >
+              <RotateCcw className="size-3.5" /> {t("Ripristina")}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(action, "text-destructive hover:text-destructive")}
+              disabled={none}
+              onClick={onDelete}
+            >
+              <Trash2 className="size-3.5" /> {t("Elimina per sempre")}
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={action}
+              disabled={none}
+              onClick={() => onStar(!allStarred)}
+            >
+              <Star
+                className={cn(
+                  "size-3.5",
+                  allStarred && "fill-amber-400 text-amber-500"
+                )}
+              />
+              <span className="hidden sm:inline">
+                {allStarred
+                  ? t("Rimuovi dai preferiti")
+                  : t("Aggiungi ai preferiti")}
+              </span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={action}
+              disabled={none}
+              onClick={onDuplicate}
+            >
+              <Copy className="size-3.5" />
+              <span className="hidden sm:inline">{t("Duplica")}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={action}
+              disabled={none}
+              onClick={onExport}
+            >
+              <Download className="size-3.5" />
+              <span className="hidden sm:inline">{t("Esporta")}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(action, "text-destructive hover:text-destructive")}
+              disabled={none}
+              onClick={onTrash}
+            >
+              <Trash2 className="size-3.5" />
+              <span className="hidden sm:inline">
+                {t("Sposta nel cestino")}
+              </span>
+            </Button>
+          </>
+        )}
+      </div>
     </div>
   )
 }
@@ -689,12 +1051,10 @@ function EmptyState({
   filter,
   searching,
   onCreate,
-  onImport,
 }: {
   filter: Filter
   searching: boolean
   onCreate: (kind: FileKind) => void
-  onImport: () => void
 }) {
   const t = useT()
   const message = searching
@@ -722,9 +1082,6 @@ function EmptyState({
           <Button size="sm" variant="outline" onClick={() => onCreate("doc")}>
             {t("Crea un documento")}
           </Button>
-          <Button size="sm" variant="ghost" onClick={onImport}>
-            {t("Importa da Word")}
-          </Button>
         </div>
       ) : null}
     </div>
@@ -734,16 +1091,32 @@ function EmptyState({
 function FileCard({
   file: f,
   query,
+  selected,
+  selectMode,
+  onPick,
   onRename,
   onTrash,
 }: {
   file: WFile
   query: string
+  selected: boolean
+  /** si stanno scegliendo file: un clic sceglie invece di aprire */
+  selectMode: boolean
+  /** `range`: con Maiuscole, fino all'ultimo file scelto */
+  onPick: (range: boolean) => void
   onRename: () => void
   onTrash: () => void
 }) {
   const t = useT()
   const inTrash = Boolean(f.deletedAt)
+  // ⌘/Ctrl o Maiuscole con un clic scelgono, come nel Finder e in Esplora
+  // risorse; mentre si sceglie basta il clic
+  const onCardClick = (event: React.MouseEvent) => {
+    const range = event.shiftKey
+    if (!selectMode && !range && !event.metaKey && !event.ctrlKey) return
+    event.preventDefault()
+    onPick(range)
+  }
   const snippet = query ? searchSnippet(f, query) : ""
   const body = (
     <>
@@ -783,23 +1156,55 @@ function FileCard({
 
   return (
     <div
+      data-selected={selected ? "" : undefined}
       className={cn(
         // le card fuori schermo non si disegnano: con molti file le anteprime
         // delle board pesano
         "group relative overflow-hidden rounded-2xl border border-border bg-card transition [contain-intrinsic-size:auto_260px] [content-visibility:auto] hover:border-primary/40 hover:shadow-lg",
-        inTrash && "opacity-80"
+        inTrash && !selected && "opacity-80",
+        selected && "border-primary ring-2 ring-primary/60"
       )}
     >
       {inTrash ? (
-        <div>{body}</div>
+        <div
+          onClick={onCardClick}
+          className={cn(selectMode && "cursor-pointer select-none")}
+        >
+          {body}
+        </div>
       ) : (
         <Link
           href={fileHref(f)}
-          className="block rounded-2xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          onClick={onCardClick}
+          className={cn(
+            "block rounded-2xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+            selectMode && "select-none"
+          )}
         >
           {body}
         </Link>
       )}
+
+      <button
+        type="button"
+        role="checkbox"
+        aria-checked={selected}
+        aria-label={t("Seleziona {title}", { title: displayTitle(f) })}
+        onClick={(event) => onPick(event.shiftKey)}
+        className={cn(
+          "absolute top-2 left-2 flex size-6 items-center justify-center rounded-md border shadow-sm backdrop-blur transition pointer-coarse:size-7",
+          selected
+            ? "border-primary bg-primary text-primary-foreground"
+            : "border-border bg-card/90 text-transparent hover:text-muted-foreground",
+          // senza scegliere si vede solo passandoci sopra; sui dispositivi
+          // touch si entra con «Seleziona»
+          selectMode || selected
+            ? "opacity-100"
+            : "opacity-0 group-hover:opacity-100 focus-visible:opacity-100 pointer-coarse:hidden"
+        )}
+      >
+        <Check className="size-4" strokeWidth={3} />
+      </button>
 
       {f.starred && !inTrash ? (
         <Star

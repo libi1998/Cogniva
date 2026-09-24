@@ -62,6 +62,13 @@
     "de": "{count} Verbinder",
     "pt": "{count} conectores"
   },
+  "{count} copie create": {
+    "en": "{count} copies created",
+    "es": "{count} copias creadas",
+    "fr": "{count} copies créées",
+    "de": "{count} Kopien erstellt",
+    "pt": "{count} cópias criadas"
+  },
   "{count} elementi": {
     "en": "{count} items",
     "es": "{count} elementos",
@@ -69,12 +76,40 @@
     "de": "{count} Elemente",
     "pt": "{count} elementos"
   },
+  "{count} file esportati": {
+    "en": "{count} files exported",
+    "es": "{count} archivos exportados",
+    "fr": "{count} fichiers exportés",
+    "de": "{count} Dateien exportiert",
+    "pt": "{count} arquivos exportados"
+  },
+  "{count} file ripristinati": {
+    "en": "{count} files restored",
+    "es": "{count} archivos restaurados",
+    "fr": "{count} fichiers restaurés",
+    "de": "{count} Dateien wiederhergestellt",
+    "pt": "{count} arquivos restaurados"
+  },
+  "{count} file spostati nel cestino": {
+    "en": "{count} files moved to the trash",
+    "es": "{count} archivos movidos a la papelera",
+    "fr": "{count} fichiers placés dans la corbeille",
+    "de": "{count} Dateien in den Papierkorb verschoben",
+    "pt": "{count} arquivos movidos para a lixeira"
+  },
   "{count} pagine": {
     "en": "{count} pages",
     "es": "{count} páginas",
     "fr": "{count} pages",
     "de": "{count} Seiten",
     "pt": "{count} páginas"
+  },
+  "{count} selezionati": {
+    "en": "{count} selected",
+    "es": "{count} seleccionados",
+    "fr": "{count} sélectionnés",
+    "de": "{count} ausgewählt",
+    "pt": "{count} selecionados"
   },
   "{font} (Corpo)": {
     "en": "{font} (Body)",
@@ -132,12 +167,47 @@
     "de": "{width}×{height} px · {dpi} dpi",
     "pt": "{width}×{height} px · {dpi} dpi"
   },
+  "1 copia creata": {
+    "en": "1 copy created",
+    "es": "1 copia creada",
+    "fr": "1 copie créée",
+    "de": "1 Kopie erstellt",
+    "pt": "1 cópia criada"
+  },
+  "1 file esportato": {
+    "en": "1 file exported",
+    "es": "1 archivo exportado",
+    "fr": "1 fichier exporté",
+    "de": "1 Datei exportiert",
+    "pt": "1 arquivo exportado"
+  },
+  "1 file ripristinato": {
+    "en": "1 file restored",
+    "es": "1 archivo restaurado",
+    "fr": "1 fichier restauré",
+    "de": "1 Datei wiederhergestellt",
+    "pt": "1 arquivo restaurado"
+  },
+  "1 file spostato nel cestino": {
+    "en": "1 file moved to the trash",
+    "es": "1 archivo movido a la papelera",
+    "fr": "1 fichier placé dans la corbeille",
+    "de": "1 Datei in den Papierkorb verschoben",
+    "pt": "1 arquivo movido para a lixeira"
+  },
   "1 pagina": {
     "en": "1 page",
     "es": "1 página",
     "fr": "1 page",
     "de": "1 Seite",
     "pt": "1 página"
+  },
+  "1 selezionato": {
+    "en": "1 selected",
+    "es": "1 seleccionado",
+    "fr": "1 sélectionné",
+    "de": "1 ausgewählt",
+    "pt": "1 selecionado"
   },
   "110 × 220 mm · lettera A4 piegata in tre": {
     "en": "110 × 220 mm · A4 letter folded in three",
@@ -425,6 +495,20 @@
     "fr": "Annuler ⌘Z",
     "de": "Rückgängig ⌘Z",
     "pt": "Desfazer ⌘Z"
+  },
+  "Annulla selezione": {
+    "en": "Clear selection",
+    "es": "Anular selección",
+    "fr": "Annuler la sélection",
+    "de": "Auswahl aufheben",
+    "pt": "Cancelar seleção"
+  },
+  "Annulla selezione (Esc)": {
+    "en": "Clear selection (Esc)",
+    "es": "Anular selección (Esc)",
+    "fr": "Annuler la sélection (Échap)",
+    "de": "Auswahl aufheben (Esc)",
+    "pt": "Cancelar seleção (Esc)"
   },
   "Annulla, ripristina": {
     "en": "Undo, redo",
@@ -2106,6 +2190,13 @@
     "de": "Endgültig löschen",
     "pt": "Excluir para sempre"
   },
+  "Eliminare per sempre?": {
+    "en": "Delete forever?",
+    "es": "¿Eliminar para siempre?",
+    "fr": "Supprimer définitivement ?",
+    "de": "Endgültig löschen?",
+    "pt": "Excluir para sempre?"
+  },
   "eliminato {timeAgo}": {
     "en": "deleted {timeAgo}",
     "es": "eliminado {timeAgo}",
@@ -2344,12 +2435,26 @@
     "de": "Datei nicht gefunden · Cogniva",
     "pt": "Arquivo não encontrado · Cogniva"
   },
+  "File selezionati": {
+    "en": "Selected files",
+    "es": "Archivos seleccionados",
+    "fr": "Fichiers sélectionnés",
+    "de": "Ausgewählte Dateien",
+    "pt": "Arquivos selecionados"
+  },
   "Filtri": {
     "en": "Filters",
     "es": "Filtros",
     "fr": "Filtres",
     "de": "Filter",
     "pt": "Filtros"
+  },
+  "Fine": {
+    "en": "Done",
+    "es": "Listo",
+    "fr": "Terminé",
+    "de": "Fertig",
+    "pt": "Concluído"
   },
   "Finestra": {
     "en": "Window",
@@ -2763,13 +2868,6 @@
     "fr": "Importer",
     "de": "Importieren",
     "pt": "Importar"
-  },
-  "Importa da Word": {
-    "en": "Import from .docx",
-    "es": "Importar desde .docx",
-    "fr": "Importer depuis .docx",
-    "de": "Aus .docx importieren",
-    "pt": "Importar de .docx"
   },
   "Importa Word, Markdown o spazio di lavoro…": {
     "en": "Import .docx, Markdown or a workspace…",
@@ -4815,6 +4913,13 @@
     "de": "Entsperren",
     "pt": "Desbloquear"
   },
+  "Scegli i file": {
+    "en": "Choose files",
+    "es": "Elige los archivos",
+    "fr": "Choisissez les fichiers",
+    "de": "Dateien auswählen",
+    "pt": "Escolha os arquivos"
+  },
   "Scegli un colore": {
     "en": "Pick a color",
     "es": "Elige un color",
@@ -4933,6 +5038,34 @@
     "fr": "Sélectionner",
     "de": "Auswählen",
     "pt": "Selecionar"
+  },
+  "Seleziona {title}": {
+    "en": "Select {title}",
+    "es": "Seleccionar {title}",
+    "fr": "Sélectionner {title}",
+    "de": "{title} auswählen",
+    "pt": "Selecionar {title}"
+  },
+  "Seleziona più file (⌘/Ctrl o Maiuscole + clic)": {
+    "en": "Select several files (⌘/Ctrl or Shift + click)",
+    "es": "Seleccionar varios archivos (⌘/Ctrl o Mayús + clic)",
+    "fr": "Sélectionner plusieurs fichiers (⌘/Ctrl ou Maj + clic)",
+    "de": "Mehrere Dateien auswählen (⌘/Strg oder Umschalt + Klick)",
+    "pt": "Selecionar vários arquivos (⌘/Ctrl ou Shift + clique)"
+  },
+  "Seleziona tutti": {
+    "en": "Select all",
+    "es": "Seleccionar todos",
+    "fr": "Tout sélectionner",
+    "de": "Alle auswählen",
+    "pt": "Selecionar todos"
+  },
+  "Seleziona tutti (⌘A)": {
+    "en": "Select all (⌘A)",
+    "es": "Seleccionar todos (⌘A)",
+    "fr": "Tout sélectionner (⌘A)",
+    "de": "Alle auswählen (⌘A)",
+    "pt": "Selecionar todos (⌘A)"
   },
   "Seleziona tutto": {
     "en": "Select all",
@@ -5822,13 +5955,6 @@
     "fr": "Tous|Tableaux|Docs",
     "de": "Alle|Boards|Docs",
     "pt": "Todos|Quadros|Docs"
-  },
-  "Tutto resta in questo browser. Trascina qui un file Word o Markdown per aprirlo.": {
-    "en": "Everything stays in this browser. Drag a .docx or Markdown file here to open it.",
-    "es": "Todo se queda en este navegador. Arrastra aquí un archivo .docx o Markdown para abrirlo.",
-    "fr": "Tout reste dans ce navigateur. Faites glisser ici un fichier .docx ou Markdown pour l'ouvrir.",
-    "de": "Alles bleibt in diesem Browser. Zieh eine .docx- oder Markdown-Datei hierher, um sie zu öffnen.",
-    "pt": "Tudo fica neste navegador. Arraste aqui um arquivo .docx ou Markdown para abri-lo."
   },
   "Uguale a": {
     "en": "Equal to",
