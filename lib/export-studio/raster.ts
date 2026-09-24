@@ -9,16 +9,34 @@ import { deflate, type PdfImage } from "./pdf"
 
 /* ------------------------------ qualità -------------------------------- */
 
-export type ExportQuality = "draft" | "standard" | "high"
+/**
+ * Una sola qualità, la massima: 600 punti per pollice, pixel senza perdita.
+ * Testo, forme e tabelle del PDF sono vettori e non ne hanno bisogno; vale
+ * per i PNG e per quello che nel PDF resta un'immagine.
+ */
+export const QUALITY = {
+  scale: 600 / 96,
+  dpi: 600,
+  lossless: true,
+  jpeg: 0.95,
+} as const
 
-/** Pixel per pixel CSS e codifica: 96, 192 e 300 punti per pollice */
-export const QUALITY: Record<
-  ExportQuality,
-  { scale: number; dpi: number; lossless: boolean; jpeg: number }
-> = {
-  draft: { scale: 1, dpi: 96, lossless: false, jpeg: 0.8 },
-  standard: { scale: 2, dpi: 192, lossless: false, jpeg: 0.9 },
-  high: { scale: 300 / 96, dpi: 300, lossless: true, jpeg: 0.95 },
+/**
+ * La scala dei 600 dpi, ridotta solo quanto serve perché un foglio di
+ * width × height pixel CSS stia in un canvas (una board molto grande)
+ */
+export function fitScale(
+  width: number,
+  height: number,
+  scale: number = QUALITY.scale
+) {
+  const w = Math.max(1, width)
+  const h = Math.max(1, height)
+  return Math.min(
+    scale,
+    CANVAS_MAX_SIDE / Math.max(w, h),
+    Math.sqrt(CANVAS_MAX_AREA / (w * h))
+  )
 }
 
 /**

@@ -1,6 +1,7 @@
 "use client"
 
 import { FontLibrary, familyList, type ResolvedFace } from "./fonts"
+import { fitScale } from "./raster"
 import {
   apply,
   bounds,
@@ -101,7 +102,7 @@ export type Scene = {
 }
 
 export type VectorOptions = {
-  /** pixel per pixel CSS delle immagini: 1, 2 o 3,125 */
+  /** pixel per pixel CSS delle immagini: 6,25, cioè 600 dpi */
   scale: number
   /** qualità JPEG delle foto; con `lossless` niente JPEG */
   jpeg: number
@@ -360,7 +361,7 @@ export async function paintNode(
   ) => {
     const w = Math.max(1, rect.width)
     const h = Math.max(1, rect.height)
-    const scale = Math.max(2, opts.scale)
+    const scale = fitScale(w, h, Math.max(2, opts.scale))
     const id = `text:${text}|${cs.font}|${cs.color}|${w}x${h}`
     let asset = assets.get(id)
     if (!asset) {
@@ -1228,7 +1229,7 @@ export async function paintNode(
         try {
           const canvas = await html2canvas(el, {
             backgroundColor: null,
-            scale: Math.max(2, opts.scale),
+            scale: fitScale(rect.width, rect.height, Math.max(2, opts.scale)),
             logging: false,
             useCORS: true,
           } as Parameters<typeof html2canvas>[1])

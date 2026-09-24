@@ -89,7 +89,7 @@ test("PDF con anteprima: pagine vere e testo selezionabile", async ({
 }) => {
   await openDemo(page)
   const dialog = await openStudio(page)
-  await expect(dialog.getByText(/A4 · 210×297 mm · 192 dpi/)).toBeVisible()
+  await expect(dialog.getByText(/A4 · 210×297 mm · 600 dpi/)).toBeVisible()
 
   const { name, bytes } = await downloadBytes(page, () =>
     dialog.getByRole("button", { name: "Esporta PDF" }).click()
@@ -110,7 +110,7 @@ test("intervallo di pagine, carta orizzontale e PNG", async ({ page }) => {
   const dialog = await openStudio(page)
 
   await dialog.getByRole("button", { name: "Orizzontale" }).click()
-  await expect(dialog.getByText(/A4 · 297×210 mm · 192 dpi/)).toBeVisible()
+  await expect(dialog.getByText(/A4 · 297×210 mm · 600 dpi/)).toBeVisible()
   await expect(dialog.getByRole("img", { name: "Pagina 1" })).toBeVisible({
     timeout: 60_000,
   })
@@ -187,7 +187,9 @@ test("pagine lunghe: interruzioni fra i paragrafi, testo nella pagina giusta, ni
       warnings.push(message.text())
   })
   const dialog = await openStudio(page)
-  await dialog.getByRole("button", { name: /^Bozza/ }).click()
+  // niente da scegliere: 600 dpi e il testo selezionabile ci sono sempre
+  await expect(dialog.getByRole("button", { name: /^Bozza/ })).toHaveCount(0)
+  await expect(dialog.getByText("Testo selezionabile")).toHaveCount(0)
   const { bytes } = await downloadBytes(page, () =>
     dialog.getByRole("button", { name: "Esporta PDF" }).click()
   )
@@ -196,7 +198,8 @@ test("pagine lunghe: interruzioni fra i paragrafi, testo nella pagina giusta, ni
   // ogni pagina dopo la prima comincia con un titolo di sezione intero
   for (const words of pdf.byPage.slice(1)) expect(words[0]).toBe("Sezione")
   // un PDF vero: il testo è disegnato a vettori e nessuna pagina è una
-  // fotografia del foglio (prima ogni pagina era un JPEG grande quanto lei)
+  // fotografia del foglio (prima ogni pagina era un'immagine grande quanto
+  // lei: a 600 dpi un A4 intero è largo 4961 pixel)
   expect(pdf.glyphs, warnings.join("\n")).toBeGreaterThan(200)
-  expect(Math.max(0, ...pdf.imageWidths)).toBeLessThan(700)
+  expect(Math.max(0, ...pdf.imageWidths)).toBeLessThan(4600)
 })

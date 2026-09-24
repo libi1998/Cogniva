@@ -1266,6 +1266,13 @@
     "de": "Innere vertikale Rahmenlinie",
     "pt": "Borda vertical interna"
   },
+  "Bozza": {
+    "en": "Draft",
+    "es": "Borrador",
+    "fr": "Brouillon",
+    "de": "Entwurf",
+    "pt": "Rascunho"
+  },
   "Busta": {
     "en": "Envelope",
     "es": "Sobre",

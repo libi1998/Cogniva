@@ -435,17 +435,19 @@ The download button at the top right (or **Export** in the command palette) open
 **Export** view: on the left a preview of every page exactly as it will come out, on the
 right the settings. Nothing goes through the browser's print dialog.
 
-| Setting             | What it does                                                                                       |
-| ------------------- | -------------------------------------------------------------------------------------------------- |
-| **Format**          | PDF, PNG, SVG, `.docx` or Markdown (boards: PDF, PNG and SVG)                                      |
-| **Pages**           | all, the page you were looking at, or a range such as `1-3, 5`; excluded pages fade in the preview |
-| **Paper**           | for documents without a paper size: A4, A5, A3, Letter, Legal or Tabloid, portrait or landscape    |
-| **Quality**         | resolution of photos and PNG pages: draft (96 dpi), standard (192 dpi), high (300 dpi, lossless)   |
-| **Colors**          | color or black and white                                                                           |
-| **Selectable text** | the PDF keeps an invisible text layer, so it can be searched and copied                            |
-| **One image**       | PNG with several pages: one tall image instead of a `.zip` with a file per page                    |
-| **Comments**        | `.docx`: include or leave out the comments                                                         |
-| **File name**       | editable, with the right extension shown                                                           |
+| Setting       | What it does                                                                                       |
+| ------------- | -------------------------------------------------------------------------------------------------- |
+| **Format**    | PDF, PNG, SVG, `.docx` or Markdown (boards: PDF, PNG and SVG)                                      |
+| **Pages**     | all, the page you were looking at, or a range such as `1-3, 5`; excluded pages fade in the preview |
+| **Paper**     | for documents without a paper size: A4, A5, A3, Letter, Legal or Tabloid, portrait or landscape    |
+| **Colors**    | color or black and white                                                                           |
+| **One image** | PNG with several pages: one tall image instead of a `.zip` with a file per page                    |
+| **Comments**  | `.docx`: include or leave out the comments                                                         |
+| **File name** | editable, with the right extension shown                                                           |
+
+There is nothing to choose about quality: PNG pages and whatever stays an image in a PDF
+(photos, shadows, filters) are always 600 dpi and lossless, and a PDF always carries the
+invisible text layer, so it can be searched and copied.
 
 |              | Board                                 | Document                                       |
 | ------------ | ------------------------------------- | ---------------------------------------------- |
@@ -453,7 +455,7 @@ right the settings. Nothing goes through the browser's print dialog.
 | **DOCX**     | —                                     | ✔ editable `.docx`                             |
 | **Markdown** | —                                     | ✔ `.md` (GitHub Flavored)                      |
 | **SVG**      | ✔ pure vector (~40 KB, embedded font) | ✔ whole document, pure vector                  |
-| **PNG**      | ✔ up to 300 dpi                       | ✔ one per page (`.zip`) or a single tall image |
+| **PNG**      | ✔ 600 dpi                             | ✔ one per page (`.zip`) or a single tall image |
 
 **Print…** is still there, in the Export view and with `⌘P`, for sending the document to a
 real printer.
