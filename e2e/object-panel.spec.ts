@@ -25,10 +25,16 @@ const attr = (page: Page, type: string, name: string) =>
     { type, name }
   )
 
+/**
+ * Il tipo di selezione e il nodo selezionato. Dal JSON della selezione, non
+ * dal nome della classe: nella build di produzione i nomi sono accorciati
+ * («G» invece di «NodeSelection»)
+ */
 const selection = (page: Page) =>
   withEditor<string>(
     page,
-    "return editor.state.selection.constructor.name + ':' + (editor.state.selection.node?.type.name ?? '')"
+    `const kind = { node: "NodeSelection", text: "TextSelection", cell: "CellSelection", all: "AllSelection" }[editor.state.selection.toJSON().type] ?? "?"
+     return kind + ":" + (editor.state.selection.node?.type.name ?? "")`
   )
 
 test("il testo di una nota si scrive tutto", async ({ page }) => {

@@ -591,10 +591,14 @@ test("intestazione e piè di pagina si scrivono sul foglio", async ({
   await page.getByRole("menuitem", { name: "Modifica intestazione…" }).click()
   const left = page.getByRole("textbox", { name: "Intestazione, a sinistra" })
   await expect(left).toBeFocused()
-  await page.keyboard.type("Relazione", { delay: 12 })
+  // gli spazi restano: prima ogni spazio battuto spariva
+  await page.keyboard.type("Relazione di fine anno", { delay: 12 })
+  await expect(left).toHaveValue("Relazione di fine anno")
   await page.keyboard.press("Escape")
   await expect(left).toBeHidden()
-  await expect(page.locator("[data-band]").first()).toContainText("Relazione")
+  await expect(page.locator("[data-band]").first()).toContainText(
+    "Relazione di fine anno"
+  )
 
   // doppio clic nel margine alto: si riapre, con il cursore al centro
   const sheet = await page.locator("#doc-sheet").boundingBox()
@@ -613,7 +617,11 @@ test("intestazione e piè di pagina si scrivono sul foglio", async ({
 
 test("forme: piene, davanti al testo, con la loro scheda", async ({ page }) => {
   await openDemo(page)
-  await caretAfter(page, 1, "clic destro.")
+  const paragraph = () =>
+    withEditor<string>(page, "return editor.state.doc.child(1).textContent")
+  const before = await paragraph()
+  // a metà di una parola: la forma va dopo il paragrafo, senza spezzarlo
+  await caretAfter(page, 1, "Un d")
   await openTab(page, "Inserisci")
   await (await ribbonButton(page, "Forme")).click()
   await page.getByRole("button", { name: "Rettangolo", exact: true }).click()
@@ -627,7 +635,10 @@ test("forme: piene, davanti al testo, con la loro scheda", async ({ page }) => {
     )
   // un colore pieno, non il riempimento tenue di prima
   await expect.poll(async () => (await shape())?.wrap).toBe("front")
+  expect(await paragraph()).toBe(before)
   const first = await shape()
+  // il disegno c'è davvero: il rettangolo usciva con un tracciato vuoto
+  expect(decodeURIComponent(String(first?.src))).toMatch(/<path d="M [^"]+"/)
   expect(first?.shape).toBe("rect")
   expect(String(first?.fill)).toMatch(/^#[0-9a-f]{6}$/i)
   expect(first?.fill).not.toBe("#ffffff")

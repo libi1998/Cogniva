@@ -48,12 +48,6 @@ function CommandDialog({
   const t = useT()
   return (
     <Dialog {...props}>
-      <DialogHeader className="sr-only">
-        <DialogTitle>{title ?? t("Comandi")}</DialogTitle>
-        <DialogDescription>
-          {description ?? t("Cerca un comando da eseguire…")}
-        </DialogDescription>
-      </DialogHeader>
       <DialogContent
         className={cn(
           "top-1/3 translate-y-0 overflow-hidden rounded-xl! p-0",
@@ -61,6 +55,16 @@ function CommandDialog({
         )}
         showCloseButton={showCloseButton}
       >
+        {/* Dentro la finestra, che così ha il suo titolo, e senza i margini
+            dell'intestazione: fuori, sempre montato in fondo alla pagina e
+            alto 29 px, rendeva la pagina intera scorrevole di 28 px e l'app
+            a volte scivolava in su (un clic finiva sulla voce sbagliata) */}
+        <DialogHeader className="sr-only p-0">
+          <DialogTitle>{title ?? t("Comandi")}</DialogTitle>
+          <DialogDescription>
+            {description ?? t("Cerca un comando da eseguire…")}
+          </DialogDescription>
+        </DialogHeader>
         {children}
       </DialogContent>
     </Dialog>

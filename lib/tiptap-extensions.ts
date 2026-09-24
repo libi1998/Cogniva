@@ -24,6 +24,7 @@ import {
 } from "@tiptap/extension-table"
 import { Image } from "@tiptap/extension-image"
 import { cssColor, cssLength, cssValue } from "./css"
+import { shapeImageAttrs, type DocShapeKind } from "./shape-svg"
 import { cellFormatAttributes } from "./table-format"
 
 import { tr as translate } from "@/lib/i18n/client"
@@ -1604,5 +1605,41 @@ export const StyledImage = Image.extend({
       ratio: dataAttr<number | null>("ratio", null, Number),
       label: dataAttr("label", ""),
     }
+  },
+
+  addProseMirrorPlugins() {
+    return [
+      ...(this.parent?.() ?? []),
+      new Plugin({
+        key: new PluginKey("redrawShapes"),
+        view: (view) => {
+          // Le forme si ridisegnano dai loro valori all'apertura: quelle
+          // salvate quando rettangoli, ellissi e note uscivano vuoti (e ogni
+          // disegno di una versione vecchia) tornano visibili. Fuori dalla
+          // cronologia: Annulla non deve rimetterle vuote
+          const timer = setTimeout(() => {
+            // un documento aperto solo in lettura (una versione, l'anteprima)
+            // non si tocca
+            if (view.isDestroyed || !view.editable) return
+            const tr = view.state.tr
+            view.state.doc.descendants((node, pos) => {
+              if (node.type.name !== this.name || !node.attrs.shape) return
+              const a = node.attrs
+              const next = shapeImageAttrs(a.shape as DocShapeKind, {
+                fill: String(a.fill ?? "none"),
+                stroke: String(a.stroke ?? "#000000"),
+                strokeWidth: Number(a.strokeWidth ?? 3),
+                ratio: a.ratio === null ? null : Number(a.ratio),
+                text: String(a.label ?? ""),
+              })
+              if (next.src !== a.src)
+                tr.setNodeMarkup(pos, undefined, { ...a, src: next.src })
+            })
+            if (tr.docChanged) view.dispatch(tr.setMeta("addToHistory", false))
+          }, 0)
+          return { destroy: () => clearTimeout(timer) }
+        },
+      }),
+    ]
   },
 })

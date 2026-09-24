@@ -33,9 +33,57 @@ function regular(sides: number, w: number, h: number, rotate = -90) {
   )
 }
 
-/** Il path SVG di una forma nel riquadro (0, 0, w, h) */
+/** Un rettangolo con gli angoli arrotondati di raggio r */
+function roundRect(w: number, h: number, r: number) {
+  const k = Math.max(0, Math.min(r, w / 2, h / 2))
+  if (!k) return `M 0 0 H ${w} V ${h} H 0 Z`
+  return `M ${k} 0 H ${w - k} A ${k} ${k} 0 0 1 ${w} ${k} V ${h - k} A ${k} ${k} 0 0 1 ${w - k} ${h} H ${k} A ${k} ${k} 0 0 1 0 ${h - k} V ${k} A ${k} ${k} 0 0 1 ${k} 0 Z`
+}
+
+/** Una nuvola: archi lungo il bordo di un'ellisse */
+function cloud(w: number, h: number) {
+  const bumps = 9
+  const cx = w / 2
+  const cy = h / 2
+  const rx = w * 0.4
+  const ry = h * 0.36
+  const at = (i: number) => {
+    const a = (i / bumps) * Math.PI * 2 - Math.PI / 2
+    return [cx + rx * Math.cos(a), cy + ry * Math.sin(a)]
+  }
+  let d = ""
+  for (let i = 0; i < bumps; i++) {
+    const [x0, y0] = at(i)
+    const [x1, y1] = at(i + 1)
+    const r = Math.hypot(x1 - x0, y1 - y0) * 0.62
+    d += `${i ? "" : `M ${x0.toFixed(1)} ${y0.toFixed(1)} `}A ${r.toFixed(1)} ${r.toFixed(1)} 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)} `
+  }
+  return `${d}Z`
+}
+
+/**
+ * Il path SVG di una forma nel riquadro (0, 0, w, h). Sulla board rettangoli,
+ * ellissi e note sono elementi SVG a sé e `shapePath` per loro non disegna
+ * niente: qui servono come tracciati, altrimenti la forma restava vuota
+ */
 function docShapePath(kind: DocShapeKind, w: number, h: number) {
   switch (kind) {
+    case "rect":
+    case "text":
+      return roundRect(w, h, 0)
+    case "rounded":
+      return roundRect(w, h, Math.min(w, h) * 0.16)
+    case "pill":
+      return roundRect(w, h, Math.min(w, h) / 2)
+    case "note": {
+      // il foglietto con l'angolo piegato in basso a destra
+      const f = Math.min(w, h) * 0.22
+      return `M 0 0 H ${w} V ${h - f} L ${w - f} ${h} H 0 Z M ${w} ${h - f} H ${w - f} V ${h}`
+    }
+    case "ellipse":
+      return `M 0 ${h / 2} A ${w / 2} ${h / 2} 0 1 0 ${w} ${h / 2} A ${w / 2} ${h / 2} 0 1 0 0 ${h / 2} Z`
+    case "cloud":
+      return cloud(w, h)
     case "pentagon":
       return regular(5, w, h)
     case "octagon":
@@ -54,7 +102,7 @@ function docShapePath(kind: DocShapeKind, w: number, h: number) {
     case "callout":
       return `M 8 0 H ${w - 8} Q ${w} 0 ${w} 8 V ${h * 0.7 - 8} Q ${w} ${h * 0.7} ${w - 8} ${h * 0.7} H ${w * 0.42} L ${w * 0.22} ${h} L ${w * 0.26} ${h * 0.7} H 8 Q 0 ${h * 0.7} 0 ${h * 0.7 - 8} V 8 Q 0 0 8 0 Z`
     default:
-      return shapePath(kind as NodeShape, w, h, kind === "rounded" ? 14 : 0)
+      return shapePath(kind as NodeShape, w, h, 0)
   }
 }
 

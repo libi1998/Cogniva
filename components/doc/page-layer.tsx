@@ -437,7 +437,15 @@ function EditableBand({
   const t = useT()
   const { margins } = theme
   const text = band.where === "header" ? theme.header : theme.footer
-  const parts = bandParts(text)
+  // quello che si scrive resta com'è mentre si scrive: il testo salvato è
+  // ripulito dagli spazi in fondo, e rileggerlo a ogni tasto toglieva lo
+  // spazio appena battuto («Relazione trimestrale» diventava
+  // «Relazionetrimestrale»)
+  const [draft, setDraft] = React.useState<{
+    where: string
+    parts: [string, string, string]
+  } | null>(null)
+  const parts = draft?.where === band.where ? draft.parts : bandParts(text)
   const refs = [
     React.useRef<HTMLInputElement>(null),
     React.useRef<HTMLInputElement>(null),
@@ -476,6 +484,7 @@ function EditableBand({
   const write = (index: number, value: string) => {
     const next = [...parts] as [string, string, string]
     next[index] = value
+    setDraft({ where: band.where, parts: next })
     onChange(band.where, joinBand(next))
   }
 
@@ -498,6 +507,21 @@ function EditableBand({
   const label = band.where === "header" ? t("Intestazione") : t("Piè di pagina")
   const lineTop =
     band.where === "header" ? margins.top - 4 : pageHeight - margins.bottom + 4
+  // la barretta dei campi non copre mai il testo: sta nel margine, sopra le
+  // caselle dell'intestazione o sotto quelle del piè di pagina, e se il
+  // margine è troppo stretto appena fuori dal foglio, oltre il suo bordo.
+  // Prima stava sotto la linea, sopra la prima riga del documento
+  const TOOLS_H = 24
+  const above = top - 6 - TOOLS_H - 2
+  const below = top - 6 + 24 + 2
+  const toolsTop =
+    band.where === "header"
+      ? above >= 2
+        ? above
+        : -TOOLS_H - 6
+      : below + TOOLS_H <= pageHeight - 2
+        ? below
+        : pageHeight + 6
 
   return (
     <div
@@ -557,17 +581,8 @@ function EditableBand({
         ))}
       </div>
       <div
-        className={cn(
-          "doc-band-tools absolute flex items-center gap-0.5",
-          band.where === "header" ? "" : "-translate-y-full"
-        )}
-        style={{
-          top:
-            band.where === "header"
-              ? margins.top + 16
-              : pageHeight - margins.bottom - 16,
-          right: margins.right,
-        }}
+        className="doc-band-tools absolute flex items-center gap-0.5"
+        style={{ top: toolsTop, right: margins.right }}
         // i pulsanti non tolgono il fuoco alla casella: il campo va lì
         onMouseDown={(e) => e.preventDefault()}
       >
