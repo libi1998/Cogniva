@@ -91,12 +91,21 @@ function parseWeight(text: string): [number, number] {
   return [Math.min(a, b), Math.max(a, b)]
 }
 
+/**
+ * Una @font-face. I fogli sono quelli dell'iframe di esportazione, un'altra
+ * finestra: `instanceof CSSFontFaceRule` lì è sempre falso e non si
+ * troverebbe nessun carattere
+ */
+const isFontFace = (rule: CSSRule): rule is CSSFontFaceRule =>
+  rule.constructor.name === "CSSFontFaceRule" ||
+  /^@font-face\b/i.test(rule.cssText)
+
 function collectFaces(doc: Document): Face[] {
   const faces: Face[] = []
   const visit = (rules: CSSRuleList, base: string) => {
     for (const rule of Array.from(rules)) {
       // @media e @supports possono contenere @font-face
-      if ("cssRules" in rule && !(rule instanceof CSSFontFaceRule)) {
+      if ("cssRules" in rule && !isFontFace(rule)) {
         try {
           visit((rule as CSSGroupingRule).cssRules, base)
         } catch {
@@ -104,7 +113,7 @@ function collectFaces(doc: Document): Face[] {
         }
         continue
       }
-      if (!(rule instanceof CSSFontFaceRule)) continue
+      if (!isFontFace(rule)) continue
       const style = rule.style
       const family = unquote(
         style.getPropertyValue("font-family")

@@ -179,6 +179,13 @@ test("pagine lunghe: interruzioni fra i paragrafi, testo nella pagina giusta, ni
   await (await ribbonButton(page, "Dimensioni")).click()
   await page.getByRole("menuitem", { name: /^A4/ }).click()
 
+  // se il disegno vettoriale non riesce l'esportazione ripiega sulle
+  // immagini e lo dice nella console: il motivo finisce nell'errore
+  const warnings: string[] = []
+  page.on("console", (message) => {
+    if (message.type() === "warning" || message.type() === "error")
+      warnings.push(message.text())
+  })
   const dialog = await openStudio(page)
   await dialog.getByRole("button", { name: /^Bozza/ }).click()
   const { bytes } = await downloadBytes(page, () =>
@@ -190,6 +197,6 @@ test("pagine lunghe: interruzioni fra i paragrafi, testo nella pagina giusta, ni
   for (const words of pdf.byPage.slice(1)) expect(words[0]).toBe("Sezione")
   // un PDF vero: il testo è disegnato a vettori e nessuna pagina è una
   // fotografia del foglio (prima ogni pagina era un JPEG grande quanto lei)
-  expect(pdf.glyphs).toBeGreaterThan(200)
+  expect(pdf.glyphs, warnings.join("\n")).toBeGreaterThan(200)
   expect(Math.max(0, ...pdf.imageWidths)).toBeLessThan(700)
 })
