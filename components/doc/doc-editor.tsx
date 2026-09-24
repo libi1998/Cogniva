@@ -67,11 +67,13 @@ import {
   type ImmersiveSettings,
 } from "./view-modes"
 import {
+  bandAt,
   GridOverlay,
   PageDecor,
   PageGuides,
   PageLayer,
   usePagination,
+  type BandEditing,
 } from "./page-layer"
 import { StyleDialog, type StyleDialogRequest } from "./style-dialog"
 import { StylesPane } from "./styles-panel"
@@ -191,6 +193,8 @@ export function DocEditor({
   const narrow = useNarrow(1180)
   const compact = useNarrow(639)
   const [outline, setOutline] = React.useState(false)
+  // intestazione o piè di pagina che si sta scrivendo sul foglio
+  const [band, setBand] = React.useState<BandEditing | null>(null)
   const [find, setFind] = React.useState<"find" | "replace" | null>(null)
   const [menu, setMenu] = React.useState<{ x: number; y: number } | null>(null)
   const [busy, setBusy] = React.useState(false)
@@ -729,6 +733,7 @@ export function DocEditor({
 
   const openStudio = (format: StudioFormat) => {
     if (!theme || title === null) return
+    setBand(null)
     if (mode !== "normal") setMode("normal")
     setStudio({
       format,
@@ -1092,6 +1097,20 @@ export function DocEditor({
         // la scheda dell'oggetto appena inserito, come in Word
         openPanel: () => openRibbonTab("format"),
         pageHeight: paginated && exact ? exact.h : 0,
+        editBand: (where) => {
+          if (!paginated) return false
+          if (mode !== "normal") setMode("normal")
+          setBand({
+            where,
+            part: 0,
+            page: visiblePage(
+              sheetRef.current,
+              scrollRef.current,
+              pagination.pages
+            ),
+          })
+          return true
+        },
         sources,
         openSources: (id = null, cite = false) =>
           setSourcesDialog({ id, cite }),
@@ -1346,6 +1365,7 @@ export function DocEditor({
                           className={cn(
                             "doc-sheet relative isolate",
                             theme.marks && "doc-marks",
+                            band && "doc-band-editing",
                             !theme.comments && "doc-comments-hidden",
                             paginated && "doc-paginated",
                             theme.hyphenation && "doc-hyphens",
@@ -1366,6 +1386,46 @@ export function DocEditor({
                           }}
                           onMouseDownCapture={(e) => {
                             if (e.altKey && editor) selectBehind(editor, e)
+                            // un clic nel testo chiude intestazione e piè di
+                            // pagina, come in Word
+                            const target = e.target as HTMLElement
+                            if (
+                              band &&
+                              editor?.view.dom.contains(target) &&
+                              !target.closest("[data-page-gap]")
+                            ) {
+                              setBand(null)
+                            }
+                          }}
+                          onDoubleClick={(e) => {
+                            // doppio clic nel margine alto o basso di una
+                            // pagina: si scrive l'intestazione o il piè
+                            if (!editor?.isEditable || !paginated || !exact)
+                              return
+                            const target = e.target as HTMLElement
+                            if (
+                              target.closest(
+                                "[data-band-editor], .doc-page-notes, button, input, textarea"
+                              ) ||
+                              (editor.view.dom.contains(target) &&
+                                !target.closest("[data-page-gap]"))
+                            ) {
+                              return
+                            }
+                            const el = e.currentTarget
+                            const box = el.getBoundingClientRect()
+                            const scale = box.width / (el.offsetWidth || 1) || 1
+                            const hit = bandAt(
+                              (e.clientX - box.left) / scale,
+                              (e.clientY - box.top) / scale,
+                              el.offsetWidth,
+                              exact.h,
+                              forceLight ? 0 : PAGE_GAP,
+                              theme.margins
+                            )
+                            if (!hit) return
+                            e.preventDefault()
+                            setBand(hit)
                           }}
                           style={
                             {
@@ -1428,6 +1488,14 @@ export function DocEditor({
                               pages={pagination.pages}
                               paper={paper}
                               shadow={forceLight ? "none" : sheetShadow}
+                              band={band}
+                              onBandChange={(where, text) =>
+                                setTheme({ [where]: text })
+                              }
+                              onBandClose={() => {
+                                setBand(null)
+                                editor?.commands.focus()
+                              }}
                             />
                           ) : (
                             <>

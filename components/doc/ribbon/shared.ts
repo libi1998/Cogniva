@@ -45,6 +45,11 @@ export type RibbonCtx = {
   openPanel: () => void
   /** altezza esatta della pagina se il documento è impaginato, altrimenti 0 */
   pageHeight: number
+  /**
+   * scrive l'intestazione o il piè di pagina direttamente sul foglio, sulla
+   * pagina che si sta guardando; false se il documento non ha pagine vere
+   */
+  editBand: (where: "header" | "footer") => boolean
   sources: DocSource[]
   /** «Gestisci fonti»; con `cite` il pulsante inserisce la fonte nel testo */
   openSources: (id?: string | null, cite?: boolean) => void

@@ -7,7 +7,13 @@ import { watermarkFontSize } from "@/lib/doc-design"
 import { fontStack } from "@/lib/fonts"
 import { getPagination } from "@/lib/pagination"
 import { useAuthor } from "@/lib/author"
-import { bandForPage } from "@/lib/header-footer"
+import {
+  BAND_FIELDS,
+  bandForPage,
+  bandParts,
+  joinBand,
+} from "@/lib/header-footer"
+import { cn } from "@/lib/utils"
 import type { DocMargins, DocTheme, DocWatermark } from "@/lib/types"
 import { useNotes } from "./footnote-node"
 
@@ -35,6 +41,9 @@ export function PageLayer({
   pages,
   paper,
   shadow,
+  band = null,
+  onBandChange,
+  onBandClose,
 }: {
   editor: Editor | null
   theme: DocTheme
@@ -43,6 +52,10 @@ export function PageLayer({
   pages: number
   paper: string
   shadow: string
+  /** intestazione o piè di pagina che si sta scrivendo, e su che pagina */
+  band?: BandEditing | null
+  onBandChange?: (where: "header" | "footer", text: string) => void
+  onBandClose?: () => void
 }) {
   const info = usePagination(editor)
   const notes = useNotes(editor)
@@ -94,7 +107,17 @@ export function PageLayer({
                 title={title}
                 border={border}
                 margins={margins}
+                hide={band && band.page === i ? band.where : null}
               />
+              {band && band.page === i && onBandChange && onBandClose ? (
+                <EditableBand
+                  band={band}
+                  theme={theme}
+                  pageHeight={pageHeight}
+                  onChange={onBandChange}
+                  onClose={onBandClose}
+                />
+              ) : null}
               {pageNotes.length && editor ? (
                 <div
                   className="doc-page-notes pointer-events-auto absolute overflow-hidden"
@@ -293,6 +316,7 @@ function PageBand({
   title,
   border,
   margins,
+  hide = null,
 }: {
   index: number
   pages: number
@@ -302,6 +326,8 @@ function PageBand({
   title: string
   border: string
   margins: DocMargins
+  /** la riga che si sta scrivendo: al suo posto c'è quella modificabile */
+  hide?: "header" | "footer" | null
 }) {
   const author = useAuthor()
   const start = theme.pageNumberStart ?? 1
@@ -318,8 +344,7 @@ function PageBand({
   }
   const header = bandForPage("header", theme, vars)
   const footer = bandForPage("footer", theme, vars)
-  const headTop = top + Math.max(10, margins.top / 2 - 6)
-  const footTop = top + span - Math.max(16, margins.bottom / 2)
+  const { headTop, footTop } = bandTops(top, span, margins)
 
   return (
     <>
@@ -335,13 +360,239 @@ function PageBand({
           }}
         />
       ) : null}
-      {header ? (
+      {header && hide !== "header" ? (
         <BandRow parts={header} top={headTop} margins={margins} />
       ) : null}
-      {footer ? (
+      {footer && hide !== "footer" ? (
         <BandRow parts={footer} top={footTop} margins={margins} />
       ) : null}
     </>
+  )
+}
+
+/** Dove stanno le righe di intestazione e piè di pagina in una pagina */
+function bandTops(top: number, span: number, margins: DocMargins) {
+  return {
+    headTop: top + Math.max(10, margins.top / 2 - 6),
+    footTop: top + span - Math.max(16, margins.bottom / 2),
+  }
+}
+
+export type BandEditing = {
+  where: "header" | "footer"
+  /** la pagina (da 0) su cui si scrive */
+  page: number
+  /** la parte dove mettere il cursore: sinistra, centro, destra */
+  part: 0 | 1 | 2
+}
+
+/**
+ * Da dove si fa doppio clic sul foglio a cosa si modifica: il margine alto è
+ * l'intestazione, quello basso il piè di pagina, come in Word. `x` e `y` sono
+ * in pixel del foglio, senza zoom.
+ */
+export function bandAt(
+  x: number,
+  y: number,
+  width: number,
+  pageHeight: number,
+  gap: number,
+  margins: DocMargins
+): BandEditing | null {
+  if (pageHeight <= 0) return null
+  const page = Math.max(0, Math.floor(y / (pageHeight + gap)))
+  const inPage = y - page * (pageHeight + gap)
+  if (inPage < 0 || inPage > pageHeight) return null
+  const where =
+    inPage < margins.top
+      ? "header"
+      : inPage > pageHeight - margins.bottom
+        ? "footer"
+        : null
+  if (!where) return null
+  const content = width - margins.left - margins.right
+  const rel = (x - margins.left) / (content || 1)
+  const part = rel < 1 / 3 ? 0 : rel < 2 / 3 ? 1 : 2
+  return { where, page, part }
+}
+
+/**
+ * La riga che si scrive: tre caselle (sinistra, centro, destra) al posto di
+ * quella disegnata, una linea tratteggiata con il nome come in Word e i
+ * campi da inserire nel punto del cursore. Vale per tutte le pagine.
+ */
+function EditableBand({
+  band,
+  theme,
+  pageHeight,
+  onChange,
+  onClose,
+}: {
+  band: BandEditing
+  theme: DocTheme
+  pageHeight: number
+  onChange: (where: "header" | "footer", text: string) => void
+  onClose: () => void
+}) {
+  const t = useT()
+  const { margins } = theme
+  const text = band.where === "header" ? theme.header : theme.footer
+  const parts = bandParts(text)
+  const refs = [
+    React.useRef<HTMLInputElement>(null),
+    React.useRef<HTMLInputElement>(null),
+    React.useRef<HTMLInputElement>(null),
+  ]
+  const { headTop, footTop } = bandTops(0, pageHeight, margins)
+  const top = band.where === "header" ? headTop : footTop
+
+  // il cursore va nella parte dove si è fatto doppio clic. Aperta da un
+  // menu della barra, il menu che si chiude rimette il fuoco nel testo un
+  // attimo dopo: per mezzo secondo il fuoco torna qui
+  React.useEffect(() => {
+    const input = refs[band.part].current
+    if (!input) return
+    input.focus({ preventScroll: true })
+    const end = input.value.length
+    input.setSelectionRange(end, end)
+    const until = Date.now() + 500
+    const onFocus = (e: FocusEvent) => {
+      const target = e.target as HTMLElement | null
+      if (Date.now() > until || !target?.closest(".ProseMirror")) return
+      input.focus({ preventScroll: true })
+    }
+    document.addEventListener("focusin", onFocus)
+    const stop = window.setTimeout(
+      () => document.removeEventListener("focusin", onFocus),
+      600
+    )
+    return () => {
+      window.clearTimeout(stop)
+      document.removeEventListener("focusin", onFocus)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo all'apertura
+  }, [band.where, band.page, band.part])
+
+  const write = (index: number, value: string) => {
+    const next = [...parts] as [string, string, string]
+    next[index] = value
+    onChange(band.where, joinBand(next))
+  }
+
+  /** un campo nel punto del cursore della casella attiva */
+  const insert = (token: string) => {
+    const active = refs.findIndex((r) => r.current === document.activeElement)
+    const index = active >= 0 ? active : band.part
+    const input = refs[index].current
+    if (!input) return
+    const start = input.selectionStart ?? input.value.length
+    const end = input.selectionEnd ?? start
+    const value = input.value.slice(0, start) + token + input.value.slice(end)
+    write(index, value)
+    requestAnimationFrame(() => {
+      input.focus({ preventScroll: true })
+      input.setSelectionRange(start + token.length, start + token.length)
+    })
+  }
+
+  const label = band.where === "header" ? t("Intestazione") : t("Piè di pagina")
+  const lineTop =
+    band.where === "header" ? margins.top - 4 : pageHeight - margins.bottom + 4
+
+  return (
+    <div
+      className="pointer-events-auto"
+      data-band-editor=""
+      onKeyDown={(e) => {
+        if (e.key === "Escape" || e.key === "Enter") {
+          e.preventDefault()
+          onClose()
+        }
+      }}
+    >
+      <div
+        aria-hidden
+        className="doc-band-line"
+        style={{ top: lineTop, left: 0, right: 0 }}
+      >
+        <span
+          className={cn(
+            "doc-band-tag",
+            band.where === "header" ? "top-full" : "bottom-full"
+          )}
+        >
+          {label}
+        </span>
+      </div>
+      <div
+        role="group"
+        aria-label={label}
+        className="absolute grid grid-cols-3 items-center gap-2 text-[0.72em] leading-none tabular-nums"
+        style={{
+          top: top - 6,
+          left: margins.left,
+          right: margins.right,
+        }}
+      >
+        {([0, 1, 2] as const).map((i) => (
+          <input
+            key={i}
+            ref={refs[i]}
+            value={parts[i]}
+            aria-label={
+              i === 0
+                ? t("{band}, a sinistra", { band: label })
+                : i === 1
+                  ? t("{band}, al centro", { band: label })
+                  : t("{band}, a destra", { band: label })
+            }
+            placeholder={i === band.part && !parts[i] ? t("Scrivi qui") : ""}
+            onChange={(e) => write(i, e.target.value)}
+            className={cn(
+              "doc-band-input h-6 min-w-0 rounded-[3px] bg-transparent px-1 outline-none",
+              i === 1 && "text-center",
+              i === 2 && "text-right"
+            )}
+          />
+        ))}
+      </div>
+      <div
+        className={cn(
+          "doc-band-tools absolute flex items-center gap-0.5",
+          band.where === "header" ? "" : "-translate-y-full"
+        )}
+        style={{
+          top:
+            band.where === "header"
+              ? margins.top + 16
+              : pageHeight - margins.bottom - 16,
+          right: margins.right,
+        }}
+        // i pulsanti non tolgono il fuoco alla casella: il campo va lì
+        onMouseDown={(e) => e.preventDefault()}
+      >
+        {BAND_FIELDS.map((field) => (
+          <button
+            key={field.token}
+            type="button"
+            title={field.label}
+            onClick={() => insert(field.token)}
+            className="rounded px-1.5 py-0.5 text-[11px] hover:bg-muted"
+          >
+            {field.label}
+          </button>
+        ))}
+        <button
+          type="button"
+          onClick={onClose}
+          className="ml-1 rounded bg-primary px-2 py-0.5 text-[11px] font-medium text-primary-foreground hover:bg-primary/90"
+        >
+          {band.where === "header"
+            ? t("Chiudi intestazione")
+            : t("Chiudi piè di pagina")}
+        </button>
+      </div>
+    </div>
   )
 }
 

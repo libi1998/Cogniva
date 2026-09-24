@@ -1165,7 +1165,9 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
           active={Boolean(theme.header)}
           presets={HEADER_PRESETS}
           onPick={(value) => setTheme({ header: value })}
-          onEdit={() => setDialog("header")}
+          // come in Word si scrive sul foglio; la finestra resta per i
+          // documenti senza pagine
+          onEdit={() => ctx.editBand("header") || setDialog("header")}
           onRemove={() => setTheme({ header: "" })}
         />
         <BandMenu
@@ -1174,7 +1176,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
           active={Boolean(theme.footer)}
           presets={FOOTER_PRESETS}
           onPick={(value) => setTheme({ footer: value })}
-          onEdit={() => setDialog("footer")}
+          onEdit={() => ctx.editBand("footer") || setDialog("footer")}
           onRemove={() => setTheme({ footer: "" })}
         />
         <RibbonMenu

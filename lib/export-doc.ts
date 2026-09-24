@@ -70,7 +70,9 @@ export function prepareSheet(
   node.querySelectorAll("[data-guide]").forEach((g) => g.remove())
   // la maniglia degli oggetti e i segni di formattazione restano a video
   node
-    .querySelectorAll("[data-block-handle], .doc-block-drop, .doc-mark")
+    .querySelectorAll(
+      "[data-block-handle], .doc-block-drop, .doc-mark, [data-band-editor]"
+    )
     .forEach((g) => g.remove())
   node.classList.remove("doc-marks")
   // la copia per l'SVG ha già perso le classi: si riconoscono dagli attributi

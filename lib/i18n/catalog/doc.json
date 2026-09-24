@@ -153,6 +153,27 @@
     "de": "{active} von {total}",
     "pt": "{active} de {total}"
   },
+  "{band}, a destra": {
+    "en": "{band}, right",
+    "es": "{band}, a la derecha",
+    "fr": "{band}, à droite",
+    "de": "{band}, rechts",
+    "pt": "{band}, à direita"
+  },
+  "{band}, a sinistra": {
+    "en": "{band}, left",
+    "es": "{band}, a la izquierda",
+    "fr": "{band}, à gauche",
+    "de": "{band}, links",
+    "pt": "{band}, à esquerda"
+  },
+  "{band}, al centro": {
+    "en": "{band}, center",
+    "es": "{band}, en el centro",
+    "fr": "{band}, au centre",
+    "de": "{band}, Mitte",
+    "pt": "{band}, ao centro"
+  },
   "{color} scuro": {
     "en": "Dark {color}",
     "es": "{color} oscuro",
@@ -1679,12 +1700,26 @@
     "de": "Thesaurus schließen",
     "pt": "Fechar o dicionário de sinônimos"
   },
+  "Chiudi intestazione": {
+    "en": "Close header",
+    "es": "Cerrar encabezado",
+    "fr": "Fermer l'en-tête",
+    "de": "Kopfzeile schließen",
+    "pt": "Fechar cabeçalho"
+  },
   "Chiudi la cronologia": {
     "en": "Close the history",
     "es": "Cerrar el historial",
     "fr": "Fermer l'historique",
     "de": "Verlauf schließen",
     "pt": "Fechar o histórico"
+  },
+  "Chiudi piè di pagina": {
+    "en": "Close footer",
+    "es": "Cerrar pie de página",
+    "fr": "Fermer le pied de page",
+    "de": "Fußzeile schließen",
+    "pt": "Fechar rodapé"
   },
   "Chiudi Struttura": {
     "en": "Close Outline",
@@ -8167,6 +8202,13 @@
     "fr": "Écrivez la liste ou importez un fichier CSV (y compris exporté depuis n'importe quel tableur).",
     "de": "Schreib die Liste oder importiere eine CSV-Datei (auch aus jeder Tabellenkalkulation exportiert).",
     "pt": "Escreva a lista ou importe um arquivo CSV (inclusive exportado de qualquer planilha)."
+  },
+  "Scrivi qui": {
+    "en": "Type here",
+    "es": "Escribe aquí",
+    "fr": "Saisissez ici",
+    "de": "Hier eingeben",
+    "pt": "Digite aqui"
   },
   "Scrivi un commento…": {
     "en": "Write a comment…",
