@@ -3002,6 +3002,20 @@
     "de": "Schalter",
     "pt": "Interruptor"
   },
+  "Interruzione di colonna": {
+    "en": "Column break",
+    "es": "Salto de columna",
+    "fr": "Saut de colonne",
+    "de": "Spaltenumbruch",
+    "pt": "Quebra de coluna"
+  },
+  "Interruzione di pagina": {
+    "en": "Page break",
+    "es": "Salto de página",
+    "fr": "Saut de page",
+    "de": "Seitenumbruch",
+    "pt": "Quebra de página"
+  },
   "Intervallo": {
     "en": "Range",
     "es": "Intervalo",

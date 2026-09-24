@@ -609,6 +609,15 @@ export function DocEditor({
   }, [editor, layoutHeight, layoutTop, layoutBottom])
   const pagination = usePagination(editor)
 
+  // segni di formattazione (¶): decorazioni dell'editor, accese dal tema
+  const marksVisible = Boolean(theme?.marks)
+  React.useEffect(() => {
+    if (!editor) return
+    queueMicrotask(() => {
+      if (!editor.isDestroyed) editor.commands.setFormattingMarks(marksVisible)
+    })
+  }, [editor, marksVisible])
+
   const zoom = theme?.zoom ?? 1
   const setZoom = React.useCallback(
     (value: number) => setDocTheme(fileId, { zoom: clampZoom(value) }),

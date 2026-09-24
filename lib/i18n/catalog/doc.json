@@ -3716,6 +3716,13 @@
     "de": "Das Dokument hat keine Überschriften (Formatvorlagen Überschrift 1–3).",
     "pt": "O documento não tem títulos (estilos Título 1–3)."
   },
+  "Il documento ora è impaginato su fogli A4": {
+    "en": "The document is now laid out on A4 pages",
+    "es": "El documento ahora se compone en hojas A4",
+    "fr": "Le document est maintenant mis en page sur des feuilles A4",
+    "de": "Das Dokument ist jetzt auf A4-Seiten umbrochen",
+    "pt": "O documento agora é paginado em folhas A4"
+  },
   "Il documento prima delle revisioni": {
     "en": "The document before the revisions",
     "es": "El documento antes de las revisiones",
@@ -4604,13 +4611,6 @@
     "fr": "Arrêter la lecture",
     "de": "Vorlesen beenden",
     "pt": "Parar a leitura"
-  },
-  "Interruzione di pagina": {
-    "en": "Page break",
-    "es": "Salto de página",
-    "fr": "Saut de page",
-    "de": "Seitenumbruch",
-    "pt": "Quebra de página"
   },
   "Interruzioni": {
     "en": "Breaks",

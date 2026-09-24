@@ -98,7 +98,11 @@ import {
 import { docAccent } from "@/lib/palette"
 import { getWorkspace, useStore } from "@/lib/store"
 import { docTitleText } from "@/lib/tiptap-extensions"
-import { displayTitle, type PageNumberPosition } from "@/lib/types"
+import {
+  displayTitle,
+  PAGE_FORMATS,
+  type PageNumberPosition,
+} from "@/lib/types"
 import { cn } from "@/lib/utils"
 import {
   RibbonButton,
@@ -627,6 +631,13 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
   const [dialog, setDialog] = React.useState<InsertDialog>(null)
   const fileRef = React.useRef<HTMLInputElement>(null)
   const body = () => atBody(editor, st)
+  // una pagina vuota o un salto pagina si vedono solo con i fogli veri: un
+  // documento «Schermo» è una striscia sola, e passa all'A4 come in Word
+  const paged = () => {
+    if (PAGE_FORMATS[theme.format].mm) return
+    setTheme({ format: "a4" })
+    toast(t("Il documento ora è impaginato su fogli A4"))
+  }
   const accent = docAccent(theme.accent)
   const close = () => setDialog(null)
 
@@ -766,7 +777,8 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
             title={t("Una pagina bianca nel punto del cursore")}
             icon={<RectangleHorizontal className="size-4 rotate-90" />}
             className="justify-start"
-            onClick={() =>
+            onClick={() => {
+              paged()
               body()
                 .insertContent([
                   { type: "pageBreak" },
@@ -774,7 +786,7 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
                   { type: "pageBreak" },
                 ])
                 .run()
-            }
+            }}
           />
           <RibbonButton
             compact
@@ -782,7 +794,10 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
             title={t("Il testo riparte dalla pagina successiva ⌘↵")}
             icon={<SquareSplitVertical className="size-4" />}
             className="justify-start"
-            onClick={() => body().setPageBreak().run()}
+            onClick={() => {
+              paged()
+              body().setPageBreak().run()
+            }}
           />
         </RibbonRows>
       </RibbonGroup>

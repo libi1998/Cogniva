@@ -286,7 +286,8 @@ export function SizeCombo({
   return (
     <Combo<number>
       label={t("Dimensione carattere")}
-      width={60}
+      // «23,5» intero: a 60 px si vedeva solo «23,»
+      width={76}
       inputMode="decimal"
       display={fmt(pt)}
       items={WORD_SIZES}

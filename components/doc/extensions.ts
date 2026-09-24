@@ -15,6 +15,7 @@ import { AutoCorrect } from "@/lib/autocorrect"
 import { FindReplace } from "@/lib/find-replace"
 import { ReadAloudHighlight } from "@/lib/read-aloud/highlight"
 import { Pagination } from "@/lib/pagination"
+import { FormattingMarks } from "@/lib/formatting-marks"
 import { ListStyles, SortBlocks, TextEffects } from "@/lib/doc-typography"
 import { Bookmark, CoverPart, DropCap, Field, TextBox } from "@/lib/doc-fields"
 import {
@@ -133,6 +134,7 @@ export function createDocExtensions(): AnyExtension[] {
     FindReplace,
     ReadAloudHighlight,
     Pagination,
+    FormattingMarks,
     CommentMark,
     MathInline,
     MathBlock,

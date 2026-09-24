@@ -551,11 +551,28 @@ export function hasDesignDefaults() {
   return Object.keys(readDesignDefaults()).length > 0
 }
 
-/** Il tema di un documento nuovo: i valori iniziali più quelli predefiniti */
+const CM = 96 / 2.54
+const cm = (n: number) => Math.round(n * CM * 100) / 100
+
+/** I margini «Normale» di Word: 2,5 cm sopra e sotto, 2 cm ai lati */
+export const WORD_MARGINS = {
+  top: cm(2.5),
+  right: cm(2),
+  bottom: cm(2.5),
+  left: cm(2),
+}
+
+/**
+ * Il tema di un documento nuovo: i valori iniziali più quelli predefiniti.
+ * Come in Word si parte da un foglio A4 intero, anche vuoto: con il formato
+ * «Schermo» il foglio era alto quanto il testo, cioè una striscia.
+ */
 export function newDocTheme(): DocTheme {
   // un documento nuovo è nella lingua di chi lo crea
   return {
     ...defaultDocTheme,
+    format: "a4",
+    margins: { ...WORD_MARGINS },
     language: currentRegion(),
     ...readDesignDefaults(),
   }
