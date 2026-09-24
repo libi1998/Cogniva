@@ -478,7 +478,7 @@ test("Layout: il rientro si scrive nella casella, non nel documento", async ({
   await openTab(page, "Layout")
   const field = page.getByLabel("A sinistra", { exact: true })
   await field.click()
-  // la casella seleziona il suo testo al fotogramma dopo il fuoco
+  // la casella seleziona il suo numero appena ha il fuoco
   await field.evaluate(
     () =>
       new Promise((done) =>

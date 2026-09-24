@@ -272,9 +272,11 @@ function RibbonBody({
       ]
       if (!groups.length) return
       const labels: string[] = []
+      const whole = new Set<string>()
       for (const group of groups) {
         const name = group.dataset.groupLabel ?? ""
         labels.push(name)
+        if (group.dataset.fixed !== undefined) whole.add(name)
         if (group.offsetWidth <= 0) continue
         const store =
           group.dataset.collapsed === undefined ? widths.current : small.current
@@ -294,7 +296,9 @@ function RibbonBody({
       )
       // un gruppo già stretto non guadagna niente a chiudersi
       const shrunk = labels.map((name, i) =>
-        Math.min(natural[i], small.current.get(name) ?? COLLAPSED_WIDTH)
+        whole.has(name)
+          ? natural[i]
+          : Math.min(natural[i], small.current.get(name) ?? COLLAPSED_WIDTH)
       )
       const widthWith = (open: number) =>
         natural.slice(0, open).reduce((sum, w) => sum + w, 0) +

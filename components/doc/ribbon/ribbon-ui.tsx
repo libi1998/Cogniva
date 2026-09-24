@@ -56,6 +56,7 @@ export function RibbonGroup({
   className,
   safe,
   launcher,
+  fixed,
 }: {
   label: string
   /** icona del pulsante quando il gruppo si riduce */
@@ -69,8 +70,14 @@ export function RibbonGroup({
    * finestra con tutte le opzioni («Carattere…», «Paragrafo…»)
    */
   launcher?: { title: string; onClick: () => void }
+  /**
+   * il gruppo è già un solo pulsante grande: ridotto sarebbe lo stesso
+   * pulsante, che apre un riquadro con dentro il pulsante vero
+   */
+  fixed?: boolean
 }) {
-  const collapsed = React.useContext(CollapsedGroups).has(label)
+  const shut = React.useContext(CollapsedGroups)
+  const collapsed = !fixed && shut.has(label)
   const body = (
     <div className={cn("flex min-h-0 flex-1 items-center gap-0.5", className)}>
       {children}
@@ -90,6 +97,7 @@ export function RibbonGroup({
       data-ribbon-group=""
       data-group-label={label}
       data-safe={safe ? "" : undefined}
+      data-fixed={fixed ? "" : undefined}
       role="group"
       aria-label={label}
       className="flex shrink-0 flex-col border-r border-border/70 px-2 last:border-r-0"
@@ -501,6 +509,18 @@ export function Stepper({
   const t = useT()
   const backToText = useFinalFocus()
   const [draft, setDraft] = React.useState<string | null>(null)
+  const input = React.useRef<HTMLInputElement>(null)
+  // entrando nella casella l'unità sparisce e il numero resta selezionato,
+  // per scriverci sopra. La selezione si rifà appena il numero è nella
+  // casella: fatta prima, cambiare il valore la toglierebbe e quello che si
+  // scrive finirebbe in coda («1» diventava «11,5»)
+  const selectAll = React.useRef(false)
+  const fresh = React.useRef(false)
+  React.useLayoutEffect(() => {
+    if (!selectAll.current) return
+    selectAll.current = false
+    input.current?.select()
+  }, [draft])
   const clamp = (v: number) =>
     Math.min(max, Math.max(min, Number(v.toFixed(decimals))))
   const shown =
@@ -530,12 +550,27 @@ export function Stepper({
         style={{ width }}
       >
         <input
+          ref={input}
           value={shown}
           inputMode="decimal"
           aria-label={label}
-          onFocus={(e) => {
+          onFocus={() => {
+            selectAll.current = true
+            fresh.current = true
             setDraft(formatDecimal(Number(value.toFixed(decimals))))
-            requestAnimationFrame(() => e.target.select())
+          }}
+          // il clic che dà il fuoco non deve togliere la selezione appena
+          // fatta, mettendo il cursore dove si è cliccato
+          onMouseUp={(e) => {
+            if (!fresh.current) return
+            fresh.current = false
+            if (e.currentTarget.selectionStart !== e.currentTarget.selectionEnd)
+              return
+            e.preventDefault()
+            e.currentTarget.select()
+          }}
+          onKeyUp={() => {
+            fresh.current = false
           }}
           onChange={(e) => {
             setDraft(e.target.value)
