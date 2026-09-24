@@ -164,6 +164,8 @@ inheriting it.
 | Undo / Redo        | `⌘Z` / `⇧⌘Z`                                                                                                                                                           |
 
 While dragging an element, **alignment guides** appear with snapping to edges and centers.
+A drag redraws the board once per frame, however many movements a fast mouse or pen
+sends; the pen and the eraser still get every point.
 
 ## Documents
 
@@ -200,25 +202,70 @@ the edge of the screen.
 | **Review**     | spelling, **AutoCorrect**, **Thesaurus**, word count · **read aloud** · accessibility checker · **translate**, language · **comments** · **track changes** with accept/reject · compare, **version history** · restrict editing · ink                          |
 | **View**       | read mode, print layout, web layout, outline, draft · focus and immersive reader · ruler, gridlines, navigation pane · zoom, one page, multiple pages · new window, full screen                                                                                |
 
-Every command lives in exactly one place: file settings are in the tabs, and the panel on
-the right only shows what you're working on.
+Every command lives in exactly one place: file settings are in the tabs, and the
+contextual tab only shows what you're working on.
 
-### Style panel
+The **Home** tab also has an **Indents and spacing** group, and the small button in the
+corner of **Font** and **Paragraph** opens their dialogs, as in Word:
 
-Contextual: it changes with the selection and never shows file settings.
+- **Paragraph**: alignment, indents (first line and hanging too), spacing before and
+  after, line spacing, _keep with next_, _keep lines together_ and _page break before_ —
+  followed by the pagination and saved to `.docx`
+- **Font**: expanded or condensed spacing, raised or lowered text, small caps
 
-| Selection    | What you get                                                                                                                            |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
-| **Text**     | character spacing, first-line indent                                                                                                    |
-| **Picture**  | wrapping, position and alignment, coordinates, width, rotation, border, shadow, alt text                                                |
-| **Table**    | rows, columns, merge/split cells, headers · **line width, style and color**, banded rows · cell shading and vertical alignment          |
-| **Board**    | height, caption, move up/down, open the board                                                                                           |
-| **Note**     | note text (opens ready for typing), at the bottom of the page or at the end of the document, delete                                     |
-| **Chart**    | type, title, data sheet, legend, palette, stacked, labels, gridlines, smooth lines, axis titles, width, height, alignment               |
-| **Equation** | LaTeX with explained errors, inline or on its own line, structures (fractions, roots, sums, integrals, matrices…) and one-click symbols |
-| **Citation** | source, cited pages, edit the source                                                                                                    |
-| **Video**    | address, width, alignment                                                                                                               |
-| **3D model** | preset views, zoom, auto-rotate, color, background, alt text, width, height, alignment, replace                                         |
+### Contextual tab
+
+When you work on an object, a colored tab appears next to **View**, named after it, and
+opens by itself when the object is inserted. It never shows file settings, and **More
+options** at its end holds every setting of the object in one pane.
+
+| Tab                   | What you get                                                                                                                            |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| **Table**             | rows, columns, merge/split cells, headers, banded rows · **per-cell format** (see [Tables](#tables))                                    |
+| **Picture format**    | wrapping, position and alignment, coordinates, width, rotation, border, shadow, alt text                                                |
+| **Shape format**      | fill (or none), outline color and width, text inside the shape                                                                          |
+| **Chart format**      | type, title, data sheet, legend, palette, stacked, labels, gridlines, smooth lines, axis titles, width, height, alignment               |
+| **Table of contents** | style (_Automatic 1_ with dot leaders and page numbers, _Automatic 2_ in a colored box, _Simple_), levels, default title, move up/down  |
+| **Board**             | height, caption, move up/down, open the board                                                                                           |
+| **Note**              | note text (opens ready for typing), at the bottom of the page or at the end of the document, delete                                     |
+| **Equation**          | LaTeX with explained errors, inline or on its own line, structures (fractions, roots, sums, integrals, matrices…) and one-click symbols |
+| **Citation**          | source, cited pages, edit the source                                                                                                    |
+| **Video**             | address, width, alignment                                                                                                               |
+| **3D model**          | preset views, zoom, auto-rotate, color, background, alt text, width, height, alignment, replace                                         |
+
+Tables, tables of contents, charts, boards, videos, equations and 3D models have a **✥
+handle** above them: a click selects the whole object, dragging it moves the object
+between paragraphs, with a line showing where it will land.
+
+### Tables
+
+- **Select** a cell, row, column or the whole table (a selected table is outlined)
+- **Borders side by side**: all, outside, inside, horizontal, vertical, a single side or
+  none, with the pen's style, width and color
+- **Shading**, **nine-position alignment**, cell margins, row height and _distribute
+  columns_ for each cell or the selected ones
+- Tables break between rows across pages, and everything goes into the `.docx`
+
+### Headers and footers
+
+Double-click the top or bottom margin of a page (or **Insert › Header › Edit**) and type
+straight on the sheet, in the left, center and right parts of the line. A small bar in
+the margin inserts page number, page count, title, author and date at the cursor; `Esc`,
+`Enter`, _Close_ or a click in the text go back to the document, which stays dimmed
+meanwhile. Documents without pages keep the dialog.
+
+### Shapes
+
+**Insert › Shapes** places the shape in front of the text, filled with a solid color and
+an outline in the same tone, free to move on the page and selected right away with its
+**Shape format** tab. Side handles stretch it in width or height only; the drawing is
+redone at every change, so it looks the same on screen, in print and in exports.
+
+### Formatting marks
+
+**Home › ¶** shows a dot for spaces, ° for non-breaking spaces, → for tabs, ↵ for line
+breaks, ¶ at the end of paragraphs and ¤ at the end of cells, plus the dashed page and
+column breaks. They never move the text and never end up in exports.
 
 ### Pictures
 
@@ -266,7 +313,7 @@ top, top and bottom on the side), type them in centimeters in the page diagram (
   see it on screen: the gap between sheets exists only on screen
 - **Footnotes** (`⌥⌘F`) at the bottom of the page of their reference, with the space
   reserved; **endnotes** (`⌥⌘D`) numbered i, ii, iii at the end of the document. A note can
-  be switched from one type to the other in the panel
+  be switched from one type to the other in its **Note** tab
 - **Line numbers** in the margin: continuous or restarting on every page
 - **Columns**: one, two or three, with column breaks (with multiple columns the pages are
   shown as guides)
@@ -286,8 +333,8 @@ doesn't delete the replies.
 
 **Insert › Equation** offers a new formula, an inline one and eight presets (quadratic
 formula, binomial theorem, Taylor, Fourier…). Typing `$x^2$` in the text creates an inline
-formula, `$$…$$` on an empty line a display formula. Edit them in LaTeX from the panel,
-with one-click structures and symbols.
+formula, `$$…$$` on an empty line a display formula. Edit them in LaTeX from the
+**Equation** tab, with one-click structures and symbols.
 
 ### Citations and bibliography
 
@@ -314,7 +361,7 @@ address.
 **Insert › 3D Models**: a glTF model (`.glb`, or `.gltf` with embedded data,
 up to 40 MB) from your device or an https address, or one of twelve ready-made **3D
 shapes**. In the document you rotate it by dragging and zoom with the scroll wheel when
-it's selected; the Style panel has preset views (front, top, isometric…), zoom,
+it's selected; its **3D model** tab has preset views (front, top, isometric…), zoom,
 auto-rotate, color, background, size and alt text. three.js is downloaded only when a model
 appears on screen, and an off-screen model doesn't hold on to a WebGL context. Print, PDF,
 PNG and DOCX use a snapshot of the current view.
@@ -427,7 +474,9 @@ pages) and you had been away for a few minutes.
 - **Speed**: on a 12,000-word document a keystroke costs about 0.3 ms, and pagination adds
   about 1 ms (it measures everything before the browser paints, so nothing jumps). Words,
   characters and line numbers are counted when idle; formulas, citations and bibliography
-  are rendered without React
+  are rendered without React. When a very long document takes more than a third of a
+  frame to paginate, pages are redone at short intervals while you type (60–400 ms)
+  instead of on every key; short documents stay instant
 
 ## Light and dark theme
 
