@@ -86,9 +86,13 @@ test("inserisce una forma 3D, la ruota e usa le visualizzazioni", async ({
 
   const frame = page.locator("#doc-sheet .doc-model3d-frame")
   await expect(frame).toBeVisible()
-  // l'anteprima si genera appena il modello è disegnato
+  // l'anteprima si genera appena il modello è disegnato. three.js arriva
+  // solo adesso, alla prima forma: in sviluppo si compila al momento e può
+  // volerci ben più dei 5 secondi di un'attesa normale
   await expect
-    .poll(async () => String((await modelAttrs(page))?.poster ?? ""))
+    .poll(async () => String((await modelAttrs(page))?.poster ?? ""), {
+      timeout: 20_000,
+    })
     .toMatch(/^data:image\/png/)
   // il modello resta selezionato e la sua scheda si apre da sola
   await expect(page.getByRole("tab", { name: "Modello 3D" })).toHaveAttribute(
