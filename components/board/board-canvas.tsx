@@ -187,7 +187,11 @@ export function BoardCanvas({
     data.nodes.forEach((n) => m.set(n.id, n))
     return m
   }, [data.nodes])
-  const ordered = React.useMemo(() => sortedForRender(data.nodes), [data.nodes])
+  // i contenitori (sezioni e frame) in uno strato loro, sotto ai connettori
+  const [containers, others] = React.useMemo(() => {
+    const ordered = sortedForRender(data.nodes)
+    return [ordered.filter(isContainer), ordered.filter((n) => !isContainer(n))]
+  }, [data.nodes])
 
   /* --------------------------- coordinate helpers ------------------------ */
 
@@ -240,7 +244,9 @@ export function BoardCanvas({
     const el = document.activeElement as HTMLElement | null
     if (!el) return false
     if (el.tagName !== "TEXTAREA" && el.tagName !== "INPUT") return false
-    return !!el.closest('[data-layer="nodes"], [data-layer="edges"]')
+    return !!el.closest(
+      '[data-layer="nodes"], [data-layer="containers"], [data-layer="edges"]'
+    )
   }
 
   const begin = (i: Interaction) => {
@@ -1450,6 +1456,30 @@ export function BoardCanvas({
     tool.t === "select" && interKind === "none" && selection.nodes.length <= 1
   const resizeAllowed = tool.t === "select" && selection.nodes.length === 1
 
+  const nodeView = (node: BoardNode) => (
+    <NodeView
+      key={node.id}
+      node={node}
+      theme={theme}
+      zoom={vp.zoom}
+      selected={selNodes.has(node.id)}
+      editing={editingNode === node.id}
+      editingCell={editingCell?.id === node.id ? editingCell.index : null}
+      interactive={interactive}
+      showHandles={handlesAllowed && editingNode !== node.id}
+      showResize={
+        resizeAllowed && selNodes.has(node.id) && editingNode !== node.id
+      }
+      onPointerDown={onNodePointerDown}
+      onDoubleClick={onNodeDoubleClick}
+      onContextMenu={onNodeContextMenu}
+      onTextCommit={onNodeTextCommit}
+      onCellCommit={onNodeCellCommit}
+      onConnectStart={onConnectStart}
+      onResizeStart={onResizeStart}
+    />
+  )
+
   return (
     <div
       ref={ref}
@@ -1478,38 +1508,59 @@ export function BoardCanvas({
         )
       }}
     >
+      {page ? (
+        <svg
+          data-layer="page"
+          className="absolute inset-0 h-full w-full"
+          style={{ pointerEvents: "none" }}
+        >
+          <g transform={`translate(${vp.x} ${vp.y}) scale(${vp.zoom})`}>
+            <rect
+              x={0}
+              y={0}
+              width={page.w}
+              height={page.h}
+              fill={background}
+              stroke={rgba(darkCanvas ? "#ffffff" : whim.base[900], 0.16)}
+              strokeWidth={1 / vp.zoom}
+              style={{
+                filter: `drop-shadow(0 ${8 / vp.zoom}px ${24 / vp.zoom}px ${rgba(whim.base[900], 0.22)})`,
+              }}
+            />
+            <text
+              x={0}
+              y={-10 / vp.zoom}
+              fontSize={12 / vp.zoom}
+              fontFamily="var(--font-inter), sans-serif"
+              fill={rgba(darkCanvas ? "#ffffff" : whim.base[900], 0.45)}
+            >
+              {formatLabel(theme.page.format, theme.page.orientation)}
+            </text>
+          </g>
+        </svg>
+      ) : null}
+
+      {/* sezioni e frame sotto ai connettori: prima li coprivano, e un
+          connettore dentro una sezione non si poteva né cliccare né
+          selezionare (nella board d'esempio nessuno) */}
+      <div
+        data-layer="containers"
+        className="absolute inset-0"
+        style={{
+          transform: `translate(${vp.x}px, ${vp.y}px) scale(${vp.zoom})`,
+          transformOrigin: "0 0",
+          pointerEvents: "none",
+        }}
+      >
+        {containers.map(nodeView)}
+      </div>
+
       <svg
         data-layer="edges"
         className="absolute inset-0 h-full w-full"
         style={{ pointerEvents: "none" }}
       >
         <g transform={`translate(${vp.x} ${vp.y}) scale(${vp.zoom})`}>
-          {page ? (
-            <g>
-              <rect
-                x={0}
-                y={0}
-                width={page.w}
-                height={page.h}
-                fill={background}
-                stroke={rgba(darkCanvas ? "#ffffff" : whim.base[900], 0.16)}
-                strokeWidth={1 / vp.zoom}
-                style={{
-                  filter: `drop-shadow(0 ${8 / vp.zoom}px ${24 / vp.zoom}px ${rgba(whim.base[900], 0.22)})`,
-                }}
-              />
-              <text
-                x={0}
-                y={-10 / vp.zoom}
-                fontSize={12 / vp.zoom}
-                fontFamily="var(--font-inter), sans-serif"
-                fill={rgba(darkCanvas ? "#ffffff" : whim.base[900], 0.45)}
-              >
-                {formatLabel(theme.page.format, theme.page.orientation)}
-              </text>
-            </g>
-          ) : null}
-
           {data.edges.map((edge) => {
             const from = nodeById.get(edge.from)
             const to = nodeById.get(edge.to)
@@ -1633,29 +1684,7 @@ export function BoardCanvas({
           pointerEvents: "none",
         }}
       >
-        {ordered.map((node) => (
-          <NodeView
-            key={node.id}
-            node={node}
-            theme={theme}
-            zoom={vp.zoom}
-            selected={selNodes.has(node.id)}
-            editing={editingNode === node.id}
-            editingCell={editingCell?.id === node.id ? editingCell.index : null}
-            interactive={interactive}
-            showHandles={handlesAllowed && editingNode !== node.id}
-            showResize={
-              resizeAllowed && selNodes.has(node.id) && editingNode !== node.id
-            }
-            onPointerDown={onNodePointerDown}
-            onDoubleClick={onNodeDoubleClick}
-            onContextMenu={onNodeContextMenu}
-            onTextCommit={onNodeTextCommit}
-            onCellCommit={onNodeCellCommit}
-            onConnectStart={onConnectStart}
-            onResizeStart={onResizeStart}
-          />
-        ))}
+        {others.map(nodeView)}
       </div>
 
       <BoardContextMenu

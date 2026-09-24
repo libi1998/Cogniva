@@ -368,3 +368,34 @@ test("in inglese i decimali si scrivono col punto", async ({ page }) => {
     "10.5"
   )
 })
+
+test("board: i connettori dentro una sezione si cliccano", async ({ page }) => {
+  await page.goto("/it/board/demo-board")
+  await expect(page.locator('[data-node-id="n2"]')).toBeVisible()
+  // il punto a metà del connettore e1, che sta dentro la sezione sec1
+  const mid = await page.evaluate(() => {
+    const path = document.querySelector<SVGPathElement>(
+      'path[data-edge-id="e1"]'
+    )!
+    const point = path.getPointAtLength(path.getTotalLength() / 2)
+    const m = path.getScreenCTM()!
+    return {
+      x: point.x * m.a + point.y * m.c + m.e,
+      y: point.x * m.b + point.y * m.d + m.f,
+    }
+  })
+  // prima la sezione, disegnata sopra, si prendeva il clic
+  await page.mouse.click(mid.x, mid.y, { button: "right" })
+  await expect(
+    page.getByRole("menuitem", { name: "Inverti direzione" })
+  ).toBeVisible()
+  await page.keyboard.press("Escape")
+
+  // doppio clic: l'etichetta si scrive, ⎋ la annulla, Invio la salva
+  await page.mouse.dblclick(mid.x, mid.y)
+  const label = page.locator("foreignObject input")
+  await expect(label).toBeVisible()
+  await label.fill("sì")
+  await page.keyboard.press("Enter")
+  await expect(page.locator('span[data-edge-id="e1"]')).toHaveText("sì")
+})
