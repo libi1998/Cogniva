@@ -29,6 +29,23 @@ export function useFinalFocus() {
   return React.useContext(FinalFocus) ?? undefined
 }
 
+type WithEditor = HTMLElement & {
+  editor?: { isDestroyed?: boolean; view?: { focus(): void } }
+}
+
+/**
+ * Rimette il fuoco nel posto indicato. Se è il testo di un documento anche il
+ * cursore torna subito dov'era: con il solo `focus()` il browser lo porta
+ * all'inizio della pagina e l'editor lo rimette a posto solo un attimo dopo,
+ * così chi riprende a scrivere al volo finiva nel titolo.
+ */
+export function focusBack(target: HTMLElement | null | undefined) {
+  if (!target?.isConnected) return
+  const editor = (target as WithEditor).editor
+  if (editor?.view && !editor.isDestroyed) editor.view.focus()
+  else target.focus({ preventScroll: true })
+}
+
 /**
  * Rimette il fuoco appena una finestra o un menu si chiude, senza aspettare
  * che finisca di sparire: chi riprende subito a scrivere non perde la prima
@@ -43,7 +60,7 @@ export function useFocusBackWhenClosed(open: boolean | undefined) {
   const wasOpen = React.useRef(false)
   React.useEffect(() => {
     if (wasOpen.current && !open) {
-      target?.current?.focus({ preventScroll: true })
+      focusBack(target?.current)
     }
     wasOpen.current = Boolean(open)
   }, [open, target])

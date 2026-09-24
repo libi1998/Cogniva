@@ -13,6 +13,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import {
+  focusBack,
   useFinalFocus,
   useFocusBackWhenClosed,
 } from "@/components/ui/final-focus"
@@ -474,12 +475,14 @@ export function Stepper({
           onKeyDown={(e) => {
             // Invio torna al testo, come in Word: si riprende a scrivere nel
             // documento (il valore si applica già mentre si digita). In una
-            // finestra, come «Modifica stile», si resta nella finestra
+            // finestra, come «Modifica stile», si resta nella finestra; nel
+            // riquadro di un gruppo ridotto è il gruppo a chiudersi e a
+            // rimettere il fuoco nel testo
             if (e.key === "Enter") {
               e.preventDefault()
               const input = e.currentTarget
               if (backToText?.current && !input.closest('[role="dialog"]'))
-                backToText.current.focus()
+                focusBack(backToText.current)
               else input.blur()
               return
             }
