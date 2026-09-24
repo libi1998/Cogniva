@@ -498,3 +498,44 @@ test("Layout: il rientro si scrive nella casella, non nel documento", async ({
   await page.keyboard.type("X")
   expect(await paragraphs(page)).toEqual(["TeXsto del paragrafo"])
 })
+
+test("Copia formato non toglie commenti e revisioni", async ({ page }) => {
+  await openDemo(page)
+  await withEditor(
+    page,
+    `editor.commands.setContent({ type: "doc", content: [
+      { type: "docTitle", content: [{ type: "text", text: "Prova" }] },
+      { type: "paragraph", content: [
+        { type: "text", text: "uno", marks: [{ type: "bold" }] },
+        { type: "text", text: " " },
+        { type: "text", text: "due", marks: [{ type: "comment", attrs: { id: "c1" } }] },
+        { type: "text", text: " " },
+        { type: "text", text: "tre", marks: [{ type: "deletion", attrs: { author: "Ada", date: 1 } }] },
+      ] },
+    ] })
+    editor.chain().focus().setTextSelection({ from: 8, to: 11 }).run()`
+  )
+  await openTab(page, "Home")
+  await (await ribbonButton(page, "Copia formato")).click()
+  const marks = (from: number) =>
+    withEditor<string[]>(
+      page,
+      `return editor.state.doc.resolve(${from}).marks().map((m) => m.type.name).sort()`
+    )
+  // si dipinge su «due», che ha un commento, e su «tre», eliminata con le
+  // revisioni: prima il commento perdeva il suo testo e l'eliminazione
+  // spariva, facendo ricomparire la parola
+  for (const [from, to] of [
+    [12, 15],
+    [16, 19],
+  ]) {
+    await withEditor(
+      page,
+      `editor.chain().setTextSelection({ from: ${from}, to: ${to} }).run()`
+    )
+    await page.locator("#doc-sheet .ProseMirror").dispatchEvent("mouseup")
+    if (from === 12) await (await ribbonButton(page, "Copia formato")).click()
+  }
+  expect(await marks(13)).toEqual(["bold", "comment"])
+  expect(await marks(17)).toEqual(["bold", "deletion"])
+})
