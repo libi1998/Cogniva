@@ -17,6 +17,8 @@ type FileMeta = {
   starred?: boolean
   /** nel cestino da questo momento; dopo 30 giorni il file sparisce */
   deletedAt?: number
+  /** la cartella della home in cui sta; senza, fuori da ogni cartella */
+  folder?: string
 }
 
 /* ------------------------------- Board ---------------------------------- */

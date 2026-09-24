@@ -59,6 +59,12 @@ function hist(id: string): Hist {
 type State = {
   hydrated: boolean
   files: WFile[]
+  /**
+   * le cartelle create nella home. Quelle con dei file si leggono anche dai
+   * file stessi (ognuno ha il nome della sua), così viaggiano con
+   * l'esportazione; questo elenco tiene anche quelle ancora vuote
+   */
+  folders: string[]
   historyTick: number
 
   hydrate: () => Promise<void>
@@ -86,6 +92,13 @@ type State = {
   /** le copie, subito dopo ciascun originale; restituisce i loro id */
   duplicateFiles: (ids: string[]) => string[]
   setStarred: (ids: string[], starred: boolean) => void
+  /** crea una cartella (vuota); restituisce il nome com'è stato salvato */
+  createFolder: (name: string) => string | null
+  renameFolder: (from: string, to: string) => string | null
+  /** toglie la cartella: i file restano, fuori da ogni cartella */
+  deleteFolder: (name: string) => void
+  /** sposta i file in una cartella, o fuori da tutte con null */
+  moveToFolder: (ids: string[], folder: string | null) => void
 
   snapshot: (id: string) => void
   undo: (id: string) => void
@@ -156,9 +169,14 @@ function normalizeFile(f: WFile): WFile {
       : f.kind === "board"
         ? "shapes"
         : "file-text"
-  return f.kind === "board"
-    ? { ...f, title, createdAt, updatedAt, icon, data: normalizeBoard(f.data) }
-    : { ...f, title, createdAt, updatedAt, icon, data: normalizeDoc(f.data) }
+  const base = { ...f, title, createdAt, updatedAt, icon }
+  // una cartella dev'essere un nome vero: altrimenti il file sta fuori
+  const folder = folderName(f.folder)
+  if (folder) base.folder = folder
+  else delete base.folder
+  return base.kind === "board"
+    ? { ...base, data: normalizeBoard(base.data) }
+    : { ...base, data: normalizeDoc(base.data) }
 }
 
 /**
@@ -190,10 +208,54 @@ function touch(f: WFile): WFile {
   return { ...f, updatedAt: Date.now() }
 }
 
+/** Il nome di una cartella ripulito: spazi uniti, al massimo 60 caratteri */
+export function folderName(name: unknown): string {
+  return typeof name === "string"
+    ? name.replace(/\s+/g, " ").trim().slice(0, 60)
+    : ""
+}
+
+export const sameFolder = (a: string, b: string) =>
+  a.localeCompare(b, undefined, { sensitivity: "accent" }) === 0
+
+function readFolders(): string[] {
+  try {
+    const raw: unknown = JSON.parse(readStorage(STORAGE.folders) ?? "[]")
+    return Array.isArray(raw) ? raw.map(folderName).filter(Boolean) : []
+  } catch {
+    return []
+  }
+}
+
+function writeFolders(folders: string[]) {
+  writeStorage(STORAGE.folders, JSON.stringify(folders))
+}
+
+/**
+ * Tutte le cartelle, in ordine di nome: quelle create e quelle che hanno dei
+ * file (anche arrivate con un'importazione)
+ */
+export function allFolders(
+  files: readonly WFile[],
+  folders: readonly string[]
+) {
+  const out: string[] = []
+  const add = (name: string | undefined) => {
+    const clean = folderName(name)
+    if (clean && !out.some((x) => sameFolder(x, clean))) out.push(clean)
+  }
+  folders.forEach(add)
+  for (const f of files) if (!f.deletedAt) add(f.folder)
+  return out.sort((a, b) =>
+    a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" })
+  )
+}
+
 export const useStore = create<State>((set, get) => {
   return {
     hydrated: false,
     files: [],
+    folders: [],
     historyTick: 0,
 
     hydrate: async () => {
@@ -243,7 +305,7 @@ export const useStore = create<State>((set, get) => {
         if (expired) purged.push(f.id)
         return !expired
       })
-      set({ files, hydrated: true })
+      set({ files, folders: readFolders(), hydrated: true })
       // da qui in poi i salvataggi riguardano solo i file che cambiano
       for (const f of files) lastSaved.set(f.id, f)
       // I file d'esempio si scrivono subito. Prima restavano solo in memoria
@@ -390,6 +452,73 @@ export const useStore = create<State>((set, get) => {
           f.id === id ? { ...f, starred: !f.starred } : f
         ),
       }),
+
+    createFolder: (name) => {
+      const clean = folderName(name)
+      if (!clean) return null
+      const existing = allFolders(get().files, get().folders).find((x) =>
+        sameFolder(x, clean)
+      )
+      if (existing) return existing
+      const folders = [...get().folders, clean]
+      writeFolders(folders)
+      set({ folders })
+      return clean
+    },
+
+    renameFolder: (from, to) => {
+      const clean = folderName(to)
+      if (!clean) return null
+      const folders = get().folders.filter((x) => !sameFolder(x, from))
+      if (!folders.some((x) => sameFolder(x, clean))) folders.push(clean)
+      writeFolders(folders)
+      set({
+        folders,
+        files: get().files.map((f) =>
+          f.folder && sameFolder(f.folder, from) ? { ...f, folder: clean } : f
+        ),
+      })
+      return clean
+    },
+
+    deleteFolder: (name) => {
+      const folders = get().folders.filter((x) => !sameFolder(x, name))
+      writeFolders(folders)
+      set({
+        folders,
+        files: get().files.map((f) => {
+          if (!f.folder || !sameFolder(f.folder, name)) return f
+          const rest = { ...f }
+          delete rest.folder
+          return rest
+        }),
+      })
+    },
+
+    moveToFolder: (ids, folder) => {
+      const which = new Set(ids)
+      const typed = folder === null ? "" : folderName(folder)
+      // «lavoro» e «Lavoro» sono la stessa cartella: vale il nome che c'è già
+      const clean = typed
+        ? (allFolders(get().files, get().folders).find((x) =>
+            sameFolder(x, typed)
+          ) ?? typed)
+        : ""
+      if (clean && !get().folders.some((x) => sameFolder(x, clean))) {
+        const folders = [...get().folders, clean]
+        writeFolders(folders)
+        set({ folders })
+      }
+      set({
+        files: get().files.map((f) => {
+          if (!which.has(f.id) || (f.folder ?? "") === clean) return f
+          if (clean) return { ...f, folder: clean }
+          const rest = { ...f }
+          delete rest.folder
+          return rest
+        }),
+      })
+    },
 
     setStarred: (ids, starred) => {
       const which = new Set(ids)

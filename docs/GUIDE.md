@@ -67,6 +67,13 @@ Then open http://localhost:3000. Other commands:
 - **Sort** by last modified, created date or name
 - **Favorites** and **Trash**: a deleted file can be restored (also from the _Undo_ button
   in the notification); the trash empties itself after 30 days
+- **Folders** in the sidebar: create, rename and delete them (the files stay); move files
+  with _Move to_ in their menu or by dragging them onto a folder, and out again onto _All
+  files_. A new file created inside an open folder stays there. Folders travel with the
+  JSON export
+- **Select several files** with the checkbox on each card, _Select_, ⌘/Ctrl + click or
+  Shift + click for a range, ⌘A for all: the bar above the grid moves, duplicates,
+  favorites, exports or trashes them together (Delete trashes them, Esc stops selecting)
 - **Import** DOCX (`.docx`), Markdown (`.md`), HTML and plain-text files: they become
   editable documents with headings, lists, tables, images, footnotes and endnotes,
   checklists and formulas (`$…$`). Just drag the files onto the window

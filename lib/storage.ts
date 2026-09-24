@@ -20,6 +20,8 @@ export const STORAGE = {
   autocorrect: "cogniva.doc.autocorrect",
   /** «Riprendi la lettura»: dove si era arrivati in ogni documento */
   resume: "cogniva.doc.resume",
+  /** le cartelle della home create e ancora vuote */
+  folders: "cogniva.folders",
 } as const
 
 const LEGACY: Partial<Record<string, string>> = {
