@@ -692,7 +692,7 @@ export function MailingsTab({ ctx }: { ctx: RibbonCtx }) {
           plainText({
             type: "doc",
             content: (editor.getJSON().content ?? []).flatMap((n) =>
-              fillContent(n, row)
+              fillContent(n, row, merge?.fields)
             ),
           }).trim()
         }

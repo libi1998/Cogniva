@@ -201,10 +201,31 @@ const text = (value: string, marks?: JSONContent["marks"]): JSONContent[] =>
     ? [{ type: "text", text: value, ...(marks?.length ? { marks } : {}) }]
     : []
 
+/**
+ * Il testo di una regola con i campi «Nome» sostituiti dai valori del
+ * record: così la riga di saluto intera («Gentile «Nome» «Cognome»,») sta in
+ * una regola sola, e il testo alternativo la sostituisce tutta. Un campo
+ * vuoto si porta via lo spazio che lo precede («Gentile Mario,» e non
+ * «Gentile Mario ,»); un «…» che non è un campo dell'elenco resta com'è.
+ */
+export function fillTemplate(
+  text: string,
+  row: Record<string, string>,
+  /** i campi dell'elenco: un record può non avere tutte le colonne */
+  fields: readonly string[] = []
+) {
+  return text.replace(/(\s?)«([^«»]+)»/g, (whole, space: string, name) => {
+    if (!(name in row) && !fields.includes(name)) return whole
+    const value = (row[name] ?? "").trim()
+    return value ? `${space}${value}` : ""
+  })
+}
+
 /** Il contenuto con i campi sostituiti dai valori di un record */
 export function fillContent(
   node: JSONContent,
-  row: Record<string, string>
+  row: Record<string, string>,
+  fields: readonly string[] = []
 ): JSONContent[] {
   if (node.type === "mergeField") {
     const name = String(node.attrs?.name ?? "")
@@ -217,13 +238,20 @@ export function fillContent(
       op: (a.op ?? "eq") as MergeRule["op"],
       value: String(a.value ?? ""),
     })
-    return text(String(ok ? (a.then ?? "") : (a.otherwise ?? "")), node.marks)
+    return text(
+      fillTemplate(
+        String(ok ? (a.then ?? "") : (a.otherwise ?? "")),
+        row,
+        fields
+      ),
+      node.marks
+    )
   }
   if (!node.content) return [node]
   return [
     {
       ...node,
-      content: node.content.flatMap((child) => fillContent(child, row)),
+      content: node.content.flatMap((child) => fillContent(child, row, fields)),
     },
   ]
 }
@@ -242,7 +270,7 @@ export function mergedDocument(
       // il titolo del modello diventa un Titolo 1 in ogni lettera: tutte
       // uguali, e il documento unito tiene il suo nome («… — unione»)
       // invece di prendere quello della prima riga
-      const filled = fillContent(block, row)
+      const filled = fillContent(block, row, merge.fields)
       for (const node of filled) {
         out.push(
           node.type === "docTitle"
@@ -613,7 +641,8 @@ export const MergeIf = Node.create({
         { class: "doc-merge-field", "data-merge-if": "" },
         HTMLAttributes
       ),
-      `«Se ${node.attrs.field}»`,
+      // come a schermo, nella lingua dell'app (prima sempre «Se»)
+      tr("«Se {field}…»", { field: node.attrs.field }),
     ]
   },
 
@@ -637,7 +666,10 @@ export const MergeIf = Node.create({
         if (!row)
           return { text: tr("«Se {field}…»", { field: a.field }), title }
         const ok = testRule(row, { field: a.field, op: a.op, value: a.value })
-        return { text: String(ok ? a.then : a.otherwise), title }
+        return {
+          text: fillTemplate(String(ok ? a.then : a.otherwise), row),
+          title,
+        }
       })
       return {
         dom: view.dom,
