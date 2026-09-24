@@ -188,6 +188,8 @@ test("Invio divide il paragrafo, non lo corregge", async ({ page }) => {
     editor.chain().insertContentAt(end, { type: "paragraph" }).focus("end").run()
     `
   )
+  // come in `type`: il primo tasto aspetta il fuoco, o va perso
+  await focused(page)
   await page.keyboard.type("perche", { delay: 12 })
   await page.keyboard.press("Enter")
   await page.keyboard.type("dopo", { delay: 12 })
