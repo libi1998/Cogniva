@@ -1381,12 +1381,18 @@ function materializePseudos(node: HTMLElement, view: Window) {
       const ps = view.getComputedStyle(el, `::${which}`)
       const text = contentText(ps.content, el)
       if (!text || !text.trim()) continue
-      if (ps.display === "none" || ps.position === "absolute" || ps.position === "fixed")
+      if (
+        ps.display === "none" ||
+        ps.position === "absolute" ||
+        ps.position === "fixed"
+      )
         continue
       const span = doc.createElement("span")
       span.textContent = text
       span.setAttribute("aria-hidden", "true")
-      span.style.cssText = COPY.map((p) => `${p}:${ps.getPropertyValue(p)}`).join(";")
+      span.style.cssText = COPY.map(
+        (p) => `${p}:${ps.getPropertyValue(p)}`
+      ).join(";")
       const cls = `cg-vec-${which}`
       el.classList.add(cls)
       if (which === "before") el.insertBefore(span, el.firstChild)
