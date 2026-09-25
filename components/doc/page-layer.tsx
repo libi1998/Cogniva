@@ -47,6 +47,7 @@ export function PageLayer({
   onBandChange,
   onBandClose,
   body,
+  focusRef,
 }: {
   editor: Editor | null
   theme: DocTheme
@@ -64,6 +65,8 @@ export function PageLayer({
    * intestazione o piè di pagina non ci stanno (come in Word)
    */
   body?: { top: number; bottom: number }
+  /** dove torna il fuoco chiudendo menu e finestre (vedi BandEditor) */
+  focusRef?: React.RefObject<HTMLElement | null>
 }) {
   const info = usePagination(editor)
   const notes = useNotes(editor)
@@ -127,6 +130,7 @@ export function PageLayer({
                   pageHeight={pageHeight}
                   bodyTop={bodyTop}
                   bodyBottom={bodyBottom}
+                  focusRef={focusRef}
                   onChange={onBandChange}
                   onClose={onBandClose}
                 />
@@ -474,6 +478,7 @@ function EditableBand({
   pageHeight,
   bodyTop,
   bodyBottom,
+  focusRef,
   onChange,
   onClose,
 }: {
@@ -484,6 +489,7 @@ function EditableBand({
   pageHeight: number
   bodyTop: number
   bodyBottom: number
+  focusRef?: React.RefObject<HTMLElement | null>
   onChange: (where: "header" | "footer", content: BandContent) => void
   onClose: () => void
 }) {
@@ -528,6 +534,7 @@ function EditableBand({
         vars={vars}
         theme={theme}
         at={band.at}
+        focusRef={focusRef}
         onChange={(content) => onChange(band.where, content)}
         onClose={onClose}
         className="doc-band doc-band-writing absolute"

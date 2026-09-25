@@ -373,6 +373,7 @@ export function BandEditor({
   toolbarClassName,
   toolbarStyle,
   showClose = true,
+  focusRef,
 }: {
   where: "header" | "footer"
   initial: BandContent | null
@@ -386,6 +387,11 @@ export function BandEditor({
   toolbarClassName?: string
   toolbarStyle?: React.CSSProperties
   showClose?: boolean
+  /**
+   * dove menu e finestre della barra rimettono il fuoco quando si chiudono:
+   * mentre si scrive l'intestazione è lei, non il testo del documento
+   */
+  focusRef?: React.RefObject<HTMLElement | null>
 }) {
   const t = useT()
   const latest = React.useRef(onChange)
@@ -420,6 +426,18 @@ export function BandEditor({
       latest.current(e.getJSON() as BandContent)
     },
   })
+
+  // il menu che ha aperto l'intestazione («Modifica intestazione…») rimette
+  // il fuoco quando finisce di sparire, un attimo dopo: se puntasse ancora al
+  // documento, su un computer lento un tasto finiva lì («· ozza»)
+  React.useEffect(() => {
+    if (!editor || !focusRef) return
+    const previous = focusRef.current
+    focusRef.current = editor.view.dom
+    return () => {
+      if (focusRef.current === editor.view.dom) focusRef.current = previous
+    }
+  }, [editor, focusRef])
 
   // il cursore dove si è fatto doppio clic, altrimenti in fondo
   React.useEffect(() => {

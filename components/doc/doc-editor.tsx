@@ -340,9 +340,10 @@ export function DocEditor({
     editorRef.current = editor
   })
 
-  // il testo, per chi deve rimetterci il cursore: finestre, menu, riquadri
+  // il testo, per chi deve rimetterci il cursore: finestre, menu, riquadri.
+  // Mentre si scrive l'intestazione il posto è suo (lo tiene BandEditor)
   React.useEffect(() => {
-    if (!textRef) return
+    if (!textRef || band) return
     textRef.current = editor && !editor.isDestroyed ? editor.view.dom : null
   })
 
@@ -1551,6 +1552,7 @@ export function DocEditor({
                               shadow={forceLight ? "none" : sheetShadow}
                               band={band}
                               body={{ top: bodyTop, bottom: bodyBottom }}
+                              focusRef={textRef}
                               onBandChange={(where, content) =>
                                 setTheme(
                                   where === "header"

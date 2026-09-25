@@ -178,3 +178,24 @@ test("un'intestazione in tre parti di prima si legge ancora", async ({
   await page.keyboard.press("Escape")
   await expect(band).toContainText("· bozza")
 })
+
+test("su un computer lento il fuoco resta nell'intestazione", async ({
+  page,
+  browserName,
+}) => {
+  // la CPU rallentata si chiede solo a Chromium
+  test.skip(browserName !== "chromium", "rallentamento solo in Chromium")
+  await onA4(page)
+  const cdp = await page.context().newCDPSession(page)
+  // il menu che apre l'intestazione rimette il fuoco quando finisce di
+  // sparire: su una macchina lenta, se puntava al documento, ci restava
+  await cdp.send("Emulation.setCPUThrottlingRate", { rate: 10 })
+  const header = await editHeader(page)
+  for (let i = 0; i < 8; i += 1) {
+    await page.waitForTimeout(150)
+    await expect(header).toBeFocused()
+  }
+  await page.keyboard.type("Lento ma giusto", { delay: 10 })
+  await cdp.send("Emulation.setCPUThrottlingRate", { rate: 1 })
+  await expect(header).toHaveText("Lento ma giusto")
+})
