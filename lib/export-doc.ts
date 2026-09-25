@@ -77,6 +77,10 @@ export function prepareSheet(
     )
     .forEach((g) => g.remove())
   node.classList.remove("doc-marks")
+  // l'intestazione che si stava scrivendo: sulla carta c'è quella salvata
+  node
+    .querySelectorAll(".doc-band-hidden")
+    .forEach((el) => el.classList.remove("doc-band-hidden"))
   node
     .querySelectorAll(".ProseMirror-selectednode")
     .forEach((el) => el.classList.remove("ProseMirror-selectednode"))

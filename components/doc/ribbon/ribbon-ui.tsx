@@ -443,7 +443,9 @@ export function SwatchGrid({
   return (
     <div
       className="grid gap-1.5 p-1.5"
-      style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+      // mai più piccoli dei colori degli altri menu: in un menu a larghezza
+      // automatica una colonna «0-1fr» si stringeva a pochi pixel
+      style={{ gridTemplateColumns: `repeat(${columns}, minmax(1.5rem, 1fr))` }}
     >
       {colors.map((c) => (
         <button
@@ -491,6 +493,7 @@ export function Stepper({
   width = 64,
   labelWidth = 62,
   compact,
+  lazy,
 }: {
   icon?: React.ReactNode
   label: string
@@ -505,6 +508,12 @@ export function Stepper({
   labelWidth?: number
   /** riga bassa: due campi e un'intestazione stanno nell'altezza della barra */
   compact?: boolean
+  /**
+   * il numero scritto si applica con Invio o uscendo dalla casella, non a
+   * ogni cifra: per le misure in cui «1» prima di «10» farebbe un passo vero
+   * (e uno in più da annullare), come la larghezza di una tabella
+   */
+  lazy?: boolean
 }) {
   const t = useT()
   const backToText = useFinalFocus()
@@ -516,6 +525,8 @@ export function Stepper({
   // scrive finirebbe in coda («1» diventava «11,5»)
   const selectAll = React.useRef(false)
   const fresh = React.useRef(false)
+  // con «lazy»: c'è un numero scritto e non ancora applicato
+  const typed = React.useRef(false)
   React.useLayoutEffect(() => {
     if (!selectAll.current) return
     selectAll.current = false
@@ -574,9 +585,16 @@ export function Stepper({
           }}
           onChange={(e) => {
             setDraft(e.target.value)
-            commit(e.target.value)
+            if (lazy) typed.current = true
+            else commit(e.target.value)
           }}
-          onBlur={() => setDraft(null)}
+          onBlur={(e) => {
+            if (typed.current) {
+              typed.current = false
+              commit(e.currentTarget.value)
+            }
+            setDraft(null)
+          }}
           onKeyDown={(e) => {
             // Invio torna al testo, come in Word: si riprende a scrivere nel
             // documento (il valore si applica già mentre si digita). In una
@@ -586,6 +604,11 @@ export function Stepper({
             if (e.key === "Enter") {
               e.preventDefault()
               const input = e.currentTarget
+              if (typed.current) {
+                // applicato qui: uscendo dalla casella non si rifà
+                typed.current = false
+                commit(input.value)
+              }
               if (backToText?.current && !input.closest('[role="dialog"]'))
                 focusBack(backToText.current)
               else input.blur()
@@ -593,7 +616,14 @@ export function Stepper({
             }
             if (e.key !== "ArrowUp" && e.key !== "ArrowDown") return
             e.preventDefault()
-            const next = clamp(value + (e.key === "ArrowUp" ? step : -step))
+            // le frecce partono dal numero scritto, se c'è
+            const typedValue = Number(
+              e.currentTarget.value.replace(",", ".").replace(/[^\d.-]/g, "")
+            )
+            const base =
+              typed.current && Number.isFinite(typedValue) ? typedValue : value
+            typed.current = false
+            const next = clamp(base + (e.key === "ArrowUp" ? step : -step))
             setDraft(formatDecimal(next))
             onChange(next)
           }}

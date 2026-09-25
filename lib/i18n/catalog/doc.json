@@ -153,27 +153,6 @@
     "de": "{active} von {total}",
     "pt": "{active} de {total}"
   },
-  "{band}, a destra": {
-    "en": "{band}, right",
-    "es": "{band}, a la derecha",
-    "fr": "{band}, à droite",
-    "de": "{band}, rechts",
-    "pt": "{band}, à direita"
-  },
-  "{band}, a sinistra": {
-    "en": "{band}, left",
-    "es": "{band}, a la izquierda",
-    "fr": "{band}, à gauche",
-    "de": "{band}, links",
-    "pt": "{band}, à esquerda"
-  },
-  "{band}, al centro": {
-    "en": "{band}, center",
-    "es": "{band}, en el centro",
-    "fr": "{band}, au centre",
-    "de": "{band}, Mitte",
-    "pt": "{band}, ao centro"
-  },
   "{color} chiaro": {
     "en": "Light {color}",
     "es": "{color} claro",
@@ -727,6 +706,13 @@
     "de": "Höhe",
     "pt": "Altura"
   },
+  "Altezza della tabella · trascina": {
+    "en": "Table height · drag",
+    "es": "Alto de la tabla · arrastra",
+    "fr": "Hauteur du tableau · faites glisser",
+    "de": "Tabellenhöhe · ziehen",
+    "pt": "Altura da tabela · arraste"
+  },
   "Altezza in righe": {
     "en": "Height in rows",
     "es": "Alto en filas",
@@ -985,6 +971,13 @@
     "fr": "Augmenter",
     "de": "Erhöhen",
     "pt": "Aumentar"
+  },
+  "Aumenta carattere": {
+    "en": "Increase font size",
+    "es": "Aumentar tamaño de fuente",
+    "fr": "Augmenter la taille de police",
+    "de": "Schrift vergrößern",
+    "pt": "Aumentar tamanho da fonte"
   },
   "Aumenta dimensione carattere": {
     "en": "Increase font size",
@@ -1861,6 +1854,20 @@
     "de": "Schriftfarbe",
     "pt": "Cor da fonte"
   },
+  "Colore dei numeri": {
+    "en": "Number color",
+    "es": "Color de los números",
+    "fr": "Couleur des numéros",
+    "de": "Farbe der Nummern",
+    "pt": "Cor dos números"
+  },
+  "Colore dei punti": {
+    "en": "Bullet color",
+    "es": "Color de las viñetas",
+    "fr": "Couleur des puces",
+    "de": "Farbe der Aufzählungszeichen",
+    "pt": "Cor dos marcadores"
+  },
   "Colore del bordo": {
     "en": "Border color",
     "es": "Color del borde",
@@ -2637,6 +2644,20 @@
     "fr": "Taille de cellule",
     "de": "Zellengröße",
     "pt": "Tamanho da célula"
+  },
+  "Dimensioni della tabella · trascina": {
+    "en": "Table size · drag",
+    "es": "Tamaño de la tabla · arrastra",
+    "fr": "Taille du tableau · faites glisser",
+    "de": "Tabellengröße · ziehen",
+    "pt": "Tamanho da tabela · arraste"
+  },
+  "Dimensioni tabella": {
+    "en": "Table Size",
+    "es": "Tamaño de tabla",
+    "fr": "Taille du tableau",
+    "de": "Tabellengröße",
+    "pt": "Tamanho da tabela"
   },
   "Direzione": {
     "en": "Direction",
@@ -4185,6 +4206,20 @@
     "de": "Ungültiges Bild",
     "pt": "Imagem inválida"
   },
+  "Immagine più grande": {
+    "en": "Larger picture",
+    "es": "Imagen más grande",
+    "fr": "Image plus grande",
+    "de": "Bild vergrößern",
+    "pt": "Imagem maior"
+  },
+  "Immagine più piccola": {
+    "en": "Smaller picture",
+    "es": "Imagen más pequeña",
+    "fr": "Image plus petite",
+    "de": "Bild verkleinern",
+    "pt": "Imagem menor"
+  },
   "Immagine senza testo alternativo": {
     "en": "Picture without alt text",
     "es": "Imagen sin texto alternativo",
@@ -4647,13 +4682,6 @@
     "de": "Board einfügen",
     "pt": "Inserir quadro"
   },
-  "Inserisci campo": {
-    "en": "Insert field",
-    "es": "Insertar campo",
-    "fr": "Insérer un champ",
-    "de": "Feld einfügen",
-    "pt": "Inserir campo"
-  },
   "Inserisci campo unione": {
     "en": "Insert merge field",
     "es": "Insertar campo de combinación",
@@ -4835,6 +4863,13 @@
     "fr": "Insérer du texte d'exemple",
     "de": "Blindtext einfügen",
     "pt": "Inserir texto de exemplo"
+  },
+  "Inserisci un campo: numero di pagina, titolo, autore, data": {
+    "en": "Insert a field: page number, title, author, date",
+    "es": "Insertar un campo: número de página, título, autor, fecha",
+    "fr": "Insérer un champ : numéro de page, titre, auteur, date",
+    "de": "Feld einfügen: Seitenzahl, Titel, Autor, Datum",
+    "pt": "Inserir um campo: número de página, título, autor, data"
   },
   "Inserito": {
     "en": "Inserted",
@@ -5080,6 +5115,13 @@
     "fr": "Largeur de colonne, couleur de page, espacement et mise au point sur la ligne",
     "de": "Spaltenbreite, Seitenfarbe, Abstand und Zeilenfokus",
     "pt": "Largura da coluna, cor da página, espaçamento e foco na linha"
+  },
+  "Larghezza della tabella · trascina": {
+    "en": "Table width · drag",
+    "es": "Ancho de la tabla · arrastra",
+    "fr": "Largeur du tableau · faites glisser",
+    "de": "Tabellenbreite · ziehen",
+    "pt": "Largura da tabela · arraste"
   },
   "Larghezza nel documento": {
     "en": "Width in the document",
@@ -5333,6 +5375,13 @@
     "de": "Horizontale Linie",
     "pt": "Linha horizontal"
   },
+  "Linea sopra": {
+    "en": "Line above",
+    "es": "Línea encima",
+    "fr": "Ligne au-dessus",
+    "de": "Linie oben",
+    "pt": "Linha acima"
+  },
   "Linea sottile": {
     "en": "Thin line",
     "es": "Línea fina",
@@ -5346,6 +5395,13 @@
     "fr": "Ligne fine, tout à gauche",
     "de": "Dünne Linie, alles links",
     "pt": "Linha fina, tudo à esquerda"
+  },
+  "Linea sotto": {
+    "en": "Line below",
+    "es": "Línea debajo",
+    "fr": "Ligne en dessous",
+    "de": "Linie unten",
+    "pt": "Linha abaixo"
   },
   "Linea spessa": {
     "en": "Thick line",
@@ -7559,6 +7615,13 @@
     "de": "Verkleinern ⌘−",
     "pt": "Diminuir zoom ⌘−"
   },
+  "Riduci carattere": {
+    "en": "Decrease font size",
+    "es": "Reducir tamaño de fuente",
+    "fr": "Réduire la taille de police",
+    "de": "Schrift verkleinern",
+    "pt": "Diminuir tamanho da fonte"
+  },
   "Riduci dimensione carattere": {
     "en": "Decrease font size",
     "es": "Reducir el tamaño de fuente",
@@ -8244,13 +8307,6 @@
     "fr": "Écrivez la liste ou importez un fichier CSV (y compris exporté depuis n'importe quel tableur).",
     "de": "Schreib die Liste oder importiere eine CSV-Datei (auch aus jeder Tabellenkalkulation exportiert).",
     "pt": "Escreva a lista ou importe um arquivo CSV (inclusive exportado de qualquer planilha)."
-  },
-  "Scrivi qui": {
-    "en": "Type here",
-    "es": "Escribe aquí",
-    "fr": "Saisissez ici",
-    "de": "Hier eingeben",
-    "pt": "Digite aqui"
   },
   "Scrivi un commento…": {
     "en": "Write a comment…",
@@ -9155,6 +9211,20 @@
     "de": "Schmal",
     "pt": "Estreito"
   },
+  "Strumenti del piè di pagina": {
+    "en": "Footer tools",
+    "es": "Herramientas del pie de página",
+    "fr": "Outils du pied de page",
+    "de": "Fußzeilentools",
+    "pt": "Ferramentas do rodapé"
+  },
+  "Strumenti dell'intestazione": {
+    "en": "Header tools",
+    "es": "Herramientas del encabezado",
+    "fr": "Outils de l’en-tête",
+    "de": "Kopfzeilentools",
+    "pt": "Ferramentas do cabeçalho"
+  },
   "Strumenti di correzione": {
     "en": "Proofing tools",
     "es": "Herramientas de corrección",
@@ -9245,6 +9315,13 @@
     "fr": "supérieure",
     "de": "oben",
     "pt": "superior"
+  },
+  "Tab porta al centro della riga e poi a destra. Invio va a capo.": {
+    "en": "Tab moves to the center of the line, then to the right. Enter starts a new line.",
+    "es": "Tab lleva al centro de la línea y luego a la derecha. Intro crea una línea nueva.",
+    "fr": "Tab va au centre de la ligne, puis à droite. Entrée passe à la ligne.",
+    "de": "Tab springt zur Zeilenmitte, dann nach rechts. Eingabe beginnt eine neue Zeile.",
+    "pt": "Tab leva ao centro da linha e depois à direita. Enter começa uma nova linha."
   },
   "Tabella {columns}×{rows}": {
     "en": "{columns}×{rows} table",
@@ -9413,6 +9490,13 @@
     "fr": "Texte final, avec un trait rouge à côté",
     "de": "Endgültiger Text, daneben ein roter Strich",
     "pt": "Texto final, com uma linha vermelha ao lado"
+  },
+  "Testo libero, immagini e campi che si riempiono pagina per pagina.": {
+    "en": "Free text, pictures and fields that fill in page by page.",
+    "es": "Texto libre, imágenes y campos que se rellenan página a página.",
+    "fr": "Texte libre, images et champs qui se remplissent page par page.",
+    "de": "Freier Text, Bilder und Felder, die sich Seite für Seite füllen.",
+    "pt": "Texto livre, imagens e campos que se preenchem página a página."
   },
   "Testo nella forma": {
     "en": "Text in shape",
@@ -9763,13 +9847,6 @@
     "fr": "Trois",
     "de": "Drei",
     "pt": "Três"
-  },
-  "Tre parti per riga: a sinistra, al centro, a destra. I campi si riempiono pagina per pagina.": {
-    "en": "Three parts per line: left, center, right. The fields fill in page by page.",
-    "es": "Tres partes por línea: a la izquierda, al centro, a la derecha. Los campos se rellenan página a página.",
-    "fr": "Trois parties par ligne : à gauche, au centre, à droite. Les champs se remplissent page par page.",
-    "de": "Drei Teile pro Zeile: links, mittig, rechts. Die Felder füllen sich Seite für Seite.",
-    "pt": "Três partes por linha: à esquerda, ao centro, à direita. Os campos se preenchem página a página."
   },
   "Troppe ricerche: riprova fra un minuto.": {
     "en": "Too many searches: try again in a minute.",

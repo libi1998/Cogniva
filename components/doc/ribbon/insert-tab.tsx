@@ -97,6 +97,7 @@ import {
   FOOTER_PRESETS,
   HEADER_PRESETS,
   PAGE_NUMBER_FORMATS,
+  hasBand,
 } from "@/lib/header-footer"
 import { docAccent } from "@/lib/palette"
 import { getWorkspace, useStore } from "@/lib/store"
@@ -1219,22 +1220,23 @@ export function InsertTab({ ctx }: { ctx: RibbonCtx }) {
         <BandMenu
           label={t("Intestazione")}
           icon={<PanelTop className="size-5" />}
-          active={Boolean(theme.header)}
+          active={hasBand(theme, "header")}
           presets={HEADER_PRESETS}
-          onPick={(value) => setTheme({ header: value })}
+          // un modello prende il posto del testo libero
+          onPick={(value) => setTheme({ header: value, headerContent: null })}
           // come in Word si scrive sul foglio; la finestra resta per i
           // documenti senza pagine
           onEdit={() => ctx.editBand("header") || setDialog("header")}
-          onRemove={() => setTheme({ header: "" })}
+          onRemove={() => setTheme({ header: "", headerContent: null })}
         />
         <BandMenu
           label={t("Piè di pagina")}
           icon={<PanelBottom className="size-5" />}
-          active={Boolean(theme.footer)}
+          active={hasBand(theme, "footer")}
           presets={FOOTER_PRESETS}
-          onPick={(value) => setTheme({ footer: value })}
+          onPick={(value) => setTheme({ footer: value, footerContent: null })}
           onEdit={() => ctx.editBand("footer") || setDialog("footer")}
-          onRemove={() => setTheme({ footer: "" })}
+          onRemove={() => setTheme({ footer: "", footerContent: null })}
         />
         <RibbonMenu
           className="w-60"

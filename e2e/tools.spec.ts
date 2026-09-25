@@ -577,44 +577,6 @@ test("Cancella formattazione lascia commenti, revisioni e collegamenti", async (
   expect(await marks(17)).toEqual(["link"])
 })
 
-test("intestazione e piè di pagina si scrivono sul foglio", async ({
-  page,
-}) => {
-  await openDemo(page)
-  // su fogli veri, come un documento nuovo
-  await openTab(page, "Layout")
-  await (await ribbonButton(page, "Dimensioni")).click()
-  await page.getByRole("menuitem", { name: /^A4/ }).click()
-
-  await openTab(page, "Inserisci")
-  await (await ribbonButton(page, "Intestazione")).click()
-  await page.getByRole("menuitem", { name: "Modifica intestazione…" }).click()
-  const left = page.getByRole("textbox", { name: "Intestazione, a sinistra" })
-  await expect(left).toBeFocused()
-  // gli spazi restano: prima ogni spazio battuto spariva
-  await page.keyboard.type("Relazione di fine anno", { delay: 12 })
-  await expect(left).toHaveValue("Relazione di fine anno")
-  await page.keyboard.press("Escape")
-  await expect(left).toBeHidden()
-  await expect(page.locator("[data-band]").first()).toContainText(
-    "Relazione di fine anno"
-  )
-
-  // doppio clic nel margine alto: si riapre, con il cursore al centro
-  const sheet = await page.locator("#doc-sheet").boundingBox()
-  if (!sheet) throw new Error("foglio non trovato")
-  await page.mouse.dblclick(sheet.x + sheet.width / 2, sheet.y + 24)
-  const center = page.getByRole("textbox", { name: "Intestazione, al centro" })
-  await expect(center).toBeFocused()
-  await page
-    .locator("[data-band-editor]")
-    .getByRole("button", { name: "Numero di pagina" })
-    .click()
-  await expect(center).toBeFocused()
-  await page.keyboard.press("Enter")
-  await expect(page.locator("[data-band]").first()).toContainText("1")
-})
-
 test("forme: piene, davanti al testo, con la loro scheda", async ({ page }) => {
   await openDemo(page)
   const paragraph = () =>

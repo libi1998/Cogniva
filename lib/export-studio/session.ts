@@ -207,7 +207,11 @@ function paginate(
 ): Slice[] {
   const { margins } = snapshot
   const origin = node.getBoundingClientRect().top
-  const prose = node.querySelector(".ProseMirror") ?? node
+  // il testo del documento: non l'intestazione, se la si stava scrivendo
+  const prose =
+    node.querySelector(".ProseMirror.doc-prose") ??
+    node.querySelector(".ProseMirror") ??
+    node
   const blocks = Array.from(prose.children)
     .map((el) => {
       const rect = el.getBoundingClientRect()

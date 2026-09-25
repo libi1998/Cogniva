@@ -1,7 +1,7 @@
 import { Extension } from "@tiptap/core"
 import { Fragment, type Node as PMNode } from "@tiptap/pm/model"
 import { TextSelection, type EditorState } from "@tiptap/pm/state"
-import { cssValue } from "./css"
+import { cssColor, cssValue } from "./css"
 import { firstNumber } from "./numbers"
 
 import {
@@ -411,6 +411,8 @@ declare module "@tiptap/core" {
         levels: string | null
       ) => ReturnType
       setListStart: (start: number) => ReturnType
+      /** il colore dei punti o dei numeri dell'elenco; null: automatico */
+      setListColor: (color: string | null) => ReturnType
     }
     sortBlocks: {
       sortBlocks: (options: SortOptions) => ReturnType
@@ -746,6 +748,21 @@ export const ListStyles = Extension.create({
             renderHTML: (a) =>
               a.levels ? { "data-levels": clean(a.levels) } : {},
           },
+          // il colore dei punti o dei numeri, come «Definisci nuovo punto
+          // elenco › Carattere» di Word; gli elenchi annidati lo ereditano
+          markerColor: {
+            default: null,
+            parseHTML: (el) => cssColor(el.getAttribute("data-marker-color")),
+            renderHTML: (a) => {
+              const color = cssColor(a.markerColor)
+              return color
+                ? {
+                    "data-marker-color": color,
+                    style: `--list-marker:${color}`,
+                  }
+                : {}
+            },
+          },
         },
       },
     ]
@@ -812,6 +829,19 @@ export const ListStyles = Extension.create({
               ...list.node.attrs,
               levels,
               listStyle: null,
+            })
+          }
+          return true
+        },
+      setListColor:
+        (color) =>
+        ({ state, tr, dispatch }) => {
+          const list = findList(state, ["bulletList", "orderedList"], false)
+          if (!list) return false
+          if (dispatch) {
+            tr.setNodeMarkup(list.pos, undefined, {
+              ...list.node.attrs,
+              markerColor: cssColor(color) ?? null,
             })
           }
           return true

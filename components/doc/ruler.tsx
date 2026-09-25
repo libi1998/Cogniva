@@ -9,6 +9,10 @@ import { N_ } from "@/lib/i18n/config"
 const CM = 96 / 2.54
 /** spessore del righello */
 export const RULER_SIZE = 22
+/** metà dell'ingombro di un numero: più vicino al bordo uscirebbe dal binario */
+const LABEL_HALF = 6
+/** attorno alla maniglia di un margine i numeri finirebbero sotto di lei */
+const HANDLE_CLEAR = 9
 
 type Axis = "horizontal" | "vertical"
 
@@ -17,7 +21,10 @@ type Axis = "horizontal" | "vertical"
  * contati dal margine, e una maniglia per lato da trascinare.
  *
  * Lo stesso componente disegna quello in alto (margini sinistro e destro) e
- * quello di fianco (margini superiore e inferiore).
+ * quello di fianco (margini superiore e inferiore). Con le pagine vere quello
+ * di fianco si ripete accanto a ogni foglio, come in Word: ogni pagina ha i
+ * suoi margini e i numeri ripartono dal suo margine alto, invece di contare
+ * di seguito lungo tutto il documento e attraverso lo spazio fra i fogli.
  */
 export function Ruler({
   axis,
@@ -25,20 +32,83 @@ export function Ruler({
   start,
   end,
   onMargin,
+  pages = 1,
+  gap = 0,
 }: {
   axis: Axis
-  /** lunghezza del foglio lungo questo asse, in pixel */
+  /** lunghezza del foglio (di una pagina, con le pagine vere) lungo questo asse, in pixel */
   length: number
   /** margine iniziale: sinistro in orizzontale, superiore in verticale */
   start: number
   /** margine finale: destro in orizzontale, inferiore in verticale */
   end: number
   onMargin: (side: MarginSide, value: number) => void
+  /** fogli da affiancare, uno sotto l'altro (solo in verticale) */
+  pages?: number
+  /** spazio fra un foglio e l'altro */
+  gap?: number
+}) {
+  const horizontal = axis === "horizontal"
+  const count = horizontal ? 1 : Math.max(1, Math.floor(pages))
+  if (length <= 0) return null
+  if (count === 1) {
+    return (
+      <Track
+        axis={axis}
+        length={length}
+        start={start}
+        end={end}
+        onMargin={onMargin}
+        id={horizontal ? "doc-ruler" : "doc-ruler-y"}
+      />
+    )
+  }
+  return (
+    <div
+      id="doc-ruler-y"
+      className="relative shrink-0"
+      style={{
+        width: RULER_SIZE,
+        height: count * length + (count - 1) * gap,
+      }}
+    >
+      {Array.from({ length: count }, (_, page) => (
+        <div
+          key={page}
+          className="absolute inset-x-0"
+          style={{ top: page * (length + gap) }}
+        >
+          <Track
+            axis={axis}
+            length={length}
+            start={start}
+            end={end}
+            onMargin={onMargin}
+          />
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function Track({
+  axis,
+  length,
+  start,
+  end,
+  onMargin,
+  id,
+}: {
+  axis: Axis
+  length: number
+  start: number
+  end: number
+  onMargin: (side: MarginSide, value: number) => void
+  id?: string
 }) {
   const t = useT()
   const [dragging, setDragging] = React.useState<"start" | "end" | null>(null)
   const horizontal = axis === "horizontal"
-  const id = horizontal ? "doc-ruler" : "doc-ruler-y"
   const sides = React.useMemo<Record<"start" | "end", MarginSide>>(
     () =>
       horizontal
@@ -49,16 +119,28 @@ export function Ruler({
 
   const ticks = React.useMemo(() => {
     if (length <= 0) return []
-    const out: { at: number; label: number | null }[] = []
+    const out: { at: number; label: number | null; whole: boolean }[] = []
     const first = Math.ceil((-start / CM) * 2) / 2
     const last = Math.floor(((length - start) / CM) * 2) / 2
+    const handles = [start, length - end]
     for (let k = first; k <= last; k += 0.5) {
       const at = start + k * CM
-      if (at < 0 || at > length) continue
-      out.push({ at, label: Number.isInteger(k) ? Math.abs(k) : null })
+      // una tacca sul bordo sporgerebbe dagli angoli arrotondati
+      if (at < 1 || at > length - 1) continue
+      // lo zero sta sotto la maniglia del margine, come in Word; i numeri
+      // troppo vicini a una maniglia o al bordo restano solo tacche
+      const label =
+        Number.isInteger(k) &&
+        k !== 0 &&
+        at >= LABEL_HALF &&
+        at <= length - LABEL_HALF &&
+        handles.every((h) => Math.abs(at - h) >= HANDLE_CLEAR)
+          ? Math.abs(k)
+          : null
+      out.push({ at, label, whole: Number.isInteger(k) })
     }
     return out
-  }, [length, start])
+  }, [length, start, end])
 
   const latest = React.useRef({ length, onMargin })
   React.useEffect(() => {
@@ -66,10 +148,11 @@ export function Ruler({
   })
 
   const startDrag = React.useCallback(
-    (which: "start" | "end", event: React.PointerEvent) => {
+    (which: "start" | "end", event: React.PointerEvent<HTMLElement>) => {
       event.preventDefault()
       setDragging(which)
-      const bar = document.getElementById(id)
+      // il binario di questa pagina: con le pagine vere ce n'è uno per foglio
+      const bar = event.currentTarget.closest<HTMLElement>("[data-ruler]")
       let frame = 0
       let pending: number | null = null
       const side = sides[which]
@@ -102,10 +185,8 @@ export function Ruler({
       window.addEventListener("pointermove", move)
       window.addEventListener("pointerup", up)
     },
-    [horizontal, id, sides]
+    [horizontal, sides]
   )
-
-  if (length <= 0) return null
 
   const box = horizontal
     ? { width: length, height: RULER_SIZE }
@@ -114,6 +195,7 @@ export function Ruler({
   return (
     <div
       id={id}
+      data-ruler
       data-guide
       className="relative shrink-0 rounded-md border border-[var(--doc-border)] select-none"
       style={{ ...box, background: "var(--doc-ruler-off)" }}
@@ -129,50 +211,50 @@ export function Ruler({
         }}
       />
 
-      {ticks.map((t, i) => (
+      {ticks.map((tick, i) => (
         <React.Fragment key={i}>
           <div
             className="absolute"
             style={
               horizontal
                 ? {
-                    left: t.at,
+                    left: tick.at,
                     bottom: 0,
                     width: 1,
-                    height: t.label === null ? 4 : 6,
+                    height: tick.whole ? 6 : 4,
                     background: "var(--doc-muted)",
-                    opacity: t.label === null ? 0.45 : 0.7,
+                    opacity: tick.whole ? 0.7 : 0.45,
                   }
                 : {
-                    top: t.at,
+                    top: tick.at,
                     right: 0,
                     height: 1,
-                    width: t.label === null ? 4 : 6,
+                    width: tick.whole ? 6 : 4,
                     background: "var(--doc-muted)",
-                    opacity: t.label === null ? 0.45 : 0.7,
+                    opacity: tick.whole ? 0.7 : 0.45,
                   }
             }
           />
-          {t.label !== null ? (
+          {tick.label !== null ? (
             <span
               className="pointer-events-none absolute text-[8px] leading-none tabular-nums"
               style={
                 horizontal
                   ? {
-                      left: t.at,
-                      top: 2,
+                      left: tick.at,
+                      top: 3,
                       transform: "translateX(-50%)",
                       color: "var(--doc-muted)",
                     }
                   : {
-                      top: t.at,
-                      left: 2,
+                      top: tick.at,
+                      left: 3,
                       transform: "translateY(-50%)",
                       color: "var(--doc-muted)",
                     }
               }
             >
-              {t.label}
+              {tick.label}
             </span>
           ) : null}
         </React.Fragment>

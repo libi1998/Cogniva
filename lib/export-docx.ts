@@ -11,7 +11,7 @@ import {
 } from "./citations"
 import { fontMap } from "./fonts"
 import { getAuthor } from "./author"
-import { bandParts, formatPageNumber, normalizeBand } from "./header-footer"
+import { bandLayout, bandSegments, formatPageNumber } from "./header-footer"
 import { isPaginated, pageAt } from "./pagination"
 import { fieldText } from "./doc-fields"
 import { renderWatermark } from "./watermark-image"
@@ -27,6 +27,7 @@ import { docAccent } from "./palette"
 import { numberingWords } from "./doc-typography"
 import {
   PAGE_FORMATS,
+  type BandNode,
   type DocComment,
   type DocSource,
   type DocTheme,
@@ -236,16 +237,24 @@ export async function buildDocx({
   /** gli elenchi usati: ognuno con i suoi segni diventa una numerazione Word */
   const listRefs = new Map<
     string,
-    { kind: "bullet" | "ordered"; levels: string; style: string; start: number }
+    {
+      kind: "bullet" | "ordered"
+      levels: string
+      style: string
+      start: number
+      color: string
+    }
   >()
   const listRef = (
     kind: "bullet" | "ordered",
     levels: string,
     style: string,
-    start: number
+    start: number,
+    color: string
   ) => {
-    const key = `cogniva-${kind}-${levels || "std"}-${style || "std"}-${start}`
-    if (!listRefs.has(key)) listRefs.set(key, { kind, levels, style, start })
+    const key = `cogniva-${kind}-${levels || "std"}-${style || "std"}-${start}${color ? `-${color}` : ""}`
+    if (!listRefs.has(key))
+      listRefs.set(key, { kind, levels, style, start, color })
     return key
   }
   const cited = sortSources(
@@ -857,10 +866,30 @@ export async function buildDocx({
       )
     })
     await Promise.all(rowJobs)
+    // colonne tutte con la loro larghezza (tabella ridimensionata o colonne
+    // trascinate): la tabella è larga quanto la loro somma, come sul foglio
+    const columns: number[] = []
+    node.firstChild?.forEach((cell) => {
+      const widths = Array.isArray(cell.attrs.colwidth)
+        ? (cell.attrs.colwidth as unknown[]).map(Number)
+        : []
+      const span = Math.max(1, Number(cell.attrs.colspan) || 1)
+      for (let i = 0; i < span; i += 1) columns.push(widths[i] || 0)
+    })
+    const fixed = columns.length > 0 && columns.every((w) => w > 0)
     return [
       new d.Table({
         rows,
-        width: { size: 100, type: d.WidthType.PERCENTAGE },
+        ...(fixed
+          ? {
+              width: {
+                size: Math.round(columns.reduce((s, w) => s + w, 0) * TWIP),
+                type: d.WidthType.DXA,
+              },
+              columnWidths: columns.map((w) => Math.round(w * TWIP)),
+              layout: d.TableLayoutType.FIXED,
+            }
+          : { width: { size: 100, type: d.WidthType.PERCENTAGE } }),
         borders: {
           top: line,
           bottom: line,
@@ -879,6 +908,8 @@ export async function buildDocx({
     level: number
     instance: number
     reference: string
+    /** colore dei punti o dei numeri, esadecimale senza «#» ("" automatico) */
+    color: string
   }
   type Entry = { node: PMNode; pos: number }
 
@@ -1151,7 +1182,11 @@ export async function buildDocx({
               ? "ordered"
               : "task"
         const nested = opts.list && opts.list.kind === kind
+        // il colore dei segni: il suo, o quello dell'elenco che lo contiene
+        const color =
+          hex(node.attrs.markerColor) ?? (nested ? opts.list!.color : "")
         const ctx: ListCtx = {
+          color,
           kind,
           level: opts.list ? Math.min(8, opts.list.level + 1) : 0,
           // ogni elenco numerato ricomincia da 1
@@ -1162,13 +1197,14 @@ export async function buildDocx({
           reference:
             kind === "task"
               ? ""
-              : nested && !node.attrs.listStyle
+              : nested && !node.attrs.listStyle && color === opts.list!.color
                 ? opts.list!.reference
                 : listRef(
                     kind,
                     String(node.attrs.levels ?? ""),
                     String(node.attrs.listStyle ?? ""),
-                    Number(node.attrs.start ?? 1)
+                    Number(node.attrs.start ?? 1),
+                    color
                   ),
         }
         const items = await Promise.all(
@@ -1418,57 +1454,145 @@ export async function buildDocx({
     month: "long",
     year: "numeric",
   })
-  /** Una parte della riga: testo e campi di pagina che Word aggiorna da sé */
-  const bandRuns = (text: string): Docx.TextRun[] => {
-    const filled = text
-      .replaceAll("{titolo}", title)
-      .replaceAll("{autore}", author)
-      .replaceAll("{data}", today)
-    return filled
-      .split(/(\{pagina\}|\{pagine\})/)
-      .filter(Boolean)
-      .map((piece) =>
-        piece === "{pagina}"
-          ? new d.TextRun({ ...small, children: [d.PageNumber.CURRENT] })
-          : piece === "{pagine}"
-            ? new d.TextRun({
-                ...small,
-                children: [d.PageNumber.TOTAL_PAGES],
-              })
-            : new d.TextRun({ ...small, text: piece })
-      )
+  const BAND_ALIGN: Record<
+    string,
+    (typeof d.AlignmentType)[keyof typeof d.AlignmentType]
+  > = {
+    left: d.AlignmentType.LEFT,
+    center: d.AlignmentType.CENTER,
+    right: d.AlignmentType.RIGHT,
+    justify: d.AlignmentType.JUSTIFIED,
   }
-  const band = (where: "header" | "footer") => {
-    const parts = bandParts(
-      normalizeBand(where === "header" ? theme.header : theme.footer)
-    )
-    const position = theme.pageNumbers ?? "none"
-    const [row, col] = position.split("-")
-    if (
-      position !== "none" &&
-      row === (where === "header" ? "top" : "bottom") &&
-      !parts.some((p) => p.includes("{pagina}"))
-    ) {
-      const index = col === "left" ? 0 : col === "center" ? 1 : 2
-      parts[index] = [parts[index], "{pagina}"].filter(Boolean).join("  ")
+  /** le formattazioni di un pezzo di intestazione, sopra al suo stile grigio */
+  const bandRun = (marks: BandNode["marks"]): Docx.IRunOptions => {
+    const o: {
+      -readonly [K in keyof Docx.IRunOptions]?: Docx.IRunOptions[K]
+    } = { ...small }
+    for (const mark of marks ?? []) {
+      const attrs = mark.attrs ?? {}
+      if (mark.type === "bold") o.bold = true
+      else if (mark.type === "italic") o.italics = true
+      else if (mark.type === "underline") o.underline = {}
+      else if (mark.type === "strike") o.strike = true
+      else if (mark.type === "superscript") o.superScript = true
+      else if (mark.type === "subscript") o.subScript = true
+      else if (mark.type === "highlight") {
+        const fill = hex(attrs.color) ?? "FFF3A3"
+        o.shading = { type: d.ShadingType.CLEAR, color: "auto", fill }
+      } else if (mark.type === "textStyle") {
+        const color = hex(attrs.color)
+        if (color) o.color = color
+        const px = parseFloat(String(attrs.fontSize ?? ""))
+        // mezzi punti: 1 px = 0,75 pt
+        if (px > 0) o.size = Math.round(px * 0.75 * 2)
+        const family = String(attrs.fontFamily ?? "")
+          .split(",")[0]
+          ?.replace(/["']/g, "")
+          .trim()
+        if (family) o.font = family
+      }
     }
-    if (!parts.some(Boolean)) return null
-    return new d.Paragraph({
-      tabStops: [
-        {
-          type: d.TabStopType.CENTER,
-          position: Math.round(d.TabStopPosition.MAX / 2),
-        },
-        { type: d.TabStopType.RIGHT, position: d.TabStopPosition.MAX },
-      ],
-      children: [
-        ...bandRuns(parts[0]),
-        new d.TextRun({ ...small, text: "\t" }),
-        ...bandRuns(parts[1]),
-        new d.TextRun({ ...small, text: "\t" }),
-        ...bandRuns(parts[2]),
-      ],
-    })
+    return o
+  }
+  /**
+   * Intestazione o piè a testo libero come paragrafi di Word: tabulazioni al
+   * centro e a destra della colonna di testo, campi di pagina che Word
+   * aggiorna da sé, immagini e linee
+   */
+  const bandParagraphs = async (
+    where: "header" | "footer"
+  ): Promise<Docx.Paragraph[]> => {
+    const content = bandLayout(where, theme)
+    if (!content) return []
+    const width = Math.round(
+      (pageWpx - theme.margins.left - theme.margins.right) * TWIP
+    )
+    const out: Docx.Paragraph[] = []
+    for (const paragraph of content.content ?? []) {
+      const tabbed = bandSegments(paragraph).length > 1
+      const children: Docx.ParagraphChild[] = []
+      for (const node of paragraph.content ?? []) {
+        if (node.type === "text") {
+          children.push(
+            new d.TextRun({ ...bandRun(node.marks), text: node.text ?? "" })
+          )
+        } else if (node.type === "bandTab") {
+          children.push(new d.TextRun({ ...small, text: "\t" }))
+        } else if (node.type === "hardBreak") {
+          children.push(new d.TextRun({ ...small, break: 1 }))
+        } else if (node.type === "bandField") {
+          const field = String(node.attrs?.field)
+          const run = bandRun(node.marks)
+          children.push(
+            field === "page"
+              ? new d.TextRun({ ...run, children: [d.PageNumber.CURRENT] })
+              : field === "pages"
+                ? new d.TextRun({
+                    ...run,
+                    children: [d.PageNumber.TOTAL_PAGES],
+                  })
+                : new d.TextRun({
+                    ...run,
+                    text:
+                      field === "title"
+                        ? title
+                        : field === "author"
+                          ? author
+                          : today,
+                  })
+          )
+        } else if (node.type === "bandImage") {
+          try {
+            const pic = await pictureFromSrc(String(node.attrs?.src ?? ""))
+            const height = Number(node.attrs?.height) || 40
+            const alt = String(node.attrs?.alt ?? "")
+            children.push(
+              new d.ImageRun({
+                type: pic.type,
+                data: pic.data,
+                transformation: {
+                  width: Math.round((height * pic.w) / (pic.h || 1)),
+                  height: Math.round(height),
+                },
+                altText: alt
+                  ? { name: alt, description: alt, title: alt }
+                  : undefined,
+              })
+            )
+          } catch {
+            // un'immagine rovinata non ferma l'esportazione
+          }
+        }
+      }
+      const border = paragraph.attrs?.border
+      const line = {
+        style: d.BorderStyle.SINGLE,
+        size: 6,
+        color: "71717A",
+        space: 2,
+      }
+      out.push(
+        new d.Paragraph({
+          alignment: tabbed
+            ? undefined
+            : BAND_ALIGN[String(paragraph.attrs?.textAlign ?? "")],
+          tabStops: tabbed
+            ? [
+                { type: d.TabStopType.CENTER, position: Math.round(width / 2) },
+                { type: d.TabStopType.RIGHT, position: width },
+              ]
+            : undefined,
+          border:
+            border === "bottom"
+              ? { bottom: line }
+              : border === "top"
+                ? { top: line }
+                : undefined,
+          children,
+        })
+      )
+    }
+    return out
   }
 
   // la filigrana: un'immagine grande quanto la pagina, dietro al testo,
@@ -1514,16 +1638,16 @@ export async function buildDocx({
           ],
         })
       : null
-  const headerBand = band("header")
-  const footerBand = band("footer")
-  const headerChildren = [watermarkParagraph(), headerBand].filter(
+  const headerBand = await bandParagraphs("header")
+  const footerBand = await bandParagraphs("footer")
+  const headerChildren = [watermarkParagraph(), ...headerBand].filter(
     (p): p is Docx.Paragraph => p !== null
   )
   const header = headerChildren.length
     ? new d.Header({ children: headerChildren })
     : undefined
-  const footer = footerBand
-    ? new d.Footer({ children: [footerBand] })
+  const footer = footerBand.length
+    ? new d.Footer({ children: footerBand })
     : undefined
   // la prima pagina diversa perde intestazione e piè, non la filigrana
   const emptyHeader = new d.Header({
@@ -1613,10 +1737,13 @@ export async function buildDocx({
     levels: string
     style: string
     start: number
+    color: string
   }): Docx.ILevelsOptions[] =>
     Array.from({ length: 9 }, (_, level) => {
       const indent = {
         paragraph: { indent: { left: 720 + level * 360, hanging: 360 } },
+        // punti e numeri colorati, come «Definisci nuovo punto elenco»
+        ...(ref.color ? { run: { color: ref.color } } : {}),
       }
       if (ref.kind === "bullet") {
         const glyphs = LEVEL_BULLETS[ref.levels] ?? LEVEL_BULLETS.std

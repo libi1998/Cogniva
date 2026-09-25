@@ -138,6 +138,9 @@ test("il codice resta come si scrive", async ({ page }) => {
     editor.commands.setCodeBlock()
     `
   )
+  // il fuoco arriva al fotogramma dopo: con la build di produzione la prima
+  // lettera arrivava prima e andava persa («f (a»)
+  await focused(page)
   await page.keyboard.type('if (a --> b) "x"...', { delay: 12 })
   expect(
     await withEditor<string>(
