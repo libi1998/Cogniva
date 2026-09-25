@@ -213,6 +213,10 @@ corner of **Font** and **Paragraph** opens their dialogs, as in Word:
   followed by the pagination and saved to `.docx`
 - **Font**: expanded or condensed spacing, raised or lowered text, small caps
 
+The bulleted and numbered list menus also pick the **color of the bullets or numbers**
+(Automatic keeps the soft gray); nested lists follow it, and it goes into the PDF and the
+`.docx`. Outside a list, picking a color starts a list in that color.
+
 ### Contextual tab
 
 When you work on an object, a colored tab appears next to **View**, named after it, and
@@ -244,15 +248,26 @@ between paragraphs, with a line showing where it will land.
   none, with the pen's style, width and color
 - **Shading**, **nine-position alignment**, cell margins, row height and _distribute
   columns_ for each cell or the selected ones
+- **Resize the whole table** like Word's corner handle: drag the handle on its right
+  edge (width), at the bottom (height) or in the corner (both). A dashed outline shows the
+  new size in centimeters, columns and rows keep their proportions, and a single _Undo_
+  goes back. **Table › Table Size** takes the exact width and height, applied with `Enter`
 - Tables break between rows across pages, and everything goes into the `.docx`
 
 ### Headers and footers
 
 Double-click the top or bottom margin of a page (or **Insert › Header › Edit**) and type
-straight on the sheet, in the left, center and right parts of the line. A small bar in
-the margin inserts page number, page count, title, author and date at the cursor; `Esc`,
-`Enter`, _Close_ or a click in the text go back to the document, which stays dimmed
-meanwhile. Documents without pages keep the dialog.
+straight on the sheet, as **free text**: several lines, bold, italic, underline, size,
+color and alignment. `Tab` moves to the center of the line and then to the right edge,
+like Word's default tab stops. The small bar in the margin also inserts **fields** (page
+number, page count, title, author, date), **pictures** such as a logo (− and + size the
+selected one) and a **line** under the header or above the footer.
+
+A header or footer taller than its margin moves the text of every page, as in Word. `Esc`,
+_Close_ or a click in the text go back to the document, which stays dimmed meanwhile.
+Headers written in three parts by earlier versions open as one line with two tabs.
+Documents without pages edit both in the **Header and footer** dialog, with the same
+editor and the presets.
 
 ### Shapes
 
@@ -300,7 +315,8 @@ selected with `⌥` + click; `⌥↑` and `⌥↓` move it by one block, the cor
 
 The four margins are independent: drag them from the ruler handles (left and right at the
 top, top and bottom on the side), type them in centimeters in the page diagram (`↑`/`↓` by
-0.1 cm, with `⇧` by 1 cm) or pick a preset: Normal, Narrow, Moderate, Wide.
+0.1 cm, with `⇧` by 1 cm) or pick a preset: Normal, Narrow, Moderate, Wide. With real
+pages the side ruler repeats next to every sheet, counting from that page's top margin.
 
 ### Page
 

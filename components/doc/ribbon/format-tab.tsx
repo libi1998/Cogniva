@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useEditorState } from "@tiptap/react"
 import {
   AlignCenter,
   AlignLeft,
@@ -44,6 +45,7 @@ import {
 } from "@/lib/shape-svg"
 import { SWATCHES, whim } from "@/lib/palette"
 import type { BorderKind, BorderLine } from "@/lib/table-format"
+import { measureTable, resizeTable, selectedTable } from "@/lib/table-size"
 import { cn } from "@/lib/utils"
 import { ObjectOptions } from "../doc-inspector"
 import type { DocState } from "../use-doc-state"
@@ -629,6 +631,74 @@ function CellAlignGrid({ ctx }: { ctx: RibbonCtx }) {
   )
 }
 
+/**
+ * Larghezza e altezza della tabella intera, come «Proprietà tabella» di
+ * Word: le colonne e le righe cambiano tutte nella stessa proporzione. Le
+ * misure sono quelle del foglio, anche per una tabella larga quanto la pagina.
+ */
+function TableSizeGroup({ ctx }: { ctx: RibbonCtx }) {
+  const t = useT()
+  const { editor } = ctx
+  const size = useEditorState({
+    editor,
+    selector: ({ editor: e }) => {
+      const sel = selectedTable(e.state)
+      const box = sel ? measureTable(e.view, sel.pos) : null
+      if (!box) return null
+      const dom = e.view.nodeDOM(box.pos)
+      return {
+        pos: box.pos,
+        // al centesimo di centimetro: un ridisegno solo quando cambia davvero
+        width: Math.round((box.width / CM) * 100) / 100,
+        height: Math.round((box.height / CM) * 100) / 100,
+        room: dom instanceof HTMLElement ? dom.offsetWidth / CM : 30,
+      }
+    },
+  })
+  if (!size) return null
+  return (
+    <RibbonGroup
+      label={t("Dimensioni tabella")}
+      icon={<Scaling className="size-5" />}
+    >
+      <div className="flex flex-col gap-0.5">
+        <Stepper
+          compact
+          lazy
+          label={t("Larghezza")}
+          labelWidth={64}
+          width={90}
+          value={size.width}
+          unit="cm"
+          step={0.5}
+          min={1}
+          max={Math.max(1, Math.floor(size.room * 100) / 100)}
+          decimals={2}
+          onChange={(cm) =>
+            resizeTable(editor, size.pos, {
+              width: Math.min(size.room, cm) * CM,
+            })
+          }
+        />
+        <Stepper
+          compact
+          lazy
+          label={t("Altezza")}
+          labelWidth={64}
+          width={90}
+          value={size.height}
+          unit="cm"
+          step={0.5}
+          min={0.5}
+          max={60}
+          decimals={2}
+          onChange={(cm) => resizeTable(editor, size.pos, { height: cm * CM })}
+        />
+      </div>
+    </RibbonGroup>
+  )
+}
+
 function TableTab({ ctx }: { ctx: RibbonCtx }) {
   const t = useT()
   const { editor, st } = ctx
@@ -782,7 +852,7 @@ function TableTab({ ctx }: { ctx: RibbonCtx }) {
           <BordersPanel ctx={ctx} />
         </RibbonPopover>
         <RibbonMenu
-          className="w-auto"
+          className="w-[260px]"
           trigger={
             <RibbonButton
               large
@@ -853,6 +923,7 @@ function TableTab({ ctx }: { ctx: RibbonCtx }) {
             compact
             label={t("Altezza")}
             labelWidth={52}
+            width={78}
             value={st.cellMinHeight / CM}
             unit="cm"
             step={0.25}
@@ -870,6 +941,7 @@ function TableTab({ ctx }: { ctx: RibbonCtx }) {
             compact
             label={t("Margini")}
             labelWidth={52}
+            width={78}
             value={st.cellPadding / PT}
             unit="pt"
             step={1}
@@ -892,6 +964,8 @@ function TableTab({ ctx }: { ctx: RibbonCtx }) {
           />
         </div>
       </RibbonGroup>
+
+      <TableSizeGroup ctx={ctx} />
 
       <RibbonGroup label={t("Tabella")} icon={<Columns3 className="size-5" />}>
         <MoveRows ctx={ctx} />
@@ -946,7 +1020,7 @@ function ShapeGroup({ ctx }: { ctx: RibbonCtx }) {
     <RibbonGroup label={t("Stile forma")} icon={<Shapes className="size-5" />}>
       {line ? null : (
         <RibbonMenu
-          className="w-auto"
+          className="w-[260px]"
           trigger={
             <RibbonButton
               large
@@ -978,7 +1052,7 @@ function ShapeGroup({ ctx }: { ctx: RibbonCtx }) {
         </RibbonMenu>
       )}
       <RibbonMenu
-        className="w-auto"
+        className="w-[260px]"
         trigger={
           <RibbonButton
             large
@@ -1069,7 +1143,7 @@ function ImageTab({ ctx }: { ctx: RibbonCtx }) {
         icon={<SquareDashed className="size-5" />}
       >
         <RibbonMenu
-          className="w-auto"
+          className="w-[260px]"
           trigger={
             <RibbonButton
               large

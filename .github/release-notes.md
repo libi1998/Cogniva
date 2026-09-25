@@ -1,48 +1,36 @@
-## 📝 Documents that work like Word
+## 📝 Headers and footers like in Word
 
-- **New documents start on a real A4 sheet** with Word's _Normal_ margins; _Blank page_ and _Page break_ really move to a new sheet
-- **A contextual tab replaces the Style panel**: _Table_, _Picture format_, _Shape format_, _Chart format_, _Table of contents_, _Note_, _Video_, _3D model_, _Equation_ and _Board_ appear next to _View_ only while you work on that object, and open by themselves when you insert it
-- **Tables with per-cell formatting**: borders side by side with pen style, width and color, shading, nine-position alignment, cell margins, row height, select cell/row/column/table, distribute columns — all saved to `.docx`
-- **✥ move handle** on tables, tables of contents, charts, boards, videos, equations and 3D models: click to select, drag to move between paragraphs
-- **Table of contents** with a title you type on the sheet, dot leaders and page numbers (even on a single page), moved with the handle or `⌥↑`/`⌥↓`
-- **Headers and footers on the sheet**: double-click the margin and type in the left, center and right parts, with page number, page count, title, author and date one click away
-- **Real shapes**: solid fill and outline, in front of the text and free to move, with fill, outline and text in _Shape format_ and side handles to stretch them
-- **Paragraph** and **Font** dialogs (keep with next, keep lines together, page break before, hanging indent, character spacing, raised/lowered text, small caps) and a new _Indents and spacing_ group in _Home_
-- **Formatting marks** redone: · for spaces, ° non-breaking spaces, → tabs, ↵ line breaks, ¶ paragraphs, ¤ cells — they no longer move the text or end up in exports
+- **Free text instead of three boxes**: double-click the top or bottom margin and write as on the sheet — several lines, bold, italic, underline, font size and color, alignment, a line above or below
+- **Pictures and logos**: insert a picture from the header toolbar and make it smaller or larger; when the header grows taller, the page text moves down, as in Word
+- **Fields one click away**: page number, page count, title, author and date; `Tab` sends the text to the center and then to the right, like Word's default tab stops
+- Everything goes into `.docx` (tab stops, page-number fields, pictures and lines), the PDF and the print; headers written with the previous version read exactly the same
 
-## 🖨️ Real vector PDF and SVG
+## 📋 Colored lists
 
-- The PDF is no longer a picture of each page: text is drawn with the real outlines of the letters, from the same font files the browser uses (variable fonts included), sharp at any zoom
-- Backgrounds, borders, highlights, underlines, shapes, charts, boards, icons and formulas become vector paths; links stay clickable
-- **Always 600 dpi and always selectable text**: no quality or text options to pick any more — what can't be vector (photos, shadows, filters) is rendered at 600 dpi, and the PDF always carries searchable, copyable text
-- The document's SVG export is true vector paths too, readable by any program
+- **Bullet color** and **Number color** in the _Bulleted list_ and _Numbered list_ menus: outside a list the color starts a colored one, _Automatic_ goes back to gray. Saved to `.docx`
 
-## 🏠 Home
+## 📐 Tables you can resize
 
-- **Folders** in the sidebar: create, rename and delete them (files stay safe, with Undo); move files with _Move to_ or by dragging them onto a folder. Folders travel with the `.json` export
-- **Select several files** with the checkbox, ⌘/Ctrl + click, ⇧ + click or ⌘A: favorite, duplicate, move, export or trash them all at once; restore or delete them forever from the trash
-- A cleaner sidebar: the drag-and-drop hint and the _Import from Word_ button are gone (dragging a file still works)
+- **Drag the table's edges**: the right handle for the width, the bottom one for the height, the corner for both, with the new size in centimeters while you drag
+- Or type **Width** and **Height** in _Table › Table Size_: the size is applied with Enter, columns and rows keep their proportions and `.docx` keeps the exact widths
+- One Undo per change, never the whole table
+- The cell _Background_ menu has swatches as big as in the other color menus
 
-## ⚡ Faster
+## 📏 Ruler
 
-- **Long documents**: when paginating takes longer than a third of a frame, pages are redone at short intervals while you type instead of on every key; short documents stay instant
-- **Boards**: dragging redraws once per frame instead of for each of the 120–240 mouse or pen events per second; pen and eraser still get every point
-- Actions on many files are a single save and a single redraw
+- The numbers stay inside the ruler: no more labels spilling past the edges or under the margin handles
+- The vertical ruler follows every sheet and starts over at the top of each page
 
 ## 🐛 Fixes
 
-- Rectangles, rounded rectangles, pills, notes, ellipses and clouds are no longer drawn empty; a shape inserted mid-sentence no longer splits the paragraph
-- Spaces typed in headers and footers are kept, and the field bar no longer covers the first line
-- Selection handles no longer show up in the preview and in the PDF
-- The page no longer scrolls 28 px under the app (a click could land on the item below the one you meant)
-- The _Add-ins_ group is always a single button; number boxes select their value on focus, so typing replaces it (no more "11,5" instead of "1")
+- Typing in a header right after opening it no longer loses the first keys on slower computers
 
 ## 🔄 Upgrading
 
-Nothing to do: your files stay in your browser. Shapes saved with the previous version redraw themselves the first time you open the document.
+Nothing to do: your files stay in your browser. Headers and footers from earlier versions open as free text.
 
 ---
 
 ☕ Enjoying Cogniva? [Buy me a coffee on PayPal](https://www.paypal.me/liborioriggi98) — it keeps the project going. Thank you! 💜
 
-**Full changelog**: https://github.com/libi1998/Cogniva/compare/v1.1.1...v1.2.0
+**Full changelog**: https://github.com/libi1998/Cogniva/compare/v1.2.0...v1.3.0

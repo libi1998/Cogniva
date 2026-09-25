@@ -64,6 +64,8 @@ export type DocState = {
   listStyle: string
   listLevels: string
   listStart: number
+  /** il colore dei punti o dei numeri dell'elenco del cursore ("": automatico) */
+  listColor: string
 
   blockType: "docTitle" | "paragraph" | "heading" | "blockquote"
   lineHeight: string
@@ -212,6 +214,7 @@ const EMPTY: DocState = {
   listStyle: "",
   listLevels: "",
   listStart: 1,
+  listColor: "",
   blockType: "paragraph",
   lineHeight: "",
   spaceBefore: 0,
@@ -413,6 +416,7 @@ export function useDocState(editor: Editor | null): DocState {
         let listStyle = ""
         let listLevels = ""
         let listStart = 1
+        let listColor = ""
         let innerList = false
         for (let depth = $from.depth; depth > 0; depth -= 1) {
           const node = $from.node(depth)
@@ -424,6 +428,10 @@ export function useDocState(editor: Editor | null): DocState {
             listStart = Number(node.attrs.start ?? 1)
           }
           listLevels = String(node.attrs.levels ?? "")
+          // il colore vale anche per gli elenchi annidati: vince il più vicino
+          if (!listColor && node.attrs.markerColor) {
+            listColor = String(node.attrs.markerColor)
+          }
         }
 
         return {
@@ -476,6 +484,7 @@ export function useDocState(editor: Editor | null): DocState {
           listStyle,
           listLevels,
           listStart,
+          listColor,
 
           blockType: blockType as DocState["blockType"],
           lineHeight: String(block.lineHeight ?? ""),

@@ -305,6 +305,18 @@ export type DocMargins = {
 
 export type MarginSide = "top" | "right" | "bottom" | "left"
 
+/** Un nodo di intestazione o piè di pagina, nel JSON di ProseMirror */
+export type BandNode = {
+  type: string
+  attrs?: Record<string, unknown>
+  content?: BandNode[]
+  marks?: { type: string; attrs?: Record<string, unknown> }[]
+  text?: string
+}
+
+/** Intestazione o piè di pagina a testo libero: un piccolo documento */
+export type BandContent = { type: "doc"; content?: BandNode[] }
+
 export type DocTheme = {
   font: FontKey
   cornerRadius: number
@@ -323,10 +335,19 @@ export type DocTheme = {
   columns: 1 | 2 | 3
   /**
    * riga ripetuta in cima e in fondo a ogni pagina: «sinistra | centro |
-   * destra», con i campi {pagina}, {pagine}, {titolo}, {autore}, {data}
+   * destra», con i campi {pagina}, {pagine}, {titolo}, {autore}, {data}.
+   * Con il testo libero qui c'è il suo riassunto in testo semplice, per le
+   * versioni precedenti dell'app e per sapere al volo se c'è
    */
   header: string
   footer: string
+  /**
+   * intestazione e piè di pagina a testo libero, come in Word: righe con la
+   * loro formattazione, tabulazioni al centro e a destra, immagini e campi.
+   * Quando mancano valgono `header` e `footer`
+   */
+  headerContent?: BandContent | null
+  footerContent?: BandContent | null
   /** dove compare il numero di pagina */
   pageNumbers: PageNumberPosition
   /** stile dei numeri di pagina e numero della prima pagina */
@@ -557,6 +578,8 @@ export const defaultDocTheme: DocTheme = {
   columns: 1,
   header: "",
   footer: "",
+  headerContent: null,
+  footerContent: null,
   pageNumbers: "none",
   pageNumberFormat: "arabic",
   pageNumberStart: 1,

@@ -1,14 +1,19 @@
 import { expect, type Page } from "@playwright/test"
 
-/** Apre il documento d'esempio e aspetta l'editor */
+/**
+ * Apre il documento d'esempio e aspetta l'editor. Si cerca quello del
+ * documento (.doc-prose): scrivendo l'intestazione sul foglio ce n'è un altro
+ */
 export async function openDemo(page: Page) {
   await page.goto("/doc/demo-doc")
-  await expect(page.locator("#doc-sheet .ProseMirror")).toBeVisible()
+  await expect(page.locator("#doc-sheet .ProseMirror.doc-prose")).toBeVisible()
   // l'editor è pronto quando espone l'istanza sul suo elemento
   await page.waitForFunction(() =>
     Boolean(
       (
-        document.querySelector("#doc-sheet .ProseMirror") as unknown as {
+        document.querySelector(
+          "#doc-sheet .ProseMirror.doc-prose"
+        ) as unknown as {
           editor?: unknown
         } | null
       )?.editor
@@ -27,7 +32,7 @@ export async function withEditor<T>(
   return page.evaluate(
     ([source, value]) => {
       const el = document.querySelector(
-        "#doc-sheet .ProseMirror"
+        "#doc-sheet .ProseMirror.doc-prose"
       ) as unknown as {
         editor: unknown
       }
@@ -74,7 +79,7 @@ export async function selectText(page: Page, block: number, text: string) {
 /** Aspetta che il fuoco sia davvero nel testo: i tasti vanno lì */
 async function focused(page: Page) {
   await page.waitForFunction(() => {
-    const el = document.querySelector("#doc-sheet .ProseMirror")
+    const el = document.querySelector("#doc-sheet .ProseMirror.doc-prose")
     return Boolean(el && el.contains(document.activeElement))
   })
 }

@@ -56,6 +56,8 @@ import {
   type CommentsController,
 } from "./comments"
 import { BlockHandle } from "./block-handle"
+import { TableResize } from "./table-resize"
+import { bandText } from "@/lib/header-footer"
 import { InkLayer, useInk } from "./ink-layer"
 import {
   DEFAULT_IMMERSIVE,
@@ -68,6 +70,7 @@ import {
 } from "./view-modes"
 import {
   bandAt,
+  bandPlaces,
   GridOverlay,
   PageDecor,
   PageGuides,
@@ -134,6 +137,7 @@ import { useNarrow } from "@/lib/use-media"
 import {
   PAGE_FORMATS,
   clampZoom,
+  defaultDocTheme,
   type DocMargins,
   type DocTheme,
   type MarginSide,
@@ -195,6 +199,9 @@ export function DocEditor({
   const [outline, setOutline] = React.useState(false)
   // intestazione o piè di pagina che si sta scrivendo sul foglio
   const [band, setBand] = React.useState<BandEditing | null>(null)
+  // quanto sono alti intestazione e piè di pagina sul foglio: se non stanno
+  // nel margine il testo si sposta, come in Word
+  const [bandSpace, setBandSpace] = React.useState({ header: 0, footer: 0 })
   const [find, setFind] = React.useState<"find" | "replace" | null>(null)
   const [menu, setMenu] = React.useState<{ x: number; y: number } | null>(null)
   const [busy, setBusy] = React.useState(false)
@@ -333,9 +340,10 @@ export function DocEditor({
     editorRef.current = editor
   })
 
-  // il testo, per chi deve rimetterci il cursore: finestre, menu, riquadri
+  // il testo, per chi deve rimetterci il cursore: finestre, menu, riquadri.
+  // Mentre si scrive l'intestazione il posto è suo (lo tiene BandEditor)
   React.useEffect(() => {
-    if (!textRef) return
+    if (!textRef || band) return
     textRef.current = editor && !editor.isDestroyed ? editor.view.dom : null
   })
 
@@ -554,6 +562,33 @@ export function DocEditor({
     return () => ro.disconnect()
   }, [ready])
 
+  // l'altezza di intestazione e piè di pagina sul foglio, anche mentre si
+  // scrivono o quando un'immagine finisce di caricarsi
+  React.useLayoutEffect(() => {
+    const el = sheetRef.current
+    if (!el) return
+    const measure = () => {
+      let header = 0
+      let footer = 0
+      el.querySelectorAll<HTMLElement>("[data-band-kind]").forEach((b) => {
+        const h = b.offsetHeight
+        if (b.dataset.bandKind === "header") header = Math.max(header, h)
+        else footer = Math.max(footer, h)
+      })
+      setBandSpace((prev) =>
+        Math.abs(prev.header - header) < 1 && Math.abs(prev.footer - footer) < 1
+          ? prev
+          : { header, footer }
+      )
+    }
+    measure()
+    const ro = new ResizeObserver(measure)
+    el.querySelectorAll("[data-band-kind]").forEach((b) => ro.observe(b))
+    return () => ro.disconnect()
+    // il tema cambia scrivendo intestazione e piè; con più pagine il foglio
+    // si allunga e ci sono fasce nuove da guardare
+  }, [theme, band, ready, sheetHeight])
+
   const setTheme = React.useCallback(
     (patch: Partial<DocTheme>) => setDocTheme(fileId, patch),
     [fileId, setDocTheme]
@@ -584,6 +619,8 @@ export function DocEditor({
           width: view === "web" ? "full" : theme.width,
           header: "",
           footer: "",
+          headerContent: null,
+          footerContent: null,
           pageNumbers: "none",
           pageBorder: "none",
           watermark: view === "web" ? theme.watermark : null,
@@ -595,8 +632,19 @@ export function DocEditor({
   const exact = screenTheme ? pageSizeExact(screenTheme) : null
   const paginated = Boolean(exact) && screenTheme?.columns === 1
   const layoutHeight = paginated && exact ? exact.h : 0
-  const layoutTop = theme?.margins.top ?? 0
-  const layoutBottom = theme?.margins.bottom ?? 0
+  // dove comincia e finisce il testo: il margine, o più giù (più su) se
+  // l'intestazione (il piè) è più alta dello spazio che le lascia
+  const places = bandPlaces(theme?.margins ?? defaultDocTheme.margins)
+  const bodyTop = Math.max(
+    theme?.margins.top ?? 0,
+    bandSpace.header ? Math.ceil(places.headTop + bandSpace.header + 6) : 0
+  )
+  const bodyBottom = Math.max(
+    theme?.margins.bottom ?? 0,
+    bandSpace.footer ? Math.ceil(places.footBottom + bandSpace.footer + 6) : 0
+  )
+  const layoutTop = bodyTop
+  const layoutBottom = bodyBottom
   React.useEffect(() => {
     if (!editor) return
     // fuori dal ciclo di React: la transazione aggiorna viste dei nodi che a
@@ -1011,7 +1059,12 @@ export function DocEditor({
   const fluid = compact && !page
   const layout: DocTheme = fluid
     ? { ...viewTheme, margins: COMPACT_MARGINS }
-    : viewTheme
+    : {
+        ...viewTheme,
+        margins: { ...viewTheme.margins, top: bodyTop, bottom: bodyBottom },
+      }
+  // intestazione e piè stanno ai margini scelti: solo il testo si sposta
+  const decorTheme: DocTheme = fluid ? layout : viewTheme
   const sheetWidth =
     mode === "immersive"
       ? IMMERSIVE_WIDTHS[immersive.width]
@@ -1102,7 +1155,7 @@ export function DocEditor({
           if (mode !== "normal") setMode("normal")
           setBand({
             where,
-            part: 0,
+            at: null,
             page: visiblePage(
               sheetRef.current,
               scrollRef.current,
@@ -1340,7 +1393,10 @@ export function DocEditor({
                 {showRuler ? (
                   <Ruler
                     axis="vertical"
-                    length={sheetHeight}
+                    // con le pagine vere un righello per foglio, come in Word
+                    length={paginated && exact ? exact.h : sheetHeight}
+                    pages={paginated && exact ? pagination.pages : 1}
+                    gap={PAGE_GAP}
                     start={theme.margins.top}
                     end={theme.margins.bottom}
                     onMargin={setMargin}
@@ -1416,16 +1472,22 @@ export function DocEditor({
                             const box = el.getBoundingClientRect()
                             const scale = box.width / (el.offsetWidth || 1) || 1
                             const hit = bandAt(
-                              (e.clientX - box.left) / scale,
                               (e.clientY - box.top) / scale,
-                              el.offsetWidth,
                               exact.h,
                               forceLight ? 0 : PAGE_GAP,
-                              theme.margins
+                              {
+                                ...theme.margins,
+                                top: bodyTop,
+                                bottom: bodyBottom,
+                              }
                             )
                             if (!hit) return
                             e.preventDefault()
-                            setBand(hit)
+                            // il cursore va dove si è fatto doppio clic
+                            setBand({
+                              ...hit,
+                              at: { x: e.clientX, y: e.clientY },
+                            })
                           }}
                           style={
                             {
@@ -1489,8 +1551,20 @@ export function DocEditor({
                               paper={paper}
                               shadow={forceLight ? "none" : sheetShadow}
                               band={band}
-                              onBandChange={(where, text) =>
-                                setTheme({ [where]: text })
+                              body={{ top: bodyTop, bottom: bodyBottom }}
+                              focusRef={textRef}
+                              onBandChange={(where, content) =>
+                                setTheme(
+                                  where === "header"
+                                    ? {
+                                        headerContent: content,
+                                        header: bandText(content),
+                                      }
+                                    : {
+                                        footerContent: content,
+                                        footer: bandText(content),
+                                      }
+                                )
                               }
                               onBandClose={() => {
                                 setBand(null)
@@ -1501,7 +1575,7 @@ export function DocEditor({
                             <>
                               {page ? <PageGuides pageHeight={page.h} /> : null}
                               <PageDecor
-                                theme={layout}
+                                theme={decorTheme}
                                 title={title ?? ""}
                                 pageHeight={page?.h ?? 0}
                                 sheetHeight={sheetHeight}
@@ -1521,6 +1595,7 @@ export function DocEditor({
                             paperDark={paperDark}
                           />
                           <BlockHandle editor={editor} sheet={sheetRef} />
+                          <TableResize editor={editor} sheet={sheetRef} />
                           {/* tippy sposta la barretta fuori da qui: senza un involucro
                       fisso, aggiungere un fratello prima di lei fa fallire
                       l'inserimento nel DOM e la pagina si pianta */}

@@ -55,6 +55,9 @@ const OPPOSITE: Record<BorderSide, BorderSide> = {
   right: "left",
 }
 
+/** la colonna più stretta, come le celle di Tiptap (`cellMinWidth`) */
+export const MIN_COLUMN = 25
+
 /** «1px solid #000», «none» oppure null (quello della tabella) */
 export function borderCss(line: BorderLine | null): string {
   if (!line) return "none"
@@ -184,6 +187,13 @@ declare module "@tiptap/core" {
       selectTablePart: (part: "cell" | "row" | "column" | "table") => ReturnType
       distributeColumns: () => ReturnType
       setRowHeight: (px: number | null) => ReturnType
+      /** larghezza di ogni colonna della tabella in `tablePos`, in pixel */
+      setTableColumnWidths: (tablePos: number, widths: number[]) => ReturnType
+      /** altezza minima di ogni riga della tabella in `tablePos`, in pixel */
+      setTableRowHeights: (
+        tablePos: number,
+        heights: (number | null)[]
+      ) => ReturnType
     }
   }
 }
@@ -305,6 +315,80 @@ export const TableFormat = Extension.create({
               )
             )
           )
+          return true
+        },
+      setTableColumnWidths:
+        (tablePos, widths) =>
+        ({ state, dispatch }) => {
+          const table = state.doc.nodeAt(tablePos)
+          if (table?.type.name !== "table") return false
+          const map = TableMap.get(table)
+          if (widths.length !== map.width) return false
+          if (dispatch) {
+            const tr = state.tr
+            const start = tablePos + 1
+            // pixel interi che sommati fanno la larghezza chiesta: arrotondate
+            // una a una, tre colonne da 126,67 facevano 10,05 cm invece di 10
+            let sum = 0
+            const whole = widths.map((w) => {
+              const before = Math.round(sum)
+              sum += w
+              return Math.max(MIN_COLUMN, Math.round(sum) - before)
+            })
+            const seen = new Set<number>()
+            for (const pos of map.map) {
+              if (seen.has(pos)) continue
+              seen.add(pos)
+              const node = table.nodeAt(pos)
+              if (!node) continue
+              const cell = map.findCell(pos)
+              // come le colonne trascinate a mano: una larghezza per colonna
+              // coperta dalla cella
+              const colwidth = whole.slice(cell.left, cell.right)
+              tr.setNodeMarkup(start + pos, undefined, {
+                ...node.attrs,
+                colwidth,
+              })
+            }
+            dispatch(tr)
+          }
+          return true
+        },
+      setTableRowHeights:
+        (tablePos, heights) =>
+        ({ state, dispatch }) => {
+          const table = state.doc.nodeAt(tablePos)
+          if (table?.type.name !== "table") return false
+          const map = TableMap.get(table)
+          if (heights.length !== map.height) return false
+          if (dispatch) {
+            const tr = state.tr
+            const start = tablePos + 1
+            // pixel interi che sommati fanno l'altezza chiesta, come per le
+            // colonne
+            let sum = 0
+            const whole = heights.map((h) => {
+              if (!h || h <= 0) return null
+              const before = Math.round(sum)
+              sum += h
+              return Math.round(sum) - before
+            })
+            const seen = new Set<number>()
+            for (const pos of map.map) {
+              if (seen.has(pos)) continue
+              seen.add(pos)
+              const node = table.nodeAt(pos)
+              if (!node) continue
+              const cell = map.findCell(pos)
+              // una cella su più righe le lascia decidere a loro
+              const px = cell.bottom - cell.top === 1 ? whole[cell.top] : null
+              tr.setNodeMarkup(start + pos, undefined, {
+                ...node.attrs,
+                minHeight: px && px > 0 ? Math.min(600, Math.round(px)) : null,
+              })
+            }
+            dispatch(tr)
+          }
           return true
         },
       distributeColumns:

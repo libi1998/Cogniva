@@ -852,10 +852,28 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                 }
                 onPick={(b) => chain().setListStyle("bullet", b.value).run()}
                 render={(b) => (
-                  <span className="text-center text-xl leading-none">
+                  <span
+                    className="text-center text-xl leading-none"
+                    style={{
+                      color: (st.bulletList && st.listColor) || undefined,
+                    }}
+                  >
                     {b.glyph}
                   </span>
                 )}
+              />
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel>{t("Colore dei punti")}</DropdownMenuLabel>
+              <SwatchGrid
+                columns={7}
+                colors={TEXT_COLORS}
+                value={st.bulletList ? st.listColor : undefined}
+                onPick={(v) =>
+                  // fuori da un elenco lo si crea già colorato
+                  (st.bulletList ? chain() : chain().toggleBulletList())
+                    .setListColor(v || null)
+                    .run()
+                }
               />
               {st.bulletList ? (
                 <>
@@ -885,6 +903,18 @@ export function HomeTab({ ctx }: { ctx: RibbonCtx }) {
                 }
                 onPick={(n) => chain().setListStyle("ordered", n.value).run()}
                 render={(n) => <ListSample marks={n.sample} />}
+              />
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel>{t("Colore dei numeri")}</DropdownMenuLabel>
+              <SwatchGrid
+                columns={7}
+                colors={TEXT_COLORS}
+                value={st.orderedList ? st.listColor : undefined}
+                onPick={(v) =>
+                  (st.orderedList ? chain() : chain().toggleOrderedList())
+                    .setListColor(v || null)
+                    .run()
+                }
               />
               {st.orderedList ? (
                 <>

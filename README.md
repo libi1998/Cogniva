@@ -90,11 +90,13 @@ Diagrams, wireframes and professional documents: **no account**, **no server**, 
 - 🔤 **308 modern fonts**, including free metric-compatible alternatives to the most common document fonts
 - 📃 **Real pages** — a new document starts on a full A4 sheet — with margins, columns and
   line numbers
-- 🧾 **Headers and footers written right on the sheet**: double-click the margin, add page
-  numbers, title, author or date
+- 🧾 **Headers and footers written right on the sheet** as free text: double-click the
+  margin, add a logo, a line, page numbers, title, author or date; `Tab` moves to the
+  center and to the right, like Word
 - 🎛️ **A contextual tab** for the object you're working on — _Table_, _Picture format_,
   _Shape format_, _Chart format_, _Table of contents_… — that opens by itself on insert
 - ¶ **Formatting marks** for spaces, tabs, line breaks, paragraphs and cells
+- 🎨 **Colored bullets and numbers** for every list
 - 🎙️ **Dictation**: just speak and the text appears, punctuation included
 - 🔍 **Find and replace**, word count and spell check
 - ✨ **AutoCorrect** while you type: smart quotes, dashes, `(c)` → ©, `1/2` → ½, capital
@@ -110,7 +112,8 @@ Diagrams, wireframes and professional documents: **no account**, **no server**, 
 <summary><b>🧱 Insert</b></summary>
 
 - 🔲 **Tables like Word's**: borders side by side with pen style, width and color, shading,
-  nine-position alignment, cell margins and row height for every cell
+  nine-position alignment, cell margins and row height for every cell; drag the handles
+  to resize the whole table, or type its width and height
 - ✥ **A move handle** on tables, charts, tables of contents, boards and more: click to
   select, drag to move between paragraphs
 - 🖼️ Pictures with seven text wrapping options, icons and smart diagrams

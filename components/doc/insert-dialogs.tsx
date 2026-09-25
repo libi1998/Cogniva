@@ -38,19 +38,20 @@ import {
 } from "@/lib/doc-inserts"
 import { fontStack } from "@/lib/fonts"
 import {
-  BAND_FIELDS,
-  bandParts,
+  bandContent,
+  bandFromText,
+  bandText,
   FOOTER_PRESETS,
   HEADER_PRESETS,
-  joinBand,
   PAGE_NUMBER_FORMATS,
 } from "@/lib/header-footer"
+import { BandEditor } from "./band-editor"
 import { ICON_CATEGORIES, ICON_NAMES } from "@/lib/icon-library"
 import { docAccent, getSwatch } from "@/lib/palette"
 import type { DocTheme } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
-import { useT, tr, currentLocale } from "@/lib/i18n/client"
+import { useT, tr, currentLocale, currentRegion } from "@/lib/i18n/client"
 /** Finestra con intestazione, contenuto e pulsanti: lo schema di tutte */
 function Shell({
   open,
@@ -1499,7 +1500,7 @@ export function HeaderFooterDialog({
       onClose={onClose}
       title={t("Intestazione e piè di pagina")}
       description={t(
-        "Tre parti per riga: a sinistra, al centro, a destra. I campi si riempiono pagina per pagina."
+        "Testo libero, immagini e campi che si riempiono pagina per pagina."
       )}
       width={600}
     >
@@ -1525,30 +1526,28 @@ function HeaderFooterForm({
   initial: "header" | "footer"
 }) {
   const t = useT()
+  const author = useAuthor()
   const [tab, setTab] = React.useState(initial)
-  const [header, setHeader] = React.useState(bandParts(theme.header))
-  const [footer, setFooter] = React.useState(bandParts(theme.footer))
+  const [header, setHeader] = React.useState(() => bandContent(theme, "header"))
+  const [footer, setFooter] = React.useState(() => bandContent(theme, "footer"))
+  // un modello o «Rimuovi» rifanno l'editor con il contenuto nuovo
+  const [version, setVersion] = React.useState(0)
   const [first, setFirst] = React.useState(theme.differentFirstPage)
   const [format, setFormat] = React.useState(theme.pageNumberFormat)
   const [start, setStart] = React.useState(theme.pageNumberStart)
-  const focused = React.useRef<{
-    index: number
-    input: HTMLInputElement | null
-  }>({
-    index: 0,
-    input: null,
-  })
-  const parts = tab === "header" ? header : footer
-  const setParts = tab === "header" ? setHeader : setFooter
+  const content = tab === "header" ? header : footer
+  const setContent = tab === "header" ? setHeader : setFooter
   const presets = tab === "header" ? HEADER_PRESETS : FOOTER_PRESETS
-
-  const addToken = (token: string) => {
-    const { index, input } = focused.current
-    const value = parts[index]
-    const at = input?.selectionStart ?? value.length
-    const next = [...parts] as [string, string, string]
-    next[index] = `${value.slice(0, at)}${token}${value.slice(at)}`
-    setParts(next)
+  const vars = {
+    page: Math.max(0, Math.round(start)),
+    pages: Math.max(0, Math.round(start)),
+    title: "",
+    author,
+    date: new Date().toLocaleDateString(currentRegion(), {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }),
   }
 
   return (
@@ -1557,8 +1556,10 @@ function HeaderFooterForm({
       onSubmit={(e) => {
         e.preventDefault()
         setTheme({
-          header: joinBand(header),
-          footer: joinBand(footer),
+          headerContent: header,
+          header: bandText(header),
+          footerContent: footer,
+          footer: bandText(footer),
           differentFirstPage: first,
           pageNumberFormat: format,
           pageNumberStart: Math.max(0, Math.round(start)),
@@ -1584,48 +1585,23 @@ function HeaderFooterForm({
             </button>
           ))}
         </div>
-        <div className="grid gap-2 sm:grid-cols-3">
-          {([t("A sinistra"), t("Al centro"), t("A destra")] as const).map(
-            (label, i) => (
-              <label key={label} className="block space-y-1">
-                <span className="text-xs text-muted-foreground">{label}</span>
-                <Input
-                  value={parts[i]}
-                  onFocus={(e) => {
-                    focused.current = { index: i, input: e.target }
-                  }}
-                  onChange={(e) => {
-                    const next = [...parts] as [string, string, string]
-                    next[i] = e.target.value.replace(/\|/g, "")
-                    setParts(next)
-                  }}
-                  className={cn(
-                    "h-8 text-sm",
-                    i === 1 && "text-center",
-                    i === 2 && "text-right"
-                  )}
-                />
-              </label>
-            )
-          )}
-        </div>
-        <div className="flex flex-wrap items-center gap-1">
-          <span className="mr-1 text-xs text-muted-foreground">
-            {t("Inserisci campo")}
-          </span>
-          {BAND_FIELDS.map((f) => (
-            <Button
-              key={f.token}
-              type="button"
-              variant="outline"
-              size="sm"
-              className="h-7 text-xs"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => addToken(f.token)}
-            >
-              {f.label}
-            </Button>
-          ))}
+        <div className="relative space-y-1.5">
+          <BandEditor
+            key={`${tab}-${version}`}
+            where={tab}
+            initial={content}
+            vars={vars}
+            theme={{ ...theme, pageNumberFormat: format }}
+            onChange={setContent}
+            showClose={false}
+            className="doc-band min-h-16 rounded-md border border-input px-2 py-1.5 text-base"
+            toolbarClassName="static flex-wrap"
+          />
+          <p className="text-[11px] text-muted-foreground">
+            {t(
+              "Tab porta al centro della riga e poi a destra. Invio va a capo."
+            )}
+          </p>
         </div>
         <div>
           <span className="text-xs text-muted-foreground">{t("Modelli")}</span>
@@ -1634,7 +1610,10 @@ function HeaderFooterForm({
               <button
                 key={p.label}
                 type="button"
-                onClick={() => setParts(bandParts(p.value))}
+                onClick={() => {
+                  setContent(bandFromText(p.value))
+                  setVersion((v) => v + 1)
+                }}
                 className="rounded-md border border-border px-2 py-1.5 text-left transition hover:bg-muted"
               >
                 <span className="block text-xs font-medium">{p.label}</span>
@@ -1693,7 +1672,10 @@ function HeaderFooterForm({
         <Button
           type="button"
           variant="outline"
-          onClick={() => setParts(["", "", ""])}
+          onClick={() => {
+            setContent(null)
+            setVersion((v) => v + 1)
+          }}
         >
           {tab === "header"
             ? t("Rimuovi intestazione")
