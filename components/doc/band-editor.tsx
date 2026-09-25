@@ -393,16 +393,14 @@ export function BandEditor({
     latest.current = onChange
   })
   const label = where === "header" ? t("Intestazione") : t("Piè di pagina")
-  // estensioni e contenuto di partenza una volta sola: mentre si scrive il
-  // tema cambia a ogni tasto, l'editor no
+  // estensioni, contenuto di partenza e proprietà una volta sola: mentre si
+  // scrive il tema cambia a ogni tasto e questo componente si ridisegna. Con
+  // un oggetto nuovo a ogni giro useEditor rifaceva le opzioni dell'editor,
+  // che rimetteva il suo stato: una battuta non ancora letta si perdeva
+  // (sulla CI, più lenta, spariva uno spazio)
   const [setup] = React.useState(() => ({
     extensions: createBandExtensions({ vars, theme }),
     content: sanitizeBand(initial) ?? EMPTY_BAND,
-  }))
-  const editor = useEditor({
-    immediatelyRender: false,
-    extensions: setup.extensions,
-    content: setup.content as never,
     editorProps: {
       attributes: {
         class: "doc-band-editor",
@@ -412,6 +410,12 @@ export function BandEditor({
         spellcheck: "false",
       },
     },
+  }))
+  const editor = useEditor({
+    immediatelyRender: false,
+    extensions: setup.extensions,
+    content: setup.content as never,
+    editorProps: setup.editorProps,
     onUpdate: ({ editor: e }) => {
       latest.current(e.getJSON() as BandContent)
     },
